@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>প্রশ্নপত্র Maker</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='22'>প</text></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -13,11 +13,11 @@
 html{font-size:14px;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#4f46e5}
-::selection{background:#4f46e5;color:#fff}
+::-webkit-scrollbar-thumb{background:var(--t4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+::selection{background:var(--accent);color:#fff}
 
-/* ═══════ TOKENS ═══════ */
+/* ═══════ TOKENS (DARK DEFAULT) ═══════ */
 :root{
   --bg:       #0a0e1a;
   --bg1:      #0f1629;
@@ -47,15 +47,38 @@ html{font-size:14px;-webkit-font-smoothing:antialiased}
   --p-margin: 1.0cm;
   --p-fsize:  11pt;
   --p-lh:     1.5;
+  --pv-bg:    #13182b;
+}
+
+/* ═══════ TOKENS (LIGHT THEME) ═══════ */
+[data-theme="light"] {
+  --bg:       #f8fafc;
+  --bg1:      #ffffff;
+  --bg2:      #f1f5f9;
+  --bg3:      #e2e8f0;
+  --bg4:      #cbd5e1;
+  --border:   #e2e8f0;
+  --border2:  #cbd5e1;
+  --accent:   #4f46e5;
+  --accent2:  #4338ca;
+  --accent3:  #3730a3;
+  --t1:       #0f172a;
+  --t2:       #334155;
+  --t3:       #475569;
+  --t4:       #94a3b8;
+  --shadow:   0 4px 24px rgba(0,0,0,.08);
+  --shadow2:  0 2px 8px rgba(0,0,0,.04);
+  --pv-bg:    #e2e8f0;
 }
 
 /* ═══════ BODY / SHELL ═══════ */
-body{font-family:var(--font-ui);background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;display:flex;flex-direction:column;transition:background 0.3s, color 0.3s;}
 
 /* ═══════ TOPBAR ═══════ */
 #topbar{
   height:52px;background:var(--bg1);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;
+  transition:background 0.3s, border-color 0.3s;
 }
 .logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
 .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#818cf8);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-family:var(--font-bn);color:#fff;font-weight:700}
@@ -66,14 +89,16 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--t1);height:100v
 
 /* fit badge */
 #fit-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;transition:.2s}
-#fit-badge.ok{background:#052e16;color:#4ade80;border:1px solid #166534}
-#fit-badge.warn{background:#2d1a00;color:#fbbf24;border:1px solid #92400e}
-#fit-badge.over{background:#2d0606;color:#f87171;border:1px solid #7f1d1d}
+#fit-badge.ok{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+#fit-badge.warn{background:rgba(245,158,11,0.15);color:var(--gold);border:1px solid rgba(245,158,11,0.3)}
+#fit-badge.over{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
 
 /* ═══════ SETTINGS STRIP ═══════ */
 #strip{
   height:44px;background:var(--bg1);border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:0;flex-shrink:0;overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  transition:background 0.3s, border-color 0.3s;
 }
 #strip::-webkit-scrollbar{height:0}
 .sg{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--border);height:100%;flex-shrink:0}
@@ -96,6 +121,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .pill.on{background:var(--accent);color:#fff;font-weight:600}
 .pill:not(.on):hover{color:var(--t1);background:var(--bg4)}
 
+/* select dropdown standard */
+.select-std{background:var(--bg3);border:1px solid var(--border2);color:var(--t1);border-radius:4px;padding:3px 8px;font-size:11px;outline:none;cursor:pointer;}
+.select-std:focus{border-color:var(--accent2);}
+
 /* ═══════ MAIN SPLIT ═══════ */
 #main{flex:1;display:flex;overflow:hidden}
 
@@ -105,11 +134,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
   background:var(--bg1);border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;
   resize:horizontal;
+  transition:background 0.3s, border-color 0.3s;
 }
 #sidebar-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 14px 70px;display:flex;flex-direction:column;gap:10px}
 
 /* ═══════ CARDS ═══════ */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s, background .3s}
 .card:focus-within{border-color:var(--border2)}
 .card-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:.15s}
 .card-hdr:hover{background:var(--bg3)}
@@ -132,10 +162,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 input[type=text],input[type=number],textarea,select{
   width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);
   color:var(--t1);font-family:var(--font-ui);font-size:12.5px;padding:6px 9px;outline:none;
-  transition:border-color .15s,box-shadow .15s;box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+  transition:border-color .15s,box-shadow .15s, background .3s, color .3s;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.1);
 }
 input[type=text]:focus,input[type=number]:focus,textarea:focus,select:focus{
-  border-color:var(--accent2);box-shadow:inset 0 1px 3px rgba(0,0,0,.3),0 0 0 2px rgba(99,102,241,.2);
+  border-color:var(--accent2);box-shadow:inset 0 1px 3px rgba(0,0,0,.1),0 0 0 2px rgba(99,102,241,.2);
 }
 textarea{resize:vertical;min-height:52px;line-height:1.5;font-family:var(--font-bn);font-size:13px}
 .bn-field{font-family:var(--font-bn)!important;font-size:13px!important}
@@ -144,6 +175,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 .c2{grid-template-columns:1fr 1fr}
 .c3{grid-template-columns:1fr 1fr 1fr}
 .fgrp{display:flex;flex-direction:column;gap:4px}
+.f-full{grid-column: 1 / -1;}
 
 /* ═══════ BUTTONS ═══════ */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:var(--r2);border:1px solid transparent;font-family:var(--font-ui);font-size:12px;font-weight:500;cursor:pointer;outline:none;transition:.15s;white-space:nowrap;user-select:none}
@@ -166,7 +198,8 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 .chip{display:inline-flex;align-items:center;gap:4px;background:rgba(79,70,229,.12);border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;color:var(--accent3);font-family:var(--font-bn)}
 
 /* ═══════ QUESTION ITEMS ═══════ */
-.qitem{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:7px;transition:border-color .15s}
+.qitem{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:7px;transition:border-color .15s, background 0.3s; cursor: grab;}
+.qitem:active{cursor: grabbing;}
 .qitem:hover{border-color:var(--border2)}
 .qitem-hdr{display:flex;align-items:center;gap:6px}
 .qnum{font-size:10px;font-weight:700;color:var(--t3);font-family:var(--font-bn);min-width:22px}
@@ -181,10 +214,14 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 .extra-block{border:1px solid var(--border2);border-radius:5px;padding:7px;margin-top:4px;position:relative}
 .extra-del{position:absolute;top:4px;right:5px;background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;line-height:1;padding:0}
 
+/* Mobile Nav Adjusters */
+.nav-arrows { display: flex; gap: 2px; }
+.nav-arrows button { font-size: 14px; padding: 2px 6px; }
+
 /* ═══════ QPF PASTE ═══════ */
-.qpf-ta{font-family:'Courier New',monospace;font-size:11px;color:#4ade80;background:#020c04;border:1px solid #1a4a2a;border-radius:5px;padding:8px 10px;line-height:1.6;min-height:80px}
-.qpf-ta::placeholder{color:#1a4a2a}
-.qpf-ta:focus{border-color:#10b981;outline:none}
+.qpf-ta{font-family:'Courier New',monospace;font-size:11px;color:var(--green);background:rgba(16, 185, 129, 0.05);border:1px solid var(--border2);border-radius:5px;padding:8px 10px;line-height:1.6;min-height:80px}
+.qpf-ta::placeholder{color:var(--t3)}
+.qpf-ta:focus{border-color:var(--green);outline:none}
 
 /* ═══════ EXPORT BAR ═══════ */
 #export-bar{
@@ -192,30 +229,32 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
   background:linear-gradient(0deg,var(--bg1) 80%,transparent);
   display:flex;align-items:center;justify-content:space-between;
   padding:0 14px;gap:8px;z-index:50;border-top:1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 /* ═══════ PREVIEW PANEL ═══════ */
-#preview{flex:1;display:flex;flex-direction:column;background:#13182b;overflow:hidden}
-#preview-bar{height:40px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:12px;flex-shrink:0}
+#preview{flex:1;display:flex;flex-direction:column;background:var(--pv-bg);overflow:hidden;transition:background 0.3s;}
+#preview-bar{height:40px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:12px;flex-shrink:0;transition:background 0.3s, border-color 0.3s;}
 #preview-vp{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px 20px;gap:20px}
 
 /* ═══════ PREVIEW PAGE ═══════ */
-.pp-wrap{transform-origin:top center;margin-bottom:-40px}
+.pp-wrap{transform-origin:top center;margin-bottom:-40px; transition: transform 0.2s ease;}
 .pp{background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.6);border-radius:2px}
+[data-theme="light"] .pp { box-shadow:0 8px 40px rgba(0,0,0,.15); }
 .empty-ph{text-align:center;padding:60px 20px;color:var(--t3);font-size:13px;line-height:1.8}
 .empty-ph .ei{font-size:40px;margin-bottom:12px}
 
 /* ═══════ INFO PANEL ═══════ */
 #ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;opacity:0;pointer-events:none;transition:.3s}
 #ov.show{opacity:1;pointer-events:auto}
-#info{position:fixed;top:0;right:0;width:min(460px,95vw);height:100vh;background:var(--bg1);border-left:1px solid var(--border);z-index:801;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--shadow)}
+#info{position:fixed;top:0;right:0;width:min(460px,95vw);height:100vh;background:var(--bg1);border-left:1px solid var(--border);z-index:801;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;display:flex;flex-direction:column;box-shadow:var(--shadow)}
 #info.show{transform:none}
 .info-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
 .info-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:16px}
 .info-sec-ttl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent3);padding-bottom:5px;border-bottom:1px solid var(--border);margin-bottom:6px}
 .info-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
 .iico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.iico.b{background:#0f1e3a}.iico.g{background:#052e16}.iico.a{background:#2d1a00}.iico.p{background:#1e0a3a}
+.iico.b{background:rgba(99,102,241,0.2)}.iico.g{background:rgba(16,185,129,0.2)}.iico.a{background:rgba(245,158,11,0.2)}.iico.p{background:rgba(168,85,247,0.2)}
 .info-p{font-size:12px;line-height:1.65;color:var(--t2)}
 .info-p strong{color:var(--t1);font-weight:600}
 .lib-tag{display:inline-flex;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--t2);font-family:monospace;margin:2px}
@@ -253,15 +292,51 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 .qp-itable{border-collapse:collapse;margin:2pt auto;font-size:calc(var(--p-fsize) - 1pt)}
 .qp-itable td{border:.5pt solid #555;padding:1.5pt 4pt;text-align:center}
 
+/* ═══════ SEPARATION & DIFFERENTIATION LOGIC ═══════ */
+.qp-page.pv-mode-one {
+  width: 148.5mm;
+  margin: 0 auto;
+}
+.qp-page.pv-mode-one .symm-part {
+  display: none !important;
+}
+
+.qp-set-right,
+.qp-set-right b,
+.qp-set-right span,
+.qp-set-right div {
+  color: #5D4037 !important;
+}
+.qp-set-right .qp-itable td {
+  border-color: #5D4037 !important;
+}
+
+/* ═══════ MOBILE RESPONSIVENESS ═══════ */
+@media (max-width: 768px) {
+  #topbar { height: auto; min-height: 52px; flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+  .topbar-mid { width: 100%; max-width: none; order: 3; justify-content: center; }
+  .logo-text { font-size: 14px; }
+  #main { flex-direction: column; }
+  #sidebar { width: 100% !important; max-width: none !important; height: 50vh; resize: vertical; border-right: none; border-bottom: 1px solid var(--border); flex: none; }
+  #preview { height: 50vh; flex: 1; }
+  #dia-panel { width: 95vw; height: auto; max-height: 90vh; overflow-y: auto; }
+  #dia-canvas { width: 100%; height: auto; aspect-ratio: 52/32; }
+}
+
 /* ═══════ @MEDIA PRINT ═══════ */
 @media print{
   @page{size:A4 landscape;margin:0}
-  body,#app-shell{background:#fff!important;display:block!important;height:auto!important;overflow:visible!important}
+  body,#main{background:#fff!important;display:block!important;height:auto!important;overflow:visible!important}
   #topbar,#strip,#sidebar,#preview-bar,#info,#ov,#toasts,#dia-modal,.no-print{display:none!important}
   #preview,#preview-vp{display:block!important;background:#fff!important;overflow:visible!important;padding:0!important}
   .pp-wrap{transform:none!important;margin-bottom:0!important}
   .pp{box-shadow:none!important;page-break-after:always}
   .pp:last-child{page-break-after:auto}
+
+  .qp-page { width: 297mm !important; }
+  .qp-page.pv-mode-one { width: 297mm !important; }
+  .qp-page.pv-mode-one .qp-div.symm-part { display: flex !important; }
+  .qp-page.pv-mode-one .qp-set.symm-part { display: block !important; }
 }
 </style>
 </head>
@@ -288,6 +363,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 
   <div class="topbar-right">
     <span id="fit-badge" class="ok">✓ Ready</span>
+    <button class="icon-btn" id="theme-toggle" title="Toggle Theme"></button>
     <button class="icon-btn" id="info-btn" title="How to use">
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     </button>
@@ -296,10 +372,6 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 
 <!-- ═══ SETTINGS STRIP ═══ -->
 <div id="strip">
-  <div class="sg">
-    <span class="slabel">Teacher</span>
-    <input type="text" id="s-teacher" value="Shibanjan Bera" style="width:130px;padding:3px 7px;font-size:12px"/>
-  </div>
   <div class="sg">
     <span class="slabel">Margin</span>
     <input type="range" id="s-mg" min="3" max="18" value="10" step="1"/>
@@ -328,12 +400,12 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
   </div>
   <div class="sg">
     <span class="slabel">Watermark</span>
-    <label class="btn btn-ghost btn-sm" style="cursor:pointer;font-size:11px">
-      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      <span id="wm-lbl">Default</span>
-      <input type="file" id="wm-file" accept="image/*" hidden/>
-    </label>
-    <button class="icon-btn btn-sm" id="wm-rst" title="Reset">↺</button>
+    <select id="s-wm" class="select-std">
+      <option value="default">Default Map</option>
+      <option value="none">None</option>
+      <option value="custom">Upload New...</option>
+    </select>
+    <input type="file" id="wm-file" accept="image/*" hidden/>
   </div>
 </div>
 
@@ -372,14 +444,10 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
           <span class="card-ttl">📄 Exam Information</span>
         </div>
         <div class="card-body" id="ei-body">
-          <div class="frow c2">
-            <div class="fgrp">
-              <label class="flabel">Test Number</label>
-              <input type="number" id="f-tno" value="1" min="1"/>
-            </div>
-            <div class="fgrp">
-              <label class="flabel">Full Marks <span style="color:var(--accent3);font-size:9px">(auto)</span></label>
-              <input type="number" id="f-fm" value="0" readonly style="opacity:.5;cursor:not-allowed"/>
+          <div class="frow">
+            <div class="fgrp f-full">
+              <label class="flabel">Top Title Text</label>
+              <input type="text" id="f-tt" value="Test no. 1 by Shibanjan Bera" class="bn-field" placeholder="E.g., Second Unit Test 2026"/>
             </div>
           </div>
           <div class="frow c2">
@@ -388,13 +456,19 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
               <input type="text" id="f-cls" placeholder="VII (WBBSE)" class="bn-field"/>
             </div>
             <div class="fgrp">
+              <label class="flabel">Full Marks <span style="color:var(--accent3);font-size:9px">(auto)</span></label>
+              <input type="number" id="f-fm" value="0" readonly style="opacity:.5;cursor:not-allowed"/>
+            </div>
+          </div>
+          <div class="frow c2">
+            <div class="fgrp">
+              <label class="flabel">Subject</label>
+              <input type="text" id="f-subj" placeholder="বিজ্ঞান / Science" class="bn-field"/>
+            </div>
+            <div class="fgrp">
               <label class="flabel">Time (min)</label>
               <input type="number" id="f-time" value="30" min="5" max="300"/>
             </div>
-          </div>
-          <div class="fgrp">
-            <label class="flabel">Subject <span id="subj-warn" style="color:var(--gold);font-size:9px;display:none"> ⚠ long — will shrink</span></label>
-            <input type="text" id="f-subj" placeholder="বিজ্ঞান / Science" class="bn-field"/>
           </div>
           <div class="fgrp">
             <label class="flabel">Instructions (optional)</label>
@@ -475,11 +549,16 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
       <div class="info-sec-ttl">What is this</div>
       <div class="info-item"><div class="iico b">📝</div><p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates Bengali exam papers that print two identical copies on one A4 landscape sheet. Cut the dotted centre line — two students each get one set.</p></div>
     </div>
-
     
-      <div class="info-item"><div class="iico b">📝</div><p class="info-p"><strong>OCR from Gemini / ChatGPT by Prompt (Photo → QP)</strong> Upload the question paper photo and send with this text: <br/><br/>You are a question paper digitizer. Analyze this image of a printed question paper and extract ALL content into the .qpf format below. Follow every rule strictly.<br/><br/>RULES:<br/><br/>1. Start with ##META. Extract: TEACHER (look for "by [name]" near the title), TEST_NO (the number near "Test no."), CLASS, SUBJECT, FULL_MARKS (the number after "Full Marks:"), TIME (number only, in minutes).<br/><br/>2. Set FONT_SIZE: 11, MARGIN: 1.0, DIVIDER: dotted, SEC_LANG: bn, WATERMARK: default.<br/><br/>3. For each section (বিভাগ ক / খ / গ / ঘ etc.), create a ##SECTION_[NAME] block. Map: ক→KA, খ→KHA, গ→GA, ঘ→GHA, ঙ→UMA.<br/><br/>4. Inside each section: HEADING (exact Bengali instruction text), TYPE (mcq if options ক/খ/গ/ঘ or a/b/c/d appear; short if 1 mark without options; descriptive if 2 marks; long if 3+ marks), MARKS_PER_Q (the first number in the marks formula like "১ × ৪ = ৪"), OPT_STYLE (bn if Bengali options ক/খ/গ/ঘ, else en).<br/><br/>5. For each question write Q: followed by the EXACT Bengali text. Preserve all Bengali Unicode exactly.<br/><br/>6. For MCQ questions, immediately after Q: write OP_K, OP_KH, OP_G, OP_GH with option text only (no ক/খ prefix).<br/><br/>7. For subscripts use [SUB:x], superscripts use [SUP:x], chemical formulas use [CHEM:formula], equations use [EQ:text], Greek letters use [SYM:name].<br/><br/>8. If a question contains a table, write TABLE_START:rows×cols, then each row with pipe | separating cells, then TABLE_END.<br/><br/>9. End with ##END.<br/><br/>10. Output ONLY the .qpf content. No explanation. No markdown fences. No extra text. Start directly with // Question Paper Format v1.0..</p></div>
+    <div>
+      <div class="info-sec-ttl">🤖 AI OCR Prompt</div>
+      <div class="info-item"><div class="iico p">✨</div><p class="info-p" style="margin-bottom:0;">Use this specific prompt with an AI assistant (like Gemini or ChatGPT) to accurately digitize printed question papers into the QPF format.</p></div>
+      <button class="btn btn-accent btn-full" id="copy-prompt-btn" style="margin-top: 8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        Copy AI Prompt
+      </button>
     </div>
-  
+
     <div>
       <div class="info-sec-ttl">🔒 100% Offline — No Server</div>
       <div class="info-item"><div class="iico g">🛡</div><p class="info-p"><strong>Nothing leaves your device.</strong> No server, no login, no analytics. Runs entirely in your browser RAM. Works offline after first load.</p></div>
@@ -495,7 +574,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
     <div>
       <div class="info-sec-ttl">🤖 OCR Flow (Photo → Paper)</div>
       <div class="step"><div class="sn">1</div><p class="info-p">Take a photo of a printed question paper. Open Gemini or ChatGPT.</p></div>
-      <div class="step"><div class="sn">2</div><p class="info-p">Upload the photo. Paste the <strong>QPF prompt</strong> from README.md. The AI outputs structured .qpf text.</p></div>
+      <div class="step"><div class="sn">2</div><p class="info-p">Upload the photo. Copy and paste the <strong>AI OCR Prompt</strong> provided above.</p></div>
       <div class="step"><div class="sn">3</div><p class="info-p">Copy the AI output. Click <strong>"Paste QPF"</strong> in the header, paste, click <strong>Apply & Fill Form</strong>.</p></div>
       <div class="step"><div class="sn">4</div><p class="info-p">Review the form, then click <strong>Print / PDF</strong>. Set A4, Landscape, No margins in the print dialog.</p></div>
     </div>
@@ -534,7 +613,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
         <button class="btn btn-ghost btn-sm" id="dia-cancel">Cancel</button>
       </div>
     </div>
-    <canvas id="dia-cv" width="520" height="320" id="dia-canvas"></canvas>
+    <canvas id="dia-cv" width="520" height="320"></canvas>
   </div>
 </div>
 
@@ -558,11 +637,26 @@ const HDGS=['সঠিক উত্তরটি নির্বাচন কর�
 const TYPES=[{v:'mcq',l:'MCQ'},{v:'short',l:'Short Answer'},{v:'descriptive',l:'Descriptive'},{v:'long',l:'Long Answer'}];
 const SEC_QPF=['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA'];
 
+const OCR_PROMPT = `You are a question paper digitizer. Analyze this image of a printed question paper and extract ALL content into the .qpf format below. Follow every rule strictly.
+
+RULES:
+1. Start with ##META. Extract: TEACHER (look for "by [name]" near the title), TEST_NO (the number near "Test no."), CLASS, SUBJECT, FULL_MARKS (the number after "Full Marks:"), TIME (number only, in minutes).
+2. Set FONT_SIZE: 11, MARGIN: 1.0, DIVIDER: dotted, SEC_LANG: bn, WATERMARK: default.
+3. For each section (বিভাগ ক / খ / গ / ঘ etc.), create a ##SECTION_[NAME] block. Map: ক→KA, খ→KHA, গ→GA, ঘ→GHA, ঙ→UMA.
+4. Inside each section: HEADING (exact Bengali instruction text), TYPE (mcq if options ক/খ/গ/ঘ or a/b/c/d appear; short if 1 mark without options; descriptive if 2 marks; long if 3+ marks), MARKS_PER_Q (the first number in the marks formula like "১ × ৪ = ৪"), OPT_STYLE (bn if Bengali options ক/খ/গ/ঘ, else en).
+5. For each question write Q: followed by the EXACT Bengali text. Preserve all Bengali Unicode exactly.
+6. For MCQ questions, immediately after Q: write OP_K, OP_KH, OP_G, OP_GH with option text only (no ক/খ prefix).
+7. For subscripts use [SUB:x], superscripts use [SUP:x], chemical formulas use [CHEM:formula], equations use [EQ:text], Greek letters use [SYM:name].
+8. If a question contains a table, write TABLE_START:rows×cols, then each row with pipe | separating cells, then TABLE_END.
+9. End with ##END.
+10. Output ONLY the .qpf content. No explanation. No markdown fences. No extra text. Start directly with // Question Paper Format v1.0.`;
+
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
 const S={
-  teacher:'Shibanjan Bera',testNo:1,klass:'',subject:'',time:30,inst:'',fullMarks:0,
+  topTitle:'Test no. 1 by Shibanjan Bera',
+  klass:'',subject:'',time:30,inst:'',fullMarks:0,
   margin:1.0,fontSize:11,divider:'dotted',secLang:'bn',wm:'default',wmData:null,
   sections:[],zoom:.55,pvMode:'one'
 };
@@ -591,7 +685,32 @@ function renderTok(t){
 
 function exFname(ext){
   const c=(S.klass||'Test').replace(/[^\w\u0980-\u09FF ]/g,'').trim();
-  return `${c} Test ${S.testNo}.${ext}`;
+  return `${c} Test.${ext}`;
+}
+
+/* ═══════════════════════════════════════
+   THEME TOGGLE
+═══════════════════════════════════════ */
+function initTheme() {
+  const themeBtn = $('theme-toggle');
+  let isLight = localStorage.getItem('theme') === 'light';
+  
+  const sunIcon = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  const moonIcon = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+  const applyTheme = () => {
+    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    themeBtn.innerHTML = isLight ? moonIcon : sunIcon;
+    themeBtn.title = isLight ? "Switch to Dark Mode" : "Switch to Light Mode";
+  };
+
+  themeBtn.onclick = () => {
+    isLight = !isLight;
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    applyTheme();
+  };
+
+  applyTheme();
 }
 
 /* ═══════════════════════════════════════
@@ -619,24 +738,39 @@ function recalc(){
    SETTINGS STRIP
 ═══════════════════════════════════════ */
 function initStrip(){
-  $('s-teacher').oninput=e=>{S.teacher=e.target.value;sched()};
   $('s-mg').oninput=e=>{S.margin=parseFloat((e.target.value/10).toFixed(1));$('s-mg-v').textContent=S.margin.toFixed(1)+'cm';applyVars();sched()};
   $('s-fs').oninput=e=>{S.fontSize=parseFloat(e.target.value);$('s-fs-v').textContent=S.fontSize+'pt';applyVars();sched()};
   $$('.dopt').forEach(o=>o.onclick=()=>{$$('.dopt').forEach(x=>x.classList.remove('on'));o.classList.add('on');S.divider=o.dataset.d;sched()});
   $$('#s-slang .pill').forEach(p=>p.onclick=()=>{$$('#s-slang .pill').forEach(x=>x.classList.remove('on'));p.classList.add('on');S.secLang=p.dataset.v;rebuildSecs();sched()});
+  
+  $('s-wm').onchange=e=>{
+    const v=e.target.value;
+    if(v==='custom'){
+      $('wm-file').click();
+    } else {
+      S.wm=v; S.wmData=null; sched();
+    }
+  };
+
   $('wm-file').onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();r.onload=ev=>{S.wmData=ev.target.result;S.wm='custom';$('wm-lbl').textContent=f.name.slice(0,12)+(f.name.length>12?'…':'');sched()};
+    const f=e.target.files[0];
+    if(!f){ $('s-wm').value=S.wm; return; }
+    const r=new FileReader();
+    r.onload=ev=>{
+      S.wm='custom';
+      S.wmData=ev.target.result;
+      $('s-wm').value='custom';
+      sched();
+    };
     r.readAsDataURL(f);
   };
-  $('wm-rst').onclick=()=>{S.wm='default';S.wmData=null;$('wm-lbl').textContent='Default';$('wm-file').value='';sched()};
 }
 
 /* ═══════════════════════════════════════
    EXAM INFO
 ═══════════════════════════════════════ */
 function initExamInfo(){
-  $('f-tno').oninput=e=>{S.testNo=parseInt(e.target.value)||1;sched()};
+  $('f-tt').oninput=e=>{S.topTitle=e.target.value;sched()};
   $('f-cls').oninput=e=>{S.klass=e.target.value;sched()};
   $('f-subj').oninput=e=>{S.subject=e.target.value;$('subj-warn').style.display=e.target.value.length>26?'inline':'none';sched()};
   $('f-time').oninput=e=>{S.time=parseInt(e.target.value)||30;sched()};
@@ -668,15 +802,22 @@ function initPaste(){
 ═══════════════════════════════════════ */
 function fitZoom(){
   const vp=$('preview-vp');
-  S.zoom=Math.max(.2,Math.min(1.5,(vp.clientWidth-40)/1122));
+  const targetW = S.pvMode === 'one' ? 561 : 1122; 
+  S.zoom=Math.max(.2,Math.min(1.5,(vp.clientWidth-40)/targetW));
   $('z-lbl').textContent=Math.round(S.zoom*100)+'%';
   sched();
 }
+
 function initZoom(){
   $('z-in').onclick=()=>{S.zoom=Math.min(1.5,+(S.zoom+.05).toFixed(2));$('z-lbl').textContent=Math.round(S.zoom*100)+'%';sched()};
   $('z-out').onclick=()=>{S.zoom=Math.max(.2,+(S.zoom-.05).toFixed(2));$('z-lbl').textContent=Math.round(S.zoom*100)+'%';sched()};
   $('z-fit').onclick=fitZoom;
-  $$('#pv-mode .pill').forEach(p=>p.onclick=()=>{$$('#pv-mode .pill').forEach(x=>x.classList.remove('on'));p.classList.add('on');S.pvMode=p.dataset.m;sched()});
+  $$('#pv-mode .pill').forEach(p=>p.onclick=()=>{
+    $$('#pv-mode .pill').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');
+    S.pvMode=p.dataset.m;
+    fitZoom(); 
+  });
 }
 
 /* ═══════════════════════════════════════
@@ -796,12 +937,20 @@ function mkQItem(q,qi,sec,si,cont){
   w.className='qitem';
   const num=`${bn(si+1)}.${bn(qi+1)})`;
 
+  const moveCtrls = `
+    <div class="nav-arrows">
+      <button class="icon-btn move-up" title="Move Up" ${qi===0?'disabled style="opacity:0.3"':''}>↑</button>
+      <button class="icon-btn move-dn" title="Move Down" ${qi===sec.questions.length-1?'disabled style="opacity:0.3"':''}>↓</button>
+    </div>
+    <button class="icon-btn btn-sm del-q"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  `;
+
   if(sec.type==='mcq'){
     w.innerHTML=`
       <div class="qitem-hdr">
         <span class="qnum">${num}</span>
         <span style="flex:1;font-size:10px;color:var(--t3)">MCQ</span>
-        <button class="icon-btn btn-sm del-q"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        ${moveCtrls}
       </div>
       <div class="q-img-row">
         <div style="flex:1;min-width:0">
@@ -820,7 +969,7 @@ function mkQItem(q,qi,sec,si,cont){
       <div class="qitem-hdr">
         <span class="qnum">${num}</span>
         <span style="flex:1;font-size:10px;color:var(--t3)">${TYPES.find(t=>t.v===sec.type)?.l||sec.type}</span>
-        <button class="icon-btn btn-sm del-q"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        ${moveCtrls}
       </div>
       <textarea class="q-txt bn-field" rows="3" placeholder="Type question…">${esc(q.text)}</textarea>
       <div class="q-actions">
@@ -837,6 +986,23 @@ function mkQItem(q,qi,sec,si,cont){
 
   // Delete Q
   w.querySelector('.del-q').onclick=()=>{sec.questions=sec.questions.filter(x=>x.id!==q.id);renderQList(sec,si,cont);recalc();sched()};
+  
+  // Mobile Reordering Navigation
+  const mUp = w.querySelector('.move-up');
+  if(mUp) mUp.onclick=()=>{
+    if(qi>0) {
+      const t=sec.questions[qi]; sec.questions[qi]=sec.questions[qi-1]; sec.questions[qi-1]=t;
+      renderQList(sec,si,cont); recalc(); sched();
+    }
+  };
+  const mDn = w.querySelector('.move-dn');
+  if(mDn) mDn.onclick=()=>{
+    if(qi<sec.questions.length-1) {
+      const t=sec.questions[qi]; sec.questions[qi]=sec.questions[qi+1]; sec.questions[qi+1]=t;
+      renderQList(sec,si,cont); recalc(); sched();
+    }
+  };
+
   // Text
   w.querySelector('.q-txt').oninput=e=>{q.text=e.target.value;sched()};
   // Opts
@@ -846,6 +1012,45 @@ function mkQItem(q,qi,sec,si,cont){
     slot.onclick=()=>fi.click();
     fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{q.img=ev.target.result;slot.innerHTML=`<img src="${ev.target.result}"/>`;sched()};r.readAsDataURL(f)};
   }
+
+  // DRAG AND DROP REORDERING
+  w.draggable = true;
+  
+  w.addEventListener('dragstart', e => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', qi);
+    w.style.opacity = '0.4';
+  });
+
+  w.addEventListener('dragend', () => {
+    w.style.opacity = '1';
+  });
+
+  w.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    w.style.border = '1px dashed var(--accent)';
+  });
+
+  w.addEventListener('dragleave', () => {
+    w.style.border = '';
+  });
+
+  w.addEventListener('drop', e => {
+    e.preventDefault();
+    w.style.border = '';
+    
+    const draggedIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (isNaN(draggedIdx) || draggedIdx === qi) return;
+
+    const draggedItem = sec.questions.splice(draggedIdx, 1)[0];
+    sec.questions.splice(qi, 0, draggedItem);
+
+    renderQList(sec, si, cont);
+    recalc();
+    sched();
+  });
+
   return w;
 }
 
@@ -871,9 +1076,30 @@ function renderExtras(q,cont){
 }
 
 function addImg(q,cont){
-  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.hidden=true;
-  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{q.extra.push({type:'image',data:ev.target.result});renderExtras(q,cont);sched()};r.readAsDataURL(f)};
-  document.body.appendChild(inp);inp.click();inp.remove();
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='image/*';
+  inp.style.display='none';
+  
+  document.body.appendChild(inp);
+  
+  inp.onchange=e=>{
+    const f=e.target.files[0];
+    if(!f) {
+      inp.remove(); 
+      return;
+    }
+    const r=new FileReader();
+    r.onload=ev=>{
+      q.extra.push({type:'image',data:ev.target.result});
+      renderExtras(q,cont);
+      sched();
+      inp.remove();
+    };
+    r.readAsDataURL(f)
+  };
+  
+  inp.click();
 }
 
 function addTbl(q,cont){
@@ -935,21 +1161,31 @@ $('dia-modal').onclick=e=>{if(e.target===$('dia-modal'))$('dia-modal').classList
 function parseQPF(text){
   const lines=text.split('\n').map(l=>l.trim());
   let mode='',curSec=null,curQ=null;
-  S.sections=[];
+  
+  const tempSections = [];
+  let tempTopTitle = '';
+  let tempTestNo = 1, tempTeacher = '';
 
   for(const line of lines){
     if(!line||line.startsWith('//'))continue;
     if(line==='##META'){mode='meta';continue}
     if(line==='##END')break;
+    
     if(line.startsWith('##SECTION_')){
-      if(curSec){if(curQ){curSec.questions.push(curQ);curQ=null}S.sections.push(curSec)}
-      curSec={id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]};mode='sec';continue;
+      if(curSec){
+        if(curQ){curSec.questions.push(curQ);curQ=null;}
+        tempSections.push(curSec);
+      }
+      curSec={id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]};
+      mode='sec';
+      continue;
     }
+    
     if(mode==='meta'){
       const i=line.indexOf(':');if(i<0)continue;
       const k=line.slice(0,i).trim(),v=line.slice(i+1).trim();
-      if(k==='TEACHER')S.teacher=v;
-      else if(k==='TEST_NO')S.testNo=parseInt(v)||1;
+      if(k==='TEACHER')tempTeacher=v;
+      else if(k==='TEST_NO')tempTestNo=parseInt(v)||1;
       else if(k==='CLASS')S.klass=v;
       else if(k==='SUBJECT')S.subject=v;
       else if(k==='TIME')S.time=parseInt(v)||30;
@@ -957,6 +1193,7 @@ function parseQPF(text){
       else if(k==='MARGIN')S.margin=parseFloat(v)||1;
       else if(k==='DIVIDER')S.divider=v;
       else if(k==='SEC_LANG')S.secLang=v;
+      else if(k==='WATERMARK') { S.wm=v; S.wmData=null; }
     } else if(mode==='sec'&&curSec){
       if(line.startsWith('HEADING:')){curSec.heading=line.slice(8).trim();continue}
       if(line.startsWith('TYPE:')){const t=line.slice(5).trim();curSec.type=['mcq','short','descriptive','long'].includes(t)?t:'short';continue}
@@ -979,18 +1216,41 @@ function parseQPF(text){
       }
     }
   }
-  if(curSec){if(curQ)curSec.questions.push(curQ);S.sections.push(curSec)}
-  syncFields();rebuildSecs();recalc();applyVars();sched();
+  
+  if(curSec){
+    if(curQ) curSec.questions.push(curQ);
+    tempSections.push(curSec);
+  }
+
+  // Compile legacy Teacher/Test_No tags into the new Top Title field for backwards compatibility
+  if(tempTeacher || tempTestNo) {
+    S.topTitle = `Test no. ${tempTestNo} by ${tempTeacher}`;
+  }
+
+  if (tempSections.length > 0) {
+    S.sections = tempSections;
+    syncFields();
+    rebuildSecs();
+    recalc();
+    applyVars();
+    sched();
+  } else {
+    throw new Error("No valid sections found in the provided text.");
+  }
 }
 
 function syncFields(){
   const set=(id,v)=>{const e=$(id);if(e)e.value=v};
-  set('s-teacher',S.teacher);set('f-tno',S.testNo);set('f-cls',S.klass);
+  set('f-tt',S.topTitle);set('f-cls',S.klass);
   set('f-subj',S.subject);set('f-time',S.time);
   set('s-fs',S.fontSize);$('s-fs-v').textContent=S.fontSize+'pt';
   set('s-mg',S.margin*10);$('s-mg-v').textContent=S.margin.toFixed(1)+'cm';
   $$('.dopt').forEach(o=>o.classList.toggle('on',o.dataset.d===S.divider));
   $$('#s-slang .pill').forEach(p=>p.classList.toggle('on',p.dataset.v===S.secLang));
+  
+  const wmEl = $('s-wm');
+  if(S.wm === 'default' || S.wm === 'none') wmEl.value = S.wm;
+  else if(S.wm === 'custom') wmEl.value = 'custom';
 }
 
 /* ═══════════════════════════════════════
@@ -1002,13 +1262,21 @@ function sched(d=80){clearTimeout(_pvT);_pvT=setTimeout(render,d)}
 function render(){
   const vp=$('preview-vp'),ph=$('ph');
   const has=S.sections.length||S.subject||S.klass;
-  if(!has){vp.innerHTML='';vp.appendChild(ph);ph.style.display='';return}
-  ph.style.display='none';
+  
+  if(!has){
+    // Target only the generated document wrappers to avoid destroying the #ph placeholder node.
+    vp.querySelectorAll('.pp-wrap').forEach(w => w.remove());
+    if(ph) ph.style.display='';
+    return;
+  }
+  
+  if(ph) ph.style.display='none';
 
   const setHTML=buildSet();
   const pageHTML=buildPage(setHTML);
 
-  vp.innerHTML='';
+  vp.querySelectorAll('.pp-wrap').forEach(w => w.remove());
+  
   const wrap=document.createElement('div');
   wrap.className='pp-wrap';
   wrap.style.cssText=`transform:scale(${S.zoom});transform-origin:top center;margin-bottom:${-(210*(1-S.zoom)*3.7795)+24}px`;
@@ -1018,7 +1286,7 @@ function render(){
   wrap.appendChild(page);
   vp.appendChild(wrap);
 
-  setTimeout(()=>checkFit(page.firstElementChild),120);
+  setTimeout(()=>checkFit(page.querySelector('.qp-page')),120);
 }
 
 function checkFit(el){
@@ -1031,30 +1299,37 @@ function checkFit(el){
 }
 
 function buildPage(setHTML){
-  const wm=S.wmData||'watermark/default.svg';
+  let wmImg = '';
+  if (S.wm === 'default') wmImg = 'watermark/default.svg';
+  else if (S.wm === 'custom' && S.wmData) wmImg = S.wmData;
+
+  const wmHtml = wmImg ? `<div class="qp-wm"><img src="${wmImg}" onerror="this.style.display='none'"/></div>` : '';
   const divHTML=buildDiv();
-  return `<div class="qp-page">
-    <div class="qp-wm"><img src="${wm}" onerror="this.style.display='none'"/></div>
+
+  // We architecturally embed both sets. The 'pv-mode-one' class handles selective hiding
+  // for an optimized screen representation, while ensuring full symmetry during document print.
+  return `<div class="qp-page ${S.pvMode === 'one' ? 'pv-mode-one' : ''}">
+    ${wmHtml}
     <div class="qp-set">${setHTML}</div>
     ${divHTML}
-    ${S.pvMode==='both'?`<div class="qp-set">${setHTML}</div>`:'<div class="qp-set" style="opacity:.25;pointer-events:none">'+setHTML+'</div>'}
+    <div class="qp-set qp-set-right symm-part">${setHTML}</div>
   </div>`;
 }
 
 function buildDiv(){
   const d=S.divider;
-  if(d==='solid')return`<div class="qp-div" style="width:.15cm;border-left:.5pt solid #bbb;"></div>`;
+  if(d==='solid')return`<div class="qp-div symm-part" style="width:.15cm;border-left:.5pt solid #bbb;"></div>`;
   const ch=d==='dotted'?'·':d==='dashed'?'-':'✂';
   const rows=Array(36).fill(`<div>${ch}</div>`).join('');
-  return`<div class="qp-div">${rows}</div>`;
+  return`<div class="qp-div symm-part">${rows}</div>`;
 }
 
 function buildSet(){
-  const t=esc(S.teacher||'Teacher'),tn=bn(S.testNo),fm=S.fullMarks;
+  const fm=S.fullMarks;
   const cl=esc(S.klass||'—'),sb=esc(S.subject||'—'),ti=S.time||30;
   const sbFS=S.subject.length>26?Math.max(7,S.fontSize-2)+'pt':S.fontSize+'pt';
   const fsPt=S.fontSize+'pt';
-  let h=`<div style="text-align:center;font-family:'DM Serif Text',serif;font-size:14pt;font-weight:bold;padding-bottom:2pt">Test no. ${tn} by ${t}</div>
+  let h=`<div style="text-align:center;font-family:'DM Serif Text',serif;font-size:14pt;font-weight:bold;padding-bottom:2pt">${esc(S.topTitle)}</div>
   <div style="display:flex;justify-content:space-between;font-family:'DM Serif Text',serif;font-size:${fsPt};padding-bottom:3pt">
     <span>Full Marks: ${fm}</span>
     <span style="font-size:${sbFS}">Class: ${cl} &nbsp;|&nbsp; ${sb}</span>
@@ -1111,7 +1386,7 @@ function buildExtH(q){
    EXPORT — QPF
 ═══════════════════════════════════════ */
 function exportQPF(){
-  let o=`// Question Paper Format v1.0\n\n##META\nTEACHER: ${S.teacher}\nTEST_NO: ${S.testNo}\nCLASS: ${S.klass}\nSUBJECT: ${S.subject}\nFULL_MARKS: ${S.fullMarks}\nTIME: ${S.time}\nFONT_SIZE: ${S.fontSize}\nMARGIN: ${S.margin}\nDIVIDER: ${S.divider}\nSEC_LANG: ${S.secLang}\nWATERMARK: default\n\n`;
+  let o=`// Question Paper Format v1.0\n\n##META\nTEACHER: Legacy Teacher\nTEST_NO: 1\nCLASS: ${S.klass}\nSUBJECT: ${S.subject}\nFULL_MARKS: ${S.fullMarks}\nTIME: ${S.time}\nFONT_SIZE: ${S.fontSize}\nMARGIN: ${S.margin}\nDIVIDER: ${S.divider}\nSEC_LANG: ${S.secLang}\nWATERMARK: ${S.wm}\n\n`;
   S.sections.forEach((sec,idx)=>{
     o+=`##SECTION_${SEC_QPF[idx]||'S'+(idx+1)}\nHEADING: ${sec.heading}\nTYPE: ${sec.type}\nMARKS_PER_Q: ${sec.mpq}\nOPT_STYLE: ${sec.os}\n\n`;
     sec.questions.forEach(q=>{
@@ -1141,7 +1416,7 @@ async function exportODT(){
   z.folder('META-INF').file('manifest.xml',`<?xml version="1.0"?><manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"><manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/></manifest:manifest>`);
   z.file('styles.xml',`<?xml version="1.0"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:automatic-styles><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="29.7cm" fo:page-height="21cm" style:print-orientation="landscape" fo:margin-top="0.4cm" fo:margin-bottom="0.4cm" fo:margin-left="0.4cm" fo:margin-right="0.4cm"/></style:page-layout></office:automatic-styles><office:master-styles><style:master-page style:name="Standard" style:page-layout-name="pm1"/></office:master-styles></office:document-styles>`);
   const xesc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  let body=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Title">Test no. ${S.testNo} by ${xesc(S.teacher)}</text:p>`;
+  let body=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Title">${xesc(S.topTitle)}</text:p>`;
   body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Full Marks: ${S.fullMarks} | Class: ${xesc(S.klass)} | Subject: ${xesc(S.subject)} | Time: ${S.time} min</text:p>`;
   S.sections.forEach((sec,idx)=>{
     body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"><text:span text:style-name="Bold">বিভাগ '${sl(idx)}' — ${xesc(sec.heading)} [${sec.mpq}×${sec.questions.length}=${sec.mpq*sec.questions.length}]</text:span></text:p>`;
@@ -1159,10 +1434,38 @@ async function exportODT(){
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
 
 /* ═══════════════════════════════════════
-   INFO PANEL
+   INFO PANEL & PROMPT
 ═══════════════════════════════════════ */
 $('info-btn').onclick=()=>{$('info').classList.add('show');$('ov').classList.add('show')};
 $('info-close').onclick=$('ov').onclick=()=>{$('info').classList.remove('show');$('ov').classList.remove('show')};
+
+$('copy-prompt-btn').onclick=()=>{
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(OCR_PROMPT).then(() => {
+      toast('Prompt copied to clipboard!', 'success');
+    }).catch(err => {
+      fallbackCopyTextToClipboard(OCR_PROMPT);
+    });
+  } else {
+    fallbackCopyTextToClipboard(OCR_PROMPT);
+  }
+};
+
+function fallbackCopyTextToClipboard(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    toast('Prompt copied to clipboard!', 'success');
+  } catch (err) {
+    toast('Failed to copy prompt.', 'error');
+  }
+  document.body.removeChild(ta);
+}
 
 /* ═══════════════════════════════════════
    CARD COLLAPSE (global)
@@ -1178,7 +1481,17 @@ document.addEventListener('click',e=>{
 /* ═══════════════════════════════════════
    EXPORTS WIRING
 ═══════════════════════════════════════ */
-$('ex-pdf').onclick=()=>{render();setTimeout(()=>window.print(),300)};
+$('ex-pdf').onclick=()=>{
+  render();
+  setTimeout(()=>{
+    try {
+      window.print();
+    } catch(err) {
+      toast('Print blocked by environment. Please export as ODT.', 'error');
+    }
+  }, 300);
+};
+
 $('ex-qpf').onclick=exportQPF;
 $('ex-odt').onclick=exportODT;
 
@@ -1187,6 +1500,7 @@ $('ex-odt').onclick=exportODT;
 ═══════════════════════════════════════ */
 function init(){
   applyVars();
+  initTheme();
   initStrip();initExamInfo();initPaste();initZoom();
 
   $('add-sec').onclick=()=>{
