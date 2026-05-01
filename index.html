@@ -660,7 +660,7 @@ CRITICAL RULES:
 5. Do not put question numbering in output text.
 6. Replace any standalone double comma (") acting as a ditto mark with the exact word(s) it refers to from the line immediately above it. Do not leave the double comma in the final output.
 ​7. Transcribe long horizontal strokes or visual variations like "- ____" acting as fill-in-the-blanks as a long uniform underscore string ("________"). Always append a "।" symbol at the end of these fill-in-the-blank questions.
-​8. For True/False questions (containing "সত্য", "মিথ্যা", "True", "False", or "T/F"): Write the full sentence of the question first, add a full stop "." (for English medium) or "।" (for Bengali medium), and then append "(সত্য/মিথ্যা)" or "(T/F)" depending on the medium.
+​8. For True/False questions (containing these words (or you can detect the intention of the question) : "সত্য", "মিথ্যা", "True", "False", or "T/F"): Write the full sentence of the question first, add a full stop "." (for English medium) or "।" (for Bengali medium), and then append "(সত্য/মিথ্যা)" for bengali medium or "(T/F)" for english medium. but don't write in both bangla and english (for e.g. "(সত্য/মিথ্যা) (T/F)").
 9. ZERO HALLUCINATION & NO AUTOCORRECT: Do not guess, rephrase, or autocorrect words based on domain knowledge. Transcribe EXACTLY what is visibly written on the page character-by-character (e.g., do not substitute "উপাদানের" with domain-specific guesses). If any word or character is illegible, ambiguous, or unreadable, DO NOT make assumptions or guess its meaning. Instead, explicitly ask me for clarification by pointing out the exact location of the unreadable text, and I will provide the correct word. Or you can put this "<§>" in the place of that unreadable something.
 10. Auto-generate the section HEADING based on the detected TYPE and MARKS_PER_Q parameters using the following logic:
 If TYPE is short & MARKS_PER_Q is 1: HEADING: সংক্ষিপ্ত উত্তর দাও:
@@ -672,7 +672,7 @@ SCHEMA TO FOLLOW:
 
 ##META
 TOP_TITLE: Test No. [Extract the test number only] by Shibanjan Sir
-CLASS: [Extract the class or grade]
+CLASS: [Extract the class or grade which is mainly written in roman number digits, ignore the board name like WBBSE]
 SUBJECT: [Extract the subject]
 TIME: [Extract the time duration in minutes, numbers only, if not in minutes then calculate the time in minute]
 MEDIUM: bn
@@ -711,8 +711,8 @@ FORMATTING INSTRUCTIONS FOR QUESTIONS:
    STATE
 ═══════════════════════════════════════ */
 const S={
-  topTitle:'Test no. 1 by Shibanjan Bera',
-  klass:'',subject:'',time:30,inst:'',fullMarks:0,
+  topTitle:'Test no. XX by Shibanjan Bera',
+  klass:'',subject:'',time:30,inst:'',fullMarks:'',
   margin:1.0,fontSize:11,divider:'dotted',secLang:'bn',
   medium:'bn', 
   wm:'default',wmData:null,wmSize:65,wmOpacity:7,
