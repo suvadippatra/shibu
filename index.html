@@ -7,6 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='22'>প</text></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=DM+Serif+Text&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- KaTeX for Scientific Notation Rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
 <style>
 /* ═══════ RESET ═══════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -313,19 +316,26 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 
 /* ═══════ MOBILE RESPONSIVENESS ═══════ */
 @media (max-width: 768px) {
-  body { height: auto; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; display: block; }
-  #topbar { height: auto; min-height: 52px; flex-wrap: wrap; padding: 10px 12px; gap: 8px; position: relative; z-index: 101; }
-  .topbar-mid { width: 100%; max-width: none; order: 3; justify-content: center; }
-  .logo-text { font-size: 14px; }
-  #main { flex-direction: column; overflow: visible; height: auto; }
-  #sidebar { width: 100% !important; max-width: none !important; height: auto; flex: none; overflow: visible; border-right: none; border-bottom: 1px solid var(--border); }
-  #sidebar-scroll { overflow: visible; padding-bottom: 30px; height: auto; }
-  #export-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; background: var(--bg1); border-top: 1px solid var(--border); box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
-  #preview { height: auto; min-height: 60vh; flex: none; overflow: visible; padding-bottom: 80px; }
-  #preview-vp { overflow: visible; height: auto; }
-  #preview-bar { position: sticky; top: 0; z-index: 90; }
-  #dia-panel { width: 95vw; height: auto; max-height: 90vh; overflow-y: auto; }
-  #dia-canvas { width: 100%; height: auto; aspect-ratio: 52/32; }
+  /* Aggressive overrides to unlock native scrolling */
+  html, body { height: auto !important; min-height: 100dvh !important; overflow: auto !important; display: block !important; }
+  
+  #topbar { height: auto !important; min-height: 52px !important; flex-wrap: wrap !important; padding: 10px 12px !important; gap: 8px !important; position: relative !important; z-index: 101 !important; }
+  .topbar-mid { width: 100% !important; max-width: none !important; order: 3 !important; justify-content: center !important; }
+  .logo-text { font-size: 14px !important; }
+  
+  /* Convert structural flex containers to block flow for unimpeded mobile scroll */
+  #main { display: block !important; height: auto !important; overflow: visible !important; }
+  #sidebar { display: block !important; width: 100% !important; max-width: none !important; height: auto !important; flex: none !important; overflow: visible !important; border-right: none !important; border-bottom: 1px solid var(--border) !important; }
+  #sidebar-scroll { display: block !important; overflow: visible !important; padding-bottom: 30px !important; height: auto !important; }
+  
+  #preview { display: block !important; height: auto !important; min-height: 60vh !important; flex: none !important; overflow: visible !important; padding-bottom: 80px !important; }
+  #preview-vp { display: block !important; overflow: visible !important; height: auto !important; }
+  #preview-bar { position: sticky !important; top: 0 !important; z-index: 90 !important; }
+  
+  #export-bar { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; background: var(--bg1) !important; border-top: 1px solid var(--border) !important; box-shadow: 0 -4px 12px rgba(0,0,0,0.2) !important; }
+  
+  #dia-panel { width: 95vw !important; height: auto !important; max-height: 90vh !important; overflow-y: auto !important; }
+  #dia-canvas { width: 100% !important; height: auto !important; aspect-ratio: 52/32 !important; }
 }
 
 /* ═══════ @MEDIA PRINT ═══════ */
@@ -431,7 +441,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
           </button>
         </div>
         <div class="card-body">
-          <textarea id="qpf-ta" class="qpf-ta" rows="5" placeholder="## META&#10;TEACHER: Shibanjan Bera&#10;..."></textarea>
+          <textarea id="qpf-ta" class="qpf-ta" rows="5" placeholder="## META&#10;TOP_TITLE: Test no 1 by Shibanjan Bera..."></textarea>
           <div style="display:flex;gap:7px">
             <button class="btn btn-primary btn-sm" id="qpf-apply" style="flex:1">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -642,19 +652,43 @@ const HDGS=['সঠিক উত্তরটি নির্বাচন কর�
 const TYPES=[{v:'mcq',l:'MCQ'},{v:'short',l:'Short Answer'},{v:'descriptive',l:'Descriptive'},{v:'long',l:'Long Answer'}];
 const SEC_QPF=['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA'];
 
-const OCR_PROMPT = `You are a question paper digitizer. Analyze this image of a printed question paper and extract ALL content into the .qpf format below. Follow every rule strictly.
+const OCR_PROMPT = `You are an expert academic digitization assistant. Your task is to extract content from the provided exam paper image and strictly format it into the custom Question Paper Format (QPF) detailed below.
 
-RULES:
-1. Start with ##META. Extract: TEACHER (look for "by [name]" near the title), TEST_NO (the number near "Test no."), CLASS, SUBJECT, FULL_MARKS (the number after "Full Marks:"), TIME (number only, in minutes).
-2. Set FONT_SIZE: 11, MARGIN: 1.0, DIVIDER: dotted, SEC_LANG: bn, WATERMARK: default.
-3. For each section (বিভাগ ক / খ / গ / ঘ etc.), create a ##SECTION_[NAME] block. Map: ক→KA, খ→KHA, গ→GA, ঘ→GHA, ঙ→UMA.
-4. Inside each section: HEADING (exact Bengali instruction text), TYPE (mcq if options ক/খ/গ/ঘ or a/b/c/d appear; short if 1 mark without options; descriptive if 2 marks; long if 3+ marks), MARKS_PER_Q (the first number in the marks formula like "১ × ৪ = ৪"), OPT_STYLE (bn if Bengali options ক/খ/গ/ঘ, else en).
-5. For each question write Q: followed by the EXACT Bengali text. Preserve all Bengali Unicode exactly.
-6. For MCQ questions, immediately after Q: write OP_K, OP_KH, OP_G, OP_GH with option text only (no ক/খ prefix).
-7. For subscripts use [SUB:x], superscripts use [SUP:x], chemical formulas use [CHEM:formula], equations use [EQ:text], Greek letters use [SYM:name].
-8. If a question contains a table, write TABLE_START:rows×cols, then each row with pipe | separating cells, then TABLE_END.
-9. End with ##END.
-10. Output ONLY the .qpf content. No explanation. No markdown fences. No extra text. Start directly with // Question Paper Format v1.0.`;
+CRITICAL DIRECTIVES:
+1. Maintain absolute fidelity to the source text, particularly Bengali Unicode characters.
+2. Output ONLY the raw QPF text. Do not wrap the output in markdown code blocks (e.g., \`\`\`), and do not include conversational filler or explanations.
+
+FORMATTING RULES:
+1. Start with the ##META block. Extract the available data or leave the value blank if absent:
+TOP_TITLE: [Extract main header, e.g., Test no. 1 by Shibanjan Bera]
+CLASS: [Extract class]
+SUBJECT: [Extract subject]
+FULL_MARKS: [Extract marks]
+TIME: [Extract time in minutes]
+FONT_SIZE: 11
+MARGIN: 1.0
+DIVIDER: dotted
+SEC_LANG: bn
+WATERMARK: default
+
+2. For each distinct section, create a block starting with ##SECTION_[ID] (e.g., ##SECTION_KA).
+HEADING: [Exact Bengali instruction]
+TYPE: [mcq | short | descriptive | long]
+MARKS_PER_Q: [Numeric value of points per question]
+OPT_STYLE: [en | bn]
+
+3. For each question, begin a new line with the prefix Q: .
+- For mathematical formulas and equations, you MUST enclose the valid LaTeX/KaTeX string inside our custom token: [EQ: \\frac{a}{b} = c]
+- For chemical formulas, use: [CHEM: H2SO4]
+- For isolated subscripts or superscripts, use [SUB:x] or [SUP:x].
+
+4. If the section TYPE is mcq, follow the Q:  line immediately with four option lines:
+OP_K: [Text for option 1]
+OP_KH: [Text for option 2]
+OP_G: [Text for option 3]
+OP_GH: [Text for option 4]
+
+5. Conclude the entire document with exactly: ##END`;
 
 /* ═══════════════════════════════════════
    STATE
@@ -680,12 +714,20 @@ function cv(n,v){document.documentElement.style.setProperty(n,v)}
 function applyVars(){cv('--p-margin',S.margin+'cm');cv('--p-fsize',S.fontSize+'pt')}
 
 function renderTok(t){
-  return t
+  let out = t
     .replace(/\[SUB:([^\]]+)\]/g,'<sub>$1</sub>')
     .replace(/\[SUP:([^\]]+)\]/g,'<sup>$1</sup>')
     .replace(/\[SYM:([^\]]+)\]/g,(_,s)=>`<span style="font-family:serif">${SYM[s.toLowerCase()]||s}</span>`)
-    .replace(/\[CHEM:([^\]]+)\]/g,(_,f)=>`<i>${f.replace(/(\d+)/g,'<sub>$1</sub>')}</i>`)
-    .replace(/\[EQ:([^\]]+)\]/g,'<i>$1</i>');
+    .replace(/\[CHEM:([^\]]+)\]/g,(_,f)=>`<i>${f.replace(/(\d+)/g,'<sub>$1</sub>')}</i>`);
+    
+  out = out.replace(/\[EQ:([^\]]+)\]/g, (_, eq) => {
+    if(typeof katex !== 'undefined') {
+      try { return katex.renderToString(eq, {throwOnError: false}); }
+      catch(e) { return `<i>${eq}</i>`; }
+    }
+    return `<i>${eq}</i>`;
+  });
+  return out;
 }
 
 function exFname(ext){
@@ -1164,61 +1206,83 @@ $('dia-modal').onclick=e=>{if(e.target===$('dia-modal'))$('dia-modal').classList
    QPF PARSER
 ═══════════════════════════════════════ */
 function parseQPF(text){
-  const lines=text.split('\n').map(l=>l.trim());
-  let mode='',curSec=null,curQ=null;
+  // Defensively strip markdown formatting artifacts occasionally generated by AI models
+  const lines = text.split('\n')
+    .map(l => l.trim())
+    .filter(l => !l.startsWith('```'));
   
+  let mode='', curSec=null, curQ=null;
   const tempSections = [];
-  let tempTopTitle = '';
-  let tempTestNo = 1, tempTeacher = '';
+  let tempTopTitle = '', tempTestNo = 1, tempTeacher = '';
 
   for(const line of lines){
-    if(!line||line.startsWith('//'))continue;
-    if(line.replace(/\s+/g,'').startsWith('##META')){mode='meta';continue}
-    if(line.startsWith('##END'))break;
+    if(!line || line.startsWith('//')) continue;
     
-    if(line.startsWith('##SECTION')){
+    // Normalize line prefixes to increase parsing tolerance
+    const normLine = line.toUpperCase().replace(/\s+/g, '');
+    
+    if(normLine.startsWith('##META')){ mode='meta'; continue; }
+    if(normLine.startsWith('##END')) break;
+    
+    if(normLine.startsWith('##SECTION')){
       if(curSec){
-        if(curQ){curSec.questions.push(curQ);curQ=null;}
+        if(curQ){ curSec.questions.push(curQ); curQ=null; }
         tempSections.push(curSec);
       }
-      curSec={id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]};
-      mode='sec';
+      curSec = { id:uid(), heading:HDGS[0], type:'mcq', mpq:1, os:'bn', questions:[] };
+      mode = 'sec';
       continue;
     }
     
-    if(mode==='meta'){
-      const i=line.indexOf(':');if(i<0)continue;
-      const k=line.slice(0,i).trim().toUpperCase(),v=line.slice(i+1).trim();
-      if(k==='TOP_TITLE')tempTopTitle=v;
-      else if(k==='TEACHER')tempTeacher=v;
-      else if(k==='TEST_NO')tempTestNo=parseInt(v)||1;
-      else if(k==='CLASS')S.klass=v;
-      else if(k==='SUBJECT')S.subject=v;
-      else if(k==='TIME')S.time=parseInt(v)||30;
-      else if(k==='FONT_SIZE')S.fontSize=parseFloat(v)||11;
-      else if(k==='MARGIN')S.margin=parseFloat(v)||1;
-      else if(k==='DIVIDER')S.divider=v;
-      else if(k==='SEC_LANG')S.secLang=v;
-      else if(k==='WATERMARK') { S.wm=v; S.wmData=null; }
-    } else if(mode==='sec'&&curSec){
-      if(line.startsWith('HEADING:')){curSec.heading=line.slice(8).trim();continue}
-      if(line.startsWith('TYPE:')){const t=line.slice(5).trim();curSec.type=['mcq','short','descriptive','long'].includes(t)?t:'short';continue}
-      if(line.startsWith('MARKS_PER_Q:')){curSec.mpq=parseFloat(line.slice(12).trim())||1;continue}
-      if(line.startsWith('OPT_STYLE:')){curSec.os=line.slice(10).trim()||'bn';continue}
-      if(line.startsWith('Q:')){if(curQ)curSec.questions.push(curQ);curQ={id:uid(),text:line.slice(2).trim(),options:['','','',''],img:null,extra:[]};continue}
+    if(mode === 'meta'){
+      const i = line.indexOf(':'); if(i < 0) continue;
+      const k = line.slice(0,i).trim().toUpperCase(), v = line.slice(i+1).trim();
+      
+      if(k === 'TOP_TITLE') tempTopTitle = v;
+      else if(k === 'TEACHER') tempTeacher = v;
+      else if(k === 'TEST_NO') tempTestNo = parseInt(v) || 1;
+      else if(k === 'CLASS') S.klass = v;
+      else if(k === 'SUBJECT') S.subject = v;
+      else if(k === 'TIME') S.time = parseInt(v) || 30;
+      else if(k === 'FONT_SIZE') S.fontSize = parseFloat(v) || 11;
+      else if(k === 'MARGIN') S.margin = parseFloat(v) || 1;
+      else if(k === 'DIVIDER') S.divider = v;
+      else if(k === 'SEC_LANG') S.secLang = v;
+      else if(k === 'WATERMARK') { S.wm = v; S.wmData = null; }
+    } else if(mode === 'sec' && curSec){
+      const upLine = line.toUpperCase();
+      
+      // Use resilient substring extractions to gracefully handle blank property values
+      if(upLine.startsWith('HEADING:')){ curSec.heading = line.substring(8).trim(); continue; }
+      if(upLine.startsWith('TYPE:')){ const t = line.substring(5).trim().toLowerCase(); curSec.type = ['mcq','short','descriptive','long'].includes(t) ? t : 'short'; continue; }
+      if(upLine.startsWith('MARKS_PER_Q:')){ curSec.mpq = parseFloat(line.substring(12).trim()) || 1; continue; }
+      if(upLine.startsWith('OPT_STYLE:')){ curSec.os = line.substring(10).trim().toLowerCase() || 'bn'; continue; }
+      
+      // Employ lenient regex matching to capture questions even if inadvertently numbered by AI
+      const qMatch = line.match(/^(?:\d+\.\s*)?Q:\s*(.*)/i);
+      if(qMatch){
+        if(curQ) curSec.questions.push(curQ);
+        curQ = { id:uid(), text:qMatch[1].trim(), options:['','','',''], img:null, extra:[] };
+        continue;
+      }
+      
       if(curQ){
-        if(line.startsWith('OP_K:')){curQ.options[0]=line.slice(5).trim();continue}
-        if(line.startsWith('OP_KH:')){curQ.options[1]=line.slice(6).trim();continue}
-        if(line.startsWith('OP_G:')){curQ.options[2]=line.slice(5).trim();continue}
-        if(line.startsWith('OP_GH:')){curQ.options[3]=line.slice(6).trim();continue}
-        if(line.startsWith('TABLE_START:')){
-          const d=line.slice(12).trim().split('x');
-          const ex={type:'table',rows:Array.from({length:parseInt(d[0])||2},()=>Array(parseInt(d[1])||2).fill(''))};
-          curQ.extra.push(ex);continue;
+        if(upLine.startsWith('OP_K:')){ curQ.options[0] = line.substring(5).trim(); continue; }
+        if(upLine.startsWith('OP_KH:')){ curQ.options[1] = line.substring(6).trim(); continue; }
+        if(upLine.startsWith('OP_G:')){ curQ.options[2] = line.substring(5).trim(); continue; }
+        if(upLine.startsWith('OP_GH:')){ curQ.options[3] = line.substring(6).trim(); continue; }
+        if(upLine.startsWith('TABLE_START:')){
+          const d = line.substring(12).trim().split('x');
+          const ex = { type:'table', rows:Array.from({length:parseInt(d[0])||2},()=>Array(parseInt(d[1])||2).fill('')) };
+          curQ.extra.push(ex); continue;
         }
-        if(line==='TABLE_END')continue;
-        const last=curQ.extra[curQ.extra.length-1];
-        if(last?.type==='table'){const cols=line.split('|').map(s=>s.trim());const ei=last.rows.findIndex(r=>r.every(c=>c===''));if(ei>=0)last.rows[ei]=cols.slice(0,last.rows[0].length)}
+        if(upLine === 'TABLE_END') continue;
+        const last = curQ.extra[curQ.extra.length-1];
+        if(last?.type === 'table'){
+          const cols = line.split('|').map(s=>s.trim());
+          const ei = last.rows.findIndex(r=>r.every(c=>c===''));
+          if(ei >= 0) last.rows[ei] = cols.slice(0,last.rows[0].length);
+        }
       }
     }
   }
@@ -1228,7 +1292,7 @@ function parseQPF(text){
     tempSections.push(curSec);
   }
 
-  // Compile legacy Teacher/Test_No tags into the new Top Title field for backwards compatibility
+  // Gracefully synthesize legacy tags into the abstracted Top Title 
   if(tempTopTitle) {
     S.topTitle = tempTopTitle;
   } else if(tempTeacher || tempTestNo) {
@@ -1243,7 +1307,7 @@ function parseQPF(text){
     applyVars();
     sched();
   } else {
-    throw new Error("No valid sections found in the provided text.");
+    throw new Error("No valid parsing delimiters found. Verify the input syntax.");
   }
 }
 
@@ -1265,14 +1329,14 @@ function syncFields(){
    PREVIEW RENDERER
 ═══════════════════════════════════════ */
 let _pvT=null;
-function sched(d=80){clearTimeout(_pvT);_pvT=setTimeout(render,d)}
+// Extended debounce cycle to 250ms to strictly prevent UI lag during text input
+function sched(d=250){clearTimeout(_pvT);_pvT=setTimeout(render,d)}
 
 function render(){
   const vp=$('preview-vp'),ph=$('ph');
   const has=S.sections.length||S.subject||S.klass;
   
   if(!has){
-    // Target only the generated document wrappers to avoid destroying the #ph placeholder node.
     vp.querySelectorAll('.pp-wrap').forEach(w => w.remove());
     if(ph) ph.style.display='';
     return;
@@ -1308,14 +1372,13 @@ function checkFit(el){
 
 function buildPage(setHTML){
   let wmImg = '';
-  if (S.wm === 'default') wmImg = 'watermark/default.svg';
+  // Explicitly configured to seek a PNG asset by default for standard image compatibility
+  if (S.wm === 'default') wmImg = 'watermark/default.png';
   else if (S.wm === 'custom' && S.wmData) wmImg = S.wmData;
 
   const wmHtml = wmImg ? `<div class="qp-wm"><img src="${wmImg}" onerror="this.style.display='none'"/></div>` : '';
   const divHTML=buildDiv();
 
-  // We architecturally embed both sets. The 'pv-mode-one' class handles selective hiding
-  // for an optimized screen representation, while ensuring full symmetry during document print.
   return `<div class="qp-page ${S.pvMode === 'one' ? 'pv-mode-one' : ''}">
     ${wmHtml}
     <div class="qp-set">${setHTML}</div>
@@ -1410,7 +1473,7 @@ function exportQPF(){
   });
   o+='##END\n';
   dl(new Blob([o],{type:'text/plain;charset=utf-8'}),exFname('qpf'));
-  toast('QPF saved!','success');
+  toast('QPF structured layout saved!','success');
 }
 
 /* ═══════════════════════════════════════
@@ -1418,13 +1481,12 @@ function exportQPF(){
 ═══════════════════════════════════════ */
 async function exportODT(){
   if(typeof JSZip==='undefined'){toast('JSZip loading, try again.','warn');return}
-  toast('Building formatted ODT…','info',5000);
+  toast('Synthesizing formatted OpenDocument...','info',5000);
   const z=new JSZip();
   z.file('mimetype','application/vnd.oasis.opendocument.text');
   
   z.folder('META-INF').file('manifest.xml',`<?xml version="1.0"?><manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"><manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/></manifest:manifest>`);
   
-  // Inject explicit layout and font size configurations into the baseline styles document
   z.file('styles.xml',`<?xml version="1.0"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3">
     <office:automatic-styles>
       <style:page-layout style:name="pm1">
@@ -1436,7 +1498,6 @@ async function exportODT(){
   
   const xesc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   
-  // Format token mapping function to accurately map internal tokens to ODT XML styles
   const rTokODT=t=>t
     .replace(/\[SUB:([^\]]+)\]/g,'<text:span text:style-name="Sub">$1</text:span>')
     .replace(/\[SUP:([^\]]+)\]/g,'<text:span text:style-name="Sup">$1</text:span>')
@@ -1451,20 +1512,52 @@ async function exportODT(){
     body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"><text:span text:style-name="Bold">বিভাগ '${sl(idx)}' — ${xesc(sec.heading)} [${sec.mpq}×${sec.questions.length}=${sec.mpq*sec.questions.length}]</text:span></text:p>`;
     sec.questions.forEach((q,qi)=>{
       body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${bn(idx+1)}.${bn(qi+1)}) ${rTokODT(xesc(q.text))}</text:p>`;
+      
       if(sec.type==='mcq'){
         const ls=sec.os==='bn'?BN_O:EN_O;
-        body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Indent">${q.options.map((o,i)=>`(${ls[i]}) ${rTokODT(xesc(o))}`).join('   ')}</text:p>`;
+        body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="MCQOpts">${q.options.map((o,i)=>`(${ls[i]}) ${rTokODT(xesc(o))}`).join('<text:tab/>')}</text:p>`;
       }
+      
+      (q.extra||[]).forEach(ex=>{
+        if(ex.type==='table' && ex.rows.length){
+          const tname = `Tab${Math.random().toString(36).substring(7)}`;
+          body += `<table:table table:name="${tname}">`;
+          body += `<table:table-column table:number-columns-repeated="${ex.rows[0].length}"/>`;
+          ex.rows.forEach(row => {
+            body += `<table:table-row>`;
+            row.forEach(cell => {
+               body += `<table:table-cell table:style-name="TableCell" office:value-type="string"><text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="TableCellP">${xesc(cell)}</text:p></table:table-cell>`;
+            });
+            body += `</table:table-row>`;
+          });
+          body += `</table:table>`;
+        }
+      });
     });
   });
   
-  z.file('content.xml',`<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3">
+  z.file('content.xml',`<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" office:version="1.3">
     <office:automatic-styles>
       <style:style style:name="Standard" style:family="paragraph"><style:text-properties fo:font-size="${S.fontSize}pt"/></style:style>
-      <style:style style:name="Title" style:family="paragraph"><style:text-properties fo:font-size="14pt" fo:font-weight="bold"/><style:paragraph-properties fo:text-align="center"/></style:style>
-      <style:style style:name="HeaderData" style:family="paragraph"><style:paragraph-properties fo:text-align="center"/></style:style>
+      <style:style style:name="Title" style:family="paragraph"><style:text-properties fo:font-size="14pt" fo:font-weight="bold"/><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.2cm"/></style:style>
+      <style:style style:name="HeaderData" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.4cm"/></style:style>
       <style:style style:name="Bold" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style>
-      <style:style style:name="Indent" style:family="paragraph"><style:paragraph-properties fo:margin-left="0.5cm"/></style:style>
+      
+      <style:style style:name="MCQOpts" style:family="paragraph">
+        <style:paragraph-properties fo:margin-left="0.8cm">
+          <style:tab-stops>
+             <style:tab-stop style:position="3.5cm"/>
+             <style:tab-stop style:position="7.0cm"/>
+             <style:tab-stop style:position="10.5cm"/>
+          </style:tab-stops>
+        </style:paragraph-properties>
+      </style:style>
+      
+      <style:style style:name="TableCell" style:family="table-cell">
+        <style:table-cell-properties fo:border="0.05pt solid #000000" fo:padding="0.1cm"/>
+      </style:style>
+      <style:style style:name="TableCellP" style:family="paragraph"><style:paragraph-properties fo:text-align="center"/></style:style>
+      
       <style:style style:name="Sub" style:family="text"><style:text-properties style:text-position="sub 58%"/></style:style>
       <style:style style:name="Sup" style:family="text"><style:text-properties style:text-position="super 58%"/></style:style>
       <style:style style:name="Italic" style:family="text"><style:text-properties fo:font-style="italic"/></style:style>
@@ -1475,7 +1568,7 @@ async function exportODT(){
   
   const blob=await z.generateAsync({type:'blob',mimeType:'application/vnd.oasis.opendocument.text'});
   dl(blob,exFname('odt'));
-  toast('ODT exported! Open with LibreOffice.','success');
+  toast('ODT generated with complete layout styling!','success');
 }
 
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
