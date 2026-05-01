@@ -707,11 +707,12 @@ OP_GH: [If TYPE is mcq, write option 4 here]
 ##END
 
 FORMATTING INSTRUCTIONS FOR QUESTIONS:
-- For mathematical equations, wrap the valid LaTeX string in this token: [EQ: \\frac{a}{b} = c]
-- For chemical formulas, use: [CHEM: H2SO4]
-- For isolated subscripts or superscripts, use [SUB:x] or [SUP:x].
-- If a question contains a table, write TABLE_START:rows×cols on a new line, then write each row separating cells with a pipe (|), then write TABLE_END on a new line.`;
+​For mathematical equations, wrap the valid LaTeX string in this token: [EQ: \frac{a}{b} = c]
+​For chemical formulas, use: [CHEM: H2SO4]
+​For isolated subscripts or superscripts, wrap ONLY the target character in the tag. Do not wrap the base letter. (Example: For C₃, write C[SUB:3], strictly do NOT write [SUB:C3]).
+​If a question contains a table, write TABLE_START:rows×cols on a new line, then write each row separating cells with a pipe (|), then write TABLE_END on a new line.`;
 
+  
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
