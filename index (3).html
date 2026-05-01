@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>প্রশ্নপত্র Maker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='22'>প</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=DM+Serif+Text&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════ RESET ═══════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#4f46e5}
+::selection{background:#4f46e5;color:#fff}
+
+/* ═══════ TOKENS ═══════ */
+:root{
+  --bg:       #0a0e1a;
+  --bg1:      #0f1629;
+  --bg2:      #141d35;
+  --bg3:      #1a2540;
+  --bg4:      #1f2d4d;
+  --border:   #1e2d4a;
+  --border2:  #243559;
+  --accent:   #4f46e5;
+  --accent2:  #6366f1;
+  --accent3:  #818cf8;
+  --gold:     #f59e0b;
+  --gold2:    #fbbf24;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --t1:       #f1f5f9;
+  --t2:       #94a3b8;
+  --t3:       #475569;
+  --t4:       #2d3f5e;
+  --shadow:   0 4px 24px rgba(0,0,0,.5);
+  --shadow2:  0 2px 8px rgba(0,0,0,.4);
+  --r:        8px;
+  --r2:       5px;
+  --font-ui:  'Inter',system-ui,sans-serif;
+  --font-bn:  'Tiro Bangla','Kalpurush',serif;
+  --font-tt:  'DM Serif Text',serif;
+  --p-margin: 1.0cm;
+  --p-fsize:  11pt;
+  --p-lh:     1.5;
+}
+
+/* ═══════ BODY / SHELL ═══════ */
+body{font-family:var(--font-ui);background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ═══════ TOPBAR ═══════ */
+#topbar{
+  height:52px;background:var(--bg1);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#818cf8);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-family:var(--font-bn);color:#fff;font-weight:700}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:-.02em;color:var(--t1)}
+.logo-text em{color:var(--accent3);font-style:normal}
+.topbar-mid{flex:1;display:flex;align-items:center;gap:8px;max-width:400px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+
+/* fit badge */
+#fit-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;transition:.2s}
+#fit-badge.ok{background:#052e16;color:#4ade80;border:1px solid #166534}
+#fit-badge.warn{background:#2d1a00;color:#fbbf24;border:1px solid #92400e}
+#fit-badge.over{background:#2d0606;color:#f87171;border:1px solid #7f1d1d}
+
+/* ═══════ SETTINGS STRIP ═══════ */
+#strip{
+  height:44px;background:var(--bg1);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;flex-shrink:0;overflow-x:auto;overflow-y:hidden;
+}
+#strip::-webkit-scrollbar{height:0}
+.sg{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--border);height:100%;flex-shrink:0}
+.sg:last-child{border-right:none}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.sval{font-size:11px;font-weight:700;color:var(--accent3);min-width:34px}
+
+/* range input */
+input[type=range]{-webkit-appearance:none;height:3px;background:var(--border2);border-radius:2px;outline:none;width:100px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent2);cursor:pointer;box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+
+/* divider picker */
+.dpick{display:flex;gap:4px}
+.dopt{padding:4px 9px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--t2);font-size:12px;cursor:pointer;transition:.15s;letter-spacing:.04em}
+.dopt.on{border-color:var(--accent2);background:rgba(79,70,229,.15);color:var(--accent3)}
+
+/* toggle pills */
+.pill-group{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.pill{padding:4px 11px;font-size:11px;font-weight:500;color:var(--t3);cursor:pointer;transition:.15s;user-select:none;white-space:nowrap}
+.pill.on{background:var(--accent);color:#fff;font-weight:600}
+.pill:not(.on):hover{color:var(--t1);background:var(--bg4)}
+
+/* ═══════ MAIN SPLIT ═══════ */
+#main{flex:1;display:flex;overflow:hidden}
+
+/* ═══════ SIDEBAR ═══════ */
+#sidebar{
+  width:400px;min-width:300px;max-width:550px;
+  background:var(--bg1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;
+  resize:horizontal;
+}
+#sidebar-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 14px 70px;display:flex;flex-direction:column;gap:10px}
+
+/* ═══════ CARDS ═══════ */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s}
+.card:focus-within{border-color:var(--border2)}
+.card-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:.15s}
+.card-hdr:hover{background:var(--bg3)}
+.card-hdr.open{border-bottom-color:var(--border)}
+.chevron{width:15px;height:15px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.card-hdr.open .chevron{transform:rotate(90deg)}
+.card-ttl{font-size:12px;font-weight:600;color:var(--t2);flex:1;letter-spacing:.02em}
+.card-body{padding:12px;display:flex;flex-direction:column;gap:10px}
+.card-body.hide{display:none}
+
+/* section colors */
+.sc-card[data-si="0"]{border-left:3px solid #6366f1}
+.sc-card[data-si="1"]{border-left:3px solid #10b981}
+.sc-card[data-si="2"]{border-left:3px solid #f59e0b}
+.sc-card[data-si="3"]{border-left:3px solid #ec4899}
+.sc-card[data-si="4"]{border-left:3px solid #06b6d4}
+
+/* ═══════ FORM CONTROLS ═══════ */
+.flabel{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:4px}
+input[type=text],input[type=number],textarea,select{
+  width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);
+  color:var(--t1);font-family:var(--font-ui);font-size:12.5px;padding:6px 9px;outline:none;
+  transition:border-color .15s,box-shadow .15s;box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+input[type=text]:focus,input[type=number]:focus,textarea:focus,select:focus{
+  border-color:var(--accent2);box-shadow:inset 0 1px 3px rgba(0,0,0,.3),0 0 0 2px rgba(99,102,241,.2);
+}
+textarea{resize:vertical;min-height:52px;line-height:1.5;font-family:var(--font-bn);font-size:13px}
+.bn-field{font-family:var(--font-bn)!important;font-size:13px!important}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px}
+.frow{display:grid;gap:8px}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:1fr 1fr 1fr}
+.fgrp{display:flex;flex-direction:column;gap:4px}
+
+/* ═══════ BUTTONS ═══════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:var(--r2);border:1px solid transparent;font-family:var(--font-ui);font-size:12px;font-weight:500;cursor:pointer;outline:none;transition:.15s;white-space:nowrap;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;font-weight:600}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--t2);border-color:var(--border2)}
+.btn-ghost:hover{background:var(--bg3);color:var(--t1);border-color:var(--border2)}
+.btn-accent{background:transparent;color:var(--accent3);border-color:var(--border2)}
+.btn-accent:hover{background:rgba(79,70,229,.1);border-color:var(--accent2)}
+.btn-danger{background:transparent;color:var(--red);border-color:transparent;padding:5px 8px}
+.btn-danger:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-full{width:100%}
+.icon-btn{background:transparent;border:1px solid transparent;border-radius:5px;color:var(--t3);cursor:pointer;padding:5px;display:flex;align-items:center;justify-content:center;transition:.15s;outline:none}
+.icon-btn:hover{background:var(--bg3);color:var(--t1);border-color:var(--border2)}
+.icon-btn:active{transform:scale(.93)}
+
+/* chip */
+.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(79,70,229,.12);border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;color:var(--accent3);font-family:var(--font-bn)}
+
+/* ═══════ QUESTION ITEMS ═══════ */
+.qitem{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:7px;transition:border-color .15s}
+.qitem:hover{border-color:var(--border2)}
+.qitem-hdr{display:flex;align-items:center;gap:6px}
+.qnum{font-size:10px;font-weight:700;color:var(--t3);font-family:var(--font-bn);min-width:22px}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px}
+.opt-row{display:flex;align-items:center;gap:5px}
+.opt-ltr{font-size:11px;font-weight:700;color:var(--t3);font-family:var(--font-bn);min-width:16px;flex-shrink:0}
+.q-img-row{display:grid;grid-template-columns:1fr 80px;gap:8px;align-items:start}
+.img-slot{width:80px;min-height:60px;border:1.5px dashed var(--border2);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;color:var(--t3);text-align:center;overflow:hidden;transition:.15s;flex-shrink:0;position:relative}
+.img-slot:hover{border-color:var(--accent2);background:rgba(79,70,229,.08)}
+.img-slot img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0}
+.q-actions{display:flex;gap:5px;flex-wrap:wrap}
+.extra-block{border:1px solid var(--border2);border-radius:5px;padding:7px;margin-top:4px;position:relative}
+.extra-del{position:absolute;top:4px;right:5px;background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+/* ═══════ QPF PASTE ═══════ */
+.qpf-ta{font-family:'Courier New',monospace;font-size:11px;color:#4ade80;background:#020c04;border:1px solid #1a4a2a;border-radius:5px;padding:8px 10px;line-height:1.6;min-height:80px}
+.qpf-ta::placeholder{color:#1a4a2a}
+.qpf-ta:focus{border-color:#10b981;outline:none}
+
+/* ═══════ EXPORT BAR ═══════ */
+#export-bar{
+  position:absolute;bottom:0;left:0;right:0;height:54px;
+  background:linear-gradient(0deg,var(--bg1) 80%,transparent);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;gap:8px;z-index:50;border-top:1px solid var(--border);
+}
+
+/* ═══════ PREVIEW PANEL ═══════ */
+#preview{flex:1;display:flex;flex-direction:column;background:#13182b;overflow:hidden}
+#preview-bar{height:40px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:12px;flex-shrink:0}
+#preview-vp{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px 20px;gap:20px}
+
+/* ═══════ PREVIEW PAGE ═══════ */
+.pp-wrap{transform-origin:top center;margin-bottom:-40px}
+.pp{background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.6);border-radius:2px}
+.empty-ph{text-align:center;padding:60px 20px;color:var(--t3);font-size:13px;line-height:1.8}
+.empty-ph .ei{font-size:40px;margin-bottom:12px}
+
+/* ═══════ INFO PANEL ═══════ */
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;opacity:0;pointer-events:none;transition:.3s}
+#ov.show{opacity:1;pointer-events:auto}
+#info{position:fixed;top:0;right:0;width:min(460px,95vw);height:100vh;background:var(--bg1);border-left:1px solid var(--border);z-index:801;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--shadow)}
+#info.show{transform:none}
+.info-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.info-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:16px}
+.info-sec-ttl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent3);padding-bottom:5px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.info-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.iico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.iico.b{background:#0f1e3a}.iico.g{background:#052e16}.iico.a{background:#2d1a00}.iico.p{background:#1e0a3a}
+.info-p{font-size:12px;line-height:1.65;color:var(--t2)}
+.info-p strong{color:var(--t1);font-weight:600}
+.lib-tag{display:inline-flex;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--t2);font-family:monospace;margin:2px}
+.step{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px}
+.sn{width:19px;height:19px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* ═══════ TOAST ═══════ */
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:9px 15px;font-size:12px;color:var(--t1);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;animation:tIn .25s ease,tOut .3s 2.7s ease forwards;pointer-events:auto}
+.toast.ok{border-color:var(--green)}.toast.warn{border-color:var(--gold)}.toast.err{border-color:var(--red)}
+@keyframes tIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes tOut{to{opacity:0;transform:translateY(-8px)}}
+
+/* ═══════ DIAGRAM MODAL ═══════ */
+#dia-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:none;align-items:center;justify-content:center}
+#dia-modal.show{display:flex}
+#dia-panel{background:var(--bg1);border:1px solid var(--border2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;max-width:95vw}
+#dia-canvas{background:#fff;border-radius:4px;cursor:crosshair;display:block;touch-action:none}
+.dia-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* ═══════ PRINT LAYOUT ═══════ */
+.qp-page{width:297mm;min-height:210mm;display:flex;font-family:var(--font-bn);font-size:var(--p-fsize);color:#111;position:relative;overflow:hidden;background:#fff}
+.qp-set{flex:1;padding:var(--p-margin);overflow:hidden;min-width:0}
+.qp-div{flex-shrink:0;width:1.2cm;display:flex;flex-direction:column;align-items:center;justify-content:space-around;font-size:7pt;color:#bbb;padding:2mm 0}
+.qp-title{text-align:center;font-family:var(--font-tt);font-size:14pt;font-weight:bold;padding-bottom:2pt}
+.qp-info{display:flex;justify-content:space-between;font-family:var(--font-tt);font-size:calc(var(--p-fsize) - 0.5pt);padding-bottom:3pt}
+.qp-sec-hdr{text-align:center;font-weight:bold;padding:3pt 0 1pt}
+.qp-sec-row{display:flex;justify-content:space-between;font-weight:bold;padding-bottom:1pt}
+.qp-q{margin-bottom:2.5pt;text-align:justify}
+.qp-q-mcq-opts{display:flex;justify-content:space-evenly;text-align:center;margin-top:1pt;gap:4pt}
+.qp-q-mcq-opts.g2{display:grid;grid-template-columns:1fr 1fr;text-align:center}
+.qp-q-mcq-opts.g1{display:flex;flex-direction:column;align-items:flex-start;padding-left:8pt}
+.qp-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5;opacity:.07}
+.qp-wm img{max-width:65%;max-height:65%;object-fit:contain}
+.qp-itable{border-collapse:collapse;margin:2pt auto;font-size:calc(var(--p-fsize) - 1pt)}
+.qp-itable td{border:.5pt solid #555;padding:1.5pt 4pt;text-align:center}
+
+/* ═══════ @MEDIA PRINT ═══════ */
+@media print{
+  @page{size:A4 landscape;margin:0}
+  body,#app-shell{background:#fff!important;display:block!important;height:auto!important;overflow:visible!important}
+  #topbar,#strip,#sidebar,#preview-bar,#info,#ov,#toasts,#dia-modal,.no-print{display:none!important}
+  #preview,#preview-vp{display:block!important;background:#fff!important;overflow:visible!important;padding:0!important}
+  .pp-wrap{transform:none!important;margin-bottom:0!important}
+  .pp{box-shadow:none!important;page-break-after:always}
+  .pp:last-child{page-break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div id="topbar">
+  <div class="logo">
+    <div class="logo-icon">প</div>
+    <div class="logo-text">প্রশ্নপত্র <em>Maker</em></div>
+  </div>
+
+  <div class="topbar-mid">
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer" title="Upload .qpf backup">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload .qpf
+      <input type="file" id="qpf-file" accept=".qpf,.txt" hidden/>
+    </label>
+    <button class="btn btn-ghost btn-sm" id="paste-toggle">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Paste QPF
+    </button>
+  </div>
+
+  <div class="topbar-right">
+    <span id="fit-badge" class="ok">✓ Ready</span>
+    <button class="icon-btn" id="info-btn" title="How to use">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS STRIP ═══ -->
+<div id="strip">
+  <div class="sg">
+    <span class="slabel">Teacher</span>
+    <input type="text" id="s-teacher" value="Shibanjan Bera" style="width:130px;padding:3px 7px;font-size:12px"/>
+  </div>
+  <div class="sg">
+    <span class="slabel">Margin</span>
+    <input type="range" id="s-mg" min="3" max="18" value="10" step="1"/>
+    <span class="sval" id="s-mg-v">1.0cm</span>
+  </div>
+  <div class="sg">
+    <span class="slabel">Font</span>
+    <input type="range" id="s-fs" min="8" max="13" value="11" step="0.5"/>
+    <span class="sval" id="s-fs-v">11pt</span>
+  </div>
+  <div class="sg">
+    <span class="slabel">Divider</span>
+    <div class="dpick">
+      <div class="dopt on" data-d="dotted">·&#xB7;·</div>
+      <div class="dopt" data-d="dashed">- - -</div>
+      <div class="dopt" data-d="solid">———</div>
+      <div class="dopt" data-d="text">✂</div>
+    </div>
+  </div>
+  <div class="sg">
+    <span class="slabel">Sections</span>
+    <div class="pill-group" id="s-slang">
+      <div class="pill on" data-v="bn">ক খ গ</div>
+      <div class="pill" data-v="en">A B C</div>
+    </div>
+  </div>
+  <div class="sg">
+    <span class="slabel">Watermark</span>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer;font-size:11px">
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span id="wm-lbl">Default</span>
+      <input type="file" id="wm-file" accept="image/*" hidden/>
+    </label>
+    <button class="icon-btn btn-sm" id="wm-rst" title="Reset">↺</button>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside id="sidebar">
+    <div id="sidebar-scroll">
+
+      <!-- QPF paste card (hidden by default) -->
+      <div class="card" id="paste-card" style="display:none">
+        <div class="card-hdr open" style="cursor:default">
+          <svg class="chevron on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(90deg)"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="card-ttl">📋 Paste QPF / OCR Output</span>
+          <button class="icon-btn btn-sm" id="paste-close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="card-body">
+          <textarea id="qpf-ta" class="qpf-ta" rows="5" placeholder="## META&#10;TEACHER: Shibanjan Bera&#10;..."></textarea>
+          <div style="display:flex;gap:7px">
+            <button class="btn btn-primary btn-sm" id="qpf-apply" style="flex:1">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Apply & Fill Form
+            </button>
+            <button class="btn btn-ghost btn-sm" id="qpf-clear">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Info -->
+      <div class="card">
+        <div class="card-hdr open" data-tgt="ei-body">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="card-ttl">📄 Exam Information</span>
+        </div>
+        <div class="card-body" id="ei-body">
+          <div class="frow c2">
+            <div class="fgrp">
+              <label class="flabel">Test Number</label>
+              <input type="number" id="f-tno" value="1" min="1"/>
+            </div>
+            <div class="fgrp">
+              <label class="flabel">Full Marks <span style="color:var(--accent3);font-size:9px">(auto)</span></label>
+              <input type="number" id="f-fm" value="0" readonly style="opacity:.5;cursor:not-allowed"/>
+            </div>
+          </div>
+          <div class="frow c2">
+            <div class="fgrp">
+              <label class="flabel">Class</label>
+              <input type="text" id="f-cls" placeholder="VII (WBBSE)" class="bn-field"/>
+            </div>
+            <div class="fgrp">
+              <label class="flabel">Time (min)</label>
+              <input type="number" id="f-time" value="30" min="5" max="300"/>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Subject <span id="subj-warn" style="color:var(--gold);font-size:9px;display:none"> ⚠ long — will shrink</span></label>
+            <input type="text" id="f-subj" placeholder="বিজ্ঞান / Science" class="bn-field"/>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Instructions (optional)</label>
+            <textarea id="f-inst" class="bn-field" rows="2" placeholder="নির্দেশ: সমস্ত প্রশ্নের উত্তর দাও।"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections container -->
+      <div id="secs"></div>
+
+      <!-- Add Section -->
+      <button class="btn btn-accent btn-full" id="add-sec">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Section (বিভাগ)
+      </button>
+
+    </div><!-- /sidebar-scroll -->
+
+    <!-- Export bar -->
+    <div id="export-bar">
+      <div style="display:flex;gap:7px">
+        <button class="btn btn-ghost btn-sm" id="ex-qpf">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          .qpf
+        </button>
+        <button class="btn btn-ghost btn-sm" id="ex-odt">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ODT
+        </button>
+      </div>
+      <button class="btn btn-primary" id="ex-pdf">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / PDF
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ PREVIEW PANEL ═══ -->
+  <section id="preview">
+    <div id="preview-bar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--t3);font-weight:500">Preview</span>
+        <div class="pill-group" id="pv-mode">
+          <div class="pill on" data-m="one">One Set</div>
+          <div class="pill" data-m="both">Both Sets</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="icon-btn" id="z-out"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+        <span style="font-size:11px;color:var(--t2);min-width:32px;text-align:center" id="z-lbl">55%</span>
+        <button class="icon-btn" id="z-in"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+        <button class="icon-btn" id="z-fit" title="Fit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+      </div>
+    </div>
+    <div id="preview-vp">
+      <div class="empty-ph" id="ph">
+        <div class="ei">📄</div>
+        Fill in the exam info and add sections<br>to see the live preview here.
+      </div>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<!-- ═══ INFO PANEL ═══ -->
+<div id="ov"></div>
+<div id="info">
+  <div class="info-hdr">
+    <span style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      About & How to Use
+    </span>
+    <button class="icon-btn" id="info-close"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="info-body">
+    <div>
+      <div class="info-sec-ttl">What is this</div>
+      <div class="info-item"><div class="iico b">📝</div><p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates Bengali exam papers that print two identical copies on one A4 landscape sheet. Cut the dotted centre line — two students each get one set.</p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">🔒 100% Offline — No Server</div>
+      <div class="info-item"><div class="iico g">🛡</div><p class="info-p"><strong>Nothing leaves your device.</strong> No server, no login, no analytics. Runs entirely in your browser RAM. Works offline after first load.</p></div>
+      <div class="info-item"><div class="iico a">💾</div><p class="info-p"><strong>RAM usage:</strong> Typically 5–15MB per paper. Images add more. No concern on any modern device.</p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">📦 Libraries Used</div>
+      <div class="info-item"><div class="iico p">⚙</div><p class="info-p">
+        <span class="lib-tag">JSZip 3.10</span><span class="lib-tag">Google Fonts (CDN)</span><span class="lib-tag">Tiro Bangla (local)</span>
+        <br/><br/><strong>JSZip</strong> is only used for ODT export. PDF uses the browser's own print engine. Zero other dependencies.
+      </p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">🤖 OCR Flow (Photo → Paper)</div>
+      <div class="step"><div class="sn">1</div><p class="info-p">Take a photo of a printed question paper. Open Gemini or ChatGPT.</p></div>
+      <div class="step"><div class="sn">2</div><p class="info-p">Upload the photo. Paste the <strong>QPF prompt</strong> from README.md. The AI outputs structured .qpf text.</p></div>
+      <div class="step"><div class="sn">3</div><p class="info-p">Copy the AI output. Click <strong>"Paste QPF"</strong> in the header, paste, click <strong>Apply & Fill Form</strong>.</p></div>
+      <div class="step"><div class="sn">4</div><p class="info-p">Review the form, then click <strong>Print / PDF</strong>. Set A4, Landscape, No margins in the print dialog.</p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">🖨 Print Tips</div>
+      <div class="info-item"><div class="iico a">💡</div><p class="info-p">In Chrome print dialog: <strong>A4 · Landscape · Margins: None · Background graphics: ON</strong>. Use Chrome or Edge for best results.<br/><br/>For 2-page papers: print both sheets, place side by side, then cut each.</p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">⚡ Tips</div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Always export a <strong>.qpf backup</strong> after finishing — restore it anytime.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p">The <strong>fit badge</strong> (top right) warns if content overflows one page.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Drag question items up/down to reorder without retyping.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIAGRAM MODAL ═══ -->
+<div id="dia-modal">
+  <div id="dia-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:600;color:var(--t1)">✏ Draw Diagram</span>
+      <div class="dia-toolbar" id="dia-tools">
+        <button class="btn btn-ghost btn-sm dia-t on" data-t="free">✏ Free</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="line">— Line</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="rect">□ Rect</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="circle">○ Circle</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="arrow">→ Arrow</button>
+        <button class="btn btn-danger btn-sm" id="dia-clr">🗑 Clear</button>
+        <input type="color" id="dia-col" value="#111111" style="width:26px;height:26px;border:1px solid var(--border2);border-radius:4px;background:none;cursor:pointer;padding:1px"/>
+        <select id="dia-w" style="font-size:11px;padding:3px 6px;width:60px">
+          <option value="1">1px</option><option value="2" selected>2px</option><option value="3">3px</option><option value="5">5px</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary btn-sm" id="dia-save">Save</button>
+        <button class="btn btn-ghost btn-sm" id="dia-cancel">Cancel</button>
+      </div>
+    </div>
+    <canvas id="dia-cv" width="520" height="320" id="dia-canvas"></canvas>
+  </div>
+</div>
+
+<!-- ═══ TOASTS ═══ -->
+<div id="toasts"></div>
+
+<!-- JSZip -->
+<script src="libs/jszip.min.js" onerror="this.remove();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';document.head.appendChild(s)"></script>
+
+<script>
+/* ═══════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════ */
+const BN_L=['ক','খ','গ','ঘ','ঙ','চ','ছ','জ'];
+const EN_L=['A','B','C','D','E','F','G','H'];
+const BN_O=['ক','খ','গ','ঘ'];
+const EN_O=['a','b','c','d'];
+const BN_D=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+const SYM={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',pi:'π',sigma:'σ',omega:'Ω',ohm:'Ω',degree:'°',infinity:'∞',arrow:'→',darrow:'⇌',times:'×',div:'÷',approx:'≈',pm:'±',neq:'≠',leq:'≤',geq:'≥',sqrt:'√',micro:'μ'};
+const HDGS=['সঠিক উত্তরটি নির্বাচন করো:','সংক্ষিপ্ত উত্তর দাও:','নীচের প্রশ্নগুলির উত্তর দাও:','দীর্ঘ উত্তরধর্মী প্রশ্ন:'];
+const TYPES=[{v:'mcq',l:'MCQ'},{v:'short',l:'Short Answer'},{v:'descriptive',l:'Descriptive'},{v:'long',l:'Long Answer'}];
+const SEC_QPF=['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA'];
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const S={
+  teacher:'Shibanjan Bera',testNo:1,klass:'',subject:'',time:30,inst:'',fullMarks:0,
+  margin:1.0,fontSize:11,divider:'dotted',secLang:'bn',wm:'default',wmData:null,
+  sections:[],zoom:.55,pvMode:'one'
+};
+
+/* ═══════════════════════════════════════
+   UTILS
+═══════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+const $$=s=>document.querySelectorAll(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const bn=n=>String(n).split('').map(c=>BN_D[+c]??c).join('');
+const sl=i=>S.secLang==='bn'?(BN_L[i]??String(i+1)):(EN_L[i]??String(i+1));
+const ol=(i,st)=>st==='bn'?(BN_O[i]??'?'):(EN_O[i]??'?');
+function cv(n,v){document.documentElement.style.setProperty(n,v)}
+function applyVars(){cv('--p-margin',S.margin+'cm');cv('--p-fsize',S.fontSize+'pt')}
+
+function renderTok(t){
+  return t
+    .replace(/\[SUB:([^\]]+)\]/g,'<sub>$1</sub>')
+    .replace(/\[SUP:([^\]]+)\]/g,'<sup>$1</sup>')
+    .replace(/\[SYM:([^\]]+)\]/g,(_,s)=>`<span style="font-family:serif">${SYM[s.toLowerCase()]||s}</span>`)
+    .replace(/\[CHEM:([^\]]+)\]/g,(_,f)=>`<i>${f.replace(/(\d+)/g,'<sub>$1</sub>')}</i>`)
+    .replace(/\[EQ:([^\]]+)\]/g,'<i>$1</i>');
+}
+
+function exFname(ext){
+  const c=(S.klass||'Test').replace(/[^\w\u0980-\u09FF ]/g,'').trim();
+  return `${c} Test ${S.testNo}.${ext}`;
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function toast(msg,type='info',dur=3200){
+  const ic={success:'✓',warn:'⚠',error:'✕',info:'ℹ'};
+  const cl={success:'ok',warn:'warn',error:'err',info:''};
+  const w=$('toasts'),t=document.createElement('div');
+  t.className='toast '+(cl[type]||'');
+  t.innerHTML=`<span>${ic[type]||'ℹ'}</span><span>${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>t.remove(),dur+300);
+}
+
+/* ═══════════════════════════════════════
+   MARKS
+═══════════════════════════════════════ */
+function recalc(){
+  S.fullMarks=S.sections.reduce((t,s)=>t+(s.mpq||0)*(s.questions.length||0),0);
+  const el=$('f-fm');if(el)el.value=S.fullMarks;
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS STRIP
+═══════════════════════════════════════ */
+function initStrip(){
+  $('s-teacher').oninput=e=>{S.teacher=e.target.value;sched()};
+  $('s-mg').oninput=e=>{S.margin=parseFloat((e.target.value/10).toFixed(1));$('s-mg-v').textContent=S.margin.toFixed(1)+'cm';applyVars();sched()};
+  $('s-fs').oninput=e=>{S.fontSize=parseFloat(e.target.value);$('s-fs-v').textContent=S.fontSize+'pt';applyVars();sched()};
+  $$('.dopt').forEach(o=>o.onclick=()=>{$$('.dopt').forEach(x=>x.classList.remove('on'));o.classList.add('on');S.divider=o.dataset.d;sched()});
+  $$('#s-slang .pill').forEach(p=>p.onclick=()=>{$$('#s-slang .pill').forEach(x=>x.classList.remove('on'));p.classList.add('on');S.secLang=p.dataset.v;rebuildSecs();sched()});
+  $('wm-file').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=ev=>{S.wmData=ev.target.result;S.wm='custom';$('wm-lbl').textContent=f.name.slice(0,12)+(f.name.length>12?'…':'');sched()};
+    r.readAsDataURL(f);
+  };
+  $('wm-rst').onclick=()=>{S.wm='default';S.wmData=null;$('wm-lbl').textContent='Default';$('wm-file').value='';sched()};
+}
+
+/* ═══════════════════════════════════════
+   EXAM INFO
+═══════════════════════════════════════ */
+function initExamInfo(){
+  $('f-tno').oninput=e=>{S.testNo=parseInt(e.target.value)||1;sched()};
+  $('f-cls').oninput=e=>{S.klass=e.target.value;sched()};
+  $('f-subj').oninput=e=>{S.subject=e.target.value;$('subj-warn').style.display=e.target.value.length>26?'inline':'none';sched()};
+  $('f-time').oninput=e=>{S.time=parseInt(e.target.value)||30;sched()};
+  $('f-inst').oninput=e=>{S.inst=e.target.value;sched()};
+}
+
+/* ═══════════════════════════════════════
+   PASTE PANEL
+═══════════════════════════════════════ */
+function initPaste(){
+  $('paste-toggle').onclick=()=>{const c=$('paste-card');c.style.display=c.style.display==='none'?'block':'none'};
+  $('paste-close').onclick=()=>$('paste-card').style.display='none';
+  $('qpf-clear').onclick=()=>$('qpf-ta').value='';
+  $('qpf-apply').onclick=()=>{
+    const t=$('qpf-ta').value.trim();
+    if(!t){toast('Paste QPF text first.','warn');return;}
+    try{parseQPF(t);toast('Form filled!','success');$('paste-card').style.display='none';}
+    catch(e){toast('Parse error: '+e.message,'error');}
+  };
+  $('qpf-file').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=ev=>{$('qpf-ta').value=ev.target.result;$('paste-card').style.display='block';toast('Loaded — click Apply','info')};
+    r.readAsText(f,'utf-8');
+  };
+}
+
+/* ═══════════════════════════════════════
+   ZOOM
+═══════════════════════════════════════ */
+function fitZoom(){
+  const vp=$('preview-vp');
+  S.zoom=Math.max(.2,Math.min(1.5,(vp.clientWidth-40)/1122));
+  $('z-lbl').textContent=Math.round(S.zoom*100)+'%';
+  sched();
+}
+function initZoom(){
+  $('z-in').onclick=()=>{S.zoom=Math.min(1.5,+(S.zoom+.05).toFixed(2));$('z-lbl').textContent=Math.round(S.zoom*100)+'%';sched()};
+  $('z-out').onclick=()=>{S.zoom=Math.max(.2,+(S.zoom-.05).toFixed(2));$('z-lbl').textContent=Math.round(S.zoom*100)+'%';sched()};
+  $('z-fit').onclick=fitZoom;
+  $$('#pv-mode .pill').forEach(p=>p.onclick=()=>{$$('#pv-mode .pill').forEach(x=>x.classList.remove('on'));p.classList.add('on');S.pvMode=p.dataset.m;sched()});
+}
+
+/* ═══════════════════════════════════════
+   SECTION BUILDER
+═══════════════════════════════════════ */
+function rebuildSecs(){
+  const c=$('secs');c.innerHTML='';
+  S.sections.forEach((sec,idx)=>c.appendChild(mkSecCard(sec,idx)));
+  recalc();
+}
+
+function mkSecCard(sec,idx){
+  const letter=sl(idx);
+  const total=(sec.mpq||0)*(sec.questions.length||0);
+  const card=document.createElement('div');
+  card.className='card sc-card';
+  card.dataset.si=idx;
+
+  card.innerHTML=`
+    <div class="card-hdr open" id="hdr${sec.id}">
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="card-ttl">বিভাগ '${letter}' · ${TYPES.find(t=>t.v===sec.type)?.l||sec.type}</span>
+      <span class="chip">${sec.mpq}×${sec.questions.length}=${total}</span>
+      <button class="icon-btn btn-sm del-sec" title="Delete">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+      </button>
+    </div>
+    <div class="card-body" id="bd${sec.id}">
+      <div class="frow c2">
+        <div class="fgrp">
+          <label class="flabel">Heading</label>
+          <select class="sec-hdg">
+            ${HDGS.map(h=>`<option value="${esc(h)}" ${h===sec.heading?'selected':''}>${h.slice(0,22)}</option>`).join('')}
+            <option value="__c">Custom…</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Type</label>
+          <select class="sec-type">
+            ${TYPES.map(t=>`<option value="${t.v}" ${t.v===sec.type?'selected':''}>${t.l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="frow c2">
+        <div class="fgrp">
+          <label class="flabel">Marks/Q</label>
+          <input type="number" class="sec-mpq" value="${sec.mpq}" min=".5" step=".5"/>
+        </div>
+        <div class="fgrp" ${sec.type!=='mcq'?'style="visibility:hidden"':''}>
+          <label class="flabel">Option Style</label>
+          <div class="pill-group sec-os">
+            <div class="pill ${sec.os==='bn'?'on':''}" data-v="bn">ক খ গ ঘ</div>
+            <div class="pill ${sec.os==='en'?'on':''}" data-v="en">a b c d</div>
+          </div>
+        </div>
+      </div>
+      <div class="q-list" id="ql${sec.id}"></div>
+      <button class="btn btn-ghost btn-sm btn-full add-q">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add question in বিভাগ '${letter}'
+      </button>
+    </div>`;
+
+  // Collapse
+  card.querySelector('.card-hdr').onclick=e=>{
+    if(e.target.closest('.del-sec'))return;
+    const b=$(`bd${sec.id}`),h=$(`hdr${sec.id}`);
+    const o=!b.classList.contains('hide');
+    b.classList.toggle('hide',o);h.classList.toggle('open',!o);
+  };
+  // Delete
+  card.querySelector('.del-sec').onclick=e=>{
+    e.stopPropagation();
+    if(S.sections.length<=1){toast('Need at least one section.','warn');return;}
+    S.sections=S.sections.filter(s=>s.id!==sec.id);
+    rebuildSecs();sched();
+  };
+  // Heading
+  const hs=card.querySelector('.sec-hdg');
+  hs.onchange=e=>{
+    if(e.target.value==='__c'){const c=prompt('Custom heading:','');if(c)sec.heading=c;else{hs.value=sec.heading;return;}}
+    else sec.heading=e.target.value;
+    rebuildSecs();sched();
+  };
+  // Type
+  card.querySelector('.sec-type').onchange=e=>{sec.type=e.target.value;rebuildSecs();sched()};
+  // Marks
+  card.querySelector('.sec-mpq').oninput=e=>{sec.mpq=parseFloat(e.target.value)||1;recalc();sched()};
+  // Opt style
+  card.querySelectorAll('.sec-os .pill').forEach(p=>p.onclick=()=>{
+    card.querySelectorAll('.sec-os .pill').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');sec.os=p.dataset.v;sched();
+  });
+  // Add question
+  card.querySelector('.add-q').onclick=()=>{
+    sec.questions.push({id:uid(),text:'',options:['','','',''],img:null,extra:[]});
+    renderQList(sec,idx,$(`ql${sec.id}`));recalc();sched();
+  };
+
+  renderQList(sec,idx,card.querySelector('.q-list'));
+  return card;
+}
+
+/* ═══════════════════════════════════════
+   QUESTION LIST
+═══════════════════════════════════════ */
+function renderQList(sec,si,cont){
+  cont.innerHTML='';
+  if(!sec.questions.length){
+    cont.innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px 0;text-align:center">No questions yet</div>';return;
+  }
+  sec.questions.forEach((q,qi)=>cont.appendChild(mkQItem(q,qi,sec,si,cont)));
+}
+
+function mkQItem(q,qi,sec,si,cont){
+  const w=document.createElement('div');
+  w.className='qitem';
+  const num=`${bn(si+1)}.${bn(qi+1)})`;
+
+  if(sec.type==='mcq'){
+    w.innerHTML=`
+      <div class="qitem-hdr">
+        <span class="qnum">${num}</span>
+        <span style="flex:1;font-size:10px;color:var(--t3)">MCQ</span>
+        <button class="icon-btn btn-sm del-q"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="q-img-row">
+        <div style="flex:1;min-width:0">
+          <textarea class="q-txt bn-field" rows="2" placeholder="Question text…">${esc(q.text)}</textarea>
+          <div class="opt-grid" style="margin-top:5px">
+            ${[0,1,2,3].map(i=>`<div class="opt-row"><span class="opt-ltr">${ol(i,sec.os)}</span><input type="text" class="opt-f bn-field" data-i="${i}" value="${esc(q.options[i]||'')}" placeholder="Option ${i+1}"/></div>`).join('')}
+          </div>
+        </div>
+        <div class="img-slot" title="Add image">
+          ${q.img?`<img src="${q.img}"/>`:'<span>+<br>Img</span>'}
+          <input type="file" accept="image/*" hidden class="qi-file"/>
+        </div>
+      </div>`;
+  } else {
+    w.innerHTML=`
+      <div class="qitem-hdr">
+        <span class="qnum">${num}</span>
+        <span style="flex:1;font-size:10px;color:var(--t3)">${TYPES.find(t=>t.v===sec.type)?.l||sec.type}</span>
+        <button class="icon-btn btn-sm del-q"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <textarea class="q-txt bn-field" rows="3" placeholder="Type question…">${esc(q.text)}</textarea>
+      <div class="q-actions">
+        <button class="btn btn-ghost btn-sm add-img-q">🖼 Image</button>
+        <button class="btn btn-ghost btn-sm add-tbl-q">⊞ Table</button>
+        <button class="btn btn-ghost btn-sm add-dia-q">✏ Diagram</button>
+      </div>
+      <div class="extra-cont"></div>`;
+    renderExtras(q,w.querySelector('.extra-cont'));
+    w.querySelector('.add-img-q').onclick=()=>addImg(q,w.querySelector('.extra-cont'));
+    w.querySelector('.add-tbl-q').onclick=()=>addTbl(q,w.querySelector('.extra-cont'));
+    w.querySelector('.add-dia-q').onclick=()=>openDia(q,w.querySelector('.extra-cont'));
+  }
+
+  // Delete Q
+  w.querySelector('.del-q').onclick=()=>{sec.questions=sec.questions.filter(x=>x.id!==q.id);renderQList(sec,si,cont);recalc();sched()};
+  // Text
+  w.querySelector('.q-txt').oninput=e=>{q.text=e.target.value;sched()};
+  // Opts
+  if(sec.type==='mcq'){
+    w.querySelectorAll('.opt-f').forEach(inp=>inp.oninput=e=>{q.options[+e.target.dataset.i]=e.target.value;sched()});
+    const slot=w.querySelector('.img-slot'),fi=w.querySelector('.qi-file');
+    slot.onclick=()=>fi.click();
+    fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{q.img=ev.target.result;slot.innerHTML=`<img src="${ev.target.result}"/>`;sched()};r.readAsDataURL(f)};
+  }
+  return w;
+}
+
+/* ═══════════════════════════════════════
+   EXTRAS
+═══════════════════════════════════════ */
+function renderExtras(q,cont){
+  cont.innerHTML='';
+  (q.extra||[]).forEach((ex,xi)=>{
+    const d=document.createElement('div');d.className='extra-block';
+    const del=`<button class="extra-del" data-xi="${xi}">✕</button>`;
+    if(ex.type==='image'){
+      d.innerHTML=`${del}<div style="font-size:10px;color:var(--t3);margin-bottom:3px">📎 Image</div><img src="${ex.data}" style="max-height:70px;max-width:100%;object-fit:contain;display:block"/>`;
+    } else if(ex.type==='table'){
+      d.innerHTML=`${del}<div style="font-size:10px;color:var(--t3);margin-bottom:4px">⊞ Table ${ex.rows.length}×${ex.rows[0]?.length||0}</div><div class="inline-table-editor" style="overflow-x:auto"><table style="border-collapse:collapse">${ex.rows.map((row,ri)=>'<tr>'+row.map((c,ci)=>`<td style="border:1px solid var(--border2);padding:0"><input type="text" class="tbl-cell bn-field" style="border:none;background:transparent;width:70px;padding:3px 5px;font-size:11px" value="${esc(c)}" data-r="${ri}" data-c="${ci}"/></td>`).join('')+'</tr>').join('')}</table></div>`;
+      d.querySelectorAll('.tbl-cell').forEach(inp=>inp.oninput=e=>{ex.rows[+e.target.dataset.r][+e.target.dataset.c]=e.target.value;sched()});
+    } else if(ex.type==='diagram'){
+      d.innerHTML=`${del}<div style="font-size:10px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block"/>`;
+    }
+    d.querySelector('.extra-del').onclick=e=>{q.extra.splice(+e.target.dataset.xi,1);renderExtras(q,cont);sched()};
+    cont.appendChild(d);
+  });
+}
+
+function addImg(q,cont){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.hidden=true;
+  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{q.extra.push({type:'image',data:ev.target.result});renderExtras(q,cont);sched()};r.readAsDataURL(f)};
+  document.body.appendChild(inp);inp.click();inp.remove();
+}
+
+function addTbl(q,cont){
+  const rows=parseInt(prompt('Rows?','3')||'3');
+  const cols=parseInt(prompt('Columns?','3')||'3');
+  if(!rows||!cols||rows>20||cols>12){toast('Invalid size.','warn');return;}
+  q.extra.push({type:'table',rows:Array.from({length:rows},()=>Array(cols).fill(''))});
+  renderExtras(q,cont);sched();
+}
+
+/* ═══════════════════════════════════════
+   DIAGRAM CANVAS
+═══════════════════════════════════════ */
+let _diaQ=null,_diaCont=null,_diaDrawing=false,_diaSnap=null,_diaSX=0,_diaSY=0,_diaTool='free';
+
+function openDia(q,cont){
+  _diaQ=q;_diaCont=cont;
+  const cv=$('dia-cv');
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  _diaSnap=null;_diaTool='free';
+  $$('.dia-t').forEach(b=>b.classList.remove('on'));
+  $$('.dia-t')[0].classList.add('on');
+  $('dia-modal').classList.add('show');
+
+  function pos(e){const r=cv.getBoundingClientRect(),ce=e.touches?e.touches[0]:e;return{x:ce.clientX-r.left,y:ce.clientY-r.top}}
+  function down(e){_diaDrawing=true;const p=pos(e);_diaSX=p.x;_diaSY=p.y;_diaSnap=ctx.getImageData(0,0,cv.width,cv.height);ctx.beginPath();ctx.moveTo(p.x,p.y)}
+  function move(e){
+    if(!_diaDrawing)return;const p=pos(e);
+    const col=$('dia-col').value,lw=parseInt($('dia-w').value);
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.lineCap='round';ctx.lineJoin='round';
+    if(_diaTool==='free'){ctx.lineTo(p.x,p.y);ctx.stroke();return}
+    ctx.putImageData(_diaSnap,0,0);ctx.beginPath();
+    if(_diaTool==='line'){ctx.moveTo(_diaSX,_diaSY);ctx.lineTo(p.x,p.y);ctx.stroke()}
+    else if(_diaTool==='rect'){ctx.strokeRect(_diaSX,_diaSY,p.x-_diaSX,p.y-_diaSY)}
+    else if(_diaTool==='circle'){const rx=Math.abs(p.x-_diaSX)/2,ry=Math.abs(p.y-_diaSY)/2,cx=_diaSX+(p.x-_diaSX)/2,cy=_diaSY+(p.y-_diaSY)/2;ctx.ellipse(cx,cy,rx,ry,0,0,2*Math.PI);ctx.stroke()}
+    else if(_diaTool==='arrow'){const dx=p.x-_diaSX,dy=p.y-_diaSY,ang=Math.atan2(dy,dx);ctx.moveTo(_diaSX,_diaSY);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-12*Math.cos(ang-.4),p.y-12*Math.sin(ang-.4));ctx.lineTo(p.x-12*Math.cos(ang+.4),p.y-12*Math.sin(ang+.4));ctx.closePath();ctx.fillStyle=col;ctx.fill()}
+  }
+  function up(){_diaDrawing=false}
+  cv.onmousedown=down;cv.onmousemove=move;cv.onmouseup=up;
+  cv.ontouchstart=e=>{e.preventDefault();down(e)};
+  cv.ontouchmove=e=>{e.preventDefault();move(e)};
+  cv.ontouchend=up;
+}
+
+$('dia-clr').onclick=()=>{const cv=$('dia-cv');cv.getContext('2d').clearRect(0,0,cv.width,cv.height)};
+$$('.dia-t').forEach(b=>b.onclick=()=>{if(b.dataset.t){$$('.dia-t').forEach(x=>x.classList.remove('on'));b.classList.add('on');_diaTool=b.dataset.t}});
+$('dia-save').onclick=()=>{
+  const png=$('dia-cv').toDataURL('image/png');
+  if(_diaQ){_diaQ.extra.push({type:'diagram',png});renderExtras(_diaQ,_diaCont);sched()}
+  $('dia-modal').classList.remove('show');
+};
+$('dia-cancel').onclick=()=>$('dia-modal').classList.remove('show');
+$('dia-modal').onclick=e=>{if(e.target===$('dia-modal'))$('dia-modal').classList.remove('show')};
+
+/* ═══════════════════════════════════════
+   QPF PARSER
+═══════════════════════════════════════ */
+function parseQPF(text){
+  const lines=text.split('\n').map(l=>l.trim());
+  let mode='',curSec=null,curQ=null;
+  S.sections=[];
+
+  for(const line of lines){
+    if(!line||line.startsWith('//'))continue;
+    if(line==='##META'){mode='meta';continue}
+    if(line==='##END')break;
+    if(line.startsWith('##SECTION_')){
+      if(curSec){if(curQ){curSec.questions.push(curQ);curQ=null}S.sections.push(curSec)}
+      curSec={id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]};mode='sec';continue;
+    }
+    if(mode==='meta'){
+      const i=line.indexOf(':');if(i<0)continue;
+      const k=line.slice(0,i).trim(),v=line.slice(i+1).trim();
+      if(k==='TEACHER')S.teacher=v;
+      else if(k==='TEST_NO')S.testNo=parseInt(v)||1;
+      else if(k==='CLASS')S.klass=v;
+      else if(k==='SUBJECT')S.subject=v;
+      else if(k==='TIME')S.time=parseInt(v)||30;
+      else if(k==='FONT_SIZE')S.fontSize=parseFloat(v)||11;
+      else if(k==='MARGIN')S.margin=parseFloat(v)||1;
+      else if(k==='DIVIDER')S.divider=v;
+      else if(k==='SEC_LANG')S.secLang=v;
+    } else if(mode==='sec'&&curSec){
+      if(line.startsWith('HEADING:')){curSec.heading=line.slice(8).trim();continue}
+      if(line.startsWith('TYPE:')){const t=line.slice(5).trim();curSec.type=['mcq','short','descriptive','long'].includes(t)?t:'short';continue}
+      if(line.startsWith('MARKS_PER_Q:')){curSec.mpq=parseFloat(line.slice(12).trim())||1;continue}
+      if(line.startsWith('OPT_STYLE:')){curSec.os=line.slice(10).trim()||'bn';continue}
+      if(line.startsWith('Q:')){if(curQ)curSec.questions.push(curQ);curQ={id:uid(),text:line.slice(2).trim(),options:['','','',''],img:null,extra:[]};continue}
+      if(curQ){
+        if(line.startsWith('OP_K:')){curQ.options[0]=line.slice(5).trim();continue}
+        if(line.startsWith('OP_KH:')){curQ.options[1]=line.slice(6).trim();continue}
+        if(line.startsWith('OP_G:')){curQ.options[2]=line.slice(5).trim();continue}
+        if(line.startsWith('OP_GH:')){curQ.options[3]=line.slice(6).trim();continue}
+        if(line.startsWith('TABLE_START:')){
+          const d=line.slice(12).trim().split('x');
+          const ex={type:'table',rows:Array.from({length:parseInt(d[0])||2},()=>Array(parseInt(d[1])||2).fill(''))};
+          curQ.extra.push(ex);continue;
+        }
+        if(line==='TABLE_END')continue;
+        const last=curQ.extra[curQ.extra.length-1];
+        if(last?.type==='table'){const cols=line.split('|').map(s=>s.trim());const ei=last.rows.findIndex(r=>r.every(c=>c===''));if(ei>=0)last.rows[ei]=cols.slice(0,last.rows[0].length)}
+      }
+    }
+  }
+  if(curSec){if(curQ)curSec.questions.push(curQ);S.sections.push(curSec)}
+  syncFields();rebuildSecs();recalc();applyVars();sched();
+}
+
+function syncFields(){
+  const set=(id,v)=>{const e=$(id);if(e)e.value=v};
+  set('s-teacher',S.teacher);set('f-tno',S.testNo);set('f-cls',S.klass);
+  set('f-subj',S.subject);set('f-time',S.time);
+  set('s-fs',S.fontSize);$('s-fs-v').textContent=S.fontSize+'pt';
+  set('s-mg',S.margin*10);$('s-mg-v').textContent=S.margin.toFixed(1)+'cm';
+  $$('.dopt').forEach(o=>o.classList.toggle('on',o.dataset.d===S.divider));
+  $$('#s-slang .pill').forEach(p=>p.classList.toggle('on',p.dataset.v===S.secLang));
+}
+
+/* ═══════════════════════════════════════
+   PREVIEW RENDERER
+═══════════════════════════════════════ */
+let _pvT=null;
+function sched(d=80){clearTimeout(_pvT);_pvT=setTimeout(render,d)}
+
+function render(){
+  const vp=$('preview-vp'),ph=$('ph');
+  const has=S.sections.length||S.subject||S.klass;
+  if(!has){vp.innerHTML='';vp.appendChild(ph);ph.style.display='';return}
+  ph.style.display='none';
+
+  const setHTML=buildSet();
+  const pageHTML=buildPage(setHTML);
+
+  vp.innerHTML='';
+  const wrap=document.createElement('div');
+  wrap.className='pp-wrap';
+  wrap.style.cssText=`transform:scale(${S.zoom});transform-origin:top center;margin-bottom:${-(210*(1-S.zoom)*3.7795)+24}px`;
+  const page=document.createElement('div');
+  page.className='pp';
+  page.innerHTML=pageHTML;
+  wrap.appendChild(page);
+  vp.appendChild(wrap);
+
+  setTimeout(()=>checkFit(page.firstElementChild),120);
+}
+
+function checkFit(el){
+  if(!el)return;
+  const h=el.scrollHeight,ph=Math.round(210*3.7795);
+  const b=$('fit-badge');
+  if(h<=ph){b.className='fit-badge ok';b.textContent='✓ Fits'}
+  else if(h<=ph*1.8){b.className='fit-badge warn';b.textContent=`⚠ ${Math.round((h/ph-1)*100)}% over`}
+  else{b.className='fit-badge over';b.textContent='📄 2-page'}
+}
+
+function buildPage(setHTML){
+  const wm=S.wmData||'watermark/default.svg';
+  const divHTML=buildDiv();
+  return `<div class="qp-page">
+    <div class="qp-wm"><img src="${wm}" onerror="this.style.display='none'"/></div>
+    <div class="qp-set">${setHTML}</div>
+    ${divHTML}
+    ${S.pvMode==='both'?`<div class="qp-set">${setHTML}</div>`:'<div class="qp-set" style="opacity:.25;pointer-events:none">'+setHTML+'</div>'}
+  </div>`;
+}
+
+function buildDiv(){
+  const d=S.divider;
+  if(d==='solid')return`<div class="qp-div" style="width:.15cm;border-left:.5pt solid #bbb;"></div>`;
+  const ch=d==='dotted'?'·':d==='dashed'?'-':'✂';
+  const rows=Array(36).fill(`<div>${ch}</div>`).join('');
+  return`<div class="qp-div">${rows}</div>`;
+}
+
+function buildSet(){
+  const t=esc(S.teacher||'Teacher'),tn=bn(S.testNo),fm=S.fullMarks;
+  const cl=esc(S.klass||'—'),sb=esc(S.subject||'—'),ti=S.time||30;
+  const sbFS=S.subject.length>26?Math.max(7,S.fontSize-2)+'pt':S.fontSize+'pt';
+  const fsPt=S.fontSize+'pt';
+  let h=`<div style="text-align:center;font-family:'DM Serif Text',serif;font-size:14pt;font-weight:bold;padding-bottom:2pt">Test no. ${tn} by ${t}</div>
+  <div style="display:flex;justify-content:space-between;font-family:'DM Serif Text',serif;font-size:${fsPt};padding-bottom:3pt">
+    <span>Full Marks: ${fm}</span>
+    <span style="font-size:${sbFS}">Class: ${cl} &nbsp;|&nbsp; ${sb}</span>
+    <span>Time: ${ti} min</span>
+  </div>`;
+  if(S.inst)h+=`<div style="font-style:italic;font-size:calc(${fsPt} - 1pt);padding-bottom:2pt">${esc(S.inst)}</div>`;
+
+  S.sections.forEach((sec,idx)=>{
+    const L=sl(idx),tot=(sec.mpq||0)*(sec.questions.length||0);
+    const mf=`${bn(sec.mpq)} × ${bn(sec.questions.length)} = ${bn(tot)}`;
+    h+=`<div class="qp-sec-hdr" style="font-size:${fsPt}">বিভাগ '${L}'</div>
+    <div class="qp-sec-row" style="font-size:${fsPt}">
+      <span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}</span>
+      <span>${mf}</span>
+    </div>
+    <div style="font-size:${fsPt}">${buildQs(sec,idx)}</div>`;
+  });
+  return h;
+}
+
+function buildQs(sec,si){
+  if(!sec.questions.length)return'<span style="color:#aaa;font-size:8pt">(no questions)</span>';
+  return sec.questions.map((q,qi)=>{
+    const num=`<b>${bn(si+1)}.${bn(qi+1)})</b>`;
+    if(sec.type==='mcq'){
+      const opts=(q.options||['','','','']).slice(0,4);
+      const ml=Math.max(...opts.map(o=>o.length));
+      const ls=sec.os==='bn'?BN_O:EN_O;
+      let oph='';
+      if(ml<=13) oph=`<div class="qp-q-mcq-opts">${opts.map((o,i)=>`<span>(${ls[i]}) ${renderTok(esc(o))}</span>`).join('')}</div>`;
+      else if(ml<=24) oph=`<div class="qp-q-mcq-opts g2">${opts.map((o,i)=>`<span>(${ls[i]}) ${renderTok(esc(o))}</span>`).join('')}</div>`;
+      else oph=`<div class="qp-q-mcq-opts g1">${opts.map((o,i)=>`<span>(${ls[i]}) ${renderTok(esc(o))}</span>`).join('')}</div>`;
+      const imgH=q.img?`<img src="${q.img}" style="float:right;max-width:28%;max-height:32mm;object-fit:contain;margin-left:4pt"/>`:''
+      return`<div class="qp-q" ${q.img?'style="overflow:hidden"':''}>
+        ${imgH}
+        <div>${num} ${renderTok(esc(q.text))}</div>
+        ${oph}${buildExtH(q)}
+      </div>`;
+    }
+    return`<div class="qp-q">${num} ${renderTok(esc(q.text))}${buildExtH(q)}</div>`;
+  }).join('');
+}
+
+function buildExtH(q){
+  return (q.extra||[]).map(ex=>{
+    if(ex.type==='image')return`<div style="text-align:center;margin:2pt 0"><img src="${ex.data}" style="max-width:90%;max-height:36mm;object-fit:contain"/></div>`;
+    if(ex.type==='diagram'&&ex.png)return`<div style="text-align:center;margin:2pt 0"><img src="${ex.png}" style="max-width:90%;max-height:36mm;object-fit:contain"/></div>`;
+    if(ex.type==='table'){let t=`<table class="qp-itable">`; ex.rows.forEach(r=>{t+=`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`}); return t+'</table>';}
+    return'';
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   EXPORT — QPF
+═══════════════════════════════════════ */
+function exportQPF(){
+  let o=`// Question Paper Format v1.0\n\n##META\nTEACHER: ${S.teacher}\nTEST_NO: ${S.testNo}\nCLASS: ${S.klass}\nSUBJECT: ${S.subject}\nFULL_MARKS: ${S.fullMarks}\nTIME: ${S.time}\nFONT_SIZE: ${S.fontSize}\nMARGIN: ${S.margin}\nDIVIDER: ${S.divider}\nSEC_LANG: ${S.secLang}\nWATERMARK: default\n\n`;
+  S.sections.forEach((sec,idx)=>{
+    o+=`##SECTION_${SEC_QPF[idx]||'S'+(idx+1)}\nHEADING: ${sec.heading}\nTYPE: ${sec.type}\nMARKS_PER_Q: ${sec.mpq}\nOPT_STYLE: ${sec.os}\n\n`;
+    sec.questions.forEach(q=>{
+      o+=`Q: ${q.text}\n`;
+      if(sec.type==='mcq') ['OP_K','OP_KH','OP_G','OP_GH'].forEach((k,i)=>o+=`${k}: ${q.options[i]||''}\n`);
+      (q.extra||[]).forEach(ex=>{
+        if(ex.type==='table'){o+=`TABLE_START: ${ex.rows.length}x${ex.rows[0]?.length||0}\n`;ex.rows.forEach(r=>o+=r.join(' | ')+'\n');o+='TABLE_END\n'}
+        if(ex.type==='diagram')o+=`DIAGRAM_PNG: [embedded]\n`;
+        if(ex.type==='image')o+=`Q_IMAGE_BELOW: [embedded]\n`;
+      });
+      o+='\n';
+    });
+  });
+  o+='##END\n';
+  dl(new Blob([o],{type:'text/plain;charset=utf-8'}),exFname('qpf'));
+  toast('QPF saved!','success');
+}
+
+/* ═══════════════════════════════════════
+   EXPORT — ODT
+═══════════════════════════════════════ */
+async function exportODT(){
+  if(typeof JSZip==='undefined'){toast('JSZip loading, try again.','warn');return}
+  toast('Building ODT…','info',5000);
+  const z=new JSZip();
+  z.file('mimetype','application/vnd.oasis.opendocument.text');
+  z.folder('META-INF').file('manifest.xml',`<?xml version="1.0"?><manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"><manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/></manifest:manifest>`);
+  z.file('styles.xml',`<?xml version="1.0"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:automatic-styles><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="29.7cm" fo:page-height="21cm" style:print-orientation="landscape" fo:margin-top="0.4cm" fo:margin-bottom="0.4cm" fo:margin-left="0.4cm" fo:margin-right="0.4cm"/></style:page-layout></office:automatic-styles><office:master-styles><style:master-page style:name="Standard" style:page-layout-name="pm1"/></office:master-styles></office:document-styles>`);
+  const xesc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let body=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Title">Test no. ${S.testNo} by ${xesc(S.teacher)}</text:p>`;
+  body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Full Marks: ${S.fullMarks} | Class: ${xesc(S.klass)} | Subject: ${xesc(S.subject)} | Time: ${S.time} min</text:p>`;
+  S.sections.forEach((sec,idx)=>{
+    body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"><text:span text:style-name="Bold">বিভাগ '${sl(idx)}' — ${xesc(sec.heading)} [${sec.mpq}×${sec.questions.length}=${sec.mpq*sec.questions.length}]</text:span></text:p>`;
+    sec.questions.forEach((q,qi)=>{
+      body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${bn(idx+1)}.${bn(qi+1)}) ${xesc(q.text)}</text:p>`;
+      if(sec.type==='mcq'){const ls=sec.os==='bn'?BN_O:EN_O;body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${q.options.map((o,i)=>`(${ls[i]}) ${xesc(o)}`).join('   ')}</text:p>`}
+    });
+  });
+  z.file('content.xml',`<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:automatic-styles><style:style style:name="Title" style:family="paragraph"><style:text-properties fo:font-size="14pt" fo:font-weight="bold"/><style:paragraph-properties fo:text-align="center"/></style:style><style:style style:name="Bold" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style></office:automatic-styles><office:body><office:text>${body}</office:text></office:body></office:document-content>`);
+  const blob=await z.generateAsync({type:'blob',mimeType:'application/vnd.oasis.opendocument.text'});
+  dl(blob,exFname('odt'));
+  toast('ODT exported! Open with LibreOffice.','success');
+}
+
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+
+/* ═══════════════════════════════════════
+   INFO PANEL
+═══════════════════════════════════════ */
+$('info-btn').onclick=()=>{$('info').classList.add('show');$('ov').classList.add('show')};
+$('info-close').onclick=$('ov').onclick=()=>{$('info').classList.remove('show');$('ov').classList.remove('show')};
+
+/* ═══════════════════════════════════════
+   CARD COLLAPSE (global)
+═══════════════════════════════════════ */
+document.addEventListener('click',e=>{
+  const h=e.target.closest('.card-hdr[data-tgt]');
+  if(!h)return;
+  const b=$(h.dataset.tgt);if(!b)return;
+  const o=!b.classList.contains('hide');
+  b.classList.toggle('hide',o);h.classList.toggle('open',!o);
+});
+
+/* ═══════════════════════════════════════
+   EXPORTS WIRING
+═══════════════════════════════════════ */
+$('ex-pdf').onclick=()=>{render();setTimeout(()=>window.print(),300)};
+$('ex-qpf').onclick=exportQPF;
+$('ex-odt').onclick=exportODT;
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+function init(){
+  applyVars();
+  initStrip();initExamInfo();initPaste();initZoom();
+
+  $('add-sec').onclick=()=>{
+    if(S.sections.length>=10){toast('Max 10 sections.','warn');return}
+    const i=S.sections.length;
+    S.sections.push({id:uid(),heading:HDGS[Math.min(i,3)],type:['mcq','short','descriptive','long'][Math.min(i,3)],mpq:[1,1,2,3][Math.min(i,3)],os:'bn',questions:[]});
+    rebuildSecs();sched();
+  };
+
+  // Default first section
+  S.sections.push({id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]});
+  rebuildSecs();
+
+  setTimeout(fitZoom,200);
+  sched(400);
+  console.log('%cপ্রশ্নপত্র Maker ready ✓','color:#818cf8;font-size:14px;font-weight:bold');
+}
+
+document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
+</script>
+</body>
+</html>
