@@ -667,7 +667,8 @@ CRITICAL RULES:
 6. Replace any standalone double comma (") acting as a ditto mark with the exact word(s) it refers to from the line immediately above it. Do not leave the double comma in the final output.
 ​7. Transcribe long horizontal strokes or visual variations like "- ____" acting as fill-in-the-blanks as a long uniform underscore string ("________"). Always append a "।" symbol at the end of these fill-in-the-blank questions.
 ​8. For True/False questions (containing "সত্য", "মিথ্যা", "True", "False", or "T/F"): Write the full sentence of the question first, add a full stop "." (for English medium) or "।" (for Bengali medium), and then append "(সত্য/মিথ্যা)" or "(T/F)" depending on the medium.
-9. Auto-generate the section HEADING based on the detected TYPE and MARKS_PER_Q parameters using the following logic:
+9. ZERO HALLUCINATION & NO AUTOCORRECT: Do not guess, rephrase, or autocorrect words based on domain knowledge. Transcribe EXACTLY what is visibly written on the page character-by-character (e.g., do not substitute "উপাদানের" with domain-specific guesses). If any word or character is illegible, ambiguous, or unreadable, DO NOT make assumptions or guess its meaning. Instead, explicitly ask me for clarification by pointing out the exact location of the unreadable text, and I will provide the correct word. Or you can put this "<§>" in the place of that unreadable something.
+10. Auto-generate the section HEADING based on the detected TYPE and MARKS_PER_Q parameters using the following logic:
 If TYPE is short & MARKS_PER_Q is 1: HEADING: সংক্ষিপ্ত উত্তর দাও:
 If TYPE is short & MARKS_PER_Q is 2: HEADING: নীচের প্রশ্নগুলির উত্তর দাও:
 If TYPE is mcq & MARKS_PER_Q is 1: HEADING: সঠিক উত্তরটি নির্বাচন করো:
