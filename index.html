@@ -389,6 +389,13 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 <!-- ═══ SETTINGS STRIP ═══ -->
 <div id="strip">
   <div class="sg">
+    <span class="slabel">Medium</span>
+    <div class="pill-group" id="s-medium">
+      <div class="pill on" data-v="bn">বাংলা</div>
+      <div class="pill" data-v="en">English</div>
+    </div>
+  </div>
+  <div class="sg">
     <span class="slabel">Margin</span>
     <input type="range" id="s-mg" min="3" max="18" value="10" step="1"/>
     <span class="sval" id="s-mg-v">1.0cm</span>
@@ -509,7 +516,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
       <!-- Add Section -->
       <button class="btn btn-accent btn-full" id="add-sec">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Section (বিভাগ)
+        Add Section (বিভাগ / Section)
       </button>
 
     </div><!-- /sidebar-scroll -->
@@ -573,46 +580,33 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
   <div class="info-body">
     <div>
       <div class="info-sec-ttl">What is this</div>
-      <div class="info-item"><div class="iico b">📝</div><p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates Bengali exam papers that print two identical copies on one A4 landscape sheet. Cut the dotted centre line — two students each get one set.</p></div>
+      <div class="info-item"><div class="iico b">📝</div><p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates academic exam papers that print two identical copies on one A4 landscape sheet. Cut the dotted centre line — two students each get one set.</p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">🧮 Math & Formatting Cheat Sheet</div>
+      <div class="info-item"><div class="iico a">x²</div><p class="info-p" style="margin-bottom:0;"><strong>Subscript:</strong> <code>[SUB:2]</code> → H<sub>2</sub>O<br/><strong>Superscript:</strong> <code>[SUP:2]</code> → x<sup>2</sup></p></div>
+      <div class="info-item"><div class="iico b">⚗</div><p class="info-p" style="margin-bottom:0;"><strong>Chemistry:</strong> <code>[CHEM:H2SO4]</code> → <i>H<sub>2</sub>SO<sub>4</sub></i> (Auto-formats numbers)</p></div>
+      <div class="info-item"><div class="iico p">∑</div><p class="info-p" style="margin-bottom:0;"><strong>Complex Math (KaTeX):</strong> <code>[EQ: \frac{1}{2}]</code> → Automatically renders fractions, roots, integrations, etc.</p></div>
     </div>
     
     <div>
       <div class="info-sec-ttl">🤖 AI OCR Prompt</div>
-      <div class="info-item"><div class="iico p">✨</div><p class="info-p" style="margin-bottom:0;">Use this specific prompt with an AI assistant (like Gemini or ChatGPT) to accurately digitize printed question papers into the QPF format.</p></div>
+      <div class="info-item"><div class="iico p">✨</div><p class="info-p" style="margin-bottom:0;">Use this heavily constrained prompt with an AI assistant (like Gemini or ChatGPT) to accurately digitize printed question papers into the QPF format.</p></div>
       <button class="btn btn-accent btn-full" id="copy-prompt-btn" style="margin-top: 8px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        Copy AI Prompt
+        Copy Optimized AI Prompt
       </button>
     </div>
 
     <div>
       <div class="info-sec-ttl">🔒 100% Offline — No Server</div>
       <div class="info-item"><div class="iico g">🛡</div><p class="info-p"><strong>Nothing leaves your device.</strong> No server, no login, no analytics. Runs entirely in your browser RAM. Works offline after first load.</p></div>
-      <div class="info-item"><div class="iico a">💾</div><p class="info-p"><strong>RAM usage:</strong> Typically 5–15MB per paper. Images add more. No concern on any modern device.</p></div>
     </div>
-    <div>
-      <div class="info-sec-ttl">📦 Libraries Used</div>
-      <div class="info-item"><div class="iico p">⚙</div><p class="info-p">
-        <span class="lib-tag">JSZip 3.10</span><span class="lib-tag">Google Fonts (CDN)</span><span class="lib-tag">Tiro Bangla (local)</span>
-        <br/><br/><strong>JSZip</strong> is only used for ODT export. PDF uses the browser's own print engine. Zero other dependencies.
-      </p></div>
-    </div>
-    <div>
-      <div class="info-sec-ttl">🤖 OCR Flow (Photo → Paper)</div>
-      <div class="step"><div class="sn">1</div><p class="info-p">Take a photo of a printed question paper. Open Gemini or ChatGPT.</p></div>
-      <div class="step"><div class="sn">2</div><p class="info-p">Upload the photo. Copy and paste the <strong>AI OCR Prompt</strong> provided above.</p></div>
-      <div class="step"><div class="sn">3</div><p class="info-p">Copy the AI output. Click <strong>"Paste QPF"</strong> in the header, paste, click <strong>Apply & Fill Form</strong>.</p></div>
-      <div class="step"><div class="sn">4</div><p class="info-p">Review the form, then click <strong>Print / PDF</strong>. Set A4, Landscape, No margins in the print dialog.</p></div>
-    </div>
+    
     <div>
       <div class="info-sec-ttl">🖨 Print Tips</div>
       <div class="info-item"><div class="iico a">💡</div><p class="info-p">In Chrome print dialog: <strong>A4 · Landscape · Margins: None · Background graphics: ON</strong>. Use Chrome or Edge for best results.<br/><br/>For 2-page papers: print both sheets, place side by side, then cut each.</p></div>
-    </div>
-    <div>
-      <div class="info-sec-ttl">⚡ Tips</div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Always export a <strong>.qpf backup</strong> after finishing — restore it anytime.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">The <strong>fit badge</strong> (top right) warns if content overflows one page.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Drag question items up/down to reorder without retyping.</p></div>
     </div>
   </div>
 </div>
@@ -651,7 +645,7 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 
 <script>
 /* ═══════════════════════════════════════
-   CONSTANTS
+   CONSTANTS & UTILS
 ═══════════════════════════════════════ */
 const BN_L=['ক','খ','গ','ঘ','ঙ','চ','ছ','জ'];
 const EN_L=['A','B','C','D','E','F','G','H'];
@@ -659,23 +653,25 @@ const BN_O=['ক','খ','গ','ঘ'];
 const EN_O=['a','b','c','d'];
 const BN_D=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
 const SYM={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',pi:'π',sigma:'σ',omega:'Ω',ohm:'Ω',degree:'°',infinity:'∞',arrow:'→',darrow:'⇌',times:'×',div:'÷',approx:'≈',pm:'±',neq:'≠',leq:'≤',geq:'≥',sqrt:'√',micro:'μ'};
-const HDGS=['সঠিক উত্তরটি নির্বাচন করো:','সংক্ষিপ্ত উত্তর দাও:','নীচের প্রশ্নগুলির উত্তর দাও:','দীর্ঘ উত্তরধর্মী প্রশ্ন:'];
 const TYPES=[{v:'mcq',l:'MCQ'},{v:'short',l:'Short Answer'},{v:'descriptive',l:'Descriptive'},{v:'long',l:'Long Answer'}];
 const SEC_QPF=['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA'];
 
-const OCR_PROMPT = `You are an expert academic digitization assistant. Your task is to extract content from the provided exam paper image and strictly format it into the custom Question Paper Format (QPF) detailed below.
+const OCR_PROMPT = `You are a data-extraction algorithm processing an exam paper. Extract the text and format it STRICTLY according to the custom schema below.
 
-CRITICAL DIRECTIVES:
-1. Maintain absolute fidelity to the source text, particularly Bengali Unicode characters.
-2. Output ONLY the raw QPF text. Do not wrap the output in markdown code blocks (e.g., \`\`\`), and do not include conversational filler or explanations.
+CRITICAL RULES:
+1. Output raw plain text ONLY. Do NOT wrap your response in markdown code blocks (e.g., \`\`\`).
+2. Do NOT add conversational filler, preambles, or explanations.
+3. Preserve all original Bengali or English characters exactly.
+4. Do NOT extract or calculate full marks.
 
-FORMATTING RULES:
-1. Start with the ##META block. Extract the available data or leave the value blank if absent:
-TOP_TITLE: [Extract main header, e.g., Test no. 1 by Shibanjan Bera]
-CLASS: [Extract class]
-SUBJECT: [Extract subject]
-FULL_MARKS: [Extract marks]
-TIME: [Extract time in minutes]
+SCHEMA TO FOLLOW:
+
+##META
+TOP_TITLE: [Extract the main header/title text]
+CLASS: [Extract the class or grade]
+SUBJECT: [Extract the subject]
+TIME: [Extract the time duration in minutes, numbers only]
+MEDIUM: bn
 FONT_SIZE: 11
 MARGIN: 1.0
 DIVIDER: dotted
@@ -684,24 +680,29 @@ WATERMARK: default
 WM_SIZE: 65
 WM_OPACITY: 7
 
-2. For each distinct section, create a block starting with ##SECTION_[ID] (e.g., ##SECTION_KA).
-HEADING: [Exact Bengali instruction]
-TYPE: [mcq | short | descriptive | long]
-MARKS_PER_Q: [Numeric value of points per question]
-OPT_STYLE: [en | bn]
+##SECTION_A
+HEADING: [Extract the exact section instruction/heading]
+TYPE: [Choose one: mcq | short | descriptive | long]
+MARKS_PER_Q: [Numeric value of marks for one question in this section]
+OPT_STYLE: [Choose one: en | bn]
 
-3. For each question, begin a new line with the prefix Q: .
-- For mathematical formulas and equations, you MUST enclose the valid LaTeX/KaTeX string inside our custom token: [EQ: \\frac{a}{b} = c]
+Q: [Write the question text here]
+OP_K: [If TYPE is mcq, write option 1 here]
+OP_KH: [If TYPE is mcq, write option 2 here]
+OP_G: [If TYPE is mcq, write option 3 here]
+OP_GH: [If TYPE is mcq, write option 4 here]
+
+[Continue repeating the Q: block for all questions in this section]
+
+[Create a new ##SECTION_ block for the next section]
+
+##END
+
+FORMATTING INSTRUCTIONS FOR QUESTIONS:
+- For mathematical equations, wrap the valid LaTeX string in this token: [EQ: \\frac{a}{b} = c]
 - For chemical formulas, use: [CHEM: H2SO4]
 - For isolated subscripts or superscripts, use [SUB:x] or [SUP:x].
-
-4. If the section TYPE is mcq, follow the Q:  line immediately with four option lines:
-OP_K: [Text for option 1]
-OP_KH: [Text for option 2]
-OP_G: [Text for option 3]
-OP_GH: [Text for option 4]
-
-5. Conclude the entire document with exactly: ##END`;
+- If a question contains a table, write TABLE_START:rows×cols on a new line, then write each row separating cells with a pipe (|), then write TABLE_END on a new line.`;
 
 /* ═══════════════════════════════════════
    STATE
@@ -710,20 +711,27 @@ const S={
   topTitle:'Test no. 1 by Shibanjan Bera',
   klass:'',subject:'',time:30,inst:'',fullMarks:0,
   margin:1.0,fontSize:11,divider:'dotted',secLang:'bn',
+  medium:'bn', 
   wm:'default',wmData:null,wmSize:65,wmOpacity:7,
   sections:[],zoom:.55,pvMode:'one'
 };
 
-/* ═══════════════════════════════════════
-   UTILS
-═══════════════════════════════════════ */
 const $=id=>document.getElementById(id);
 const $$=s=>document.querySelectorAll(s);
 const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const bn=n=>String(n).split('').map(c=>BN_D[+c]??c).join('');
-const sl=i=>S.secLang==='bn'?(BN_L[i]??String(i+1)):(EN_L[i]??String(i+1));
-const ol=(i,st)=>st==='bn'?(BN_O[i]??'?'):(EN_O[i]??'?');
+
+// Centralized formatting logic reflecting the selected academic medium
+const bn = n => S.medium === 'en' ? String(n) : String(n).split('').map(c=>BN_D[+c]??c).join('');
+const sl = i => S.secLang==='bn'?(BN_L[i]??String(i+1)):(EN_L[i]??String(i+1));
+const ol = (i,st)=>st==='bn'?(BN_O[i]??'?'):(EN_O[i]??'?');
+const getSecPrefix = () => S.medium === 'en' ? 'Section' : 'বিভাগ';
+
+// Dynamic contextual headings
+const getDefHdgs = () => S.medium === 'en' ? 
+  ['Choose the correct option:','Answer briefly:','Answer the following questions:','Long answer type questions:'] :
+  ['সঠিক উত্তরটি নির্বাচন করো:','সংক্ষিপ্ত উত্তর দাও:','নীচের প্রশ্নগুলির উত্তর দাও:','দীর্ঘ উত্তরধর্মী প্রশ্ন:'];
+
 function cv(n,v){document.documentElement.style.setProperty(n,v)}
 function applyVars(){cv('--p-margin',S.margin+'cm');cv('--p-fsize',S.fontSize+'pt')}
 
@@ -745,8 +753,8 @@ function renderTok(t){
 }
 
 function exFname(ext){
-  const c=(S.klass||'Test').replace(/[^\w\u0980-\u09FF ]/g,'').trim();
-  return `${c} Test.${ext}`;
+  const c=(S.topTitle||'Question_Paper').replace(/[^\w\u0980-\u09FF ]/g,'').trim();
+  return `${c}.${ext}`;
 }
 
 /* ═══════════════════════════════════════
@@ -799,6 +807,14 @@ function recalc(){
    SETTINGS STRIP
 ═══════════════════════════════════════ */
 function initStrip(){
+  $$('#s-medium .pill').forEach(p=>p.onclick=()=>{
+    $$('#s-medium .pill').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');
+    S.medium=p.dataset.v;
+    rebuildSecs();
+    sched();
+  });
+
   $('s-mg').oninput=e=>{S.margin=parseFloat((e.target.value/10).toFixed(1));$('s-mg-v').textContent=S.margin.toFixed(1)+'cm';applyVars();sched()};
   $('s-fs').oninput=e=>{S.fontSize=parseFloat(e.target.value);$('s-fs-v').textContent=S.fontSize+'pt';applyVars();sched()};
   $$('.dopt').forEach(o=>o.onclick=()=>{$$('.dopt').forEach(x=>x.classList.remove('on'));o.classList.add('on');S.divider=o.dataset.d;sched()});
@@ -897,14 +913,16 @@ function mkSecCard(sec,idx){
   const letter=sl(idx);
   const total=(sec.mpq||0)*(sec.questions.length||0);
   const card=document.createElement('div');
+  const currentHdgs = getDefHdgs();
+  
   card.className='card sc-card';
   card.dataset.si=idx;
 
   card.innerHTML=`
     <div class="card-hdr open" id="hdr${sec.id}">
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      <span class="card-ttl">বিভাগ '${letter}' · ${TYPES.find(t=>t.v===sec.type)?.l||sec.type}</span>
-      <span class="chip">${sec.mpq}×${sec.questions.length}=${total}</span>
+      <span class="card-ttl">${getSecPrefix()} '${letter}' · ${TYPES.find(t=>t.v===sec.type)?.l||sec.type}</span>
+      <span class="chip">${bn(sec.mpq)}×${bn(sec.questions.length)}=${bn(total)}</span>
       <button class="icon-btn btn-sm del-sec" title="Delete">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
       </button>
@@ -914,7 +932,7 @@ function mkSecCard(sec,idx){
         <div class="fgrp">
           <label class="flabel">Heading</label>
           <select class="sec-hdg">
-            ${HDGS.map(h=>`<option value="${esc(h)}" ${h===sec.heading?'selected':''}>${h.slice(0,22)}</option>`).join('')}
+            ${currentHdgs.map(h=>`<option value="${esc(h)}" ${h===sec.heading?'selected':''}>${h.slice(0,22)}</option>`).join('')}
             <option value="__c">Custom…</option>
           </select>
         </div>
@@ -941,9 +959,19 @@ function mkSecCard(sec,idx){
       <div class="q-list" id="ql${sec.id}"></div>
       <button class="btn btn-ghost btn-sm btn-full add-q">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add question in বিভাগ '${letter}'
+        Add question in ${getSecPrefix()} '${letter}'
       </button>
     </div>`;
+
+  // Restore custom heading if it wasn't natively mapped
+  const hdgSelect = card.querySelector('.sec-hdg');
+  if (!currentHdgs.includes(sec.heading)) {
+    const opt = document.createElement('option');
+    opt.value = sec.heading;
+    opt.textContent = sec.heading.slice(0,22);
+    opt.selected = true;
+    hdgSelect.insertBefore(opt, hdgSelect.lastElementChild);
+  }
 
   // Collapse
   card.querySelector('.card-hdr').onclick=e=>{
@@ -960,9 +988,8 @@ function mkSecCard(sec,idx){
     rebuildSecs();sched();
   };
   // Heading
-  const hs=card.querySelector('.sec-hdg');
-  hs.onchange=e=>{
-    if(e.target.value==='__c'){const c=prompt('Custom heading:','');if(c)sec.heading=c;else{hs.value=sec.heading;return;}}
+  hdgSelect.onchange=e=>{
+    if(e.target.value==='__c'){const c=prompt('Custom heading:','');if(c)sec.heading=c;else{hdgSelect.value=sec.heading;return;}}
     else sec.heading=e.target.value;
     rebuildSecs();sched();
   };
@@ -1246,7 +1273,7 @@ function parseQPF(text){
         if(curQ){ curSec.questions.push(curQ); curQ=null; }
         tempSections.push(curSec);
       }
-      curSec = { id:uid(), heading:HDGS[0], type:'mcq', mpq:1, os:'bn', questions:[] };
+      curSec = { id:uid(), heading:getDefHdgs()[0], type:'mcq', mpq:1, os:'bn', questions:[] };
       mode = 'sec';
       continue;
     }
@@ -1255,12 +1282,14 @@ function parseQPF(text){
       const i = line.indexOf(':'); if(i < 0) continue;
       const k = line.slice(0,i).trim().toUpperCase(), v = line.slice(i+1).trim();
       
+      // Removed FULL_MARKS requirement; application handles dynamic recalculation
       if(k === 'TOP_TITLE') tempTopTitle = v;
       else if(k === 'TEACHER') tempTeacher = v;
       else if(k === 'TEST_NO') tempTestNo = parseInt(v) || 1;
       else if(k === 'CLASS') S.klass = v;
       else if(k === 'SUBJECT') S.subject = v;
       else if(k === 'TIME') S.time = parseInt(v) || 30;
+      else if(k === 'MEDIUM') S.medium = ['en','bn'].includes(v.toLowerCase()) ? v.toLowerCase() : 'bn';
       else if(k === 'FONT_SIZE') S.fontSize = parseFloat(v) || 11;
       else if(k === 'MARGIN') S.margin = parseFloat(v) || 1;
       else if(k === 'DIVIDER') S.divider = v;
@@ -1272,13 +1301,13 @@ function parseQPF(text){
       const upLine = line.toUpperCase();
       
       // Use resilient substring extractions to gracefully handle blank property values
-      if(upLine.startsWith('HEADING:')){ curSec.heading = line.substring(8).trim(); continue; }
-      if(upLine.startsWith('TYPE:')){ const t = line.substring(5).trim().toLowerCase(); curSec.type = ['mcq','short','descriptive','long'].includes(t) ? t : 'short'; continue; }
-      if(upLine.startsWith('MARKS_PER_Q:')){ curSec.mpq = parseFloat(line.substring(12).trim()) || 1; continue; }
-      if(upLine.startsWith('OPT_STYLE:')){ curSec.os = line.substring(10).trim().toLowerCase() || 'bn'; continue; }
+      if(upLine.startsWith('HEADING:')){ curSec.heading = line.substring(8).replace(/\*\*/g, '').trim(); continue; }
+      if(upLine.startsWith('TYPE:')){ const t = line.substring(5).replace(/\*\*/g, '').trim().toLowerCase(); curSec.type = ['mcq','short','descriptive','long'].includes(t) ? t : 'short'; continue; }
+      if(upLine.startsWith('MARKS_PER_Q:')){ curSec.mpq = parseFloat(line.substring(12).replace(/\*\*/g, '').trim()) || 1; continue; }
+      if(upLine.startsWith('OPT_STYLE:')){ curSec.os = line.substring(10).replace(/\*\*/g, '').trim().toLowerCase() || 'bn'; continue; }
       
-      // Employ lenient regex matching to capture questions even if inadvertently numbered by AI
-      const qMatch = line.match(/^(?:\d+\.\s*)?Q:\s*(.*)/i);
+      // Employ lenient regex matching to capture questions even if inadvertently numbered/bolded by AI
+      const qMatch = line.match(/^(?:(?:\d+[\.\)]\s*)|(?:[\-\*]\s*))?(?:\*\*)?Q:(?:\*\*)?\s*(.*)/i);
       if(qMatch){
         if(curQ) curSec.questions.push(curQ);
         curQ = { id:uid(), text:qMatch[1].trim(), options:['','','',''], img:null, extra:[] };
@@ -1286,12 +1315,12 @@ function parseQPF(text){
       }
       
       if(curQ){
-        if(upLine.startsWith('OP_K:')){ curQ.options[0] = line.substring(5).trim(); continue; }
-        if(upLine.startsWith('OP_KH:')){ curQ.options[1] = line.substring(6).trim(); continue; }
-        if(upLine.startsWith('OP_G:')){ curQ.options[2] = line.substring(5).trim(); continue; }
-        if(upLine.startsWith('OP_GH:')){ curQ.options[3] = line.substring(6).trim(); continue; }
+        if(upLine.startsWith('OP_K:')){ curQ.options[0] = line.substring(5).replace(/^\*\*(.*?)\*\*$/, '$1').trim(); continue; }
+        if(upLine.startsWith('OP_KH:')){ curQ.options[1] = line.substring(6).replace(/^\*\*(.*?)\*\*$/, '$1').trim(); continue; }
+        if(upLine.startsWith('OP_G:')){ curQ.options[2] = line.substring(5).replace(/^\*\*(.*?)\*\*$/, '$1').trim(); continue; }
+        if(upLine.startsWith('OP_GH:')){ curQ.options[3] = line.substring(6).replace(/^\*\*(.*?)\*\*$/, '$1').trim(); continue; }
         if(upLine.startsWith('TABLE_START:')){
-          const d = line.substring(12).trim().split('x');
+          const d = line.substring(12).replace(/\*\*/g, '').trim().split('x');
           const ex = { type:'table', rows:Array.from({length:parseInt(d[0])||2},()=>Array(parseInt(d[1])||2).fill('')) };
           curQ.extra.push(ex); continue;
         }
@@ -1342,6 +1371,7 @@ function syncFields(){
   
   $$('.dopt').forEach(o=>o.classList.toggle('on',o.dataset.d===S.divider));
   $$('#s-slang .pill').forEach(p=>p.classList.toggle('on',p.dataset.v===S.secLang));
+  $$('#s-medium .pill').forEach(p=>p.classList.toggle('on',p.dataset.v===S.medium));
   
   const wmEl = $('s-wm');
   if(S.wm === 'default' || S.wm === 'none') wmEl.value = S.wm;
@@ -1418,22 +1448,25 @@ function buildDiv(){
 }
 
 function buildSet(){
-  const fm=S.fullMarks;
-  const cl=esc(S.klass||'—'),sb=esc(S.subject||'—'),ti=S.time||30;
+  const fm=bn(S.fullMarks);
+  const cl=esc(S.klass||'—'),sb=esc(S.subject||'—'),ti=bn(S.time||30);
   const sbFS=S.subject.length>26?Math.max(7,S.fontSize-2)+'pt':S.fontSize+'pt';
   const fsPt=S.fontSize+'pt';
+  
   let h=`<div style="text-align:center;font-family:'DM Serif Text',serif;font-size:14pt;font-weight:bold;padding-bottom:2pt">${esc(S.topTitle)}</div>
   <div style="display:flex;justify-content:space-between;font-family:'DM Serif Text',serif;font-size:${fsPt};padding-bottom:3pt">
     <span>Full Marks: ${fm}</span>
     <span style="font-size:${sbFS}">Class: ${cl} &nbsp;|&nbsp; ${sb}</span>
     <span>Time: ${ti} min</span>
   </div>`;
-  if(S.inst)h+=`<div style="font-style:italic;font-size:calc(${fsPt} - 1pt);padding-bottom:2pt">${esc(S.inst)}</div>`;
+  
+  // Anchoring the instructions securely in the vertical midline of the document header
+  if(S.inst)h+=`<div style="text-align:center;margin:0 auto;font-style:italic;font-size:calc(${fsPt} - 1pt);padding-bottom:4pt">${esc(S.inst)}</div>`;
 
   S.sections.forEach((sec,idx)=>{
     const L=sl(idx),tot=(sec.mpq||0)*(sec.questions.length||0);
     const mf=`${bn(sec.mpq)} × ${bn(sec.questions.length)} = ${bn(tot)}`;
-    h+=`<div class="qp-sec-hdr" style="font-size:${fsPt}">বিভাগ '${L}'</div>
+    h+=`<div class="qp-sec-hdr" style="font-size:${fsPt}">${getSecPrefix()} '${L}'</div>
     <div class="qp-sec-row" style="font-size:${fsPt}">
       <span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}</span>
       <span>${mf}</span>
@@ -1479,7 +1512,7 @@ function buildExtH(q){
    EXPORT — QPF
 ═══════════════════════════════════════ */
 function exportQPF(){
-  let o=`// Question Paper Format v1.0\n\n##META\nTOP_TITLE: ${S.topTitle}\nCLASS: ${S.klass}\nSUBJECT: ${S.subject}\nFULL_MARKS: ${S.fullMarks}\nTIME: ${S.time}\nFONT_SIZE: ${S.fontSize}\nMARGIN: ${S.margin}\nDIVIDER: ${S.divider}\nSEC_LANG: ${S.secLang}\nWATERMARK: ${S.wm}\nWM_SIZE: ${S.wmSize}\nWM_OPACITY: ${S.wmOpacity}\n\n`;
+  let o=`// Question Paper Format v1.0\n\n##META\nTOP_TITLE: ${S.topTitle}\nCLASS: ${S.klass}\nSUBJECT: ${S.subject}\nTIME: ${S.time}\nMEDIUM: ${S.medium}\nFONT_SIZE: ${S.fontSize}\nMARGIN: ${S.margin}\nDIVIDER: ${S.divider}\nSEC_LANG: ${S.secLang}\nWATERMARK: ${S.wm}\nWM_SIZE: ${S.wmSize}\nWM_OPACITY: ${S.wmOpacity}\n\n`;
   S.sections.forEach((sec,idx)=>{
     o+=`##SECTION_${SEC_QPF[idx]||'S'+(idx+1)}\nHEADING: ${sec.heading}\nTYPE: ${sec.type}\nMARKS_PER_Q: ${sec.mpq}\nOPT_STYLE: ${sec.os}\n\n`;
     sec.questions.forEach(q=>{
@@ -1528,10 +1561,14 @@ async function exportODT(){
     .replace(/\[EQ:([^\]]+)\]/g,'<text:span text:style-name="Italic">$1</text:span>');
 
   let body=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Title">${rTokODT(xesc(S.topTitle))}</text:p>`;
-  body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="HeaderData">Full Marks: ${S.fullMarks} | Class: ${xesc(S.klass)} | Subject: ${xesc(S.subject)} | Time: ${S.time} min</text:p>`;
+  body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="HeaderData">Full Marks: ${bn(S.fullMarks)} | Class: ${xesc(S.klass)} | Subject: ${xesc(S.subject)} | Time: ${bn(S.time)} min</text:p>`;
   
+  if(S.inst){
+    body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:style-name="Instruction">${xesc(S.inst)}</text:p>`;
+  }
+
   S.sections.forEach((sec,idx)=>{
-    body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"><text:span text:style-name="Bold">বিভাগ '${sl(idx)}' — ${xesc(sec.heading)} [${sec.mpq}×${sec.questions.length}=${sec.mpq*sec.questions.length}]</text:span></text:p>`;
+    body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"><text:span text:style-name="Bold">${getSecPrefix()} '${sl(idx)}' — ${xesc(sec.heading)} [${bn(sec.mpq)}×${bn(sec.questions.length)}=${bn(sec.mpq*sec.questions.length)}]</text:span></text:p>`;
     sec.questions.forEach((q,qi)=>{
       body+=`<text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${bn(idx+1)}.${bn(qi+1)}) ${rTokODT(xesc(q.text))}</text:p>`;
       
@@ -1562,7 +1599,8 @@ async function exportODT(){
     <office:automatic-styles>
       <style:style style:name="Standard" style:family="paragraph"><style:text-properties fo:font-size="${S.fontSize}pt"/></style:style>
       <style:style style:name="Title" style:family="paragraph"><style:text-properties fo:font-size="14pt" fo:font-weight="bold"/><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.2cm"/></style:style>
-      <style:style style:name="HeaderData" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.4cm"/></style:style>
+      <style:style style:name="HeaderData" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.2cm"/></style:style>
+      <style:style style:name="Instruction" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.4cm"/><style:text-properties fo:font-style="italic"/></style:style>
       <style:style style:name="Bold" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style>
       
       <style:style style:name="MCQOpts" style:family="paragraph">
@@ -1668,12 +1706,12 @@ function init(){
   $('add-sec').onclick=()=>{
     if(S.sections.length>=10){toast('Max 10 sections.','warn');return}
     const i=S.sections.length;
-    S.sections.push({id:uid(),heading:HDGS[Math.min(i,3)],type:['mcq','short','descriptive','long'][Math.min(i,3)],mpq:[1,1,2,3][Math.min(i,3)],os:'bn',questions:[]});
+    S.sections.push({id:uid(),heading:getDefHdgs()[Math.min(i,3)],type:['mcq','short','descriptive','long'][Math.min(i,3)],mpq:[1,1,2,3][Math.min(i,3)],os:'bn',questions:[]});
     rebuildSecs();sched();
   };
 
   // Default first section
-  S.sections.push({id:uid(),heading:HDGS[0],type:'mcq',mpq:1,os:'bn',questions:[]});
+  S.sections.push({id:uid(),heading:getDefHdgs()[0],type:'mcq',mpq:1,os:'bn',questions:[]});
   rebuildSecs();
 
   setTimeout(fitZoom,200);
