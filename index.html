@@ -1003,67 +1003,68 @@ select {
 <div id="info" role="dialog" aria-modal="true" aria-label="About and how to use">
   <div class="info-hdr">
     <span style="font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--t1)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> About &amp; How to Use
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Beginner's Guide
     </span>
     <button class="icon-btn" id="info-close" aria-label="Close">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <div class="info-body">
+    
     <div>
-      <div class="info-sec-ttl">What is this</div>
-      <div class="info-item">
-        <div class="iico b">📝</div>
-        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with a two-set A4 landscape print layout. This website allows teachers and educators to easily generate beautifully formatted, two-column question papers for exams. You can manually type questions or use AI (like Gemini or ChatGPT) to automatically extract questions from photos of old papers or rough notes. Everything runs locally.</p>
-      </div>
+      <div class="info-sec-ttl">1. 📝 Setting Up Details</div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Start on the left by filling out your <strong>Paper Title, Class, Time,</strong> and <strong>Subject</strong>. The Full Marks will calculate automatically.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Choose your <strong>Language Mode</strong> to automatically set the correct numbering (১, ২, ৩ vs 1, 2, 3).</p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">✍️ Formatting Rules (For Manual Typing)</div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Renders Math equations.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Renders Chemistry formulas (auto-subscripts numbers).</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (e.g., x²).</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>C[SUB:3]</code> : Subscript (e.g., C₃).</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[SYM:alpha]</code> : Greek symbols (alpha, beta, gamma, etc).</p></div>
+      <div class="info-sec-ttl">2. 📚 Adding Questions</div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Click <strong>Add Section</strong> to create sections (e.g., MCQs, Long Answers). Set the marks per question.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Click <strong>Add question</strong>. Type your text. Use the 🖼️ button to upload images.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Link OR:</strong> Click "🔗 Link OR" then select two questions to automatically join them with an "অথবা / OR" choice!</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Extras:</strong> For non-MCQ questions, you can click to add mini <strong>Tables</strong> or use the <strong>Diagram</strong> tool to sketch directly on the paper.</p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">🤖 AI OCR (Gemini / ChatGPT)</div>
+      <div class="info-sec-ttl">3. 🤖 The AI Magic Trick</div>
       <div class="prompt-tabs">
         <div class="prompt-tab on" data-ptab="img" onclick="switchPromptTab('img')">📷 From Photo</div>
-        <div class="prompt-tab" data-ptab="txt" onclick="switchPromptTab('txt')">📝 From Draft Notes</div>
+        <div class="prompt-tab" data-ptab="txt" onclick="switchPromptTab('txt')">📝 From Notes</div>
       </div>
-      
       <div class="prompt-content active" id="ptab-img">
         <div style="display:flex; gap:6px">
           <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('img')">📋 Copy Image Prompt</button>
         </div>
       </div>
-      
       <div class="prompt-content" id="ptab-txt">
         <div style="display:flex; gap:6px">
           <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('txt')">📋 Copy Draft Prompt</button>
         </div>
       </div>
-      
       <div class="step"><div class="sn">1</div><p class="info-p">Copy the prompt above.</p></div>
-      <div class="step"><div class="sn">2</div><p class="info-p">Paste it into an AI (ChatGPT/Gemini) along with your photo or draft text.</p></div>
-      <div class="step"><div class="sn">3</div><p class="info-p">Click <strong>Apply &amp; Fill Form</strong>. All fields auto-fill. Review and edit as needed.</p></div>
-      <div class="step"><div class="sn">4</div><p class="info-p">Click <strong>Print / PDF</strong>. In Chrome: A4, Landscape, Margins: None, Background graphics: ON.</p></div>
+      <div class="step"><div class="sn">2</div><p class="info-p">Paste it into ChatGPT or Gemini with a photo of an old exam or rough notes.</p></div>
+      <div class="step"><div class="sn">3</div><p class="info-p">Copy the code the AI gives you, open the <strong>📥 Import</strong> drawer at the top of this site, paste it, and click <strong>Apply & Fill Form</strong>.</p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">🖨 Print Tips</div>
-      <div class="info-item"><div class="iico a">💡</div>
-        <p class="info-p">Use <strong>Chrome or Edge</strong> for best PDF output. Set paper to <strong>A4 · Landscape · Margins: None · Background graphics: ✓</strong>. Cut along the dotted centre line after printing.</p>
-      </div>
+      <div class="info-sec-ttl">4. 🎨 Styling & Auto-Fit</div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Open <strong>Paper Settings</strong> (top right). Click the <strong>Auto-fit</strong> button to magically shrink/expand the font and margins so your paper fits perfectly on one page.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p">You can also change the center cut-line style and upload your school's logo as a watermark.</p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">⚡ Efficiency Tips</div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Always export a <strong>.qpf backup</strong> after finishing — restore it anytime.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">The <strong>Auto-fit</strong> button (settings panel) automatically adjusts font, spacing, and margin to fit content on one page.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Images uploaded into questions are encoded directly into your browser.</p></div>
+      <div class="info-sec-ttl">5. 🖨️ Saving & Printing</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>.qpf Backup:</strong> Always download this! If you close the site, you can upload this file later to keep editing.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>ODT:</strong> Exports to an editable LibreOffice/Word document.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Print / PDF:</strong> Set browser to <strong>A4, Landscape, Margins: None, Background graphics: ON</strong>.</p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">✍️ Math & Science Formatting</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Math fractions/equations.</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry (auto-subscripts).</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (e.g., x²).</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>C[SUB:3]</code> : Subscript (e.g., C₃).</p></div>
     </div>
     
     <div style="text-align:center; margin-top:20px; font-size:12px; color:var(--t3); font-weight:600;">
