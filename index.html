@@ -542,7 +542,7 @@ select {
 
 /* EXTRA BLOCKS */
 .extra-block { border: 1px solid var(--border2); border-radius: var(--r2); padding: 7px; margin-top: 4px; position: relative; }
-.extra-del { position: absolute; top: 4px; right: 5px; background: none; border: none; color: var(--red); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+.extra-del { position: absolute; top: 4px; right: 5px; background: none; border: none; color: var(--red); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; z-index:20; }
 
 .inline-tbl-wrap { overflow-x: auto; border-radius: var(--r3); }
 .inline-tbl { border-collapse: collapse; min-width: 100%; }
@@ -571,14 +571,14 @@ select {
 #ov { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 900; opacity: 0; pointer-events: none; transition: .3s; }
 #ov.show { opacity: 1; pointer-events: auto; }
 
-#info {
+#info, #guide {
   position: fixed; top: 0; right: 0; width: min(470px, 95vw); height: 100dvh;
   background: var(--bg1); border-left: 1px solid var(--border); z-index: 901;
   transform: translateX(100%); transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), background .25s, border-color .25s;
   display: flex; flex-direction: column; box-shadow: var(--shadow);
 }
 
-#info.show { transform: none; }
+#info.show, #guide.show { transform: none; }
 .info-hdr { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .info-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
 
@@ -633,12 +633,13 @@ select {
   #main { display: block !important; height: auto !important; overflow: visible !important; }
   #sidebar { display: block !important; width: 100% !important; max-width: none !important; height: auto !important; flex: none !important; overflow: visible !important; border-right: none !important; border-bottom: 1px solid var(--border) !important; }
   #sidebar-scroll { overflow: visible !important; height: auto !important; padding-bottom: 20px !important; }
-  #export-bar { position: relative !important; background: var(--bg2) !important; box-shadow: none !important; }
+  #export-bar { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; z-index: 500 !important; background: var(--bg1) !important; box-shadow: var(--shadow) !important; border-top: 1px solid var(--border) !important; }
+  body { padding-bottom: 60px !important; }
   #resize-handle { display: none !important; }
   #right-col { display: block !important; height: auto !important; overflow: visible !important; }
   #preview { display: block !important; height: auto !important; min-height: 50vh !important; overflow: visible !important; }
   #preview-bar { position: sticky !important; top: 48px !important; z-index: 100 !important; }
-  #preview-vp { display: block !important; overflow: visible !important; height: auto !important; padding: 14px !important; }
+  #preview-vp { display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; height: auto !important; padding: 14px !important; }
   #settings-panel { border-top: none !important; border-bottom: 1px solid var(--border) !important; order: 1; }
   #right-col { display: flex !important; flex-direction: column !important; }
   #preview { order: 2; }
@@ -689,7 +690,7 @@ select {
   }
   #topbar, #sidebar, #resize-handle,
   #preview-bar, #settings-panel,
-  #info, #ov, #toasts, #dia-modal,
+  #info, #guide, #ov, #toasts, #dia-modal,
   .no-print { display: none !important; }
   
   #main, #right-col, #preview {
@@ -731,8 +732,11 @@ select {
       <svg id="theme-icon-dark" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       <svg id="theme-icon-light" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
-    <button class="icon-btn" id="info-btn" title="About & how to use" aria-label="Open info panel">
+    <button class="icon-btn" id="info-btn" title="AI OCR & Formatting Tools" aria-label="Open info panel">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
+    <button class="icon-btn" id="guide-btn" title="Beginner's Guide" aria-label="Open guide panel">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     </button>
   </div>
 </div>
@@ -1001,72 +1005,120 @@ select {
 <!-- OVERLAY -->
 <div id="ov"></div>
 
-<!-- INFO PANEL -->
-<div id="info" role="dialog" aria-modal="true" aria-label="About and how to use">
+<!-- INFO PANEL (Original OCR Tools) -->
+<div id="info" role="dialog" aria-modal="true" aria-label="AI and Formatting Tools">
   <div class="info-hdr">
     <span style="font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--t1)">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Beginner's Guide
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> AI OCR &amp; Formatting Tools
     </span>
     <button class="icon-btn" id="info-close" aria-label="Close">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <div class="info-body">
-    
     <div>
-      <div class="info-sec-ttl">1. 📝 Setting Up Details</div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Start on the left by filling out your <strong>Paper Title, Class, Time,</strong> and <strong>Subject</strong>. The Full Marks will calculate automatically.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Choose your <strong>Language Mode</strong> to automatically set the correct numbering (১, ২, ৩ vs 1, 2, 3).</p></div>
-    </div>
-
-    <div>
-      <div class="info-sec-ttl">2. 📚 Adding Questions</div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Click <strong>Add Section</strong> to create sections (e.g., MCQs, Long Answers). Set the marks per question.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Click <strong>Add question</strong>. Type your text. Use the 🖼️ button to upload images.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Link OR:</strong> Click "🔗 Link OR" then select two questions to automatically join them with an "অথবা / OR" choice!</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Extras:</strong> For non-MCQ questions, you can click to add mini <strong>Tables</strong> or use the <strong>Diagram</strong> tool to sketch directly on the paper.</p></div>
-    </div>
-
-    <div>
-      <div class="info-sec-ttl">3. 🤖 The AI Magic Trick</div>
-      <div class="prompt-tabs">
-        <div class="prompt-tab on" data-ptab="img" onclick="switchPromptTab('img')">📷 From Photo</div>
-        <div class="prompt-tab" data-ptab="txt" onclick="switchPromptTab('txt')">📝 From Notes</div>
+      <div class="info-sec-ttl">What is this / এটি কী?</div>
+      <div class="info-item">
+        <div class="iico b">📝</div>
+        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with a two-set A4 landscape print layout. Everything runs locally.<br><span style="color:var(--t2); font-size:11px;">এটি একটি দুই-সেট A4 ল্যান্ডস্কেপ প্রশ্নপত্র তৈরি করার টুল। সবকিছু লোকালি কাজ করে।</span></p>
       </div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম (Manual Typing)</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Math equations<br><span style="color:var(--t2); font-size:11px;">গণিতের সমীকরণ রেন্ডার করে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry formulas<br><span style="color:var(--t2); font-size:11px;">রাসায়নিক সংকেত (অটো সাবস্ক্রিপ্ট)।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (x²)<br><span style="color:var(--t2); font-size:11px;">সুপারস্ক্রিপ্ট লেখার জন্য।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>C[SUB:3]</code> : Subscript (C₃)<br><span style="color:var(--t2); font-size:11px;">সাবস্ক্রিপ্ট লেখার জন্য।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[SYM:alpha]</code> : Greek symbols<br><span style="color:var(--t2); font-size:11px;">গ্রিক অক্ষর (যেমন: আলফা, বিটা)।</span></p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">🤖 AI OCR (Gemini / ChatGPT)</div>
+      <div class="prompt-tabs">
+        <div class="prompt-tab on" data-ptab="img" onclick="switchPromptTab('img')">📷 From Photo / ছবি থেকে</div>
+        <div class="prompt-tab" data-ptab="txt" onclick="switchPromptTab('txt')">📝 From Notes / নোট থেকে</div>
+      </div>
+      
       <div class="prompt-content active" id="ptab-img">
         <div style="display:flex; gap:6px">
-          <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('img')">📋 Copy Image Prompt</button>
+          <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('img')">📋 Copy Image Prompt / প্রম্পট কপি করুন</button>
         </div>
       </div>
+      
       <div class="prompt-content" id="ptab-txt">
         <div style="display:flex; gap:6px">
-          <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('txt')">📋 Copy Draft Prompt</button>
+          <button class="btn btn-success btn-sm" style="flex:1" onclick="copyPrompt('txt')">📋 Copy Draft Prompt / প্রম্পট কপি করুন</button>
         </div>
       </div>
-      <div class="step"><div class="sn">1</div><p class="info-p">Copy the prompt above.</p></div>
-      <div class="step"><div class="sn">2</div><p class="info-p">Paste it into ChatGPT or Gemini with a photo of an old exam or rough notes.</p></div>
-      <div class="step"><div class="sn">3</div><p class="info-p">Copy the code the AI gives you, open the <strong>📥 Import</strong> drawer at the top of this site, paste it, and click <strong>Apply & Fill Form</strong>.</p></div>
+      
+      <div class="step"><div class="sn">1</div><p class="info-p">Copy the prompt above.<br><span style="color:var(--t2); font-size:11px;">উপরের প্রম্পটটি কপি করুন।</span></p></div>
+      <div class="step"><div class="sn">2</div><p class="info-p">Paste it into an AI (ChatGPT/Gemini) along with your photo or draft text.<br><span style="color:var(--t2); font-size:11px;">ছবি বা নোট সহ এআই-তে পেস্ট করুন।</span></p></div>
+      <div class="step"><div class="sn">3</div><p class="info-p">Copy AI output, paste in <strong>📥 Import</strong> drawer, and click <strong>Apply & Fill Form</strong>.<br><span style="color:var(--t2); font-size:11px;">এআই এর আউটপুট কপি করে ইম্পোর্ট ড্রয়ারে পেস্ট করে Apply এ ক্লিক করুন।</span></p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">4. 🎨 Styling & Auto-Fit</div>
-      <div class="step"><div class="sn">→</div><p class="info-p">Open <strong>Paper Settings</strong> (top right). Click the <strong>Auto-fit</strong> button to magically shrink/expand the font and margins so your paper fits perfectly on one page.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p">You can also change the center cut-line style and upload your school's logo as a watermark.</p></div>
+      <div class="info-sec-ttl">🖨 Print Tips / প্রিন্ট টিপস</div>
+      <div class="info-item"><div class="iico a">💡</div>
+        <p class="info-p">Use <strong>Chrome or Edge</strong> for best PDF output. Set paper to <strong>A4 · Landscape · Margins: None · Background graphics: ✓</strong>. Cut along the dotted centre line after printing.<br><span style="color:var(--t2); font-size:11px;">Chrome বা Edge ব্যবহার করুন। A4, Landscape, Margins: None, Background graphics: ON সেট করুন।</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE PANEL (Beginner's Guide) -->
+<div id="guide" role="dialog" aria-modal="true" aria-label="Beginner's Guide">
+  <div class="info-hdr">
+    <span style="font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--t1)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Beginner's Guide / নতুনদের গাইড
+    </span>
+    <button class="icon-btn" id="guide-close" aria-label="Close">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="info-body">
+    
+    <div>
+      <div class="info-sec-ttl">1. 📝 Setup Details / বিস্তারিত সেটআপ</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Paper Title / পেপারের নাম:</strong> The main heading.<br><span style="color:var(--t2); font-size:11px;">প্রধান শিরোনাম (যেমন: Weekly Test 1)।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Class, Time, & Subject:</strong> Full Marks automatically calculates.<br><span style="color:var(--t2); font-size:11px;">এগুলো পূরণ করুন। Full Marks স্বয়ংক্রিয়ভাবে হিসাব হবে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Language Mode / পেপার ভাষা:</strong> Automatically changes numbering style (১, ২, ৩ vs 1, 2, 3).<br><span style="color:var(--t2); font-size:11px;">ভাষা নির্বাচন করলে নম্বরের স্টাইল নিজে থেকেই বদলে যাবে।</span></p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">5. 🖨️ Saving & Printing</div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>.qpf Backup:</strong> Always download this! If you close the site, you can upload this file later to keep editing.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>ODT:</strong> Exports to an editable LibreOffice/Word document.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Print / PDF:</strong> Set browser to <strong>A4, Landscape, Margins: None, Background graphics: ON</strong>.</p></div>
+      <div class="info-sec-ttl">2. 📚 Adding Sections & Questions / বিভাগ ও প্রশ্ন যোগ</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Add Section:</strong> Exam papers are divided into sections.<br><span style="color:var(--t2); font-size:11px;">Add Section-এ ক্লিক করে নতুন বিভাগ তৈরি করুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Marks / Q:</strong> Set marks per question.<br><span style="color:var(--t2); font-size:11px;">প্রতিটি প্রশ্নের নম্বর নির্ধারণ করুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Answer Any / যে কোনো N টি:</strong> E.g., type "3" to answer 3 out of 5.<br><span style="color:var(--t2); font-size:11px;">৫টির মধ্যে ৩টি উত্তর দিতে হলে "3" লিখুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>🔗 Link OR (অথবা):</strong> Select two questions to join them with an OR.<br><span style="color:var(--t2); font-size:11px;">দুটি প্রশ্নকে 'অথবা' দিয়ে জুড়তে ব্যবহৃত হয়।</span></p></div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">✍️ Math & Science Formatting</div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Math fractions/equations.</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry (auto-subscripts).</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (e.g., x²).</p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>C[SUB:3]</code> : Subscript (e.g., C₃).</p></div>
+      <div class="info-sec-ttl">3. ⊞ Advanced Tools / উন্নত প্রশ্ন টুলস</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>⊞ Table / টেবিল:</strong> Insert typing tables.<br><span style="color:var(--t2); font-size:11px;">টেবিল তৈরি করতে ক্লিক করুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>✏ Diagram / চিত্র:</strong> Draw directly on the paper!<br><span style="color:var(--t2); font-size:11px;">সরাসরি ডায়াগ্রাম বা ছবি আঁকুন।</span></p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">4. 🤖 The AI Magic Trick / এআই ম্যাজিক (OCR)</div>
+      <div class="step"><div class="sn">→</div><p class="info-p">Use <strong>🤖 OCR Prompt</strong> to turn photos into ready papers via AI!<br><span style="color:var(--t2); font-size:11px;">প্রম্পট কপি করে ChatGPT/Gemini তে ছবি দিন, আউটপুট ইম্পোর্ট করুন।</span></p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">5. 🎨 Paper Settings / পেপার সেটিংস</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Auto-fit:</strong> Magically shrinks/expands to fit 1 page!<br><span style="color:var(--t2); font-size:11px;">পেজ ফিট করতে সাইজ ও মার্জিন অটো ঠিক করে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Watermark / জলছাপ:</strong> Add your school logo to the background.<br><span style="color:var(--t2); font-size:11px;">স্কুলের লোগো আপলোড করুন।</span></p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">6. 🖨️ Exporting & Printing / এক্সপোর্ট ও প্রিন্ট</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>.qpf:</strong> Saves a backup file! Always do this.<br><span style="color:var(--t2); font-size:11px;">ব্যাকআপ ফাইল। কাজ শেষে অবশ্যই সেভ করবেন!</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Print / PDF:</strong> Set to A4, Landscape, Margins: None.<br><span style="color:var(--t2); font-size:11px;">প্রিন্ট করার জন্য A4 ও Landscape নির্বাচন করুন।</span></p></div>
+    </div>
+
+    <div>
+      <div class="info-sec-ttl">7. 🤫 Hidden Secret / গোপন সিক্রেট</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Glow Mode:</strong> Double-click the "প" logo in the top left corner.<br><span style="color:var(--t2); font-size:11px;">লোগোটিতে ডাবল ক্লিক করলে গ্লো মোড অন হবে!</span></p></div>
     </div>
     
     <div style="text-align:center; margin-top:20px; font-size:12px; color:var(--t3); font-weight:600;">
@@ -1940,12 +1992,21 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
 function renderExtras(q, cont) {
   cont.innerHTML = '';
   (q.extra || []).forEach((ex, idx) => {
+    const align = ex.align || 'center';
     const d = document.createElement('div');
     d.className = 'extra-block';
+    
+    const alignUI = `
+      <div style="position:absolute; top:4px; right:28px; display:flex; background:var(--bg1); border:1px solid var(--border2); border-radius:var(--r3); overflow:hidden; z-index:10;">
+        <button class="extra-align-btn" data-xi="${idx}" data-val="left" style="background:${align==='left'?'var(--accent)':'transparent'};color:${align==='left'?'#fff':'var(--t2)'};border:none;padding:2px 6px;font-size:9px;cursor:pointer;outline:none;" title="Align Left">L</button>
+        <button class="extra-align-btn" data-xi="${idx}" data-val="center" style="background:${align==='center'?'var(--accent)':'transparent'};color:${align==='center'?'#fff':'var(--t2)'};border:none;border-left:1px solid var(--border2);border-right:1px solid var(--border2);padding:2px 6px;font-size:9px;cursor:pointer;outline:none;" title="Align Center">C</button>
+        <button class="extra-align-btn" data-xi="${idx}" data-val="right" style="background:${align==='right'?'var(--accent)':'transparent'};color:${align==='right'?'#fff':'var(--t2)'};border:none;padding:2px 6px;font-size:9px;cursor:pointer;outline:none;" title="Align Right">R</button>
+      </div>
+    `;
     const del = `<button class="extra-del" data-xi="${idx}" title="Remove">✕</button>`;
     
     if (ex.type === 'image') {
-      d.innerHTML = `${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">📎 Image below question</div><img src="${ex.data}" style="max-height:70px;max-width:100%;object-fit:contain;display:block"/>`;
+      d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">📎 Image below question</div><img src="${ex.data}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
     } else if (ex.type === 'table') {
       const rc = ex.rows.length;
       const cc = ex.rows[0] ? ex.rows[0].length : 0;
@@ -1958,7 +2019,8 @@ function renderExtras(q, cont) {
         rowsHtml += '</tr>';
       });
 
-      d.innerHTML = `${del}<div style="font-size:9px;color:var(--t3);margin-bottom:4px">⊞ Table ${rc}×${cc}</div><div class="inline-tbl-wrap"><table class="inline-tbl">${rowsHtml}</table></div>`;
+      d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:4px">⊞ Table ${rc}×${cc}</div><div class="inline-tbl-wrap"><table class="inline-tbl">${rowsHtml}</table></div>`;
+      
       d.querySelectorAll('.tbl-cell').forEach(inp => {
         inp.addEventListener('input', e => {
           ex.rows[+e.target.dataset.r][+e.target.dataset.c] = e.target.value;
@@ -1966,7 +2028,7 @@ function renderExtras(q, cont) {
         });
       });
     } else if (ex.type === 'diagram') {
-      d.innerHTML = `${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block"/>`;
+      d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
     }
 
     d.querySelector('.extra-del').addEventListener('click', e => {
@@ -1974,6 +2036,15 @@ function renderExtras(q, cont) {
       renderExtras(q, cont);
       sched();
     });
+    
+    d.querySelectorAll('.extra-align-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        q.extra[+e.target.dataset.xi].align = e.target.dataset.val;
+        renderExtras(q, cont);
+        sched();
+      });
+    });
+    
     cont.appendChild(d);
   });
 }
@@ -2021,7 +2092,10 @@ function openDia(q, cont) {
   const pos = e => {
     const r = cv.getBoundingClientRect();
     const ce = e.touches ? e.touches[0] : e;
-    return { x: ce.clientX - r.left, y: ce.clientY - r.top };
+    return { 
+      x: (ce.clientX - r.left) * (cv.width / r.width), 
+      y: (ce.clientY - r.top) * (cv.height / r.height) 
+    };
   };
 
   const down = e => {
@@ -2331,6 +2405,43 @@ function buildDivHTML() {
   return `<div class="qp-div">${rows}</div>`;
 }
 
+function buildExtH(q) {
+  let floatH = '';
+  let bottomH = '';
+  (q.extra || []).forEach(ex => {
+    const align = ex.align || 'center';
+    let style = '';
+    let isFloat = false;
+
+    if (align === 'right') {
+      style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;';
+      isFloat = true;
+    } else if (align === 'left') {
+      style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;';
+      isFloat = true;
+    } else {
+      style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;';
+    }
+
+    let inner = '';
+    if (ex.type === 'image') inner = `<img src="${ex.data}" style="max-width:100%;max-height:36mm;object-fit:contain"/>`;
+    if (ex.type === 'diagram' && ex.png) inner = `<img src="${ex.png}" style="max-width:100%;max-height:36mm;object-fit:contain"/>`;
+    if (ex.type === 'table') {
+      let t = `<table class="qp-itable" style="${isFloat ? 'margin:0' : 'margin:2pt auto'}">`;
+      ex.rows.forEach(row => {
+        t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`;
+      });
+      t += `</table>`;
+      inner = t;
+    }
+
+    const wrapper = `<div style="${style}">${inner}</div>`;
+    if (isFloat) floatH += wrapper;
+    else bottomH += wrapper;
+  });
+  return { floats: floatH, bottom: bottomH };
+}
+
 function buildSet(asBlocks = false) {
   const lang = S.paperLang;
   const isBn = lang !== 'full-en';
@@ -2410,6 +2521,8 @@ function buildSet(asBlocks = false) {
       let qTextEscaped = esc(q.text);
       qTextEscaped = qTextEscaped.replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
       const finalRenderedText = renderTok(qTextEscaped);
+      
+      const ext = buildExtH(q);
 
       let qHTML = '';
       if (sec.type === 'mcq') {
@@ -2427,9 +2540,9 @@ function buildSet(asBlocks = false) {
         else oph = `<div class="qp-q-mcq-opts g1">${optsHtml}</div>`;
         
         const imgH = q.img ? `<img src="${q.img}" style="float:right;max-width:28%;max-height:32mm;object-fit:contain;margin-left:4pt"/>` : '';
-        qHTML = `<div class="qp-q" ${q.img ? 'style="overflow:hidden"' : ''}>${imgH}<div style="text-align:justify">${numH} ${finalRenderedText}</div>${oph}${buildExtH(q)}</div>`;
+        qHTML = `<div class="qp-q" style="overflow:hidden">${imgH}${ext.floats}<div style="text-align:justify">${numH} ${finalRenderedText}</div>${oph}${ext.bottom}</div>`;
       } else {
-        qHTML = `<div class="qp-q"><div style="text-align:justify">${numH} ${finalRenderedText}</div>${buildExtH(q)}</div>`;
+        qHTML = `<div class="qp-q" style="overflow:hidden">${ext.floats}<div style="text-align:justify">${numH} ${finalRenderedText}</div>${ext.bottom}</div>`;
       }
 
       let orH = '';
@@ -2451,21 +2564,6 @@ function buildSet(asBlocks = false) {
   return asBlocks ? blocks : blocks.join('');
 }
 
-function buildExtH(q) {
-  let result = '';
-  (q.extra || []).forEach(ex => {
-    if (ex.type === 'image') result += `<div style="text-align:center;margin:2pt 0"><img src="${ex.data}" style="max-width:90%;max-height:36mm;object-fit:contain"/></div>`;
-    if (ex.type === 'diagram' && ex.png) result += `<div style="text-align:center;margin:2pt 0"><img src="${ex.png}" style="max-width:90%;max-height:36mm;object-fit:contain"/></div>`;
-    if (ex.type === 'table') {
-      let t = `<table class="qp-itable">`;
-      ex.rows.forEach(row => {
-        t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`;
-      });
-      result += t + `</table>`;
-    }
-  });
-  return result;
-}
 
 /* ── QPF PARSER (Robust Version) ── */
 function parseQPF(rawText) {
@@ -2829,12 +2927,26 @@ document.addEventListener('click', e => {
 });
 
 function initInfo() {
-  $('info-btn').addEventListener('click', () => { $('info').classList.add('show'); $('ov').classList.add('show'); });
-  $('info-close').addEventListener('click', closeInfo);
-  $('ov').addEventListener('click', closeInfo);
+  $('info-btn').addEventListener('click', () => { 
+    $('guide').classList.remove('show'); 
+    $('info').classList.add('show'); 
+    $('ov').classList.add('show'); 
+  });
+  
+  $('guide-btn').addEventListener('click', () => { 
+    $('info').classList.remove('show'); 
+    $('guide').classList.add('show'); 
+    $('ov').classList.add('show'); 
+  });
+  
+  $('info-close').addEventListener('click', closePanels);
+  $('guide-close').addEventListener('click', closePanels);
+  $('ov').addEventListener('click', closePanels);
 }
-function closeInfo() { 
+
+function closePanels() { 
   $('info').classList.remove('show'); 
+  $('guide').classList.remove('show'); 
   $('ov').classList.remove('show'); 
 }
 
