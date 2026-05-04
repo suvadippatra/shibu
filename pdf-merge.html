@@ -4,7 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>PDF Merge - প্রশ্নপত্র Maker</title>
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<!-- Using local library -->
+<script src="libs/pdf-lib.min.js"></script>
 <style>
 :root {
   --bg: #080d1a; --bg1: #0d1427; --bg2: #111b34; --bg3: #172040; --bg4: #1c274d;
@@ -13,11 +14,13 @@
   --r: 9px; --r2: 6px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; }
-#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;}
+#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; flex-shrink: 0;}
 .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent3)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; text-decoration: none;}
-.container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 90%; }
-.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 40px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; }
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.logo-fallback { font-size: 17px; font-family: var(--font-bn); color: #fff; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent3)); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+.container { max-width: 600px; margin: 30px auto; padding: 25px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 95%; margin-bottom: 50px;}
+.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 40px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; background: var(--bg1);}
 .drop-zone:hover { border-color: var(--accent2); background: rgba(91,80,240,.06); }
 .file-list { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
 .file-item { display: flex; justify-content: space-between; background: var(--bg3); padding: 10px; border-radius: var(--r2); font-size: 12px; border: 1px solid var(--border); }
@@ -26,38 +29,56 @@ body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); dis
 .btn:disabled { background: var(--bg3); color: var(--t3); cursor: not-allowed; }
 h2 { margin-bottom: 5px; font-size: 18px; }
 p { color: var(--t2); font-size: 12px; margin-bottom: 20px; }
-a { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
-a:hover { color: var(--accent3); }
+a.back-link { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
+a.back-link:hover { color: var(--accent3); }
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <a href="index.html" class="logo-icon">প</a>
+  <a class="logo" href="index.html" style="text-decoration: none;">
+    <div class="logo-icon" style="background: transparent;">
+      <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <span class="logo-fallback" style="display:none">প</span>
+    </div>
+  </a>
   <span style="font-weight: 700; font-size: 14px;">PDF Merge Tool</span>
 </div>
 
 <div class="container">
-  <a href="index.html">← Back to Editor</a>
+  <a href="index.html" class="back-link">← Back to Editor</a>
   <h2>Merge Multiple PDFs</h2>
-  <p>Select or drag multiple PDF files to combine them into one.</p>
+  <p>Select multiple PDF files to combine them into one single document.</p>
   
   <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
     <div style="font-size: 24px; margin-bottom: 10px;">📄 + 📄</div>
-    <div>Click to select PDF files</div>
+    <div style="font-weight: bold; color: var(--t1);">Click to select PDF files</div>
     <input type="file" id="file-input" multiple accept="application/pdf" hidden>
   </div>
 
   <div class="file-list" id="file-list"></div>
-  <button class="btn" id="merge-btn" disabled onclick="mergePDFs()">Merge & Download</button>
+  <button class="btn" id="merge-btn" disabled onclick="mergePDFs()">Merge PDFs</button>
+
+  <!-- PREVIEW SECTION -->
+  <div id="preview-section" style="display: none; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+    <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--t1);">Document Preview</h3>
+    <iframe id="pdf-preview" style="width: 100%; height: 400px; border: 1px solid var(--border2); border-radius: var(--r2); background: #fff; margin-bottom: 15px;"></iframe>
+    
+    <div style="display: flex; gap: 10px;">
+      <button class="btn" style="background: transparent; color: var(--accent3); border: 1px solid var(--border2);" id="open-browser-btn">🌐 View in Browser</button>
+      <button class="btn" style="background: var(--green); color: #fff;" id="download-btn">⬇️ Download PDF</button>
+    </div>
+  </div>
 </div>
 
 <script>
   let filesToMerge = [];
+  let currentBlobUrl = null;
 
   document.getElementById('file-input').addEventListener('change', function(e) {
     filesToMerge = Array.from(e.target.files);
     updateFileList();
+    document.getElementById('preview-section').style.display = 'none';
   });
 
   function updateFileList() {
@@ -73,10 +94,10 @@ a:hover { color: var(--accent3); }
         list.appendChild(item);
       });
       btn.disabled = filesToMerge.length < 2;
-      btn.textContent = filesToMerge.length < 2 ? "Select at least 2 PDFs" : "Merge & Download";
+      btn.textContent = filesToMerge.length < 2 ? "Select at least 2 PDFs" : "Merge PDFs";
     } else {
       btn.disabled = true;
-      btn.textContent = "Merge & Download";
+      btn.textContent = "Merge PDFs";
     }
   }
 
@@ -97,16 +118,28 @@ a:hover { color: var(--accent3); }
 
       const mergedPdfFile = await mergedPdf.save();
       const blob = new Blob([mergedPdfFile], { type: 'application/pdf' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'Merged_Document.pdf';
-      link.click();
       
-      btn.textContent = "Done! Merge More?";
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = URL.createObjectURL(blob);
+
+      // Show Preview
+      document.getElementById('pdf-preview').src = currentBlobUrl;
+      document.getElementById('preview-section').style.display = 'block';
+
+      // Setup Buttons
+      document.getElementById('open-browser-btn').onclick = () => window.open(currentBlobUrl, '_blank');
+      document.getElementById('download-btn').onclick = () => {
+        const link = document.createElement('a');
+        link.href = currentBlobUrl;
+        link.download = 'Merged_Document.pdf';
+        link.click();
+      };
+      
+      btn.textContent = "Merged Successfully! Merge More?";
       btn.disabled = false;
     } catch (err) {
       alert("Error merging PDFs: " + err.message);
-      btn.textContent = "Merge & Download";
+      btn.textContent = "Merge PDFs";
       btn.disabled = false;
     }
   }
