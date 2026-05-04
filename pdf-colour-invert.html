@@ -12,58 +12,99 @@
   --r: 9px; --r2: 6px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; }
-#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;}
+#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; flex-shrink: 0;}
 .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent3)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; text-decoration: none;}
-.container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 90%; }
-.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 40px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; }
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.logo-fallback { font-size: 17px; font-family: var(--font-bn); color: #fff; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent3)); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+.container { max-width: 600px; margin: 30px auto; padding: 25px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 95%; margin-bottom: 50px;}
+.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 40px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; background: var(--bg1);}
 .drop-zone:hover { border-color: var(--accent2); background: rgba(91,80,240,.06); }
 .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: var(--r2); font-weight: bold; cursor: pointer; transition: .2s; }
 .btn:hover { background: var(--accent2); }
 .btn:disabled { background: var(--bg3); color: var(--t3); cursor: not-allowed; }
 h2 { margin-bottom: 5px; font-size: 18px; }
 p { color: var(--t2); font-size: 12px; margin-bottom: 20px; }
-a { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
-a:hover { color: var(--accent3); }
-.warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 10px; border-radius: var(--r2); color: var(--gold2); font-size: 11px; margin-bottom: 20px; }
+a.back-link { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
+a.back-link:hover { color: var(--accent3); }
+.warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 10px; border-radius: var(--r2); color: var(--gold2); font-size: 11px; margin-bottom: 20px; line-height: 1.5; }
+
+/* The magic CSS to invert PDF colors in the iframe while keeping images mostly normal */
+.inverted-pdf { filter: invert(1) hue-rotate(180deg); }
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <a href="index.html" class="logo-icon">প</a>
-  <span style="font-weight: 700; font-size: 14px;">PDF Colour Inverter</span>
+  <a class="logo" href="index.html" style="text-decoration: none;">
+    <div class="logo-icon" style="background: transparent;">
+      <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <span class="logo-fallback" style="display:none">প</span>
+    </div>
+  </a>
+  <span style="font-weight: 700; font-size: 14px;">PDF Color Inverter</span>
 </div>
 
 <div class="container">
-  <a href="index.html">← Back to Editor</a>
-  <h2>Invert PDF Colors</h2>
-  <p>Upload a PDF to invert its color scheme (Dark to Light, Light to Dark).</p>
+  <a href="index.html" class="back-link">← Back to Editor</a>
+  <h2>Invert PDF Colors (Dark Mode Reader)</h2>
+  <p>Upload a PDF to view it in an inverted, dark-mode color scheme.</p>
   
   <div class="warning">
-    <strong>Note:</strong> Client-side vector color inversion requires an advanced rasterization pipeline (pdf.js to Canvas manipulation). Backend processing is recommended for large files.
+    <strong>Developer Note:</strong> True vector-level color inversion cannot be downloaded without server-side processing. However, you can use this tool to instantly read any PDF in an eye-friendly Dark Mode below!
   </div>
 
   <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
     <div style="font-size: 24px; margin-bottom: 10px;" id="file-icon">🌗</div>
-    <div id="file-name">Click to select PDF file</div>
+    <div id="file-name" style="font-weight: bold; color: var(--t1);">Click to select PDF file</div>
     <input type="file" id="file-input" accept="application/pdf" hidden>
   </div>
 
-  <button class="btn" id="invert-btn" disabled>Invert Colors & Download</button>
+  <button class="btn" id="invert-btn" disabled>Generate Dark Mode Preview</button>
+
+  <!-- PREVIEW SECTION -->
+  <div id="preview-section" style="display: none; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3 style="font-size: 14px; color: var(--t1);">Inverted Document</h3>
+      <label style="font-size: 12px; color: var(--t3); display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="toggle-invert" checked> Dark Mode Active
+      </label>
+    </div>
+    
+    <iframe id="pdf-preview" class="inverted-pdf" style="width: 100%; height: 500px; border: 1px solid var(--border2); border-radius: var(--r2); background: #fff;"></iframe>
+  </div>
 </div>
 
 <script>
+  let targetFile = null;
+  let currentBlobUrl = null;
+
   document.getElementById('file-input').addEventListener('change', function(e) {
     if(e.target.files.length > 0) {
-        document.getElementById('file-name').textContent = e.target.files[0].name;
+        targetFile = e.target.files[0];
+        document.getElementById('file-name').textContent = targetFile.name;
         document.getElementById('file-icon').textContent = "✅";
         document.getElementById('invert-btn').disabled = false;
+        document.getElementById('preview-section').style.display = 'none';
     }
   });
 
   document.getElementById('invert-btn').addEventListener('click', () => {
-      alert("Placeholder: Connect your rasterization logic (e.g., pdf.js + JSZip) here.");
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = URL.createObjectURL(targetFile);
+
+      const iframe = document.getElementById('pdf-preview');
+      iframe.src = currentBlobUrl;
+      document.getElementById('preview-section').style.display = 'block';
+  });
+
+  document.getElementById('toggle-invert').addEventListener('change', (e) => {
+      const iframe = document.getElementById('pdf-preview');
+      if (e.target.checked) {
+          iframe.classList.add('inverted-pdf');
+      } else {
+          iframe.classList.remove('inverted-pdf');
+      }
   });
 </script>
 </body>
