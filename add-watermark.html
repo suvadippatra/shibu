@@ -11,25 +11,43 @@
   --bg: #080d1a; --bg1: #0d1427; --bg2: #111b34; --bg3: #172040; --bg4: #1c274d;
   --border: #1a2a48; --border2: #203358; --accent: #5b50f0; --accent2: #7065f3; --accent3: #9d95f7;
   --t1: #eef2fb; --t2: #8fa3c8; --t3: #4a5d80; --shadow: 0 8px 32px rgba(0,0,0,.65);
-  --r: 9px; --r2: 6px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --r: 9px; --r2: 6px; --r3: 4px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; }
-#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; overflow-y: auto;}
+#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; flex-shrink:0;}
 .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent3)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; text-decoration: none;}
-.container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 90%; }
-.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 30px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 15px; }
+.container { max-width: 800px; margin: 30px auto; padding: 25px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 95%; flex-shrink:0; margin-bottom: 50px;}
+
+.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 30px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; background: var(--bg1);}
 .drop-zone:hover { border-color: var(--accent2); background: rgba(91,80,240,.06); }
-input[type="text"] { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r2); color: var(--t1); padding: 10px; margin-bottom: 20px; font-size: 14px; outline: none;}
-input[type="text"]:focus { border-color: var(--accent); }
 .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: var(--r2); font-weight: bold; cursor: pointer; transition: .2s; }
 .btn:hover { background: var(--accent2); }
 .btn:disabled { background: var(--bg3); color: var(--t3); cursor: not-allowed; }
+
 h2 { margin-bottom: 5px; font-size: 18px; }
 p { color: var(--t2); font-size: 12px; margin-bottom: 20px; }
-a { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
-a:hover { color: var(--accent3); }
-label { font-size: 12px; color: var(--t2); margin-bottom: 5px; display: block;}
+a.back-link { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
+a.back-link:hover { color: var(--accent3); }
+label { font-size: 11px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;}
+
+input[type="text"], select { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r2); color: var(--t1); padding: 8px 10px; font-size: 13px; outline: none; margin-bottom: 15px;}
+input[type="text"]:focus, select:focus { border-color: var(--accent); }
+
+/* Custom Sliders */
+.slider-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 15px;}
+.slider-wrap input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; background: var(--border2); border-radius: 2px; outline: none; cursor: pointer; }
+.slider-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent2); cursor: pointer; box-shadow: 0 0 0 3px rgba(99,102,241,.18); transition: box-shadow .15s; }
+.slider-wrap input[type=range]:focus::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(99,102,241,.28); }
+
+.type-tabs { display: flex; gap: 0; background: var(--bg3); border-radius: var(--r3); overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
+.type-tab { flex: 1; padding: 10px; font-size: 12px; font-weight: 600; color: var(--t3); cursor: pointer; text-align: center; transition: .15s; user-select: none; }
+.type-tab.on { background: var(--accent); color: #fff; }
+.type-tab:not(.on):hover { background: var(--bg4); color: var(--t1); }
+
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 5px 25px; background: var(--bg1); padding: 15px; border-radius: var(--r2); border: 1px solid var(--border); margin-bottom: 20px;}
+.dynamic-sec { display: none; }
+.dynamic-sec.active { display: block; }
 </style>
 </head>
 <body>
@@ -40,69 +58,225 @@ label { font-size: 12px; color: var(--t2); margin-bottom: 5px; display: block;}
 </div>
 
 <div class="container">
-  <a href="index.html">← Back to Editor</a>
-  <h2>Stamp PDF Watermark</h2>
-  <p>Add a diagonal text watermark across every page of a PDF.</p>
+  <a href="index.html" class="back-link">← Back to Editor</a>
+  <h2>Advanced PDF Watermark</h2>
+  <p>Apply customizable text or image watermarks to your PDF documents.</p>
   
   <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
     <div style="font-size: 24px; margin-bottom: 10px;" id="file-icon">📄</div>
-    <div id="file-name">Click to select PDF file</div>
+    <div id="file-name" style="font-weight: bold; color: var(--t1);">Click to select PDF file</div>
+    <div style="font-size: 11px; color: var(--t3); margin-top: 5px;">or drag and drop here</div>
     <input type="file" id="file-input" accept="application/pdf" hidden>
   </div>
 
-  <label>Watermark Text</label>
-  <input type="text" id="wm-text" placeholder="e.g. DRAFT COPY - DO NOT DISTRIBUTE" value="CONFIDENTIAL">
+  <div class="type-tabs">
+    <div class="type-tab on" data-target="sec-text" onclick="switchTab('sec-text')">Text Watermark</div>
+    <div class="type-tab" data-target="sec-img" onclick="switchTab('sec-img')">Custom Image</div>
+    <div class="type-tab" data-target="sec-svg" onclick="switchTab('sec-svg')">Default SVG Logo</div>
+  </div>
 
-  <button class="btn" id="apply-btn" disabled onclick="applyWatermark()">Apply & Download</button>
+  <!-- Shared Transform Controls -->
+  <div class="settings-grid">
+    <div>
+      <label>Position X <span id="val-x">50%</span></label>
+      <div class="slider-wrap"><input type="range" id="ctrl-x" min="0" max="100" value="50"></div>
+    </div>
+    <div>
+      <label>Position Y <span id="val-y">50%</span></label>
+      <div class="slider-wrap"><input type="range" id="ctrl-y" min="0" max="100" value="50"></div>
+    </div>
+    <div>
+      <label>Scale / Size <span id="val-s">1.0</span></label>
+      <div class="slider-wrap"><input type="range" id="ctrl-s" min="0.1" max="5" step="0.1" value="1.0"></div>
+    </div>
+    <div>
+      <label>Rotation <span id="val-r">45°</span></label>
+      <div class="slider-wrap"><input type="range" id="ctrl-r" min="-180" max="180" value="45"></div>
+    </div>
+    <div>
+      <label>Opacity <span id="val-o">30%</span></label>
+      <div class="slider-wrap"><input type="range" id="ctrl-o" min="5" max="100" value="30"></div>
+    </div>
+  </div>
+
+  <!-- Dynamic Settings -->
+  <div id="sec-text" class="dynamic-sec active">
+    <label>Watermark Text</label>
+    <input type="text" id="wm-text" placeholder="e.g. DO NOT COPY" value="CONFIDENTIAL">
+    <label>Text Color</label>
+    <select id="wm-text-color">
+      <option value="0.5,0.5,0.5">Grey</option>
+      <option value="0.9,0.2,0.2">Red</option>
+      <option value="0.2,0.2,0.9">Blue</option>
+      <option value="0,0,0">Black</option>
+    </select>
+  </div>
+
+  <div id="sec-img" class="dynamic-sec">
+    <label>Upload Custom PNG/JPG</label>
+    <input type="file" id="wm-img-file" accept="image/png, image/jpeg" style="margin-bottom:15px; color:var(--t2);">
+  </div>
+
+  <div id="sec-svg" class="dynamic-sec">
+    <label>SVG Logo Color</label>
+    <select id="wm-svg-color">
+      <option value="#6b7280">Grey</option>
+      <option value="#a855f7">Purple</option>
+      <option value="#3b82f6">Blue</option>
+      <option value="#10b981">Green</option>
+      <option value="#000000">Black</option>
+    </select>
+    <p style="margin-top:5px; color:var(--gold2);">Requires 'watermark.svg' file in the same directory to function.</p>
+  </div>
+
+  <button class="btn" id="apply-btn" disabled onclick="applyWatermark()">Apply Watermark & Download</button>
 </div>
 
 <script>
-  let targetFile = null;
+  let targetPdfFile = null;
+  let currentMode = 'sec-text';
+
+  // Bind sliders to labels
+  const bindSlider = (id, suffix, displayFn) => {
+    const el = document.getElementById('ctrl-' + id);
+    const val = document.getElementById('val-' + id);
+    el.addEventListener('input', (e) => {
+      val.textContent = displayFn ? displayFn(e.target.value) : e.target.value + suffix;
+    });
+  };
+  bindSlider('x', '%'); bindSlider('y', '%'); bindSlider('s', 'x'); bindSlider('r', '°'); bindSlider('o', '%');
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.type-tab').forEach(t => t.classList.toggle('on', t.dataset.target === tabId));
+    document.querySelectorAll('.dynamic-sec').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    currentMode = tabId;
+  }
 
   document.getElementById('file-input').addEventListener('change', function(e) {
     if(e.target.files.length > 0) {
-        targetFile = e.target.files[0];
-        document.getElementById('file-name').textContent = targetFile.name;
+        targetPdfFile = e.target.files[0];
+        document.getElementById('file-name').textContent = targetPdfFile.name;
         document.getElementById('file-icon').textContent = "✅";
         document.getElementById('apply-btn').disabled = false;
     }
   });
 
+  // Helper: Load image file to ArrayBuffer
+  function readFileAsArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  // Helper: Colorize pre-existing SVG using canvas
+  async function colorizeSVG(colorHex) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width || 500;
+        canvas.height = img.height || 500;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = "source-in";
+        ctx.fillStyle = colorHex;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob(blob => blob.arrayBuffer().then(resolve), 'image/png');
+      };
+      img.onerror = () => reject(new Error("watermark.svg not found in directory."));
+      img.src = 'watermark.svg'; // Ensure this file exists!
+    });
+  }
+
   async function applyWatermark() {
-    const text = document.getElementById('wm-text').value || "CONFIDENTIAL";
     const btn = document.getElementById('apply-btn');
-    btn.textContent = "Processing...";
+    btn.textContent = "Processing... Please wait";
     btn.disabled = true;
 
     try {
-      const arrayBuffer = await targetFile.arrayBuffer();
+      // Get shared controls
+      const posX = parseFloat(document.getElementById('ctrl-x').value) / 100;
+      const posY = parseFloat(document.getElementById('ctrl-y').value) / 100;
+      const scaleVal = parseFloat(document.getElementById('ctrl-s').value);
+      const rotVal = parseFloat(document.getElementById('ctrl-r').value);
+      const opacityVal = parseFloat(document.getElementById('ctrl-o').value) / 100;
+
+      // Load PDF
+      const arrayBuffer = await readFileAsArrayBuffer(targetPdfFile);
       const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
       const pages = pdfDoc.getPages();
 
+      let embedImage = null;
+      let isJpg = false;
+
+      // Prepare Image if needed
+      if (currentMode === 'sec-img') {
+        const imgFile = document.getElementById('wm-img-file').files[0];
+        if(!imgFile) throw new Error("Please upload an image first.");
+        isJpg = imgFile.type === 'image/jpeg';
+        const imgBuffer = await readFileAsArrayBuffer(imgFile);
+        embedImage = isJpg ? await pdfDoc.embedJpg(imgBuffer) : await pdfDoc.embedPng(imgBuffer);
+      } 
+      else if (currentMode === 'sec-svg') {
+        const color = document.getElementById('wm-svg-color').value;
+        const svgPngBuffer = await colorizeSVG(color);
+        embedImage = await pdfDoc.embedPng(svgPngBuffer);
+      }
+
+      // Apply to all pages
       pages.forEach(page => {
         const { width, height } = page.getSize();
-        page.drawText(text, {
-          x: width / 2 - 150,
-          y: height / 2 - 50,
-          size: 60,
-          color: PDFLib.rgb(0.5, 0.5, 0.5),
-          opacity: 0.3,
-          rotate: PDFLib.degrees(45),
-        });
+        
+        // Convert percentages to actual points
+        const targetX = width * posX;
+        const targetY = height * posY;
+
+        if (currentMode === 'sec-text') {
+            const text = document.getElementById('wm-text').value;
+            const colorRaw = document.getElementById('wm-text-color').value.split(',').map(Number);
+            const fontSize = 50 * scaleVal;
+            page.drawText(text, {
+              x: targetX - (text.length * fontSize * 0.25), // Rough centering
+              y: targetY,
+              size: fontSize,
+              color: PDFLib.rgb(colorRaw[0], colorRaw[1], colorRaw[2]),
+              opacity: opacityVal,
+              rotate: PDFLib.degrees(rotVal),
+            });
+        } else if (embedImage) {
+            const scaledDims = embedImage.scale(scaleVal);
+            page.drawImage(embedImage, {
+              x: targetX - (scaledDims.width / 2),
+              y: targetY - (scaledDims.height / 2),
+              width: scaledDims.width,
+              height: scaledDims.height,
+              opacity: opacityVal,
+              rotate: PDFLib.degrees(rotVal),
+            });
+        }
       });
 
+      // Save and Download
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'Watermarked_' + targetFile.name;
+      link.download = 'Watermarked_' + targetPdfFile.name;
       link.click();
       
-      btn.textContent = "Apply & Download";
+      btn.textContent = "Apply Watermark & Download";
       btn.disabled = false;
+
     } catch (err) {
-      alert("Error applying watermark: " + err.message);
-      btn.textContent = "Apply & Download";
+      alert("Error: " + err.message);
+      btn.textContent = "Apply Watermark & Download";
       btn.disabled = false;
     }
   }
