@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Add Watermark - প্রশ্নপত্র Maker</title>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
+<style>
+:root {
+  --bg: #080d1a; --bg1: #0d1427; --bg2: #111b34; --bg3: #172040; --bg4: #1c274d;
+  --border: #1a2a48; --border2: #203358; --accent: #5b50f0; --accent2: #7065f3; --accent3: #9d95f7;
+  --t1: #eef2fb; --t2: #8fa3c8; --t3: #4a5d80; --shadow: 0 8px 32px rgba(0,0,0,.65);
+  --r: 9px; --r2: 6px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; }
+#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent3)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; text-decoration: none;}
+.container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 90%; }
+.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 30px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 15px; }
+.drop-zone:hover { border-color: var(--accent2); background: rgba(91,80,240,.06); }
+input[type="text"] { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r2); color: var(--t1); padding: 10px; margin-bottom: 20px; font-size: 14px; outline: none;}
+input[type="text"]:focus { border-color: var(--accent); }
+.btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: var(--r2); font-weight: bold; cursor: pointer; transition: .2s; }
+.btn:hover { background: var(--accent2); }
+.btn:disabled { background: var(--bg3); color: var(--t3); cursor: not-allowed; }
+h2 { margin-bottom: 5px; font-size: 18px; }
+p { color: var(--t2); font-size: 12px; margin-bottom: 20px; }
+a { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
+a:hover { color: var(--accent3); }
+label { font-size: 12px; color: var(--t2); margin-bottom: 5px; display: block;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a href="index.html" class="logo-icon">প</a>
+  <span style="font-weight: 700; font-size: 14px;">Add Watermark Tool</span>
+</div>
+
+<div class="container">
+  <a href="index.html">← Back to Editor</a>
+  <h2>Stamp PDF Watermark</h2>
+  <p>Add a diagonal text watermark across every page of a PDF.</p>
+  
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+    <div style="font-size: 24px; margin-bottom: 10px;" id="file-icon">📄</div>
+    <div id="file-name">Click to select PDF file</div>
+    <input type="file" id="file-input" accept="application/pdf" hidden>
+  </div>
+
+  <label>Watermark Text</label>
+  <input type="text" id="wm-text" placeholder="e.g. DRAFT COPY - DO NOT DISTRIBUTE" value="CONFIDENTIAL">
+
+  <button class="btn" id="apply-btn" disabled onclick="applyWatermark()">Apply & Download</button>
+</div>
+
+<script>
+  let targetFile = null;
+
+  document.getElementById('file-input').addEventListener('change', function(e) {
+    if(e.target.files.length > 0) {
+        targetFile = e.target.files[0];
+        document.getElementById('file-name').textContent = targetFile.name;
+        document.getElementById('file-icon').textContent = "✅";
+        document.getElementById('apply-btn').disabled = false;
+    }
+  });
+
+  async function applyWatermark() {
+    const text = document.getElementById('wm-text').value || "CONFIDENTIAL";
+    const btn = document.getElementById('apply-btn');
+    btn.textContent = "Processing...";
+    btn.disabled = true;
+
+    try {
+      const arrayBuffer = await targetFile.arrayBuffer();
+      const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+      const pages = pdfDoc.getPages();
+
+      pages.forEach(page => {
+        const { width, height } = page.getSize();
+        page.drawText(text, {
+          x: width / 2 - 150,
+          y: height / 2 - 50,
+          size: 60,
+          color: PDFLib.rgb(0.5, 0.5, 0.5),
+          opacity: 0.3,
+          rotate: PDFLib.degrees(45),
+        });
+      });
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Watermarked_' + targetFile.name;
+      link.click();
+      
+      btn.textContent = "Apply & Download";
+      btn.disabled = false;
+    } catch (err) {
+      alert("Error applying watermark: " + err.message);
+      btn.textContent = "Apply & Download";
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
