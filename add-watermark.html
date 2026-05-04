@@ -76,12 +76,15 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
 .dynamic-sec { display: none; background: var(--bg1); padding: 15px; border-radius: var(--r2); border: 1px solid var(--border); }
 .dynamic-sec.active { display: block; }
 
-/* CSS Simulation Box */
+/* CSS Simulation Box - FIXED THE SQUEEZING TRAP HERE */
 .sim-wrapper { background: var(--bg3); padding: 20px; border-radius: var(--r); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; min-height: 400px; box-shadow: inset 0 4px 16px rgba(0,0,0,0.2); }
 #sim-page { width: 100%; max-width: 320px; aspect-ratio: 1 / 1.414; background: #ffffff; position: relative; overflow: hidden; box-shadow: var(--shadow2); border-radius: 2px;}
-#sim-wm-container { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; pointer-events: none;}
+
+/* Added width/height max-content to prevent edge-squeezing */
+#sim-wm-container { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; pointer-events: none; width: max-content; height: max-content;}
 #sim-wm-text { font-family: sans-serif; font-weight: bold; white-space: nowrap; }
-#sim-wm-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+/* Replaced max-width 100% with a fixed base width so it scales perfectly */
+#sim-wm-img { width: 150px; height: auto; object-fit: contain; }
 
 /* Info Panel CSS */
 #info { position: fixed; top: 0; right: 0; width: min(400px, 95vw); height: 100dvh; background: var(--bg1); border-left: 1px solid var(--border); z-index: 901; transform: translateX(100%); transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), background .25s, border-color .25s; display: flex; flex-direction: column; box-shadow: var(--shadow); }
