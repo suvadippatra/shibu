@@ -76,14 +76,13 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
 .dynamic-sec { display: none; background: var(--bg1); padding: 15px; border-radius: var(--r2); border: 1px solid var(--border); }
 .dynamic-sec.active { display: block; }
 
-/* CSS Simulation Box - FIXED THE SQUEEZING TRAP HERE */
+/* CSS Simulation Box */
 .sim-wrapper { background: var(--bg3); padding: 20px; border-radius: var(--r); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; min-height: 400px; box-shadow: inset 0 4px 16px rgba(0,0,0,0.2); }
 #sim-page { width: 100%; max-width: 320px; aspect-ratio: 1 / 1.414; background: #ffffff; position: relative; overflow: hidden; box-shadow: var(--shadow2); border-radius: 2px;}
 
-/* Added width/height max-content to prevent edge-squeezing */
+/* Fixed Width/Height max-content to prevent edge-squeezing */
 #sim-wm-container { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; pointer-events: none; width: max-content; height: max-content;}
 #sim-wm-text { font-family: sans-serif; font-weight: bold; white-space: nowrap; }
-/* Replaced max-width 100% with a fixed base width so it scales perfectly */
 #sim-wm-img { width: 150px; height: auto; object-fit: contain; }
 
 /* Info Panel CSS */
@@ -449,30 +448,54 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
         embedImage = await pdfDoc.embedPng(svgPngBuffer);
       }
 
+      // Mathematical Trig Sync for exact Center Rotation mapping between CSS and PDF
+      const rad = (-rotVal) * Math.PI / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+
+      // Embed standard Helvetica font to perfectly calculate text width mathematically
+      const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
       pages.forEach(page => {
         const { width, height } = page.getSize();
         
-        // Match CSS Top-to-Bottom coordinates to PDF Bottom-to-Top
         const targetX = width * posX;
-        const targetY = height * (1 - posY);
+        const targetY = height * (1 - posY); // Invert Y because PDF draws from the bottom up
 
         if (currentMode === 'sec-text') {
             const text = document.getElementById('wm-text').value || " ";
             const colorRaw = document.getElementById('wm-text-color').value.split(',').map(Number);
-            const fontSize = 50 * scaleVal;
+            
+            // Sync scale: 50px base on a 320px CSS container = 15.625% of page width
+            const fontSize = width * (50 / 320) * scaleVal;
+            const textWidth = helveticaFont.widthOfTextAtSize(text, fontSize);
+            const textHeight = helveticaFont.heightAtSize(fontSize) * 0.8; 
+
+            // Calculate precise offset so the origin stays dead-center despite corner rotation
+            const x = targetX - (textWidth / 2) * cos + (textHeight / 2) * sin;
+            const y = targetY - (textWidth / 2) * sin - (textHeight / 2) * cos;
+
             page.drawText(text, {
-              x: targetX - (text.length * fontSize * 0.28), // Approximation of center text alignment
-              y: targetY - (fontSize * 0.25),
+              x: x,
+              y: y,
               size: fontSize,
+              font: helveticaFont,
               color: PDFLib.rgb(colorRaw[0]/255, colorRaw[1]/255, colorRaw[2]/255),
               opacity: opacityVal,
-              rotate: PDFLib.degrees(-rotVal), // Negative to match CSS rotation
+              rotate: PDFLib.degrees(-rotVal),
             });
         } else if (embedImage) {
-            const scaledDims = embedImage.scale(scaleVal);
+            // Sync scale: 150px base on a 320px CSS container = 46.875% of page width
+            const baseImgWidth = width * (150 / 320);
+            const finalScale = (baseImgWidth / embedImage.width) * scaleVal;
+            const scaledDims = embedImage.scale(finalScale);
+            
+            const x = targetX - (scaledDims.width / 2) * cos + (scaledDims.height / 2) * sin;
+            const y = targetY - (scaledDims.width / 2) * sin - (scaledDims.height / 2) * cos;
+
             page.drawImage(embedImage, {
-              x: targetX - (scaledDims.width / 2),
-              y: targetY - (scaledDims.height / 2),
+              x: x,
+              y: y,
               width: scaledDims.width,
               height: scaledDims.height,
               opacity: opacityVal,
