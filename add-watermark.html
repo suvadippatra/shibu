@@ -4,7 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>Add Watermark - প্রশ্নপত্র Maker</title>
-<!-- Using local library -->
 <script src="libs/pdf-lib.min.js"></script>
 <script src="libs/fontkit.umd.min.js"></script>
 <style>
@@ -78,11 +77,9 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
 /* CSS Simulation Box */
 .sim-wrapper { background: var(--bg3); padding: 20px; border-radius: var(--r); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; min-height: 400px; box-shadow: inset 0 4px 16px rgba(0,0,0,0.2); }
-#sim-page { width: 100%; max-width: 320px; aspect-ratio: 1 / 1.414; background: #ffffff; position: relative; overflow: hidden; box-shadow: var(--shadow2); border-radius: 2px;}
-
-/* Fixed Width/Height max-content to prevent edge-squeezing */
+#sim-page { width: 100%; max-width: 320px; aspect-ratio: 1 / 1.414; background: #ffffff; position: relative; overflow: hidden; box-shadow: var(--shadow2); border-radius: 2px; transition: aspect-ratio 0.3s;}
 #sim-wm-container { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; pointer-events: none; width: max-content; height: max-content;}
-#sim-wm-text { font-family: sans-serif; font-weight: bold; white-space: nowrap; }
+#sim-wm-text { font-family: Helvetica, sans-serif; font-weight: bold; white-space: nowrap; }
 #sim-wm-img { width: 150px; height: auto; object-fit: contain; }
 
 /* Info Panel CSS */
@@ -199,7 +196,7 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
       <div id="sim-page">
         <div id="sim-wm-container">
           <!-- Text or Img will be injected here -->
-          <div id="sim-wm-text" style="color: rgba(128,128,128,0.3); font-size: 50px;">CONFIDENTIAL</div>
+          <div id="sim-wm-text" style="color: rgba(128,128,128,0.3); font-size: 30px;">CONFIDENTIAL</div>
           <img id="sim-wm-img" style="display: none; opacity: 0.3;" src="" alt=""/>
         </div>
       </div>
@@ -229,9 +226,8 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
     </button>
   </div>
   <div class="info-body">
-    <p><strong>1. Live Simulation:</strong> The box on the right represents a standard A4 page. As you move the sliders, you will see a buttery-smooth preview of exactly how your watermark will sit.</p>
-    <p><strong>2. Lock & Load:</strong> When you are happy with the simulation, select your target PDF file.</p>
-    <p><strong>3. Apply:</strong> Click "Apply & Download". The app will use your simulated math to permanently bake the watermark into every page of the real PDF.</p>
+    <p><strong>1. Live Simulation:</strong> The box on the right represents the exact shape of your uploaded PDF. As you move the sliders, you will see a buttery-smooth preview of exactly how your watermark will sit.</p>
+    <p><strong>2. Apply:</strong> Click "Apply & Download". The app will use your simulated math (converting center-rotations to baseline-rotations) to permanently bake the watermark into every page of the real PDF.</p>
     <p><strong>Note on Default Logo:</strong> The default SVG logo requires a password to unlock. Ensure <code>watermark.svg</code> is uploaded to your root folder for this feature to work.</p>
   </div>
 </div>
@@ -241,7 +237,7 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
 <script>
   // -- SHA-256 Hash of "BERA26" --
-  const DEFAULT_WM_HASH = "d89c34cb1d5083183db108522761b3bec45ac9cb159da982121ee4b4e934297c";
+  const DEFAULT_WM_HASH = "e82200dc823293290bdf7cb9d0d3f23924f9faab70ec683670dbd923ea089855";
   let hasAuthenticatedSvg = false;
   let cachedSvgBlobUrl = null;
 
@@ -277,10 +273,10 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
   // -- SIMULATION LOGIC --
   let currentMode = 'sec-text';
-  
   const simContainer = document.getElementById('sim-wm-container');
   const simText = document.getElementById('sim-wm-text');
   const simImg = document.getElementById('sim-wm-img');
+  const simPage = document.getElementById('sim-page');
 
   function updateSimulation() {
     const x = document.getElementById('ctrl-x').value;
@@ -295,27 +291,32 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
     simContainer.style.transform = `translate(-50%, -50%) rotate(${r}deg) scale(${s})`;
     simContainer.style.opacity = o / 100;
 
+    // Relative font scaling so text visually scales correctly with container
+    const baseFontSize = (simPage.clientWidth / 595) * 50; 
+
     // Apply Content Based on Tab
     if (currentMode === 'sec-text') {
         simImg.style.display = 'none';
         simText.style.display = 'block';
         simText.textContent = document.getElementById('wm-text').value || " ";
         simText.style.color = `rgb(${document.getElementById('wm-text-color').value})`;
+        simText.style.fontSize = `${baseFontSize}px`;
     } else {
         simText.style.display = 'none';
         simImg.style.display = 'block';
     }
   }
 
-  // Attach listeners to all inputs to trigger simulation update
+  // Attach listeners to trigger simulation update
   const inputsToWatch = ['ctrl-x', 'ctrl-y', 'ctrl-s', 'ctrl-r', 'ctrl-o', 'wm-text', 'wm-text-color'];
   inputsToWatch.forEach(id => document.getElementById(id).addEventListener('input', updateSimulation));
+  window.addEventListener('resize', updateSimulation);
 
   // Handle Tab Switching & Authentication
   async function switchTab(tabId) {
     if (tabId === 'sec-svg' && !hasAuthenticatedSvg) {
         const pwd = prompt('Enter password to unlock Default Logo:');
-        if (!pwd) return; // User cancelled
+        if (!pwd) return; 
         const hash = await hashPassword(pwd.trim());
         if (hash !== DEFAULT_WM_HASH) {
             toast('Access Denied: Incorrect Password', 'error');
@@ -323,7 +324,7 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
         }
         hasAuthenticatedSvg = true;
         toast('Default Logo Unlocked', 'info');
-        await renderSvgForSimulation(); // Trigger canvas render
+        await renderSvgForSimulation(); 
     }
 
     document.querySelectorAll('.type-tab').forEach(t => t.classList.toggle('on', t.dataset.target === tabId));
@@ -341,7 +342,6 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
     updateSimulation();
   }
 
-  // Handle Custom Image Upload
   document.getElementById('wm-img-file').addEventListener('change', function(e) {
       if (e.target.files.length > 0) {
           simImg.src = URL.createObjectURL(e.target.files[0]);
@@ -349,12 +349,10 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
       }
   });
 
-  // Handle SVG Color Changing
   document.getElementById('wm-svg-color').addEventListener('change', async () => {
       if (hasAuthenticatedSvg) await renderSvgForSimulation();
   });
 
-  // Slider Display Binding
   const bindSlider = (id, suffix) => {
     const el = document.getElementById('ctrl-' + id);
     const val = document.getElementById('val-' + id);
@@ -366,13 +364,24 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
   let targetPdfFile = null;
   let finalBlobUrl = null;
 
-  document.getElementById('file-input').addEventListener('change', function(e) {
+  document.getElementById('file-input').addEventListener('change', async function(e) {
     if(e.target.files.length > 0) {
         targetPdfFile = e.target.files[0];
         document.getElementById('file-name').textContent = targetPdfFile.name;
         document.getElementById('file-icon').textContent = "✅";
         document.getElementById('apply-btn').disabled = false;
         document.getElementById('preview-section').style.display = 'none';
+
+        // Synchronize Simulation Box Aspect Ratio with the uploaded PDF
+        try {
+            const arrayBuffer = await readFileAsArrayBuffer(targetPdfFile);
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+            const { width, height } = pdfDoc.getPages()[0].getSize();
+            simPage.style.aspectRatio = `${width} / ${height}`;
+            updateSimulation();
+        } catch(err) {
+            console.warn("Could not read PDF dimensions for preview synchronization.", err);
+        }
     }
   });
 
@@ -448,56 +457,57 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
         embedImage = await pdfDoc.embedPng(svgPngBuffer);
       }
 
-      // Mathematical Trig Sync for exact Center Rotation mapping between CSS and PDF
-      const rad = (-rotVal) * Math.PI / 180;
-      const cos = Math.cos(rad);
-      const sin = Math.sin(rad);
-
-      // Embed standard Helvetica font to perfectly calculate text width mathematically
-      const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      // Load Standard Font for measurement
+      const font = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
       pages.forEach(page => {
         const { width, height } = page.getSize();
         
-        const targetX = width * posX;
-        const targetY = height * (1 - posY); // Invert Y because PDF draws from the bottom up
+        // Base center coordinates
+        const cx = width * posX;
+        const cy = height * (1 - posY); // PDF coordinate system is bottom-up
+
+        // Convert UI rotation (degrees, clockwise) to PDF rotation (radians, counter-clockwise)
+        const theta = -rotVal * Math.PI / 180; 
 
         if (currentMode === 'sec-text') {
             const text = document.getElementById('wm-text').value || " ";
             const colorRaw = document.getElementById('wm-text-color').value.split(',').map(Number);
+            const fontSize = 50 * scaleVal;
             
-            // Sync scale: 50px base on a 320px CSS container = 15.625% of page width
-            const fontSize = width * (50 / 320) * scaleVal;
-            const textWidth = helveticaFont.widthOfTextAtSize(text, fontSize);
-            const textHeight = helveticaFont.heightAtSize(fontSize) * 0.8; 
+            // Exact text measurement
+            const textWidth = font.widthOfTextAtSize(text, fontSize);
+            const textHeight = fontSize * 0.75; // Approx cap height
 
-            // Calculate precise offset so the origin stays dead-center despite corner rotation
-            const x = targetX - (textWidth / 2) * cos + (textHeight / 2) * sin;
-            const y = targetY - (textWidth / 2) * sin - (textHeight / 2) * cos;
+            // Trigonometric correction: Find where the bottom-left baseline anchor point
+            // goes when the theoretical bounding box is rotated around its true center.
+            const targetX = cx - (textWidth/2)*Math.cos(theta) + (textHeight/2)*Math.sin(theta);
+            const targetY = cy - (textWidth/2)*Math.sin(theta) - (textHeight/2)*Math.cos(theta);
 
             page.drawText(text, {
-              x: x,
-              y: y,
+              x: targetX,
+              y: targetY,
               size: fontSize,
-              font: helveticaFont,
+              font: font,
               color: PDFLib.rgb(colorRaw[0]/255, colorRaw[1]/255, colorRaw[2]/255),
               opacity: opacityVal,
               rotate: PDFLib.degrees(-rotVal),
             });
+
         } else if (embedImage) {
-            // Sync scale: 150px base on a 320px CSS container = 46.875% of page width
-            const baseImgWidth = width * (150 / 320);
-            const finalScale = (baseImgWidth / embedImage.width) * scaleVal;
-            const scaledDims = embedImage.scale(finalScale);
+            const scaledDims = embedImage.scale(scaleVal);
+            const imgW = scaledDims.width;
+            const imgH = scaledDims.height;
             
-            const x = targetX - (scaledDims.width / 2) * cos + (scaledDims.height / 2) * sin;
-            const y = targetY - (scaledDims.width / 2) * sin - (scaledDims.height / 2) * cos;
+            // Trigonometric correction for Image anchor point (bottom-left)
+            const targetX = cx - (imgW/2)*Math.cos(theta) + (imgH/2)*Math.sin(theta);
+            const targetY = cy - (imgW/2)*Math.sin(theta) - (imgH/2)*Math.cos(theta);
 
             page.drawImage(embedImage, {
-              x: x,
-              y: y,
-              width: scaledDims.width,
-              height: scaledDims.height,
+              x: targetX,
+              y: targetY,
+              width: imgW,
+              height: imgH,
               opacity: opacityVal,
               rotate: PDFLib.degrees(-rotVal),
             });
