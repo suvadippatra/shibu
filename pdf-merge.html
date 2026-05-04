@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>PDF Merge - প্রশ্নপত্র Maker</title>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+:root {
+  --bg: #080d1a; --bg1: #0d1427; --bg2: #111b34; --bg3: #172040; --bg4: #1c274d;
+  --border: #1a2a48; --border2: #203358; --accent: #5b50f0; --accent2: #7065f3; --accent3: #9d95f7;
+  --t1: #eef2fb; --t2: #8fa3c8; --t3: #4a5d80; --shadow: 0 8px 32px rgba(0,0,0,.65);
+  --r: 9px; --r2: 6px; --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--t1); display: flex; flex-direction: column; height: 100vh; }
+#topbar { height: 50px; background: var(--bg1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent3)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; text-decoration: none;}
+.container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); width: 90%; }
+.drop-zone { border: 2px dashed var(--border2); border-radius: var(--r2); padding: 40px 20px; text-align: center; cursor: pointer; transition: .2s; margin-bottom: 20px; }
+.drop-zone:hover { border-color: var(--accent2); background: rgba(91,80,240,.06); }
+.file-list { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+.file-item { display: flex; justify-content: space-between; background: var(--bg3); padding: 10px; border-radius: var(--r2); font-size: 12px; border: 1px solid var(--border); }
+.btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: var(--r2); font-weight: bold; cursor: pointer; transition: .2s; }
+.btn:hover { background: var(--accent2); }
+.btn:disabled { background: var(--bg3); color: var(--t3); cursor: not-allowed; }
+h2 { margin-bottom: 5px; font-size: 18px; }
+p { color: var(--t2); font-size: 12px; margin-bottom: 20px; }
+a { color: var(--t2); text-decoration: none; font-size: 12px; display: inline-block; margin-bottom: 20px;}
+a:hover { color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a href="index.html" class="logo-icon">প</a>
+  <span style="font-weight: 700; font-size: 14px;">PDF Merge Tool</span>
+</div>
+
+<div class="container">
+  <a href="index.html">← Back to Editor</a>
+  <h2>Merge Multiple PDFs</h2>
+  <p>Select or drag multiple PDF files to combine them into one.</p>
+  
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+    <div style="font-size: 24px; margin-bottom: 10px;">📄 + 📄</div>
+    <div>Click to select PDF files</div>
+    <input type="file" id="file-input" multiple accept="application/pdf" hidden>
+  </div>
+
+  <div class="file-list" id="file-list"></div>
+  <button class="btn" id="merge-btn" disabled onclick="mergePDFs()">Merge & Download</button>
+</div>
+
+<script>
+  let filesToMerge = [];
+
+  document.getElementById('file-input').addEventListener('change', function(e) {
+    filesToMerge = Array.from(e.target.files);
+    updateFileList();
+  });
+
+  function updateFileList() {
+    const list = document.getElementById('file-list');
+    const btn = document.getElementById('merge-btn');
+    list.innerHTML = '';
+    
+    if (filesToMerge.length > 0) {
+      filesToMerge.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>${index + 1}. ${file.name}</span> <span style="color:var(--t3)">${(file.size/1024/1024).toFixed(2)} MB</span>`;
+        list.appendChild(item);
+      });
+      btn.disabled = filesToMerge.length < 2;
+      btn.textContent = filesToMerge.length < 2 ? "Select at least 2 PDFs" : "Merge & Download";
+    } else {
+      btn.disabled = true;
+      btn.textContent = "Merge & Download";
+    }
+  }
+
+  async function mergePDFs() {
+    const btn = document.getElementById('merge-btn');
+    btn.textContent = "Merging... Please wait";
+    btn.disabled = true;
+
+    try {
+      const mergedPdf = await PDFLib.PDFDocument.create();
+      
+      for (let file of filesToMerge) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
+
+      const mergedPdfFile = await mergedPdf.save();
+      const blob = new Blob([mergedPdfFile], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Merged_Document.pdf';
+      link.click();
+      
+      btn.textContent = "Done! Merge More?";
+      btn.disabled = false;
+    } catch (err) {
+      alert("Error merging PDFs: " + err.message);
+      btn.textContent = "Merge & Download";
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
