@@ -980,8 +980,8 @@ select {
             <div class="sg2-label"><span>Watermark Source</span></div>
             <div class="wm-select-wrap">
               <select id="s-wmsrc">
-                <option value="none">None</option>
-                <option value="default" selected>Default</option>
+                <option value="none" selected>None</option>
+                <option value="default">Default</option>
                 <option value="custom">Custom upload…</option>
               </select>
               <input type="file" id="wm-file" accept="image/*" hidden/>
@@ -1301,7 +1301,7 @@ const S = {
   topTitle: 'Test no. 1 by Shibanjan Bera',
   klass: '', subject: '', time: 30, inst: '', fullMarks: 0,
   paperLang: 'full-bn', fontSize: 11, lineHeight: 1.45, margin: 1.0,
-  divider: 'dotted', wmSrc: 'default', wmData: null, wmOpacity: 7, wmSize: 65,
+  divider: 'dotted', wmSrc: 'none', wmData: null, wmOpacity: 7, wmSize: 65,
   sections: [], zoom: 0.55, pvMode: 'one', autoFit: null, autoFitDirty: false, wmCustomData: null,
 };
 
@@ -1458,10 +1458,12 @@ function initSettings() {
   $('s-wmsrc').addEventListener('change', async e => { 
     if (e.target.value === 'custom') {
       $('wm-file').click();
+
     } else if (e.target.value === 'default') {
       const pwd = prompt('Enter password to access default watermark:');
       if (pwd) {
-          const hash = await hashPassword(pwd);
+          // .trim() removes accidental spaces at the beginning or end
+          const hash = await hashPassword(pwd.trim());
           if (hash === DEFAULT_WM_HASH) {
               S.wmSrc = 'default';
               _lastWmSrc = 'default';
@@ -2712,7 +2714,7 @@ function parseQPF(rawText) {
       topTitle: 'Test no. 1 by Shibanjan Bera',
       klass: '', subject: '', time: 30, inst: '',
       fontSize: 11, lineHeight: 1.45, margin: 1.0,
-      divider: 'dotted', paperLang: 'full-bn', wmSrc: 'default',
+      divider: 'dotted', paperLang: 'full-bn', wmSrc: 'none',
       sections: []
     };
 
