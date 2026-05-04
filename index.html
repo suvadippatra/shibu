@@ -760,10 +760,12 @@ select {
 <div id="topbar">
   <a class="logo" href="#" onclick="return false" title="Double click icon for glow mode">
     <div class="logo-icon">
-      <span class="logo-fallback">প</span>
+      <img src="logo.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <span class="logo-fallback" style="display:none">প</span>
     </div>
     <div class="logo-text">প্রশ্নপত্র <em>Maker</em></div>
   </a>
+
   <div class="topbar-right">
     <div id="topbar-stats"></div>
     <span id="fit-badge" class="ok">✓ Ready</span>
