@@ -316,9 +316,10 @@ body.glow-mode .qitem input[type="text"] {
   background: var(--pv-bg); overflow: hidden; min-height: 0; transition: background .25s;
 }
 #preview-bar {
-  height: 40px; background: var(--bg1); border-bottom: 1px solid var(--border);
+  min-height: 40px; height: auto;
+  background: var(--bg1); border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 12px; gap: 10px; flex-shrink: 0;
+  padding: 6px 12px; gap: 10px; flex-shrink: 0; flex-wrap: wrap;
   transition: background .25s, border-color .25s;
 }
 #preview-vp {
@@ -394,17 +395,18 @@ body.glow-mode .qitem input[type="text"] {
 .wm-select-wrap { display: flex; gap: 6px; align-items: center; }
 .wm-select-wrap select { flex: 1; }
 
-/* Autofit Button (Relocated to Preview Bar) */
-#autofit-btn {
+/* Autofit & Toggles Buttons */
+#autofit-btn, #ans-space-btn {
   display: flex; align-items: center; justify-content: center;
   gap: 5px; padding: 4px 8px; border-radius: var(--r2);
   background: transparent; border: 1px solid transparent;
   color: var(--t2); cursor: pointer; transition: .2s; outline: none;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
 }
-#autofit-btn:hover { background: var(--bg3); color: var(--t1); border-color: var(--border2); }
-#autofit-btn.active {
+#autofit-btn:hover, #ans-space-btn:hover { background: var(--bg3); color: var(--t1); border-color: var(--border2); }
+#autofit-btn.active, #ans-space-btn.active {
   background: rgba(16,185,129,.12);
-  border-color: rgba(16,185,129,.3); color: var(--green2);
+  border-color: rgba(16,185,129,.3); color: var(--green2); font-weight: 600;
 }
 
 /* ── UI COMPONENTS ── */
@@ -556,6 +558,10 @@ select {
 }
 .inline-tbl td input:focus { outline: none; background: rgba(91,80,240,.06); }
 
+/* Pointers list for labeled diagrams */
+.ptr-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.ptr-row { display: flex; gap: 4px; align-items: center; }
+
 /* ── MODALS & PANELS ── */
 #dia-modal {
   position: fixed; inset: 0; background: rgba(0,0,0,.78); z-index: 3000;
@@ -625,12 +631,27 @@ select {
 @keyframes tIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes tOut { to { opacity: 0; transform: translateY(-8px); } }
 
-/* ── ONE SET PREVIEW STYLE ── */
-.qp-page.preview-one {
-  width: calc(297mm / 2) !important;
+/* ── VIEW MODE PREVIEW STYLES ── */
+.qp-page.preview-zero {
+  width: 210mm !important;
+  min-height: 297mm !important;
   margin: 0 auto;
-  border-right: 1px dashed var(--border3);
 }
+.qp-page.preview-continuous {
+  width: 297mm !important;
+  min-height: 210mm !important;
+  margin: 0 auto;
+}
+.qp-page.preview-mirror4 .qp-set-wrapper {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 50% 50%;
+  width: 100%; height: 100%;
+}
+.qp-page.preview-mirror4 .q-quad-1 { border-right: 1px dashed #ccc; border-bottom: 1px dashed #ccc; }
+.qp-page.preview-mirror4 .q-quad-2 { border-bottom: 1px dashed #ccc; }
+.qp-page.preview-mirror4 .q-quad-3 { border-right: 1px dashed #ccc; }
+.qp-page.preview-mirror4 .q-quad-4 { }
 
 /* ── RESPONSIVE COMPACT ── */
 @media (max-width: 820px) {
@@ -706,7 +727,7 @@ select {
 .qp-info { display: flex; justify-content: space-between; font-family: var(--font-tt); font-size: calc(var(--p-fsize) - 0.5pt); padding-bottom: 3pt; line-height: 1.3; }
 .qp-sec-hdr { text-align: center; font-weight: bold; padding: 3pt 0 1pt; line-height: 1.2; break-after: avoid; page-break-after: avoid; }
 .qp-sec-row { display: flex; justify-content: space-between; font-weight: bold; padding-bottom: 1pt; line-height: 1.2; break-after: avoid; page-break-after: avoid; }
-.qp-q { margin-bottom: 2.5pt; text-align: justify; line-height: var(--p-lh); white-space: pre-wrap; break-inside: avoid; page-break-inside: avoid; }
+.qp-q { margin-bottom: 2.5pt; line-height: var(--p-lh); white-space: pre-wrap; break-inside: avoid; page-break-inside: avoid; }
 .qp-q-mcq-opts {
   display: flex; justify-content: space-evenly;
   text-align: center; margin-top: 1pt; gap: 4pt;
@@ -721,7 +742,9 @@ select {
    @MEDIA PRINT
 ══════════════════════════════════════════ */
 @media print {
-  @page { size: A4 landscape; margin: 0; }
+  html.print-portrait @page { size: A4 portrait; margin: 0; }
+  html.print-landscape @page { size: A4 landscape; margin: 0; }
+  @page { size: A4 landscape; margin: 0; } /* Fallback */
   html, body {
     background: #fff !important;
     overflow: visible !important;
@@ -749,7 +772,9 @@ select {
   .pp { box-shadow: none !important; page-break-after: always; }
   .pp:last-child { page-break-after: auto; }
   
-  .qp-page { width: 297mm !important; min-height: 210mm !important; height: auto !important; border: none !important; }
+  .qp-page { height: auto !important; border: none !important; }
+  .qp-page.preview-zero { width: 210mm !important; min-height: 297mm !important; }
+  .qp-page:not(.preview-zero) { width: 297mm !important; min-height: 210mm !important; }
   .qp-set { height: auto !important; }
 }
 </style>
@@ -793,9 +818,6 @@ select {
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> Menu
         </button>
         <div class="dropdown-content">
-          <a href="pdf-merge.html">PDF Merge</a>
-          <a href="pdf-colour-invert.html">PDF Colour Invert</a>
-          <a href="pdf-watermark-detect.html">PDF Watermark Detect</a>
           <a href="add-watermark.html">Add Watermark</a>
         </div>
       </div>
@@ -951,6 +973,16 @@ select {
               <button class="slider-btn" data-slider="s-mg" data-dir="1">+</button>
             </div>
           </div>
+          
+          <div class="sg2">
+            <div class="sg2-label"><span>Orientation</span></div>
+            <div class="dpick" id="s-orient">
+              <div class="dopt on" data-v="auto">Auto</div>
+              <div class="dopt" data-v="portrait">Portrait</div>
+              <div class="dopt" data-v="landscape">Landscape</div>
+            </div>
+          </div>
+          
           <div class="sg2">
             <div class="sg2-label"><span>Cut Line Style</span></div>
             <div class="dpick">
@@ -960,6 +992,7 @@ select {
               <div class="dopt" data-d="text">✂ cut</div>
             </div>
           </div>
+          
           <div class="sg2">
             <div class="sg2-label"><span>Watermark Opacity</span> <span class="slider-val" id="s-wmo-v">7%</span></div>
             <div class="slider-wrap">
@@ -994,11 +1027,18 @@ select {
     <!-- PREVIEW AREA -->
     <div id="preview">
       <div id="preview-bar">
-        <div style="display:flex; align-items:center; gap:9px">
+        <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
           <div class="pill-group" id="pv-mode">
-            <div class="pill on" data-m="one">One Set</div>
-            <div class="pill" data-m="both">Print View</div>
+            <div class="pill" data-m="zero">0-mirror</div>
+            <div class="pill on" data-m="mirror2">2-mirror</div>
+            <div class="pill" data-m="mirror4">4-mirror</div>
+            <div class="pill" data-m="continuous">Continuous</div>
           </div>
+          
+          <button id="ans-space-btn" title="Toggle blank space below questions for writing answers">
+             Ans Space: OFF
+          </button>
+          
           <button id="autofit-btn" onclick="runAutoFit()" title="Auto-fit content to page" style="display:none;">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21H3M3 3v18"/><path d="M7 17l5-8 3 5 2-3 3 4"/></svg> 
           </button>
@@ -1064,14 +1104,14 @@ select {
       <div class="info-sec-ttl">What is this / এটি কী?</div>
       <div class="info-item">
         <div class="iico b">📝</div>
-        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with a two-set A4 landscape print layout. Everything runs locally.<br><span style="color:var(--t2); font-size:11px;">এটি একটি দুই-সেট A4 ল্যান্ডস্কেপ প্রশ্নপত্র তৈরি করার টুল। সবকিছু লোকালি কাজ করে।</span></p>
+        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with multiple print layouts (1-page, booklet, mirror sets). Everything runs locally.<br><span style="color:var(--t2); font-size:11px;">এটি একটি প্রশ্নপত্র তৈরি করার টুল। সবকিছু লোকালি কাজ করে।</span></p>
       </div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম (Manual Typing)</div>
+      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম (Manual Typing)</div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Math equations<br><span style="color:var(--t2); font-size:11px;">গণিতের সমীকরণ রেন্ডার করে।</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry formulas<br><span style="color:var(--t2); font-size:11px;">রাসায়নিক সংকেত (অটো সাবস্ক্রিপ্ট)।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry formulas<br><span style="color:var(--t2); font-size:11px;">রাসায়নিক সংকেত (অটো সাবস্ক্রিপ্ট)।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (x²)<br><span style="color:var(--t2); font-size:11px;">সুপারস্ক্রিপ্ট লেখার জন্য।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>C[SUB:3]</code> : Subscript (C₃)<br><span style="color:var(--t2); font-size:11px;">সাবস্ক্রিপ্ট লেখার জন্য।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>[SYM:alpha]</code> : Greek symbols<br><span style="color:var(--t2); font-size:11px;">গ্রিক অক্ষর (যেমন: আলফা, বিটা)।</span></p></div>
@@ -1104,7 +1144,7 @@ select {
     <div>
       <div class="info-sec-ttl">🖨 Print Tips / প্রিন্ট টিপস</div>
       <div class="info-item"><div class="iico a">💡</div>
-        <p class="info-p">Use <strong>Chrome or Edge</strong> for best PDF output. Set paper to <strong>A4 · Landscape · Margins: None · Background graphics: ✓</strong>. Cut along the dotted centre line after printing.<br><span style="color:var(--t2); font-size:11px;">Chrome বা Edge ব্যবহার করুন। A4, Landscape, Margins: None, Background graphics: ON সেট করুন।</span></p>
+        <p class="info-p">Use <strong>Chrome or Edge</strong> for best PDF output. Verify paper orientation (Portrait vs Landscape) based on your chosen View Mode. Set Margins to <strong>None</strong> and Background graphics to <strong>✓</strong>.<br><span style="color:var(--t2); font-size:11px;">Chrome বা Edge ব্যবহার করুন। Margins: None এবং Background graphics: ON সেট করুন।</span></p>
       </div>
     </div>
     
@@ -1130,7 +1170,7 @@ select {
     <div>
       <div class="info-sec-ttl">1. 📝 Setup Details / বিস্তারিত সেটআপ</div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Paper Title / পেপারের নাম:</strong> The main heading.<br><span style="color:var(--t2); font-size:11px;">প্রধান শিরোনাম (যেমন: Weekly Test 1)।</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Class, Time, & Subject:</strong> Full Marks automatically calculates.<br><span style="color:var(--t2); font-size:11px;">এগুলো পূরণ করুন। Full Marks স্বয়ংক্রিয়ভাবে হিসাব হবে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Class, Time, & Subject:</strong> Full Marks automatically calculates.<br><span style="color:var(--t2); font-size:11px;">এগুলো পূরণ করুন। Full Marks স্বয়ংক্রিয়ভাবে হিসাব হবে।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Language Mode / পেপার ভাষা:</strong> Automatically changes numbering style (১, ২, ৩ vs 1, 2, 3).<br><span style="color:var(--t2); font-size:11px;">ভাষা নির্বাচন করলে নম্বরের স্টাইল নিজে থেকেই বদলে যাবে।</span></p></div>
     </div>
 
@@ -1139,13 +1179,15 @@ select {
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Add Section:</strong> Exam papers are divided into sections.<br><span style="color:var(--t2); font-size:11px;">Add Section-এ ক্লিক করে নতুন বিভাগ তৈরি করুন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Marks / Q:</strong> Set marks per question.<br><span style="color:var(--t2); font-size:11px;">প্রতিটি প্রশ্নের নম্বর নির্ধারণ করুন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Answer Any / যে কোনো N টি:</strong> E.g., type "3" to answer 3 out of 5.<br><span style="color:var(--t2); font-size:11px;">৫টির মধ্যে ৩টি উত্তর দিতে হলে "3" লিখুন।</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>🔗 Link OR (অথবা):</strong> Select two questions to join them with an OR.<br><span style="color:var(--t2); font-size:11px;">দুটি প্রশ্নকে 'অথবা' দিয়ে জুড়তে ব্যবহৃত হয়।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>🔗 Link OR (অথবা):</strong> Select two questions to join them with an OR.<br><span style="color:var(--t2); font-size:11px;">দুটি প্রশ্নকে 'অথবা' দিয়ে জুড়তে ব্যবহৃত হয়।</span></p></div>
     </div>
 
     <div>
       <div class="info-sec-ttl">3. ⊞ Advanced Tools / উন্নত প্রশ্ন টুলস</div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>⊞ Table / টেবিল:</strong> Insert typing tables.<br><span style="color:var(--t2); font-size:11px;">টেবিল তৈরি করতে ক্লিক করুন।</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>✏ Diagram / চিত্র:</strong> Draw directly on the paper!<br><span style="color:var(--t2); font-size:11px;">সরাসরি ডায়াগ্রাম বা ছবি আঁকুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>✏ Diagram / চিত্র:</strong> Draw directly on the paper!<br><span style="color:var(--t2); font-size:11px;">সরাসরি ডায়াগ্রাম বা ছবি আঁকুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>🏷 Labeled Diagram:</strong> Add images with pointer labels. AI leaves these blank for teachers to fill.<br><span style="color:var(--t2); font-size:11px;">পয়েন্টার সহ লেবেলযুক্ত ছবি যোগ করুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Ans Space (New!):</strong> Automatically adds blank writing space below questions (except MCQs). Customize per-section gap.<br><span style="color:var(--t2); font-size:11px;">উত্তরের জন্য নিজে থেকেই ফাঁকা জায়গা যোগ করে।</span></p></div>
     </div>
 
     <div>
@@ -1155,6 +1197,8 @@ select {
 
     <div>
       <div class="info-sec-ttl">5. 🎨 Paper Settings / পেপার সেটিংস</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>View Modes:</strong> 0-mirror (single), 2-mirror (half page), 4-mirror (quarters), or Continuous.<br><span style="color:var(--t2); font-size:11px;">৪টি প্রিন্ট লেআউট - সিঙ্গেল, ২-মিরর, ৪-মিরর, কন্টিনিউয়াস।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Orientation:</strong> Auto-switches based on mode, or force Portrait/Landscape.<br><span style="color:var(--t2); font-size:11px;">পোর্ট্রেট বা ল্যান্ডস্কেপ মোড বেছে নিন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Auto-fit:</strong> Magically shrinks/expands to fit 1 page!<br><span style="color:var(--t2); font-size:11px;">পেজ ফিট করতে সাইজ ও মার্জিন অটো ঠিক করে।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Watermark / জলছাপ:</strong> Add your school logo to the background.<br><span style="color:var(--t2); font-size:11px;">স্কুলের লোগো আপলোড করুন।</span></p></div>
     </div>
@@ -1162,7 +1206,7 @@ select {
     <div>
       <div class="info-sec-ttl">6. 🖨️ Exporting & Printing / এক্সপোর্ট ও প্রিন্ট</div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>.qpf:</strong> Saves a backup file! Always do this.<br><span style="color:var(--t2); font-size:11px;">ব্যাকআপ ফাইল। কাজ শেষে অবশ্যই সেভ করবেন!</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Print / PDF:</strong> Set to A4, Landscape, Margins: None.<br><span style="color:var(--t2); font-size:11px;">প্রিন্ট করার জন্য A4 ও Landscape নির্বাচন করুন।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Print / PDF:</strong> Set Margins to None.<br><span style="color:var(--t2); font-size:11px;">প্রিন্ট করার জন্য মার্জিন None নির্বাচন করুন।</span></p></div>
     </div>
 
     <div>
@@ -1185,23 +1229,24 @@ select {
 <script src="libs/jszip.min.js"></script>
 <script src="libs/katex.min.js"></script>
 
+
+
+
 <script>
 /* === MAIN APPLICATION LOGIC === */
 
 // SHA-256 Hash of "BERA26"
 const DEFAULT_WM_HASH = "d89c34cb1d5083183db108522761b3bec45ac9cb159da982121ee4b4e934297c";
 
-// Password Hashing Function
 async function hashPassword(str) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 const BN_L = ['ক','খ','গ','ঘ','ঙ','চ','ছ','জ','ঝ','ঞ'];
 const EN_L = ['A','B','C','D','E','F','G','H','I','J'];
 const BN_O = ['ক','খ','গ','ঘ'];
 const EN_O = ['a','b','c','d'];
-const BN_D = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
 
 const SYM = {
   alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ',
@@ -1232,21 +1277,18 @@ CRITICAL RULES:
 4. Do NOT extract or calculate full marks — omit FULL_MARKS.
 5. Do NOT include question numbering (1., 2., etc.) in Q: values.
 6. Replace any standalone double comma (") acting as a ditto mark with the exact word(s) from the line immediately above.
-7. Transcribe fill-in-the-blank lines (long dashes, underscores) as "________।" (Bengali) or "________." (English).
+7. Transcribe fill-in-the-blank lines (long dashes, underscores) as "________।" (Bengali) or "________." (English). Or use [SYM] if applicable.
 8. For True/False questions: write the full sentence, add "।" or ".", then append "(সত্য/মিথ্যা)" for Bengali or "(T/F)" for English. Never both.
 9. ZERO HALLUCINATION: Transcribe exactly what is visible. If any word is illegible, write <§> at that position. Do NOT guess or autocorrect.
 10. For sections with "answer any N" or "যেকোনো N টি" instruction, set ANSWER_ANY: N in that section block.
-11. For questions with sub-parts (a),(b),(c) or (i),(ii),(iii): Do this ONLY if there is written part by part marks in the uploaded sample. Start each sub-part on a NEW LINE by using standard newlines and indenting with spaces. Set MARKS_PER_Q to total. Append breakdown like (1+3+1) at the very end of the Q: text.
-12. Auto-generate HEADING based on TYPE and MARKS_PER_Q:
-    - TYPE mcq, any marks → সঠিক উত্তরটি নির্বাচন করো:
-    - TYPE short, MARKS_PER_Q 1 → সংক্ষিপ্ত উত্তর দাও:
-    - TYPE short, MARKS_PER_Q 2 → নীচের প্রশ্নগুলির উত্তর দাও:
-    - TYPE descriptive or long, MARKS_PER_Q 3+ → দীর্ঘ উত্তরধর্মী প্রশ্ন:
+11. For questions with sub-parts: Start each sub-part on a NEW LINE. Set MARKS_PER_Q to total. Append breakdown like (1+3+1) at the very end of the Q: text.
+12. Auto-generate HEADING based on TYPE and MARKS_PER_Q: mcq → সঠিক উত্তরটি নির্বাচন করো:, short(1) → সংক্ষিপ্ত উত্তর দাও:, short(2) → নীচের প্রশ্নগুলির উত্তর দাও:, descriptive/long(3+) → দীর্ঘ উত্তরধর্মী প্রশ্ন:
+13. For labeled diagrams, emit a LABELED_START token, followed by pointer placeholders (e.g. POINTER: Part ___ : ___), then LABELED_END. Do NOT guess the labels from the image.
 
 SCHEMA:
 ##META
 TOP_TITLE: Test No. [number only]
-CLASS: [Roman numeral class, no board name]
+CLASS: [Roman numeral class]
 SUBJECT: [subject name]
 TIME: [minutes only, number]
 FONT_SIZE: 11
@@ -1255,52 +1297,31 @@ MARGIN: 1.0
 DIVIDER: dotted
 
 ##SECTION_KA
-HEADING: [auto-generate per rule 12]
+HEADING: [auto-generate]
 TYPE: [mcq | short | descriptive | long]
-MARKS_PER_Q: [numeric, total per question including sub-parts]
+MARKS_PER_Q: [numeric]
 OPT_STYLE: [bn | en]
-ANSWER_ANY: [N if "answer any N" instruction exists, else omit this line]
-Q: [full question text, one line, no numbering. Sub-parts included inline. Marks breakdown like (1+3+1) appended if present]
-OR_NEXT: [true if this question has an alternative OR / অথবা question immediately following it, else omit]
+ANSWER_ANY: [N]
+Q: [full question text]
+OR_NEXT: [true/false]
 OP_K: [MCQ option 1]
 OP_KH: [MCQ option 2]
 OP_G: [MCQ option 3]
 OP_GH: [MCQ option 4]
-[Repeat Q: block for all questions. Create new ##SECTION_ blocks as needed.]
-##END
+##END`;
 
-TOKENS FOR SPECIAL CONTENT:
-[EQ:\\frac{a}{b}] for LaTeX math
-[CHEM:H2SO4] for chemical formulas
-C[SUB:3] for subscript
-x[SUP:2] for superscript
-[SYM:alpha] for Greek/special symbols
-TABLE_START: 3x2
-col1 | col2 | col3
-...rows...
-TABLE_END`;
-
-const PROMPT_TXT = `You are a QPF formatter. The text below is rough notes or a draft for a question paper. Convert it to QPF format v1.1.
-
-RULES:
-1. Output ONLY raw QPF text. No markdown, no fences, no explanation.
-2. Start directly with: // Question Paper Format v1.1
-3. Detect section types: options present → mcq; 1 mark no options → short; 2 marks → descriptive; 3+ marks → long.
-4. If marks unspecified, default to 1.
-5. Preserve Bengali Unicode exactly. Do not transliterate.
-6. For questions that are alternatives (OR / অথবা), set OR_NEXT: true on the first question.
-7. If "answer any N" or "যেকোনো N টি" appears for a section, add ANSWER_ANY: N to that section.
-8. For sub-parts: use newlines and spaces to indent. Append total marks breakdown like (1+3+1).
-
-[Paste draft notes after this line and send]`;
+const PROMPT_TXT = `You are a QPF formatter. The text below is rough notes or a draft for a question paper. Convert it to QPF format v1.1. Output ONLY raw QPF text. Start with: // Question Paper Format v1.1`;
 
 /* ── STATE ── */
 const S = {
   topTitle: 'Test no. 1',
-  klass: '', subject: '', time: 00, inst: '', fullMarks: 0,
+  klass: '', subject: '', time: 30, inst: '', fullMarks: 0,
   paperLang: 'full-bn', fontSize: 11, lineHeight: 1.45, margin: 1.0,
   divider: 'dotted', wmSrc: 'none', wmData: null, wmOpacity: 7, wmSize: 65,
-  sections: [], zoom: 0.55, pvMode: 'one', autoFit: null, autoFitDirty: false, wmCustomData: null,
+  sections: [], zoom: 0.55, viewMode: 'mirror2', autoFit: null, autoFitDirty: false, wmCustomData: null,
+  orient: {zero:'portrait', mirror2:'landscape', mirror4:'landscape', continuous:'portrait'},
+  orientOverride: 'auto',
+  ansSpace: false
 };
 
 let _linkMode = { active: false, secId: null, sel: [] };
@@ -1315,8 +1336,8 @@ const bn = n => String(Math.round(Number(n)||0)).split('').map(c =>
   (S.paperLang === 'full-bn' ? ['০','১','২','৩','৪','৫','৬','৭','৮','৯'][+c] : c) || c
 ).join('');
 
-const sl = i => (S.paperLang === 'full-en') ? (EN_L[i] !== undefined ? EN_L[i] : String(i + 1)) : (BN_L[i] !== undefined ? BN_L[i] : String(i + 1));
-const ol = (i, st) => (st === 'en') ? (EN_O[i] !== undefined ? EN_O[i] : '?') : (BN_O[i] !== undefined ? BN_O[i] : '?');
+const sl = i => (S.paperLang === 'full-en') ? (EN_L[i] || String(i + 1)) : (BN_L[i] || String(i + 1));
+const ol = (i, st) => (st === 'en') ? (EN_O[i] || '?') : (BN_O[i] || '?');
 
 const cv = (n, v) => document.documentElement.style.setProperty(n, v);
 
@@ -1358,16 +1379,11 @@ function recalc() {
         actualCount++;
         if(s.questions[i].isOrNext) i++;
     }
-    
-    if (s.answerAny && s.answerAny >= actualCount) {
-        s.answerAny = null;
-    }
-    
+    if (s.answerAny && s.answerAny >= actualCount) s.answerAny = null;
     if(actualCount > 0) {
         statsStr += `[${sl(idx)}: ${bn(actualCount)}] `;
         totalQ += actualCount;
     }
-    
     const countedQ = (s.answerAny && s.answerAny < actualCount) ? s.answerAny : actualCount;
     return t + (s.mpq || 0) * countedQ;
   }, 0);
@@ -1442,11 +1458,20 @@ function initSettings() {
   $('s-lh').addEventListener('input', e => { S.lineHeight = parseFloat(e.target.value); $('s-lh-v').textContent = S.lineHeight.toFixed(2); clearAutoFit(); applyVars(); sched(); });
   $('s-mg').addEventListener('input', e => { S.margin = parseFloat((e.target.value / 10).toFixed(1)); $('s-mg-v').textContent = S.margin.toFixed(1) + ' cm'; clearAutoFit(); applyVars(); sched(); });
   
-  $$('.dopt').forEach(o => o.addEventListener('click', () => {
-    $$('.dopt').forEach(x => x.classList.remove('on'));
-    o.classList.add('on');
-    S.divider = o.dataset.d;
-    sched();
+  $$('.dopt').forEach(o => o.addEventListener('click', (e) => {
+    const p = e.currentTarget.parentElement;
+    if (p.id === 's-orient') {
+      $$('#s-orient .dopt').forEach(x => x.classList.remove('on'));
+      o.classList.add('on');
+      S.orientOverride = o.dataset.v;
+      fitZoom();
+      sched();
+    } else {
+      p.querySelectorAll('.dopt').forEach(x => x.classList.remove('on'));
+      o.classList.add('on');
+      S.divider = o.dataset.d;
+      sched();
+    }
   }));
 
   $('s-wmo').addEventListener('input', e => { S.wmOpacity = parseInt(e.target.value); $('s-wmo-v').textContent = S.wmOpacity + '%'; sched(); });
@@ -1456,45 +1481,30 @@ function initSettings() {
   $('s-wmsrc').addEventListener('change', async e => { 
     if (e.target.value === 'custom') {
       $('wm-file').click();
-
     } else if (e.target.value === 'default') {
       const pwd = prompt('Enter password to access default watermark:');
       if (pwd) {
-          // .trim() removes accidental spaces at the beginning or end
           const hash = await hashPassword(pwd.trim());
           if (hash === DEFAULT_WM_HASH) {
-              S.wmSrc = 'default';
-              _lastWmSrc = 'default';
-              toast('Watermark applied.', 'success');
-              sched();
+              S.wmSrc = 'default'; _lastWmSrc = 'default';
+              toast('Watermark applied.', 'success'); sched();
           } else {
               toast('Access Denied: Incorrect Password', 'error');
-              e.target.value = _lastWmSrc;
-              S.wmSrc = _lastWmSrc;
+              e.target.value = _lastWmSrc; S.wmSrc = _lastWmSrc;
           }
-      } else {
-          e.target.value = _lastWmSrc;
-      }
+      } else { e.target.value = _lastWmSrc; }
     } else {
-      S.wmSrc = 'none';
-      _lastWmSrc = 'none';
-      sched();
+      S.wmSrc = 'none'; _lastWmSrc = 'none'; sched();
     }
   });
   
   $('wm-file').addEventListener('change', e => {
     const f = e.target.files[0]; 
-    if (!f) {
-      $('s-wmsrc').value = _lastWmSrc;
-      return;
-    }
+    if (!f) { $('s-wmsrc').value = _lastWmSrc; return; }
     const r = new FileReader();
     r.onload = ev => {
-      S.wmCustomData = ev.target.result;
-      S.wmSrc = 'custom';
-      _lastWmSrc = 'custom';
-      sched();
-      toast('Watermark updated', 'success');
+      S.wmCustomData = ev.target.result; S.wmSrc = 'custom'; _lastWmSrc = 'custom';
+      sched(); toast('Watermark updated', 'success');
     };
     r.readAsDataURL(f);
   });
@@ -1506,30 +1516,30 @@ function initSettings() {
       $$('#s-plang .pill').forEach(x => x.classList.remove('on'));
       p.classList.add('on');
       S.paperLang = newLang;
-      
       const oldHdgs = oldLang === 'full-en' ? HDGS_EN : HDGS_BN;
       const newHdgs = newLang === 'full-en' ? HDGS_EN : HDGS_BN;
-      
       S.sections.forEach(sec => {
         const idx = oldHdgs.indexOf(sec.heading);
-        if(idx !== -1) {
-          sec.heading = newHdgs[idx];
-        }
+        if(idx !== -1) sec.heading = newHdgs[idx];
       });
-      rebuildSecs();
-      sched();
+      rebuildSecs(); sched();
     }
   }));
+
+  // Answer Space Toggle
+  $('ans-space-btn').addEventListener('click', (e) => {
+      S.ansSpace = !S.ansSpace;
+      e.currentTarget.classList.toggle('active', S.ansSpace);
+      e.currentTarget.textContent = S.ansSpace ? 'Ans Space: ON' : 'Ans Space: OFF';
+      rebuildSecs();
+      sched();
+  });
 }
 
 function initExamInfo() {
   $('f-tt').addEventListener('input', e => { S.topTitle = e.target.value; sched(); });
   $('f-cls').addEventListener('input', e => { S.klass = e.target.value; sched(); });
-  $('f-subj').addEventListener('input', e => { 
-    S.subject = e.target.value; 
-    $('subj-warn').style.display = e.target.value.length > 26 ? 'inline' : 'none';
-    sched(); 
-  });
+  $('f-subj').addEventListener('input', e => { S.subject = e.target.value; $('subj-warn').style.display = e.target.value.length > 26 ? 'inline' : 'none'; sched(); });
   $('f-time').addEventListener('input', e => { S.time = parseInt(e.target.value) || 30; sched(); });
   $('f-inst').addEventListener('input', e => { S.inst = e.target.value; sched(); });
 }
@@ -1537,10 +1547,7 @@ function initExamInfo() {
 function openImportDrawer(tab) {
   const d = $('import-drawer');
   const isOpen = d.classList.contains('open');
-  if (isOpen && tab === currentImportTab()) {
-    d.classList.remove('open'); 
-    return;
-  }
+  if (isOpen && tab === currentImportTab()) { d.classList.remove('open'); return; }
   d.classList.add('open');
   switchImportTab(tab);
 }
@@ -1558,7 +1565,6 @@ function switchImportTab(tab) {
 
 function initImport() {
   $('close-drawer').addEventListener('click', () => $('import-drawer').classList.remove('open'));
-  
   $('qpf-apply').addEventListener('click', () => {
     const txt = $('qpf-ta').value.trim();
     if (!txt) { toast('Paste QPF text first.', 'warn'); return; }
@@ -1568,13 +1574,11 @@ function initImport() {
       $('import-drawer').classList.remove('open');
     } catch (e) {
       toast('Parse error: ' + e.message, 'error');
-      console.error('QPF Parsing Error:', e);
     }
   });
 
   $('qpf-clear').addEventListener('click', () => $('qpf-ta').value = '');
   $('qpf-file').addEventListener('change', e => loadQPFFile(e.target.files[0]));
-  
   const dz = $('drop-zone');
   dz.addEventListener('click', () => $('qpf-file2').click());
   $('qpf-file2').addEventListener('change', e => loadQPFFile(e.target.files[0]));
@@ -1582,18 +1586,13 @@ function initImport() {
   dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0]; 
-    if (f) loadQPFFile(f);
+    if (e.dataTransfer.files[0]) loadQPFFile(e.dataTransfer.files[0]);
   });
-
   $('ocr-prompt-quick').addEventListener('click', () => copyPrompt('img'));
   
-  // Close menu dropdown if clicked outside
   document.addEventListener('click', e => {
     const dropdown = $('menu-dropdown');
-    if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
+    if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) dropdown.classList.remove('open');
   });
 }
 
@@ -1616,9 +1615,8 @@ function switchPromptTab(tab) {
 
 function copyPrompt(which) {
   const txt = which === 'img' ? PROMPT_IMG : PROMPT_TXT;
-  navigator.clipboard.writeText(txt).then(() => {
-    toast(which === 'img' ? 'Image prompt copied!' : 'Draft prompt copied!', 'success');
-  }).catch(() => {
+  navigator.clipboard.writeText(txt).then(() => { toast(which === 'img' ? 'Image prompt copied!' : 'Draft prompt copied!', 'success'); })
+  .catch(() => {
     const ta = document.createElement('textarea');
     ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
@@ -1626,10 +1624,16 @@ function copyPrompt(which) {
   });
 }
 
+function getActiveOrient() {
+  return S.orientOverride === 'auto' ? (S.orient[S.viewMode] || 'landscape') : S.orientOverride;
+}
+
 function fitZoom() {
   const vp = $('preview-vp');
   const vpW = vp.clientWidth - 40;
-  const pageW = (S.pvMode === 'one') ? (1122 / 2) : 1122;
+  const ori = getActiveOrient();
+  const pageW = ori === 'portrait' ? Math.round(210 * 3.7795) : Math.round(297 * 3.7795);
+  
   S.zoom = Math.max(0.2, Math.min(1.5, vpW / pageW));
   $('z-lbl').textContent = Math.round(S.zoom * 100) + '%';
   sched();
@@ -1643,7 +1647,8 @@ function initZoom() {
   $$('#pv-mode .pill').forEach(p => p.addEventListener('click', () => {
     $$('#pv-mode .pill').forEach(x => x.classList.remove('on'));
     p.classList.add('on');
-    S.pvMode = p.dataset.m;
+    S.viewMode = p.dataset.m;
+    fitZoom(); 
     sched();
   }));
 }
@@ -1681,7 +1686,6 @@ function initResize() {
   handle.addEventListener('mousedown', startDrag);
   document.addEventListener('mousemove', doDrag);
   document.addEventListener('mouseup', endDrag);
-
   handle.addEventListener('touchstart', startDrag, { passive: true });
   document.addEventListener('touchmove', doDrag, { passive: true });
   document.addEventListener('touchend', endDrag);
@@ -1689,31 +1693,25 @@ function initResize() {
 
 function syncFields() {
   const set = (id, v) => { const e = $(id); if (e) e.value = (v !== undefined && v !== null) ? v : ''; };
-  
-  set('f-tt', S.topTitle);
-  set('f-cls', S.klass);
-  set('f-subj', S.subject);
-  set('f-time', S.time);
-  set('f-inst', S.inst);
-  
+  set('f-tt', S.topTitle); set('f-cls', S.klass); set('f-subj', S.subject); set('f-time', S.time); set('f-inst', S.inst);
   if ($('s-fs')) { $('s-fs').value = S.fontSize; $('s-fs-v').textContent = S.fontSize + ' pt'; }
   if ($('s-lh')) { $('s-lh').value = S.lineHeight; $('s-lh-v').textContent = S.lineHeight.toFixed(2); }
   if ($('s-mg')) { $('s-mg').value = S.margin * 10; $('s-mg-v').textContent = S.margin.toFixed(1) + ' cm'; }
-  
-  $$('.dopt').forEach(o => o.classList.toggle('on', o.dataset.d === S.divider));
+  $$('.dopt').forEach(o => {
+      if(o.parentElement.id === 's-orient') o.classList.toggle('on', o.dataset.v === S.orientOverride);
+      else o.classList.toggle('on', o.dataset.d === S.divider);
+  });
   $$('#s-plang .pill').forEach(p => p.classList.toggle('on', p.dataset.v === S.paperLang));
-  
+  $$('#pv-mode .pill').forEach(p => p.classList.toggle('on', p.dataset.m === S.viewMode));
   $('subj-warn').style.display = S.subject.length > 26 ? 'inline' : 'none';
+  $('ans-space-btn').classList.toggle('active', S.ansSpace);
+  $('ans-space-btn').textContent = S.ansSpace ? 'Ans Space: ON' : 'Ans Space: OFF';
 }
 
 function showAutoFitBtn() {
   const btn = $('autofit-btn');
   if (!btn) return;
-  
-  if (S.autoFitDirty && S.sections.length > 0) {
-     btn.style.display = 'flex';
-  }
-  
+  if (S.autoFitDirty && S.sections.length > 0) btn.style.display = 'flex';
   if (S.autoFit) {
     btn.classList.add('active');
     btn.title = `Auto-fit Active (${S.autoFit.fontSize}pt · LH${S.autoFit.lineHeight.toFixed(2)} · ${S.autoFit.margin.toFixed(1)}cm)`;
@@ -1723,9 +1721,7 @@ function showAutoFitBtn() {
   }
 }
 
-function clearAutoFit() {
-  if (S.autoFit) { S.autoFit = null; showAutoFitBtn(); }
-}
+function clearAutoFit() { if (S.autoFit) { S.autoFit = null; showAutoFitBtn(); } }
 
 /* ── SECTION BUILDER ── */
 function rebuildSecs() {
@@ -1748,30 +1744,20 @@ function mkSecCard(sec, idx) {
   const total = (sec.mpq || 0) * countedQ;
   
   let typeLabel = sec.type;
-  for (let i = 0; i < TYPES.length; i++) {
-    if (TYPES[i].v === sec.type) {
-      typeLabel = TYPES[i].l;
-      break;
-    }
-  }
+  for (let i = 0; i < TYPES.length; i++) { if (TYPES[i].v === sec.type) { typeLabel = TYPES[i].l; break; } }
   
   const card = document.createElement('div');
   card.className = 'card sc-card';
   card.dataset.si = idx;
 
   let headingOptions = '';
-  hdgs.forEach(h => {
-    headingOptions += `<option value="${esc(h)}" ${h === sec.heading ? 'selected' : ''}>${h.slice(0, 26)}</option>`;
-  });
+  hdgs.forEach(h => { headingOptions += `<option value="${esc(h)}" ${h === sec.heading ? 'selected' : ''}>${h.slice(0, 26)}</option>`; });
   headingOptions += `<option value="__c" ${!hdgs.includes(sec.heading) && sec.heading ? 'selected' : ''}>Custom…</option>`;
 
   let typeOptions = '';
-  TYPES.forEach(t => {
-    typeOptions += `<option value="${t.v}" ${t.v === sec.type ? 'selected' : ''}>${t.l}</option>`;
-  });
+  TYPES.forEach(t => { typeOptions += `<option value="${t.v}" ${t.v === sec.type ? 'selected' : ''}>${t.l}</option>`; });
 
   const isLinking = _linkMode.active && _linkMode.secId === sec.id;
-
   let footerHtml = '';
   let linkModeHTML = '';
   
@@ -1785,15 +1771,13 @@ function mkSecCard(sec, idx) {
   } else {
     footerHtml = `
       <div style="display:flex; gap:6px;">
-        <button class="btn btn-ghost btn-sm add-q no-print" style="flex:1;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 
-          Add question
-        </button>
+        <button class="btn btn-ghost btn-sm add-q no-print" style="flex:1;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add question</button>
         <button class="btn btn-accent btn-sm start-link no-print" title="Link two questions with OR">🔗 Link OR</button>
       </div>`;
   }
 
   const chipText = sec.questions.length === 0 ? 'Empty' : `${sec.mpq}×${countedQ}=${total}`;
+  const ansGapVal = sec.ansGap || (sec.type === 'long' ? 80 : sec.type === 'descriptive' ? 40 : 20);
 
   card.innerHTML = `
     <div class="card-hdr open" id="hdr${sec.id}" data-tgt="bd${sec.id}">
@@ -1803,9 +1787,7 @@ function mkSecCard(sec, idx) {
       <div style="display:flex; gap:3px" class="no-print">
         <button class="btn btn-ghost btn-xs move-sec-up" title="Move Up">↑</button>
         <button class="btn btn-ghost btn-xs move-sec-dn" title="Move Down">↓</button>
-        <button class="btn btn-danger btn-sm del-sec" title="Delete section" style="margin-left:4px">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-        </button>
+        <button class="btn btn-danger btn-sm del-sec" title="Delete section" style="margin-left:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
       </div>
     </div>
     <div class="card-body" id="bd${sec.id}">
@@ -1824,7 +1806,11 @@ function mkSecCard(sec, idx) {
         </div>
         <div class="fgrp" style="flex:1 1 70px; min-width:60px;">
           <label class="flabel" title="Leave blank = all questions required">Answer Any</label>
-          <input type="number" class="sec-aany" value="${sec.answerAny||''}" min="1" placeholder="all" title="How many questions student must answer (blank = all)"/>
+          <input type="number" class="sec-aany" value="${sec.answerAny||''}" min="1" placeholder="all"/>
+        </div>
+        <div class="fgrp" style="flex:1 1 70px; min-width:60px; display:${(S.ansSpace && sec.type !== 'mcq') ? 'flex' : 'none'};">
+          <label class="flabel" title="Height of blank space in mm">Ans Gap(mm)</label>
+          <input type="number" class="sec-ag" value="${ansGapVal}" min="0" step="5"/>
         </div>
         <div class="fgrp" style="flex:1 1 100px; min-width:90px; ${sec.type !== 'mcq' ? 'display:none' : ''}" id="os-wrap-${sec.id}">
           <label class="flabel">Opt Style</label>
@@ -1841,33 +1827,24 @@ function mkSecCard(sec, idx) {
   `;
 
   card.querySelector('.card-hdr').addEventListener('click', e => {
-    if (e.target.closest('button')) return; // Ignore if clicked buttons
-    const b = $(h.dataset.tgt);
+    if (e.target.closest('button')) return; 
     const h = e.currentTarget;
+    const b = $(h.dataset.tgt);
     if (!b) return;
     const o = !b.classList.contains('hide');
     b.classList.toggle('hide', o);
     h.classList.toggle('open', !o);
   });
 
-  // Section Ordering
   card.querySelector('.move-sec-up').addEventListener('click', e => {
-    if (idx > 0) {
-      [S.sections[idx-1], S.sections[idx]] = [S.sections[idx], S.sections[idx-1]];
-      rebuildSecs(); sched();
-    }
+    if (idx > 0) { [S.sections[idx-1], S.sections[idx]] = [S.sections[idx], S.sections[idx-1]]; rebuildSecs(); sched(); }
   });
   card.querySelector('.move-sec-dn').addEventListener('click', e => {
-    if (idx < S.sections.length - 1) {
-      [S.sections[idx+1], S.sections[idx]] = [S.sections[idx], S.sections[idx+1]];
-      rebuildSecs(); sched();
-    }
+    if (idx < S.sections.length - 1) { [S.sections[idx+1], S.sections[idx]] = [S.sections[idx], S.sections[idx+1]]; rebuildSecs(); sched(); }
   });
-
   card.querySelector('.del-sec').addEventListener('click', e => {
     if (S.sections.length <= 1) { toast('Keep at least one section.', 'warn'); return; }
-    S.sections = S.sections.filter(s => s.id !== sec.id);
-    rebuildSecs(); sched();
+    S.sections = S.sections.filter(s => s.id !== sec.id); rebuildSecs(); sched();
   });
 
   const hs = card.querySelector('.sec-hdg');
@@ -1875,9 +1852,7 @@ function mkSecCard(sec, idx) {
     if (e.target.value === '__c') {
       const c = prompt('Custom heading:', '');
       if (c) sec.heading = c; else { hs.value = sec.heading; return; }
-    } else {
-      sec.heading = e.target.value;
-    }
+    } else { sec.heading = e.target.value; }
     rebuildSecs(); sched();
   });
 
@@ -1888,22 +1863,19 @@ function mkSecCard(sec, idx) {
     rebuildSecs(); sched();
   });
 
-  card.querySelector('.sec-mpq').addEventListener('input', e => {
-    sec.mpq = parseFloat(e.target.value) || 1;
-    recalc(); sched();
-  });
-
+  card.querySelector('.sec-mpq').addEventListener('input', e => { sec.mpq = parseFloat(e.target.value) || 1; recalc(); sched(); });
   card.querySelector('.sec-aany').addEventListener('input', e => {
-    const v = parseInt(e.target.value);
-    sec.answerAny = (v && v > 0 && v < actualCount) ? v : null;
-    recalc(); sched();
+    const v = parseInt(e.target.value); sec.answerAny = (v && v > 0 && v < actualCount) ? v : null; recalc(); sched();
   });
+  
+  const agInp = card.querySelector('.sec-ag');
+  if(agInp) {
+      agInp.addEventListener('input', e => { sec.ansGap = parseInt(e.target.value) || 0; sched(); });
+  }
 
   card.querySelectorAll('.sec-os .pill').forEach(p => p.addEventListener('click', () => {
     card.querySelectorAll('.sec-os .pill').forEach(x => x.classList.remove('on'));
-    p.classList.add('on');
-    sec.os = p.dataset.v;
-    sched();
+    p.classList.add('on'); sec.os = p.dataset.v; sched();
   }));
 
   if (isLinking) {
@@ -1912,29 +1884,24 @@ function mkSecCard(sec, idx) {
       if(_linkMode.sel.length !== 2) { toast('Select exactly 2 questions.', 'warn'); return; }
       const q1Idx = sec.questions.findIndex(q => q.id === _linkMode.sel[0]);
       const q2Idx = sec.questions.findIndex(q => q.id === _linkMode.sel[1]);
-      const first = Math.min(q1Idx, q2Idx);
-      const second = Math.max(q1Idx, q2Idx);
-      
+      const first = Math.min(q1Idx, q2Idx), second = Math.max(q1Idx, q2Idx);
       const q2 = sec.questions.splice(second, 1)[0];
       sec.questions.splice(first + 1, 0, q2);
       sec.questions[first].isOrNext = true;
-      
       _linkMode = { active: false, secId: null, sel: [] };
       rebuildSecs(); sched();
     });
     card.querySelector('.cancel-link').addEventListener('click', () => {
-      _linkMode = { active: false, secId: null, sel: [] };
-      rebuildSecs();
+      _linkMode = { active: false, secId: null, sel: [] }; rebuildSecs();
     });
   } else {
     card.classList.remove('link-active');
     card.querySelector('.start-link').addEventListener('click', () => {
       if (sec.questions.length < 2) { toast('Need at least 2 questions to link.', 'warn'); return; }
-      _linkMode = { active: true, secId: sec.id, sel: [] };
-      rebuildSecs();
+      _linkMode = { active: true, secId: sec.id, sel: [] }; rebuildSecs();
     });
     card.querySelector('.add-q').addEventListener('click', () => {
-      sec.questions.push({ id: uid(), text: '', options: ['','','',''], img: null, extra: [], isOrNext: false });
+      sec.questions.push({ id: uid(), text: '', options: ['','','',''], img: null, imgSize: 60, extra: [], isOrNext: false });
       rebuildSecs(); 
     });
   }
@@ -1949,16 +1916,13 @@ function renderQList(sec, si, cont) {
     cont.innerHTML = '<div style="font-size:11px;color:var(--t3);padding:8px 0 4px;text-align:center">No questions yet — click below to add</div>';
     return;
   }
-  
   let qNum = 1;
   const isLinking = _linkMode.active && _linkMode.secId === sec.id;
   
   sec.questions.forEach((q, qi) => {
     const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
     cont.appendChild(mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking));
-    
-    if (!isOrChild && !q.isOrNext) { qNum++; }
-    else if (isOrChild && !q.isOrNext) { qNum++; }
+    if (!isOrChild && !q.isOrNext) { qNum++; } else if (isOrChild && !q.isOrNext) { qNum++; }
   });
 }
 
@@ -1966,14 +1930,10 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
   const w = document.createElement('div');
   w.className = 'qitem';
   const num = `${bn(si+1)}.${bn(qNum)})`;
+  if(q.imgSize === undefined) q.imgSize = 60;
   
   let typeLabel = sec.type;
-  for (let i = 0; i < TYPES.length; i++) {
-    if (TYPES[i].v === sec.type) {
-      typeLabel = TYPES[i].l;
-      break;
-    }
-  }
+  for (let i = 0; i < TYPES.length; i++) { if (TYPES[i].v === sec.type) { typeLabel = TYPES[i].l; break; } }
   
   const hdrHtml = `
       <div class="qitem-hdr">
@@ -1982,7 +1942,7 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
         ${isOrChild ? '<span style="font-size:9px; color:var(--gold); font-weight:bold; margin-left:6px">(OR Variant)</span>' : ''}
         ${q.isOrNext ? '<span style="font-size:9px; color:var(--accent3); font-weight:bold; margin-left:6px">🔗 LINKED TO NEXT</span>' : ''}
         <span style="flex:1"></span>
-        <button class="btn btn-ghost btn-xs toggle-ex no-print" title="Toggle Extra Tools" style="transition:transform 0.2s;">^</button>
+        <button class="btn btn-ghost btn-xs toggle-ex no-print" title="Minimize/Expand Question" style="transition:transform 0.2s;">^</button>
         <button class="btn btn-ghost btn-xs move-q-up no-print" title="Move Up">↑</button>
         <button class="btn btn-ghost btn-xs move-q-dn no-print" title="Move Down">↓</button>
         <button class="btn btn-danger btn-sm del-q no-print" title="Delete" style="margin-left:4px">
@@ -2003,108 +1963,89 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
 
     w.innerHTML = `
       ${hdrHtml}
-      <div class="q-img-row">
-        <div style="flex:1;min-width:0">
-          <textarea class="q-txt bn-field" rows="2" placeholder="Question text (Bengali or English)…">${esc(q.text)}</textarea>
-          <div class="opt-grid">${optsHtml}</div>
-        </div>
-        <div class="img-slot no-print" title="Click to add image (optional)">
-          ${q.img ? `<img src="${q.img}" alt=""/>` : '<span style="line-height:1.4">+<br>Image</span>'}
-          <input type="file" accept="image/*" hidden class="qi-file"/>
-        </div>
-      </div>
-      <div class="q-actions no-print" style="justify-content:flex-end">
+      <div class="q-body-wrap" style="display:block;">
+          <div class="q-img-row" style="margin-top:6px;">
+            <div style="flex:1;min-width:0">
+              <textarea class="q-txt bn-field" rows="2" placeholder="Question text (Bengali or English)…">${esc(q.text)}</textarea>
+              <div class="opt-grid">${optsHtml}</div>
+            </div>
+            <div class="img-slot no-print" title="Click to add image (optional)">
+              ${q.img ? `<img src="${q.img}" alt=""/>` : '<span style="line-height:1.4">+<br>Image</span>'}
+              <input type="file" accept="image/*" hidden class="qi-file"/>
+            </div>
+          </div>
+          <div class="q-actions no-print" style="justify-content:flex-end">
+            ${q.img ? `
+               <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                 <div class="slider-wrap"><span style="font-size:9px;color:var(--t3)">Align:</span>
+                   <button class="btn btn-ghost btn-xs set-img-align" data-val="left" style="background:${q.imgAlign==='left'?'var(--accent)':'transparent'};color:${q.imgAlign==='left'?'#fff':'var(--t2)'}">L</button>
+                   <button class="btn btn-ghost btn-xs set-img-align" data-val="right" style="background:${q.imgAlign!=='left'?'var(--accent)':'transparent'};color:${q.imgAlign!=='left'?'#fff':'var(--t2)'}">R</button>
+                 </div>
+                 <div class="slider-wrap"><span style="font-size:9px;color:var(--t3)">Size:</span> <input type="range" class="qi-size" min="20" max="100" value="${q.imgSize}"> <span style="font-size:9px;color:var(--t3)" class="qi-sv">${q.imgSize}%</span></div>
+               </div>` : ''}
+          </div>
       </div>`;
   } else {
     w.innerHTML = `
       ${hdrHtml}
-      <textarea class="q-txt bn-field" rows="3" placeholder="Type your question here…">${esc(q.text)}</textarea>
-      <div class="q-actions no-print"></div>
-      <div class="q-actions-extra no-print">
-        <button class="btn btn-ghost btn-xs add-img-q">🖼 Image</button>
-        <button class="btn btn-ghost btn-xs add-tbl-q">⊞ Table</button>
-        <button class="btn btn-ghost btn-xs add-dia-q">✏ Diagram</button>
-      </div>
-      <div class="extra-cont"></div>`;
+      <div class="q-body-wrap" style="display:block; margin-top:6px;">
+          <textarea class="q-txt bn-field" rows="3" placeholder="Type your question here…">${esc(q.text)}</textarea>
+          <div class="q-actions no-print"></div>
+          <div class="q-actions-extra no-print" style="display:flex">
+            <button class="btn btn-ghost btn-xs add-img-q">🖼 Image</button>
+            <button class="btn btn-ghost btn-xs add-tbl-q">⊞ Table</button>
+            <button class="btn btn-ghost btn-xs add-dia-q">✏ Diagram</button>
+            <button class="btn btn-ghost btn-xs add-lbl-q">🏷 Labeled Diagram</button>
+          </div>
+          <div class="extra-cont"></div>
+      </div>`;
       
     renderExtras(q, w.querySelector('.extra-cont'));
     w.querySelector('.add-img-q').addEventListener('click', () => addExtraImg(q, w.querySelector('.extra-cont')));
     w.querySelector('.add-tbl-q').addEventListener('click', () => addExtraTbl(q, w.querySelector('.extra-cont')));
     w.querySelector('.add-dia-q').addEventListener('click', () => openDia(q, w.querySelector('.extra-cont')));
+    w.querySelector('.add-lbl-q').addEventListener('click', () => addExtraLabeled(q, w.querySelector('.extra-cont')));
   }
   
-  // Toggle Extra Actions functionality
+  // Clean Squeeze toggle logic
   const toggleBtn = w.querySelector('.toggle-ex');
-  const extraCont = w.querySelector('.q-actions-extra');
-  if (toggleBtn && extraCont) {
+  const bodyWrap = w.querySelector('.q-body-wrap');
+  if (toggleBtn && bodyWrap) {
       toggleBtn.addEventListener('click', () => {
-         const isOpen = extraCont.classList.contains('show');
-         extraCont.classList.toggle('show', !isOpen);
-         toggleBtn.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+         const isHidden = bodyWrap.style.display === 'none';
+         bodyWrap.style.display = isHidden ? 'block' : 'none';
+         toggleBtn.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
       });
-  } else if (toggleBtn) {
-      // If MCQ (no extra actions setup), hide the toggle button to avoid confusion
-      toggleBtn.style.display = 'none';
   }
   
   if (q.isOrNext) {
-      w.querySelector('.q-actions').insertAdjacentHTML('beforeend', `<button class="btn btn-ghost btn-xs unlink-q" title="Remove OR link">Unlink 🔗</button>`);
-      w.querySelector('.unlink-q').addEventListener('click', () => {
-          q.isOrNext = false;
-          rebuildSecs(); 
-      });
+      const qact = w.querySelector('.q-actions') || w.querySelector('.q-body-wrap');
+      qact.insertAdjacentHTML('beforeend', `<button class="btn btn-ghost btn-xs unlink-q no-print" style="margin-top:4px;" title="Remove OR link">Unlink 🔗</button>`);
+      w.querySelector('.unlink-q').addEventListener('click', () => { q.isOrNext = false; rebuildSecs(); });
   }
 
-  // Handle Link Selection Mode visual states
   if (isLinking) {
     const isSelected = _linkMode.sel.includes(q.id);
     w.style.cursor = 'pointer';
     w.style.border = isSelected ? '2px solid var(--accent)' : '1px dashed var(--border2)';
     if(isSelected) w.style.background = 'rgba(91,80,240,.06)';
     
-    // Prevent normal interaction and capture clicks
     w.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
       if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; 
-      
-      if(isSelected) {
-          _linkMode.sel = _linkMode.sel.filter(id => id !== q.id);
-      } else if (_linkMode.sel.length < 2) {
-          _linkMode.sel.push(q.id);
-      }
+      if(isSelected) { _linkMode.sel = _linkMode.sel.filter(id => id !== q.id); } 
+      else if (_linkMode.sel.length < 2) { _linkMode.sel.push(q.id); }
       rebuildSecs();
     }, true);
   }
 
-  w.querySelector('.del-q').addEventListener('click', () => {
-    sec.questions = sec.questions.filter(x => x.id !== q.id);
-    rebuildSecs(); 
-  });
-
-  w.querySelector('.move-q-up').addEventListener('click', () => {
-    if (qi > 0) {
-      [sec.questions[qi-1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi-1]];
-      rebuildSecs(); 
-    }
-  });
-
-  w.querySelector('.move-q-dn').addEventListener('click', () => {
-    if (qi < sec.questions.length - 1) {
-      [sec.questions[qi+1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi+1]];
-      rebuildSecs(); 
-    }
-  });
-
+  w.querySelector('.del-q').addEventListener('click', () => { sec.questions = sec.questions.filter(x => x.id !== q.id); rebuildSecs(); });
+  w.querySelector('.move-q-up').addEventListener('click', () => { if (qi > 0) { [sec.questions[qi-1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi-1]]; rebuildSecs(); } });
+  w.querySelector('.move-q-dn').addEventListener('click', () => { if (qi < sec.questions.length - 1) { [sec.questions[qi+1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi+1]]; rebuildSecs(); } });
   w.querySelector('.q-txt').addEventListener('input', e => { q.text = e.target.value; sched(); });
 
   if (sec.type === 'mcq') {
-    w.querySelectorAll('.opt-f').forEach(inp => {
-      inp.addEventListener('input', e => {
-        q.options[+e.target.dataset.i] = e.target.value;
-        sched();
-      });
-    });
-    
+    w.querySelectorAll('.opt-f').forEach(inp => { inp.addEventListener('input', e => { q.options[+e.target.dataset.i] = e.target.value; sched(); }); });
     const slot = w.querySelector('.img-slot');
     const fi = w.querySelector('.qi-file');
     slot.addEventListener('click', () => fi.click());
@@ -2112,12 +2053,23 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
       const f = e.target.files[0]; 
       if (!f) return;
       const r = new FileReader();
-      r.onload = ev => {
-        q.img = ev.target.result;
-        slot.innerHTML = `<img src="${ev.target.result}" alt=""/>`;
-        sched();
-      };
+      r.onload = ev => { q.img = ev.target.result; rebuildSecs(); sched(); };
       r.readAsDataURL(f);
+    });
+    
+    const sizeInp = w.querySelector('.qi-size');
+    if (sizeInp) {
+        sizeInp.addEventListener('input', e => {
+            q.imgSize = parseInt(e.target.value);
+            w.querySelector('.qi-sv').textContent = q.imgSize + '%';
+            sched();
+        });
+    }
+    w.querySelectorAll('.set-img-align').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            q.imgAlign = e.currentTarget.dataset.val;
+            rebuildSecs(); sched();
+        });
     });
   }
   return w;
@@ -2127,6 +2079,8 @@ function renderExtras(q, cont) {
   cont.innerHTML = '';
   (q.extra || []).forEach((ex, idx) => {
     const align = ex.align || 'center';
+    const sz = ex.size || 60;
+    
     const d = document.createElement('div');
     d.className = 'extra-block';
     
@@ -2139,61 +2093,87 @@ function renderExtras(q, cont) {
     `;
     const del = `<button class="extra-del" data-xi="${idx}" title="Remove">✕</button>`;
     
+    const szSlider = (ex.type === 'image' || ex.type === 'diagram' || ex.type === 'labeled') ? 
+        `<div class="slider-wrap" style="position:absolute; bottom:6px; right:6px; background:var(--bg1); padding:2px 6px; border-radius:4px; border:1px solid var(--border2); z-index:10;">
+            <span style="font-size:9px;color:var(--t3)">Size:</span>
+            <input type="range" class="ex-size-inp" data-xi="${idx}" min="20" max="100" value="${sz}" style="max-width:50px;">
+        </div>` : '';
+    
     if (ex.type === 'image') {
-      d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">📎 Image below question</div><img src="${ex.data}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
+      d.innerHTML = `${alignUI}${del}${szSlider}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">📎 Image below question</div><img src="${ex.data}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
     } else if (ex.type === 'table') {
       const rc = ex.rows.length;
       const cc = ex.rows[0] ? ex.rows[0].length : 0;
       let rowsHtml = '';
       ex.rows.forEach((row, ri) => {
         rowsHtml += '<tr>';
-        row.forEach((c, ci) => {
-          rowsHtml += `<td><input type="text" class="bn-field tbl-cell" value="${esc(c)}" data-r="${ri}" data-c="${ci}" style="width:${Math.floor(100/cc)}%;min-width:50px"/></td>`;
-        });
+        row.forEach((c, ci) => { rowsHtml += `<td><input type="text" class="bn-field tbl-cell" value="${esc(c)}" data-r="${ri}" data-c="${ci}" style="width:${Math.floor(100/cc)}%;min-width:50px"/></td>`; });
         rowsHtml += '</tr>';
       });
 
       d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:4px">⊞ Table ${rc}×${cc}</div><div class="inline-tbl-wrap"><table class="inline-tbl">${rowsHtml}</table></div>`;
       
       d.querySelectorAll('.tbl-cell').forEach(inp => {
-        inp.addEventListener('input', e => {
-          ex.rows[+e.target.dataset.r][+e.target.dataset.c] = e.target.value;
-          sched();
-        });
+        inp.addEventListener('input', e => { ex.rows[+e.target.dataset.r][+e.target.dataset.c] = e.target.value; sched(); });
       });
     } else if (ex.type === 'diagram') {
-      d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
+      d.innerHTML = `${alignUI}${del}${szSlider}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
+    } else if (ex.type === 'labeled') {
+      let ptrsHtml = '';
+      (ex.pointers || []).forEach((pt, pti) => {
+          ptrsHtml += `
+            <div class="ptr-row">
+              <input type="text" class="ptr-lbl" data-xi="${idx}" data-pi="${pti}" value="${esc(pt.label)}" placeholder="A" style="width:40px; font-size:10px; padding:3px"/>
+              <span style="font-size:10px;color:var(--t3)">________</span>
+              <button class="btn btn-ghost btn-xs ptr-del" data-xi="${idx}" data-pi="${pti}">✕</button>
+            </div>
+          `;
+      });
+      
+      d.innerHTML = `${alignUI}${del}${szSlider}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">🏷 Labeled Diagram</div>
+      <div style="display:flex; flex-direction:row; gap:8px; padding-bottom:15px;">
+        <div style="flex:1;">
+            <div class="img-slot ptr-img-slot" data-xi="${idx}" style="width:100%; height:80px">
+                ${ex.data ? `<img src="${ex.data}" alt=""/>` : '<span>+<br>Image</span>'}
+                <input type="file" accept="image/*" hidden class="lbl-file"/>
+            </div>
+        </div>
+        <div style="flex:1;">
+            <div style="font-size:10px; font-weight:600; color:var(--t2)">Pointers: <button class="btn btn-ghost btn-xs ptr-add" data-xi="${idx}">+ Add</button></div>
+            <div class="ptr-list">${ptrsHtml}</div>
+        </div>
+      </div>`;
+      
+      d.querySelector('.ptr-add').addEventListener('click', (e) => { ex.pointers.push({label:'', blank:true}); renderExtras(q, cont); sched(); });
+      d.querySelectorAll('.ptr-del').forEach(btn => { btn.addEventListener('click', e => { ex.pointers.splice(+e.target.dataset.pi, 1); renderExtras(q, cont); sched(); }); });
+      d.querySelectorAll('.ptr-lbl').forEach(inp => { inp.addEventListener('input', e => { ex.pointers[+e.target.dataset.pi].label = e.target.value; sched(); }); });
+      const slot = d.querySelector('.ptr-img-slot');
+      const fi = d.querySelector('.lbl-file');
+      slot.addEventListener('click', () => fi.click());
+      fi.addEventListener('change', e => {
+        const f = e.target.files[0]; 
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = ev => { ex.data = ev.target.result; renderExtras(q, cont); sched(); };
+        r.readAsDataURL(f);
+      });
     }
 
-    d.querySelector('.extra-del').addEventListener('click', e => {
-      q.extra.splice(+e.target.dataset.xi, 1);
-      renderExtras(q, cont);
-      sched();
-    });
-    
-    d.querySelectorAll('.extra-align-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        q.extra[+e.target.dataset.xi].align = e.target.dataset.val;
-        renderExtras(q, cont);
-        sched();
-      });
-    });
+    d.querySelector('.extra-del').addEventListener('click', e => { q.extra.splice(+e.target.dataset.xi, 1); renderExtras(q, cont); sched(); });
+    d.querySelectorAll('.extra-align-btn').forEach(btn => { btn.addEventListener('click', e => { q.extra[+e.target.dataset.xi].align = e.target.dataset.val; renderExtras(q, cont); sched(); }); });
+    d.querySelectorAll('.ex-size-inp').forEach(inp => { inp.addEventListener('input', e => { q.extra[+e.target.dataset.xi].size = parseInt(e.target.value); sched(); }); });
     
     cont.appendChild(d);
   });
 }
 
 function addExtraImg(q, cont) {
-  const inp = document.createElement('input');
-  inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
   inp.addEventListener('change', e => {
     const f = e.target.files[0]; 
     if (!f) return;
     const r = new FileReader();
-    r.onload = ev => {
-      q.extra.push({ type: 'image', data: ev.target.result });
-      renderExtras(q, cont); sched();
-    };
+    r.onload = ev => { q.extra.push({ type: 'image', data: ev.target.result, size: 60 }); renderExtras(q, cont); sched(); };
     r.readAsDataURL(f);
   });
   document.body.appendChild(inp); inp.click(); inp.remove();
@@ -2202,11 +2182,12 @@ function addExtraImg(q, cont) {
 function addExtraTbl(q, cont) {
   const rows = parseInt(prompt('Number of rows?', '3') || '3');
   const cols = parseInt(prompt('Number of columns?', '3') || '3');
-  if (!rows || !cols || rows < 1 || cols < 1 || rows > 30 || cols > 12) {
-    toast('Invalid table size.', 'warn'); return;
-  }
-  q.extra.push({ type: 'table', rows: Array.from({ length: rows }, () => Array(cols).fill('')) });
-  renderExtras(q, cont); sched();
+  if (!rows || !cols || rows < 1 || cols < 1 || rows > 30 || cols > 12) { toast('Invalid table size.', 'warn'); return; }
+  q.extra.push({ type: 'table', rows: Array.from({ length: rows }, () => Array(cols).fill('')) }); renderExtras(q, cont); sched();
+}
+
+function addExtraLabeled(q, cont) {
+    q.extra.push({ type: 'labeled', data: null, align: 'center', size: 60, pointers: [{label: 'i', blank: true}] }); renderExtras(q, cont); sched();
 }
 
 /* ── DIAGRAM TOOL ── */
@@ -2220,16 +2201,12 @@ function openDia(q, cont) {
   
   $$('.dia-t').forEach(b => b.classList.remove('on'));
   if ($$('.dia-t')[0]) $$('.dia-t')[0].classList.add('on');
-  
   $('dia-modal').classList.add('show');
 
   const pos = e => {
     const r = cv.getBoundingClientRect();
     const ce = e.touches ? e.touches[0] : e;
-    return { 
-      x: (ce.clientX - r.left) * (cv.width / r.width), 
-      y: (ce.clientY - r.top) * (cv.height / r.height) 
-    };
+    return { x: (ce.clientX - r.left) * (cv.width / r.width), y: (ce.clientY - r.top) * (cv.height / r.height) };
   };
 
   const down = e => {
@@ -2249,66 +2226,45 @@ function openDia(q, cont) {
     
     ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     
-    if (_tool === 'free') {
-      ctx.lineTo(p.x, p.y); ctx.stroke(); return;
-    }
+    if (_tool === 'free') { ctx.lineTo(p.x, p.y); ctx.stroke(); return; }
     
-    ctx.putImageData(_snap, 0, 0);
-    ctx.beginPath();
+    ctx.putImageData(_snap, 0, 0); ctx.beginPath();
     
-    if (_tool === 'line') {
-      ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke();
-    } else if (_tool === 'rect') {
-      ctx.strokeRect(_sx, _sy, p.x - _sx, p.y - _sy);
-    } else if (_tool === 'circle') {
+    if (_tool === 'line') { ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    else if (_tool === 'rect') { ctx.strokeRect(_sx, _sy, p.x - _sx, p.y - _sy); }
+    else if (_tool === 'circle') {
       const rx = Math.abs(p.x - _sx) / 2, ry = Math.abs(p.y - _sy) / 2;
       const cx = _sx + (p.x - _sx) / 2, cy = _sy + (p.y - _sy) / 2;
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI);
-      ctx.stroke();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI); ctx.stroke();
     } else if (_tool === 'arrow') {
-      const dx = p.x - _sx, dy = p.y - _sy;
-      const ang = Math.atan2(dy, dx);
+      const dx = p.x - _sx, dy = p.y - _sy; const ang = Math.atan2(dy, dx);
       ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
       ctx.lineTo(p.x - 13 * Math.cos(ang - 0.42), p.y - 13 * Math.sin(ang - 0.42));
       ctx.lineTo(p.x - 13 * Math.cos(ang + 0.42), p.y - 13 * Math.sin(ang + 0.42));
-      ctx.closePath();
-      ctx.fillStyle = col; ctx.fill();
+      ctx.closePath(); ctx.fillStyle = col; ctx.fill();
     }
   };
 
   const up = () => { _drawing = false; };
-
   cv.onmousedown = down; cv.onmousemove = move; cv.onmouseup = up;
-  cv.ontouchstart = e => { e.preventDefault(); down(e); };
-  cv.ontouchmove = e => { e.preventDefault(); move(e); };
-  cv.ontouchend = up;
+  cv.ontouchstart = e => { e.preventDefault(); down(e); }; cv.ontouchmove = e => { e.preventDefault(); move(e); }; cv.ontouchend = up;
 }
 
 $$('.dia-t').forEach(b => {
   b.addEventListener('click', () => {
     if (!b.dataset.t) return;
     $$('.dia-t').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    _tool = b.dataset.t;
+    b.classList.add('on'); _tool = b.dataset.t;
   });
 });
 
-$('dia-clr').addEventListener('click', () => {
-  $('dia-canvas').getContext('2d').clearRect(0,0,520,320);
-});
-
+$('dia-clr').addEventListener('click', () => { $('dia-canvas').getContext('2d').clearRect(0,0,520,320); });
 $('dia-save').addEventListener('click', () => {
   const png = $('dia-canvas').toDataURL('image/png');
-  if (_dQ) {
-    _dQ.extra.push({ type: 'diagram', png: png });
-    renderExtras(_dQ, _dCont);
-    sched();
-  }
+  if (_dQ) { _dQ.extra.push({ type: 'diagram', png: png, size: 60 }); renderExtras(_dQ, _dCont); sched(); }
   $('dia-modal').classList.remove('show');
 });
-
 $('dia-cancel').addEventListener('click', () => $('dia-modal').classList.remove('show'));
 $('dia-modal').addEventListener('click', e => { if (e.target === $('dia-modal')) $('dia-modal').classList.remove('show'); });
 
@@ -2323,7 +2279,11 @@ function runAutoFit() {
     document.body.appendChild(mDiv);
   }
 
-  const PAGE_H = 793; 
+  const isPortrait = getActiveOrient() === 'portrait';
+  const PAGE_H = isPortrait ? 1122 : 793; 
+  let maxAvailH = PAGE_H;
+  if(S.viewMode === 'mirror4') maxAvailH = PAGE_H / 2;
+  
   let fs = S.fontSize, lh = S.lineHeight, mg = S.margin;
   const fsMin = 9, fsMax = 13, lhMin = 0.8, lhMax = 1.75, mgMin = 0.3;
 
@@ -2332,7 +2292,11 @@ function runAutoFit() {
     document.documentElement.style.setProperty('--p-lh', l);
     document.documentElement.style.setProperty('--p-margin', m + 'cm');
     mDiv.innerHTML = buildSet();
-    mDiv.style.width = 'calc((297mm - 1.2cm) / 2)';
+    
+    if(S.viewMode === 'zero' || S.viewMode === 'continuous') { mDiv.style.width = isPortrait ? '210mm' : '297mm'; } 
+    else if (S.viewMode === 'mirror2') { mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)'; } 
+    else if (S.viewMode === 'mirror4') { mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)'; }
+    
     mDiv.style.padding = m + 'cm';
     mDiv.style.fontFamily = 'var(--font-bn)';
     mDiv.style.fontSize = f + 'pt';
@@ -2341,27 +2305,24 @@ function runAutoFit() {
   }
 
   let h = measure(fs, lh, mg);
-  
-  if (h <= PAGE_H) { applyAutoFit(fs, lh, mg); return; }
+  if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
-  while (lh > lhMin && h > PAGE_H) { lh = +(lh - 0.05).toFixed(3); h = measure(fs, lh, mg); }
-  if (h <= PAGE_H) { applyAutoFit(fs, lh, mg); return; }
+  while (lh > lhMin && h > maxAvailH) { lh = +(lh - 0.05).toFixed(3); h = measure(fs, lh, mg); }
+  if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
-  while (fs > fsMin && h > PAGE_H) { fs = +(fs - 0.5).toFixed(1); h = measure(fs, lh, mg); }
-  if (h <= PAGE_H) { applyAutoFit(fs, lh, mg); return; }
+  while (fs > fsMin && h > maxAvailH) { fs = +(fs - 0.5).toFixed(1); h = measure(fs, lh, mg); }
+  if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
-  while (mg > mgMin && h > PAGE_H) { mg = +(mg - 0.1).toFixed(2); h = measure(fs, lh, mg); }
-  if (h <= PAGE_H) { applyAutoFit(fs, lh, mg); return; }
+  while (mg > mgMin && h > maxAvailH) { mg = +(mg - 0.1).toFixed(2); h = measure(fs, lh, mg); }
+  if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
-  // Adjust warning for infinite pages
-  const FILL_TARGET = PAGE_H * 1.6;
+  const FILL_TARGET = maxAvailH * 1.6;
   while ((fs < fsMax || lh < lhMax) && h < FILL_TARGET) {
-    if (lh < lhMax) lh = +(lh + 0.05).toFixed(3);
-    else if (fs < fsMax) fs = +(fs + 0.5).toFixed(1);
+    if (lh < lhMax) lh = +(lh + 0.05).toFixed(3); else if (fs < fsMax) fs = +(fs + 0.5).toFixed(1);
     h = measure(fs, lh, mg);
   }
   
-  const approxPages = Math.ceil(h / PAGE_H);
+  const approxPages = Math.ceil(h / maxAvailH);
   applyAutoFit(fs, lh, mg);
   toast(`Content needs ${approxPages} pages — filled automatically.`, 'warn');
 }
@@ -2371,9 +2332,7 @@ function applyAutoFit(fs, lh, mg) {
   if ($('s-fs')) { $('s-fs').value = fs; $('s-fs-v').textContent = fs + ' pt'; }
   if ($('s-lh')) { $('s-lh').value = lh; $('s-lh-v').textContent = lh.toFixed(2); }
   if ($('s-mg')) { $('s-mg').value = mg * 10; $('s-mg-v').textContent = mg.toFixed(1) + ' cm'; }
-  applyVars();
-  showAutoFitBtn();
-  sched();
+  applyVars(); showAutoFitBtn(); sched();
   toast(`Auto-fit: ${fs}pt · LH${lh.toFixed(2)} · ${mg.toFixed(1)}cm`, 'success');
 }
 
@@ -2382,9 +2341,7 @@ function applyAutoFit(fs, lh, mg) {
 function renderTok(t) {
   if (!t) return '';
   t = t.replace(/\[EQ:([^\]]+)\]/g, (_, eq) => {
-    try {
-      if (typeof katex !== 'undefined') return katex.renderToString(eq, { throwOnError: false, displayMode: false });
-    } catch (e) { console.warn("Katex error", e); }
+    try { if (typeof katex !== 'undefined') return katex.renderToString(eq, { throwOnError: false, displayMode: false }); } catch (e) {}
     return `<i>${esc(eq)}</i>`;
   });
   t = t.replace(/\[CHEM:([^\]]+)\]/g, (_, f) => `<i>${f.replace(/(\d+)/g, '<sub>$1</sub>')}</i>`);
@@ -2395,7 +2352,7 @@ function renderTok(t) {
 }
 
 let _pvT = null;
-function sched(d = 80) { clearTimeout(_pvT); _pvT = setTimeout(render, d); }
+function sched(d = 10) { clearTimeout(_pvT); _pvT = setTimeout(render, d); }
 
 function render() {
   try {
@@ -2403,20 +2360,13 @@ function render() {
     const has = S.sections.length || S.subject || S.klass || S.topTitle;
     
     if (!has) { 
-      vp.innerHTML = `
-        <div class="empty-ph" id="ph">
-          <div class="ei">📄</div>
-          Fill in exam info and add sections<br>to see the live preview here.
-        </div>`; 
+      vp.innerHTML = `<div class="empty-ph" id="ph"><div class="ei">📄</div>Fill in exam info and add sections<br>to see the live preview here.</div>`; 
       return; 
     }
 
-    const bothSets = (S.pvMode === 'both');
-
     let measDiv = document.getElementById('__meas__rv');
     if (!measDiv) {
-      measDiv = document.createElement('div');
-      measDiv.id = '__meas__rv';
+      measDiv = document.createElement('div'); measDiv.id = '__meas__rv';
       measDiv.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;top:-9999px;left:0;overflow:hidden;';
       document.body.appendChild(measDiv);
     }
@@ -2424,44 +2374,47 @@ function render() {
     const curMg = S.autoFit ? S.autoFit.margin : S.margin;
     const curFs = S.autoFit ? S.autoFit.fontSize : S.fontSize;
     const curLh = S.autoFit ? S.autoFit.lineHeight : S.lineHeight;
+    const isPortrait = getActiveOrient() === 'portrait';
+    
+    let usableW, availH_PX;
+    if(S.viewMode === 'zero' || S.viewMode === 'continuous') {
+        usableW = `calc(${isPortrait?'210mm':'297mm'} - ${curMg * 2}cm)`;
+        availH_PX = Math.round((isPortrait?297:210) * 3.7795) - (curMg * 37.795 * 2) - 3;
+    } else if (S.viewMode === 'mirror2') {
+        usableW = `calc((${isPortrait?'210mm':'297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
+        availH_PX = Math.round((isPortrait?297:210) * 3.7795) - (curMg * 37.795 * 2) - 3;
+    } else if (S.viewMode === 'mirror4') {
+        usableW = `calc((${isPortrait?'210mm':'297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
+        availH_PX = Math.round(((isPortrait?297:210) - 12) / 2 * 3.7795) - (curMg * 37.795 * 2) - 3;
+    }
 
-    const usableW = `calc((297mm - 1.2cm) / 2 - ${curMg * 2}cm)`;
     measDiv.style.width = usableW;
     measDiv.style.fontFamily = 'var(--font-bn)';
     measDiv.style.fontSize = curFs + 'pt';
     measDiv.style.lineHeight = curLh;
     measDiv.style.padding = '0';
 
-    const PAGE_H_PX = Math.round(210 * 3.7795);
-    const mgPx = curMg * 37.795;
-    const availH_PX = PAGE_H_PX - (mgPx * 2) - 3; // 3px safety margin
-
     const blocks = buildSet(true); 
-    const pages = [];
+    const logicalPages = [];
     let currentHTML = '';
 
     for (let i = 0; i < blocks.length; i++) {
       let testHTML = currentHTML + blocks[i];
       measDiv.innerHTML = testHTML;
-
-      if (measDiv.scrollHeight > availH_PX && currentHTML !== '') {
-        pages.push(currentHTML);
-        currentHTML = blocks[i];
-      } else {
-        currentHTML = testHTML;
-      }
+      if (measDiv.scrollHeight > availH_PX && currentHTML !== '') { logicalPages.push(currentHTML); currentHTML = blocks[i]; } 
+      else { currentHTML = testHTML; }
     }
-    if (currentHTML) pages.push(currentHTML);
+    if (currentHTML) logicalPages.push(currentHTML);
 
     vp.innerHTML = '';
-
-    pages.forEach((pageHTML) => {
-      appendPage(vp, buildActualPageHTML(pageHTML, bothSets));
-    });
-
-    setTimeout(() => {
-      checkFit(pages.length);
-    }, 120);
+    let renderedHTML = '';
+    if (S.viewMode === 'zero') renderedHTML = buildZeroPageHTML(logicalPages, isPortrait);
+    else if (S.viewMode === 'mirror2') renderedHTML = buildMirror2PageHTML(logicalPages, isPortrait);
+    else if (S.viewMode === 'mirror4') renderedHTML = buildMirror4PageHTML(logicalPages, isPortrait);
+    else if (S.viewMode === 'continuous') renderedHTML = buildContinuousSheets(logicalPages, isPortrait);
+    
+    vp.innerHTML = renderedHTML;
+    setTimeout(() => { checkFit(logicalPages.length); }, 10);
 
   } catch (error) {
     console.error("Rendering Error:", error);
@@ -2469,71 +2422,103 @@ function render() {
   }
 }
 
-function appendPage(vp, pageHTML) {
-  const wrap = document.createElement('div');
-  wrap.className = 'pp-wrap';
-  wrap.style.transform = `scale(${S.zoom})`;
-  wrap.style.transformOrigin = 'top center';
-  wrap.style.marginBottom = `-${(210 * (1 - S.zoom) * 3.7795) - 24}px`;
-  
-  const page = document.createElement('div');
-  page.className = 'pp';
-  page.innerHTML = pageHTML;
-  wrap.appendChild(page);
-  vp.appendChild(wrap);
+function wmHtmlGenerator() {
+    const wmSrc = S.wmSrc === 'none' ? null : (S.wmSrc === 'custom' && S.wmCustomData ? S.wmCustomData : 'watermark/default.png');
+    const wmStyle = `opacity:${S.wmOpacity / 100};pointer-events:none;z-index:5;`;
+    return wmSrc ? `<div class="qp-wm" style="${wmStyle}"><img src="${wmSrc}" style="max-width:${S.wmSize}%;max-height:${S.wmSize}%" onerror="this.style.display='none'"/></div>` : '';
 }
-
-function checkFit(pagesNeeded) {
-  const b = $('fit-badge'); 
-  if (!b) return;
-  
-  if (pagesNeeded === 1) {
-    b.className = 'fit-badge ok'; b.textContent = '✓ Fits';
-  } else if (pagesNeeded === 2) {
-    b.className = 'fit-badge warn'; b.textContent = `⚠ 2-pages`;
-  } else {
-    b.className = 'fit-badge over'; b.textContent = `📄 ${pagesNeeded}-pages`;
-  }
-  
-  if (pagesNeeded > 1) { S.autoFitDirty = true; showAutoFitBtn(); }
-}
-
-function buildActualPageHTML(content, bothSets) {
-  const wmSrc = S.wmSrc === 'none' ? null : (S.wmSrc === 'custom' && S.wmCustomData ? S.wmCustomData : 'watermark/default.png');
-  const wmStyle = `opacity:${S.wmOpacity / 100};pointer-events:none;z-index:5;`;
-  const wmHTML = wmSrc ? `<div class="qp-wm" style="${wmStyle}"><img src="${wmSrc}" style="max-width:${S.wmSize}%;max-height:${S.wmSize}%" onerror="this.style.display='none'"/></div>` : '';
-  const divHTML = buildDivHTML();
-  const mg = (S.autoFit ? S.autoFit.margin : S.margin);
-
-  const setBlock = `
-    <div class="qp-set" style="padding:${mg}cm; color:#111;">
-      ${wmHTML}
-      <div style="position:relative; z-index:10; height:100%;">${content}</div>
-    </div>`;
-
-  if(!bothSets) {
-      return `
-        <div class="qp-page preview-one" style="color:#111!important;display:flex">
-          ${setBlock}
-        </div>`;
-  }
-
-  return `
-    <div class="qp-page" style="color:#111!important;display:flex">
-      ${setBlock}
-      ${divHTML}
-      ${setBlock}
-    </div>`;
-}
-
 function buildDivHTML() {
   const d = S.divider;
   if (d === 'solid') return `<div class="qp-div" style="width:.15cm;border-left:.5pt solid #bbb"></div>`;
   if (d === 'text') return `<div class="qp-div" style="border-left: 1px dashed #999; position: relative; width: .25cm;"><div style="position:absolute; top:10%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div><div style="position:absolute; top:50%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div><div style="position:absolute; top:90%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div></div>`;
-  
   const ch = d === 'dotted' ? '·' : (d === 'dashed' ? '-' : '✂');
   const rows = Array.from({length: 38}, () => `<div style="line-height:1">${ch}</div>`).join('');
   return `<div class="qp-div">${rows}</div>`;
+}
+
+function wrapPageNode(htmlString, zoomFactor, isPortrait) {
+    const wrap = document.createElement('div');
+    wrap.className = 'pp-wrap';
+    wrap.style.transform = `scale(${zoomFactor})`;
+    const pageH_MM = isPortrait ? 297 : 210;
+    wrap.style.marginBottom = `-${(pageH_MM * (1 - zoomFactor) * 3.7795) - 24}px`;
+    wrap.innerHTML = `<div class="pp">${htmlString}</div>`;
+    return wrap.outerHTML;
+}
+
+function buildZeroPageHTML(pages, isPortrait) {
+    const mg = (S.autoFit ? S.autoFit.margin : S.margin);
+    const wmHTML = wmHtmlGenerator();
+    let res = '';
+    const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+    pages.forEach(p => {
+        const h = `<div class="qp-page preview-zero" style="${styleDims}"><div class="qp-set" style="padding:${mg}cm; color:#111; width:100%;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div></div>`;
+        res += wrapPageNode(h, S.zoom, isPortrait);
+    });
+    return res;
+}
+
+function buildMirror2PageHTML(pages, isPortrait) {
+    const mg = (S.autoFit ? S.autoFit.margin : S.margin);
+    const wmHTML = wmHtmlGenerator();
+    const divHTML = buildDivHTML();
+    let res = '';
+    const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+    pages.forEach(p => {
+        const setBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
+        const h = `<div class="qp-page preview-mirror2" style="${styleDims}">${setBlock}${divHTML}${setBlock}</div>`;
+        res += wrapPageNode(h, S.zoom, isPortrait);
+    });
+    return res;
+}
+
+function buildMirror4PageHTML(pages, isPortrait) {
+    const mg = (S.autoFit ? S.autoFit.margin : S.margin);
+    const wmHTML = wmHtmlGenerator();
+    let res = '';
+    const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+    pages.forEach(p => {
+        const setBlockQuad1 = `<div class="qp-set q-quad-1" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
+        const setBlockQuad2 = `<div class="qp-set q-quad-2" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
+        const setBlockQuad3 = `<div class="qp-set q-quad-3" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
+        const setBlockQuad4 = `<div class="qp-set q-quad-4" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
+        const h = `<div class="qp-page preview-mirror4" style="${styleDims}"><div class="qp-set-wrapper">${setBlockQuad1}${setBlockQuad2}${setBlockQuad3}${setBlockQuad4}</div></div>`;
+        res += wrapPageNode(h, S.zoom, isPortrait);
+    });
+    return res;
+}
+
+function buildContinuousSheets(pages, isPortrait) {
+    const mg = (S.autoFit ? S.autoFit.margin : S.margin);
+    const wmHTML = wmHtmlGenerator();
+    const divHTML = buildDivHTML();
+    let res = '';
+    const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+    
+    if(pages.length === 1) {
+        const h = `<div class="qp-page preview-continuous" style="${styleDims} justify-content: flex-end;"><div class="qp-set" style="max-width:50%; padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${pages[0]}</div></div></div>`;
+        res += wrapPageNode(h, S.zoom, isPortrait);
+        return res;
+    }
+    
+    let paddedPages = [...pages];
+    while(paddedPages.length % 4 !== 0) { paddedPages.push(''); }
+    
+    const sheetCount = paddedPages.length / 2; 
+    let outSheets = [];
+    const total = paddedPages.length;
+    for (let i = 0; i < sheetCount; i++) {
+        let leftPage, rightPage;
+        if (i % 2 === 0) { leftPage = paddedPages[total - 1 - (i/2)]; rightPage = paddedPages[i/2]; } 
+        else { leftPage = paddedPages[Math.floor(i/2) + 1]; rightPage = paddedPages[total - 2 - Math.floor(i/2)]; }
+        
+        const LBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${leftPage}</div></div>`;
+        const RBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${rightPage}</div></div>`;
+        const h = `<div class="qp-page preview-continuous" style="${styleDims}">${LBlock}${divHTML}${RBlock}</div>`;
+        outSheets.push(h);
+    }
+    outSheets.forEach(sheet => { res += wrapPageNode(sheet, S.zoom, isPortrait); });
+    return res;
 }
 
 function buildExtH(q) {
@@ -2544,31 +2529,37 @@ function buildExtH(q) {
     let style = '';
     let isFloat = false;
 
-    if (align === 'right') {
-      style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;';
-      isFloat = true;
-    } else if (align === 'left') {
-      style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;';
-      isFloat = true;
-    } else {
-      style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;';
-    }
+    if (align === 'right') { style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;'; isFloat = true; } 
+    else if (align === 'left') { style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;'; isFloat = true; } 
+    else { style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;'; }
 
     let inner = '';
-    if (ex.type === 'image') inner = `<img src="${ex.data}" style="max-width:100%;max-height:36mm;object-fit:contain"/>`;
-    if (ex.type === 'diagram' && ex.png) inner = `<img src="${ex.png}" style="max-width:100%;max-height:36mm;object-fit:contain"/>`;
-    if (ex.type === 'table') {
-      let t = `<table class="qp-itable" style="${isFloat ? 'margin:0' : 'margin:2pt auto'}">`;
-      ex.rows.forEach(row => {
-        t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`;
-      });
-      t += `</table>`;
-      inner = t;
+    const szPct = ex.size || 60;
+    
+    if (ex.type === 'image') {
+        inner = `<img src="${ex.data}" style="max-width:${szPct}%;max-height:36mm;object-fit:contain"/>`;
+    } else if (ex.type === 'diagram' && ex.png) {
+        inner = `<img src="${ex.png}" style="max-width:${szPct}%;max-height:36mm;object-fit:contain"/>`;
+    } else if (ex.type === 'table') {
+        let t = `<table class="qp-itable" style="${isFloat ? 'margin:0' : 'margin:2pt auto'}">`;
+        ex.rows.forEach(row => { t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`; });
+        t += `</table>`; inner = t;
+    } else if (ex.type === 'labeled') {
+        let pts = '';
+        if(ex.pointers && ex.pointers.length > 0) {
+            pts = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:4pt; text-align:left; font-size:calc(var(--p-fsize) - 1pt); width:100%;">`;
+            ex.pointers.forEach(p => { pts += `<div>${esc(p.label)}) ____________</div>`; });
+            pts += `</div>`;
+        }
+        
+        let containerStyle = isFloat ? 'display:flex; flex-direction:column; gap:4pt; align-items:center;' : 'display:flex; flex-direction:row; justify-content:center; gap:8pt; align-items:center; width:100%;';
+        let imgPart = ex.data ? `<img src="${ex.data}" style="max-width:${isFloat ? '100%' : szPct+'%'};max-height:40mm;object-fit:contain"/>` : '';
+        let ptsPart = `<div style="flex:1; min-width:0;">${pts}</div>`;
+        inner = `<div style="${containerStyle}">${imgPart}${ptsPart}</div>`;
     }
 
     const wrapper = `<div style="${style}">${inner}</div>`;
-    if (isFloat) floatH += wrapper;
-    else bottomH += wrapper;
+    if (isFloat) floatH += wrapper; else bottomH += wrapper;
   });
   return { floats: floatH, bottom: bottomH };
 }
@@ -2589,7 +2580,6 @@ function buildSet(asBlocks = false) {
   const fm = S.fullMarks;
   
   let blocks = [];
-  
   let h = `<div class="qp-title" style="font-size:14pt">${esc(S.topTitle || 'Question Paper')}</div>`;
   
   if (S.subject.length > 22) {
@@ -2599,9 +2589,7 @@ function buildSet(asBlocks = false) {
         <span>${classLabel}: ${klass}</span>
         <span>${timeLabel}: ${isBn ? bn(S.time) : S.time} ${timeUnit}</span>
       </div>
-      <div style="text-align:center;font-family:var(--font-tt);font-size:${fsPt};padding-bottom:2pt;">
-        ${subjectLabel}: ${subj}
-      </div>`;
+      <div style="text-align:center;font-family:var(--font-tt);font-size:${fsPt};padding-bottom:2pt;">${subjectLabel}: ${subj}</div>`;
   } else {
     h += `
       <div class="qp-info" style="font-size:${fsPt}">
@@ -2616,32 +2604,19 @@ function buildSet(asBlocks = false) {
 
   S.sections.forEach((sec, idx) => {
     const L = sl(idx);
-    
     let actualCount = 0;
-    for(let i=0; i<sec.questions.length; i++) {
-        actualCount++;
-        if(sec.questions[i].isOrNext) i++; 
-    }
+    for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
 
     const countedQ = (sec.answerAny && sec.answerAny < actualCount) ? sec.answerAny : actualCount;
     const tot = (sec.mpq || 0) * countedQ;
     const mfNum = isBn ? `${bn(sec.mpq)} × ${bn(countedQ)} = ${bn(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
-    
     const secPrefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
     const anyNote = sec.answerAny ? (isBn ? ` (যেকোনো ${bn(sec.answerAny)}টি)` : ` (any ${sec.answerAny})`) : '';
 
-    let secHdr = `
-      <div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div>
-      <div class="qp-sec-row" style="font-size:${fsPt}">
-        <span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}${anyNote}</span>
-        <span>${mfNum}</span>
-      </div>`;
+    let secHdr = `<div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div><div class="qp-sec-row" style="font-size:${fsPt}"><span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}${anyNote}</span><span>${mfNum}</span></div>`;
     blocks.push(secHdr);
 
-    if (!sec.questions.length) {
-        blocks.push(`<div style="color:#aaa;font-size:8pt;line-height:var(--p-lh)">(no questions)</div>`);
-        return;
-    }
+    if (!sec.questions.length) { blocks.push(`<div style="color:#aaa;font-size:8pt;line-height:var(--p-lh)">(no questions)</div>`); return; }
 
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
@@ -2649,46 +2624,75 @@ function buildSet(asBlocks = false) {
       const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
       const numH = isOrChild ? `<span style="opacity:0">${numStr}</span>` : `<b>${numStr}</b>`;
       
-      let qTextEscaped = esc(q.text);
-      qTextEscaped = qTextEscaped.replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
+      let qTextEscaped = esc(q.text).replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
       const finalRenderedText = renderTok(qTextEscaped);
-      
-      const ext = buildExtH(q);
+      let qTextHtml = `<div style="flex:1; min-width:0; text-align:justify;">${numH} ${finalRenderedText}</div>`;
 
-      let qHTML = '';
+      let imgHtml = '', oph = '', bottomHtml = '', leftHtml = '', rightHtml = '';
+      
       if (sec.type === 'mcq') {
         const opts = (q.options || ['','','','']).slice(0, 4);
-        let maxLen = 0;
-        opts.forEach(o => { if (o.length > maxLen) maxLen = o.length; });
-        
+        let maxLen = 0; opts.forEach(o => { if (o.length > maxLen) maxLen = o.length; });
         const ls = sec.os === 'en' ? EN_O : BN_O;
-        let optsHtml = '';
-        opts.forEach((opt, i) => { optsHtml += `<span>(${ls[i]}) ${renderTok(esc(opt))}</span>`; });
-        
-        let oph = '';
+        let optsHtml = ''; opts.forEach((opt, i) => { optsHtml += `<span>(${ls[i]}) ${renderTok(esc(opt))}</span>`; });
         if (maxLen <= 13) oph = `<div class="qp-q-mcq-opts">${optsHtml}</div>`;
         else if (maxLen <= 25) oph = `<div class="qp-q-mcq-opts g2">${optsHtml}</div>`;
         else oph = `<div class="qp-q-mcq-opts g1">${optsHtml}</div>`;
         
-        const imgH = q.img ? `<img src="${q.img}" style="float:right;max-width:28%;max-height:32mm;object-fit:contain;margin-left:4pt"/>` : '';
-        qHTML = `<div class="qp-q" style="overflow:hidden">${imgH}${ext.floats}<div style="text-align:justify">${numH} ${finalRenderedText}</div>${oph}${ext.bottom}</div>`;
-      } else {
-        qHTML = `<div class="qp-q" style="overflow:hidden">${ext.floats}<div style="text-align:justify">${numH} ${finalRenderedText}</div>${ext.bottom}</div>`;
+        if(q.img) {
+            let iH = `<img src="${q.img}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
+            if(q.imgAlign === 'left') leftHtml += `<div style="width:${q.imgSize||60}%;">${iH}</div>`;
+            else rightHtml += `<div style="width:${q.imgSize||60}%; text-align:right;">${iH}</div>`;
+        }
       }
 
-      let orH = '';
-      if (q.isOrNext && qi < sec.questions.length - 1) {
-          const orText = isBn ? 'অথবা' : 'OR';
-          orH = `<div style="text-align:center; font-weight:bold; margin: 2pt 0; font-size:calc(var(--p-fsize) - 1pt)">${orText}</div>`;
+      // Extras Logic via Flex
+      (q.extra || []).forEach(ex => {
+          let inner = '';
+          const szPct = ex.size || 60;
+          if (ex.type === 'image' && ex.data) inner = `<img src="${ex.data}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
+          else if (ex.type === 'diagram' && ex.png) inner = `<img src="${ex.png}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
+          else if (ex.type === 'table') {
+              let t = `<table class="qp-itable" style="${ex.align==='center'?'margin:2pt auto':'margin:0'}">`;
+              ex.rows.forEach(row => { t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`; });
+              inner = t + `</table>`;
+          } else if (ex.type === 'labeled') {
+              let pts = '';
+              if(ex.pointers && ex.pointers.length > 0) {
+                  pts = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:4pt; text-align:left; font-size:calc(var(--p-fsize) - 1pt); width:100%;">`;
+                  ex.pointers.forEach(p => { pts += `<div>${esc(p.label)}) ____________</div>`; });
+                  pts += `</div>`;
+              }
+              let imgPart = ex.data ? `<img src="${ex.data}" style="max-width:100%;max-height:40mm;object-fit:contain"/>` : '';
+              inner = `<div style="display:flex; flex-direction:${ex.align==='center'?'row':'column'}; gap:8pt; align-items:center; width:100%;">
+                          ${imgPart} <div style="flex:1; min-width:0; width:100%;">${pts}</div>
+                       </div>`;
+          }
+
+          if (ex.align === 'left') leftHtml += `<div style="width:${szPct}%;">${inner}</div>`;
+          else if (ex.align === 'right') rightHtml += `<div style="width:${szPct}%; text-align:right;">${inner}</div>`;
+          else bottomHtml += `<div style="text-align:center; width:100%; margin-top:4pt;">${inner}</div>`;
+      });
+
+      // Construct Flex Layout
+      let mainBlock = `<div style="display:flex; flex-direction:row; align-items:flex-start; gap:8pt;">`;
+      if (leftHtml) mainBlock += `<div style="flex-shrink:0;">${leftHtml}</div>`;
+      mainBlock += qTextHtml;
+      if (rightHtml) mainBlock += `<div style="flex-shrink:0;">${rightHtml}</div>`;
+      mainBlock += `</div>`;
+
+      // Answer Space Logic
+      let spaceH = '';
+      if (S.ansSpace && sec.type !== 'mcq') {
+          const gap = sec.ansGap || (sec.type === 'long' ? 80 : sec.type === 'descriptive' ? 40 : 20);
+          if (gap > 0) spaceH = `<div style="height:${gap}mm; width:100%"></div>`;
       }
 
+      let qHTML = `<div class="qp-q">${mainBlock}${oph}${bottomHtml}${spaceH}</div>`;
+      let orH = (q.isOrNext && qi < sec.questions.length - 1) ? `<div style="text-align:center; font-weight:bold; margin: 2pt 0; font-size:calc(var(--p-fsize) - 1pt)">${isBn ? 'অথবা' : 'OR'}</div>` : '';
       blocks.push(`<div style="font-size:${fsPt};line-height:var(--p-lh)">${qHTML + orH}</div>`);
 
-      if (!isOrChild && !q.isOrNext) {
-          qCounter++;
-      } else if (isOrChild && !q.isOrNext) {
-          qCounter++;
-      }
+      if (!isOrChild && !q.isOrNext) { qCounter++; } else if (isOrChild && !q.isOrNext) { qCounter++; }
     });
   });
   
@@ -2702,45 +2706,33 @@ function parseQPF(rawText) {
     const lines = rawText.replace(/^\uFEFF/, '').split(/\r?\n/).map(l => l.trim());
     const stripped = [];
     let inFence = false;
-    
-    for (const l of lines) {
-      if (/^```/.test(l)) { inFence = !inFence; continue; }
-      if (!inFence) stripped.push(l);
-    }
+    for (const l of lines) { if (/^```/.test(l)) { inFence = !inFence; continue; } if (!inFence) stripped.push(l); }
 
     const newState = {
-      topTitle: 'Test no. XXX',
-      klass: '', subject: '', time: 30, inst: '',
-      fontSize: 11, lineHeight: 1.45, margin: 1.0,
-      divider: 'dotted', paperLang: 'full-bn', wmSrc: 'none',
+      topTitle: 'Test no. XXX', klass: '', subject: '', time: 30, inst: '',
+      fontSize: 11, lineHeight: 1.45, margin: 1.0, divider: 'dotted', paperLang: 'full-bn', wmSrc: 'none',
       sections: []
     };
-
-    let mode = '', curSec = null, curQ = null, inTable = false;
+    let mode = '', curSec = null, curQ = null, inTable = false, inLabeled = false;
 
     const flushQ = () => { if (curQ && curSec) { curSec.questions.push(curQ); curQ = null; } };
     const flushSec = () => { flushQ(); if (curSec) { newState.sections.push(curSec); curSec = null; } };
 
     for (const raw of stripped) {
-      const line = raw.replace(/\s+/g, ' ');
-      const cleanLine = line.replace(/\s+\/\/.*$/, ''); 
-
-      if (!line || line.startsWith('//')) continue;
-
+      const cleanLine = raw.replace(/\s+/g, ' ').replace(/\s+\/\/.*$/, ''); 
+      if (!cleanLine || cleanLine.startsWith('//')) continue;
+      
       const secMatch = cleanLine.replace(/\s/g, '').match(/^##SECTION_([A-Z]+)$/i);
-      if (secMatch) {
-        flushSec();
-        curSec = { id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] };
-        mode = 'sec';
-        continue;
-      }
+      if (secMatch) { flushSec(); curSec = { id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] }; mode = 'sec'; continue; }
       
       if (cleanLine.replace(/\s/g, '') === '##META') { mode = 'meta'; continue; }
       if (cleanLine.replace(/\s/g, '') === '##END') { flushSec(); break; }
 
       const ci = cleanLine.indexOf(':');
       if (ci < 0) {
-        if (curQ && !inTable && mode === 'sec') curQ.text += `\n${cleanLine}`; // Preserve newlines for sub-parts!
+        if (cleanLine === 'LABELED_START' && curQ) { curQ.extra.push({ type: 'labeled', data: null, align: 'center', size: 60, pointers: [] }); inLabeled = true; continue; }
+        if (cleanLine === 'LABELED_END' && curQ) { inLabeled = false; continue; }
+        if (curQ && !inTable && !inLabeled && mode === 'sec') curQ.text += `\n${cleanLine}`; 
         if (inTable && curQ) {
           const lastEx = curQ.extra[curQ.extra.length - 1];
           if (lastEx && lastEx.type === 'table') {
@@ -2753,10 +2745,7 @@ function parseQPF(rawText) {
       }
 
       const k = cleanLine.slice(0, ci).trim().toUpperCase();
-      let v = cleanLine.slice(ci + 1).trim();
-
-      // Convert explicit AI [BR] tokens to natural newlines for sub-parts
-      v = v.replace(/\[BR\]/gi, '\n');
+      let v = cleanLine.slice(ci + 1).trim().replace(/\[BR\]/gi, '\n');
 
       if (mode === 'meta') {
         if (k === 'TOP_TITLE') newState.topTitle = v;
@@ -2773,14 +2762,10 @@ function parseQPF(rawText) {
       } else if (mode === 'sec' && curSec) {
         if (k === 'TABLE_START' && curQ) {
           const dims = v.split('x').map(x => parseInt(x.trim()) || 2);
-          const r = Math.min(dims[0], 30);
-          const c = Math.min(dims[1] || dims[0], 12);
-          curQ.extra.push({ type: 'table', rows: Array.from({ length: r }, () => Array(c).fill('')) });
-          inTable = true;
-          continue;
+          const r = Math.min(dims[0], 30); const c = Math.min(dims[1] || dims[0], 12);
+          curQ.extra.push({ type: 'table', rows: Array.from({ length: r }, () => Array(c).fill('')) }); inTable = true; continue;
         }
         if (k === 'TABLE_END') { inTable = false; continue; }
-        
         if (inTable && curQ) {
           const lastEx = curQ.extra[curQ.extra.length - 1];
           if (lastEx && lastEx.type === 'table') {
@@ -2790,74 +2775,51 @@ function parseQPF(rawText) {
           }
           continue;
         }
-
-        if (k === 'HEADING') curSec.heading = v;
-        else if (k === 'TYPE') {
-          const typeMap = { 'mcq': 'mcq', 'short': 'short', 'descriptive': 'descriptive', 'long': 'long', 'sa': 'short', 'la': 'long', 'desc': 'descriptive' };
-          curSec.type = typeMap[v.toLowerCase()] || 'short';
+        if (inLabeled && curQ) {
+            if (k === 'POINTER') {
+                const lastEx = curQ.extra[curQ.extra.length - 1];
+                if(lastEx && lastEx.type === 'labeled') {
+                    const pts = v.split(':'); const lbl = pts[0] && !pts[0].includes('___') ? pts[0].trim() : '';
+                    lastEx.pointers.push({label: lbl, blank: true});
+                }
+            }
+            continue;
         }
+        if (k === 'HEADING') curSec.heading = v;
+        else if (k === 'TYPE') { const typeMap = { 'mcq': 'mcq', 'short': 'short', 'descriptive': 'descriptive', 'long': 'long', 'sa': 'short', 'la': 'long', 'desc': 'descriptive' }; curSec.type = typeMap[v.toLowerCase()] || 'short'; }
         else if (k === 'MARKS_PER_Q' || k === 'MARKS') curSec.mpq = parseFloat(v) || 1;
         else if (k === 'OPT_STYLE') curSec.os = v === 'en' ? 'en' : 'bn';
         else if (k === 'ANSWER_ANY' || k === 'ANSWERANY') { const aVal = parseInt(v); if (aVal > 0) curSec.answerAny = aVal; }
-        else if (k === 'Q') {
-          flushQ();
-          curQ = { id: uid(), text: v, options: ['', '', '', ''], img: null, extra: [], isOrNext: false };
-          inTable = false;
-        }
+        else if (k === 'Q') { flushQ(); curQ = { id: uid(), text: v, options: ['', '', '', ''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false }; inTable = false; }
         else if (k === 'OR_NEXT') { if(curQ) curQ.isOrNext = (v.toLowerCase() === 'true'); }
         else if (k === 'Q_IMAGE' || k === 'Q_IMAGE_MCQ') { if (curQ && v.length > 10) curQ.img = v; }
-        else if (k === 'Q_IMAGE_BELOW') { if (curQ && v.length > 10) curQ.extra.push({ type: 'image', data: v }); }
+        else if (k === 'Q_IMAGE_BELOW') { if (curQ && v.length > 10) curQ.extra.push({ type: 'image', data: v, size: 60, align: 'center' }); }
         else {
-          const OPT_KEYS = {
-            'OP_K': 0, 'OPT_K': 0, 'OPTION_K': 0, 'OP_A': 0, 'OPT_A': 0, 'OP_1': 0, 'OPT_1': 0,
-            'OP_KH': 1, 'OPT_KH': 1, 'OPTION_KH': 1, 'OP_B': 1, 'OPT_B': 1, 'OP_2': 1, 'OPT_2': 1,
-            'OP_G': 2, 'OPT_G': 2, 'OPTION_G': 2, 'OP_C': 2, 'OPT_C': 2, 'OP_3': 2, 'OPT_3': 2,
-            'OP_GH': 3, 'OPT_GH': 3, 'OPTION_GH': 3, 'OP_D': 3, 'OPT_D': 3, 'OP_4': 3, 'OPT_4': 3
-          };
+          const OPT_KEYS = { 'OP_K': 0, 'OPT_K': 0, 'OP_KH': 1, 'OPT_KH': 1, 'OP_G': 2, 'OPT_G': 2, 'OP_GH': 3, 'OPT_GH': 3 };
           if (OPT_KEYS[k] !== undefined && curQ) curQ.options[OPT_KEYS[k]] = v;
         }
       }
     }
-    
     flushSec();
 
-    if (newState.sections.length === 0) throw new Error("No sections identified. Invalid QPF format.");
-
-    // Clean answer bounds
+    if (newState.sections.length === 0) throw new Error("No sections identified.");
     newState.sections.forEach(sec => {
       let actualCount = 0;
-      for(let i=0; i<sec.questions.length; i++) {
-        actualCount++;
-        if(sec.questions[i].isOrNext) i++; // skip alternate in count
-      }
+      for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
       if (sec.answerAny && sec.answerAny >= actualCount) sec.answerAny = null;
     });
 
     Object.assign(S, newState);
     S.autoFit = null;
-
-    syncFields(); 
-    rebuildSecs(); 
-    recalc(); 
-    applyVars(); 
-    sched(100);
-
-  } catch (err) {
-    throw new Error(err.message || "Failed to process QPF text.");
-  }
+    syncFields(); rebuildSecs(); recalc(); applyVars(); sched(10);
+  } catch (err) { throw new Error(err.message || "Failed to process QPF text."); }
 }
 
 /* ── EXPORTS ── */
-
-// Centralized safe download handler bypassing Chrome double-block via dynamic _blank elements
 function safeDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; 
-  a.download = filename; 
-  a.target = '_blank'; // Key fix for dual-download blocks
-  document.body.appendChild(a);
-  a.click();
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.target = '_blank';
+  document.body.appendChild(a); a.click();
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
 }
 
@@ -2875,11 +2837,9 @@ $('ex-qpf').addEventListener('click', (e) => {
     o += '\n';
     
     sec.questions.forEach(q => {
-      // Restore literal \n with [BR] for safe plain-text transfer
       const safeText = q.text.replace(/\n/g, ' [BR] ');
       o += `Q: ${safeText}\n`;
       if(q.isOrNext) o += `OR_NEXT: true\n`;
-      
       if (sec.type === 'mcq') {
         ['OP_K', 'OP_KH', 'OP_G', 'OP_GH'].forEach((opKey, i) => o += `${opKey}: ${q.options[i]||''}\n`);
         if (q.img) o += `Q_IMAGE_MCQ: [base64_image — ${Math.round(q.img.length/1000)}KB]\n`;
@@ -2888,11 +2848,15 @@ $('ex-qpf').addEventListener('click', (e) => {
         if (ex.type === 'table') {
           const colsCount = ex.rows[0] ? ex.rows[0].length : 0;
           o += `TABLE_START: ${ex.rows.length}x${colsCount}\n`;
-          ex.rows.forEach(r => o += `${r.join(' | ')}\n`);
-          o += `TABLE_END\n`;
+          ex.rows.forEach(r => o += `${r.join(' | ')}\n`); o += `TABLE_END\n`;
         }
         if (ex.type === 'image') o += `Q_IMAGE_BELOW: [base64_image — ${Math.round((ex.data||'').length/1000)}KB]\n`;
-        if (ex.type === 'diagram') o += `// DIAGRAM: [embedded PNG — edit in app]\n`;
+        if (ex.type === 'diagram') o += `// DIAGRAM: [embedded PNG]\n`;
+        if (ex.type === 'labeled') {
+            o += `LABELED_START\n`;
+            (ex.pointers || []).forEach(ptr => { o += `POINTER: ${ptr.label ? ptr.label + ' : ___' : 'Part ___ : ___'}\n`; });
+            o += `LABELED_END\n`;
+        }
       });
       o += '\n';
     });
@@ -2902,18 +2866,13 @@ $('ex-qpf').addEventListener('click', (e) => {
   if (_lastQpfUrl) URL.revokeObjectURL(_lastQpfUrl);
   const blob = new Blob([o], { type: 'text/plain;charset=utf-8' });
   _lastQpfUrl = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = _lastQpfUrl;
-  a.download = exFname('qpf');
-  a.click();
+  const a = document.createElement('a'); a.href = _lastQpfUrl; a.download = exFname('qpf'); a.click();
   toast('QPF backup saved!', 'success');
 });
 
-// ODT Export
 $('ex-odt').addEventListener('click', async (e) => {
   e.preventDefault(); 
-  if (typeof JSZip === 'undefined') { toast('JSZip loading, try again in a moment.', 'warn'); return; }
+  if (typeof JSZip === 'undefined') { toast('JSZip loading...', 'warn'); return; }
   toast('Building ODT…', 'info', 6000);
   
   const TAB1 = '3.00cm', TAB2 = '6.50cm', TAB3 = '10.00cm';
@@ -2924,7 +2883,11 @@ $('ex-odt').addEventListener('click', async (e) => {
   const z = new JSZip();
   z.file('mimetype', 'application/vnd.oasis.opendocument.text');
   z.folder('META-INF').file('manifest.xml', `<?xml version="1.0" encoding="UTF-8"?><manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.3"><manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/></manifest:manifest>`);
-  z.file('styles.xml', `<?xml version="1.0" encoding="UTF-8"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:automatic-styles><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="29.7cm" fo:page-height="21cm" style:print-orientation="landscape" fo:margin-top="${S.margin}cm" fo:margin-bottom="${S.margin}cm" fo:margin-left="${S.margin}cm" fo:margin-right="${S.margin}cm"/></style:page-layout></office:automatic-styles><office:master-styles><style:master-page style:name="Standard" style:page-layout-name="pm1"/></office:master-styles></office:document-styles>`);
+  
+  const isPortrait = getActiveOrient() === 'portrait';
+  const pagePropStr = isPortrait ? `fo:page-width="21cm" fo:page-height="29.7cm" style:print-orientation="portrait"` : `fo:page-width="29.7cm" fo:page-height="21cm" style:print-orientation="landscape"`;
+  
+  z.file('styles.xml', `<?xml version="1.0" encoding="UTF-8"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:automatic-styles><style:page-layout style:name="pm1"><style:page-layout-properties ${pagePropStr} fo:margin-top="${S.margin}cm" fo:margin-bottom="${S.margin}cm" fo:margin-left="${S.margin}cm" fo:margin-right="${S.margin}cm"/></style:page-layout></office:automatic-styles><office:master-styles><style:master-page style:name="Standard" style:page-layout-name="pm1"/></office:master-styles></office:document-styles>`);
   
   let body = '';
   const p = (txt, styleName) => `<text:p text:style-name="${styleName}">${txt}</text:p>\n`;
@@ -2932,60 +2895,35 @@ $('ex-odt').addEventListener('click', async (e) => {
   const center = txt => p(xe(txt), 'Center');
   
   body += center(S.topTitle);
-  const fmLabel = isBn ? 'পূর্ণমান' : 'Full Marks';
-  const timeLabel = isBn ? 'সময়' : 'Time';
-  const timeUnit = isBn ? 'মিনিট' : 'min';
-  
+  const fmLabel = isBn ? 'পূর্ণমান' : 'Full Marks', timeLabel = isBn ? 'সময়' : 'Time', timeUnit = isBn ? 'মিনিট' : 'min';
   body += p(`<text:span text:style-name="InfoLeft">${xe(fmLabel)}: ${xe(numF(S.fullMarks))}</text:span><text:tab/>${xe(S.klass ? 'শ্রেণি: '+S.klass : '')} — ${xe(S.subject)}<text:tab/>${xe(timeLabel)}: ${xe(numF(S.time))} ${xe(timeUnit)}`, 'InfoRow');
-  
   if (S.inst) body += p(`<text:span text:style-name="Italic">${xe(S.inst)}</text:span>`, 'Body');
 
   S.sections.forEach((sec, idx) => {
     const L = sl(idx);
     let actualCount = 0;
-    for(let i=0; i<sec.questions.length; i++) {
-        actualCount++;
-        if(sec.questions[i].isOrNext) i++; 
-    }
+    for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
     const countedQ = (sec.answerAny && sec.answerAny < actualCount) ? sec.answerAny : actualCount;
     const tot = (sec.mpq||0)*countedQ;
-    const prefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
     const mf = isBn ? `${numF(sec.mpq)} × ${numF(countedQ)} = ${numF(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
     
-    body += center(prefix);
+    body += center(isBn ? `বিভাগ '${L}'` : `Section '${L}'`);
     body += p(`<text:span text:style-name="BoldSpan">${xe(sec.heading)}</text:span><text:tab/>${xe(mf)}`, 'SecRow');
     
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
       const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
-      const numStr = isBn ? `${numF(idx+1)}.${numF(qCounter)})` : `${idx+1}.${qCounter})`;
-      
-      const contentStr = isOrChild ? `   ${q.text}` : `${numStr} ${q.text}`; 
+      const contentStr = isOrChild ? `   ${q.text}` : `${isBn ? `${numF(idx+1)}.${numF(qCounter)})` : `${idx+1}.${qCounter})`} ${q.text}`; 
       body += para(contentStr);
       
       if (sec.type === 'mcq') {
-        const ls = sec.os === 'en' ? EN_O : BN_O;
-        const opts = q.options.slice(0, 4);
+        const ls = sec.os === 'en' ? EN_O : BN_O; const opts = q.options.slice(0, 4);
         const maxLen = Math.max(0, ...opts.map(o => o.length));
-        
-        if (maxLen <= 25) {
-          body += p(opts.map((o,i) => `(${xe(ls[i])}) ${xe(o)}`).join('<text:tab/>'), 'MCQOpts');
-        } else {
-          body += p(`(${xe(ls[0])}) ${xe(opts[0])}<text:tab/>(${xe(ls[1])}) ${xe(opts[1])}`, 'MCQOpts');
-          body += p(`(${xe(ls[2])}) ${xe(opts[2])}<text:tab/>(${xe(ls[3])}) ${xe(opts[3])}`, 'MCQOpts');
-        }
+        if (maxLen <= 25) body += p(opts.map((o,i) => `(${xe(ls[i])}) ${xe(o)}`).join('<text:tab/>'), 'MCQOpts');
+        else { body += p(`(${xe(ls[0])}) ${xe(opts[0])}<text:tab/>(${xe(ls[1])}) ${xe(opts[1])}`, 'MCQOpts'); body += p(`(${xe(ls[2])}) ${xe(opts[2])}<text:tab/>(${xe(ls[3])}) ${xe(opts[3])}`, 'MCQOpts'); }
       }
-
-      if (q.isOrNext && qi < sec.questions.length - 1) {
-          const orText = isBn ? 'অথবা' : 'OR';
-          body += center(orText);
-      }
-      
-      if (!isOrChild && !q.isOrNext) {
-          qCounter++;
-      } else if (isOrChild && !q.isOrNext) {
-          qCounter++;
-      }
+      if (q.isOrNext && qi < sec.questions.length - 1) body += center(isBn ? 'অথবা' : 'OR');
+      if (!isOrChild && !q.isOrNext) qCounter++; else if (isOrChild && !q.isOrNext) qCounter++;
       
       (q.extra || []).forEach(ex => {
         if (ex.type === 'table') {
@@ -2994,9 +2932,7 @@ $('ex-odt').addEventListener('click', async (e) => {
           body += `<table:table-column table:number-columns-repeated="${colsCount}"/>`;
           ex.rows.forEach(row => {
             body += `<table:table-row>`;
-            row.forEach(cell => {
-              body += `<table:table-cell office:value-type="string" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"><text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${xe(cell)}</text:p></table:table-cell>`;
-            });
+            row.forEach(cell => { body += `<table:table-cell office:value-type="string" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"><text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${xe(cell)}</text:p></table:table-cell>`; });
             body += `</table:table-row>`;
           });
           body += `</table:table>`;
@@ -3006,7 +2942,6 @@ $('ex-odt').addEventListener('click', async (e) => {
   });
 
   const TAB_STYLE = `<style:tab-stops><style:tab-stop style:position="${TAB1}" style:type="left"/><style:tab-stop style:position="${TAB2}" style:type="left"/><style:tab-stop style:position="${TAB3}" style:type="left"/></style:tab-stops>`;
-  
   z.file('content.xml', `<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" office:version="1.3"><office:automatic-styles><style:style style:name="Center" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.08cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="DM Serif Text,serif"/></style:style><style:style style:name="InfoRow" style:family="paragraph"><style:paragraph-properties fo:text-align="justify" fo:margin-bottom="0.08cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="DM Serif Text,serif"/></style:style><style:style style:name="SecHeading" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-top="0.12cm" fo:margin-bottom="0.04cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="SecRow" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.04cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Body" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.06cm" fo:text-align="justify" fo:line-height="${Math.round(S.lineHeight*100)}%"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="MCQOpts" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.05cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Bold" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.06cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Italic" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.04cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-style="italic" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="BoldSpan" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style><style:style style:name="InfoLeft" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style></office:automatic-styles><office:body><office:text>\n${body}</office:text></office:body></office:document-content>`);
   
   const blob = await z.generateAsync({type:'blob', mimeType:'application/vnd.oasis.opendocument.text', compression:'DEFLATE'});
@@ -3016,138 +2951,53 @@ $('ex-odt').addEventListener('click', async (e) => {
 
 function triggerPrint() {
   const origTitle = document.title;
-  const origMode = S.pvMode; 
+  const ori = getActiveOrient();
+  document.documentElement.classList.remove('print-portrait', 'print-landscape');
+  document.documentElement.classList.add('print-' + ori);
   document.title = exFname('pdf').replace('.pdf', '');
-  S.pvMode = 'both'; 
-  render(); 
   
   setTimeout(() => {
     window.print(); 
     setTimeout(() => { 
       document.title = origTitle; 
-      S.pvMode = origMode; 
-      render(); 
+      document.documentElement.classList.remove('print-portrait', 'print-landscape');
     }, 500);
   }, 300);
 }
 
-let _origModeBeforePrint = null;
-window.addEventListener('beforeprint', () => {
-  if (S.pvMode !== 'both') {
-    _origModeBeforePrint = S.pvMode;
-    S.pvMode = 'both';
-    requestAnimationFrame(() => render());
-  }
-});
-window.addEventListener('afterprint', () => {
-  if (_origModeBeforePrint !== null) {
-    S.pvMode = _origModeBeforePrint;
-    _origModeBeforePrint = null;
-    render();
-  }
-});
-
 /* ── GLOBAL LISTENERS ── */
 document.addEventListener('click', e => {
   const h = e.target.closest('.card-hdr[data-tgt]'); 
-  if (!h) return;
-  if (e.target.closest('.move-sec-up, .move-sec-dn, .del-sec')) return;
+  if (!h || e.target.closest('.move-sec-up, .move-sec-dn, .del-sec')) return;
   const b = $(h.dataset.tgt); 
   if (!b) return;
-  const o = !b.classList.contains('hide');
-  b.classList.toggle('hide', o); 
-  h.classList.toggle('open', !o);
+  const o = !b.classList.contains('hide'); b.classList.toggle('hide', o); h.classList.toggle('open', !o);
 });
 
 function initInfo() {
-  $('info-btn').addEventListener('click', () => { 
-    $('guide').classList.remove('show'); 
-    $('info').classList.add('show'); 
-    $('ov').classList.add('show'); 
-  });
-  
-  $('guide-btn').addEventListener('click', () => { 
-    $('info').classList.remove('show'); 
-    $('guide').classList.add('show'); 
-    $('ov').classList.add('show'); 
-  });
-  
-  $('info-close').addEventListener('click', closePanels);
-  $('guide-close').addEventListener('click', closePanels);
-  $('ov').addEventListener('click', closePanels);
+  $('info-btn').addEventListener('click', () => { $('guide').classList.remove('show'); $('info').classList.add('show'); $('ov').classList.add('show'); });
+  $('guide-btn').addEventListener('click', () => { $('info').classList.remove('show'); $('guide').classList.add('show'); $('ov').classList.add('show'); });
+  $('info-close').addEventListener('click', closePanels); $('guide-close').addEventListener('click', closePanels); $('ov').addEventListener('click', closePanels);
 }
-
-function closePanels() { 
-  $('info').classList.remove('show'); 
-  $('guide').classList.remove('show'); 
-  $('ov').classList.remove('show'); 
-}
-
-function initExports() {
-  $('ex-pdf').addEventListener('click', triggerPrint);
-}
+function closePanels() { $('info').classList.remove('show'); $('guide').classList.remove('show'); $('ov').classList.remove('show'); }
+function initExports() { $('ex-pdf').addEventListener('click', triggerPrint); }
 
 /* ── BOOTSTRAP ── */
 function init() {
-  initTheme();
-  applyVars();
-  initSettings();
-  initExamInfo();
-  initImport();
-  initZoom();
-  initResize();
-  initSliderButtons();
-  initInfo();
-  initExports();
-  
-  // Hidden Glow Trigger Option
-  document.querySelector('.logo').addEventListener('dblclick', (e) => {
-    e.preventDefault();
-    document.body.classList.toggle('glow-mode');
-    toast('Hidden glow mode toggled!', 'success');
-  });
-  
+  initTheme(); applyVars(); initSettings(); initExamInfo(); initImport(); initZoom(); initResize(); initSliderButtons(); initInfo(); initExports();
+  document.querySelector('.logo').addEventListener('dblclick', (e) => { e.preventDefault(); document.body.classList.toggle('glow-mode'); toast('Hidden glow mode toggled!', 'success'); });
   $('add-sec').addEventListener('click', () => {
     if (S.sections.length >= 10) { toast('Maximum 10 sections.', 'warn'); return; }
-    const i = S.sections.length;
-    const hdgs = getHdgs();
-    S.sections.push({
-      id: uid(),
-      heading: hdgs[Math.min(i, 3)],
-      type: ['mcq','short','descriptive','long'][Math.min(i, 3)],
-      mpq: [1,1,2,3][Math.min(i, 3)],
-      os: 'bn',
-      answerAny: null,
-      questions: []
-    });
-    rebuildSecs(); 
-    sched();
+    const i = S.sections.length; const hdgs = getHdgs();
+    S.sections.push({ id: uid(), heading: hdgs[Math.min(i, 3)], type: ['mcq','short','descriptive','long'][Math.min(i, 3)], mpq: [1,1,2,3][Math.min(i, 3)], os: 'bn', answerAny: null, questions: [] });
+    rebuildSecs(); sched();
   });
   
-  S.sections.push({
-    id: uid(),
-    heading: HDGS_BN[0],
-    type: 'mcq',
-    mpq: 1,
-    os: 'bn',
-    answerAny: null,
-    questions: []
-  });
-  
-  rebuildSecs();
-  setTimeout(fitZoom, 250);
-  sched(400);
-  
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitZoom, 200);
-  });
-  
+  S.sections.push({ id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] });
+  rebuildSecs(); setTimeout(fitZoom, 250); sched(10);
+  let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitZoom, 200); });
   console.log('%cপ্রশ্নপত্র Maker — Ready ✓', 'color:#9d95f7; font-size:13px; font-weight:bold;');
 }
 
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 </script>
-</body>
-</html>
