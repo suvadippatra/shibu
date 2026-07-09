@@ -278,12 +278,14 @@ body.glow-mode .qitem input[type="text"] {
 .drop-zone p { font-size: 12px; color: var(--t2); line-height: 1.5; }
 .drop-zone span { font-size: 10px; color: var(--t3); }
 
-/* ── SIDEBAR MAIN ── */
+/* ── SIDEBAR MAIN & CONTAINER QUERIES ── */
 #sidebar-scroll {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   padding: 10px 12px; 
   display: flex; flex-direction: column; gap: 10px;
   -webkit-overflow-scrolling: touch;
+  container-type: inline-size;
+  container-name: sidebar;
 }
 
 #export-bar {
@@ -292,6 +294,15 @@ body.glow-mode .qitem input[type="text"] {
   padding: 10px 12px; gap: 8px; border-top: 1px solid var(--border);
   flex-shrink: 0;
   transition: background .25s, border-color .25s;
+}
+
+@container sidebar (min-width: 650px) {
+  #secs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
 }
 
 /* ── RESIZE HANDLE ── */
@@ -328,7 +339,7 @@ body.glow-mode .qitem input[type="text"] {
   -webkit-overflow-scrolling: touch;
 }
 .pp-wrap { transform-origin: top center; transition: transform .2s ease; }
-.pp { background: #fff; box-shadow: 0 6px 40px rgba(0,0,0,.55); border-radius: 2px; position: relative; }
+.pp { background: #fff; box-shadow: 0 6px 40px rgba(0,0,0,.55); border-radius: 2px; position: relative; overflow: hidden; }
 [data-theme="light"] .pp { box-shadow: 0 6px 40px rgba(0,0,0,.15); }
 
 .empty-ph { text-align: center; padding: 60px 20px; color: var(--t3); font-size: 12.5px; line-height: 1.8; }
@@ -444,7 +455,7 @@ body.glow-mode .qitem input[type="text"] {
 .card-ttl { font-size: 12px; font-weight: 600; color: var(--t2); flex: 1; letter-spacing: .015em; }
 
 .card-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-.card-body.hide { display: none; }
+.card-body.hide { display: none !important; }
 
 /* Section Colors */
 .sc-card[data-si="0"] { border-left: 3px solid #6366f1; }
@@ -632,26 +643,9 @@ select {
 @keyframes tOut { to { opacity: 0; transform: translateY(-8px); } }
 
 /* ── VIEW MODE PREVIEW STYLES ── */
-.qp-page.preview-zero {
-  width: 210mm !important;
-  min-height: 297mm !important;
-  margin: 0 auto;
-}
-.qp-page.preview-continuous {
-  width: 297mm !important;
-  min-height: 210mm !important;
-  margin: 0 auto;
-}
-.qp-page.preview-mirror4 .qp-set-wrapper {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 50% 50%;
-  width: 100%; height: 100%;
-}
-.qp-page.preview-mirror4 .q-quad-1 { border-right: 1px dashed #ccc; border-bottom: 1px dashed #ccc; }
-.qp-page.preview-mirror4 .q-quad-2 { border-bottom: 1px dashed #ccc; }
-.qp-page.preview-mirror4 .q-quad-3 { border-right: 1px dashed #ccc; }
-.qp-page.preview-mirror4 .q-quad-4 { }
+.qp-page.preview-mono { width: 210mm !important; min-height: 297mm !important; margin: 0 auto; }
+.qp-page.preview-flow { width: 297mm !important; min-height: 210mm !important; margin: 0 auto; }
+.qp-page.preview-quad { position: relative; }
 
 /* ── RESPONSIVE COMPACT ── */
 @media (max-width: 820px) {
@@ -663,27 +657,18 @@ select {
     flex-direction: column !important; 
     overscroll-behavior-y: none !important; 
   }
-  
   #topbar { height: 48px !important; padding: 0 10px !important; flex-shrink: 0 !important; }
-  
   #main { 
-    display: flex !important; 
-    flex-direction: column !important; 
-    overflow-y: auto !important; 
-    overflow-x: hidden !important; 
-    flex: 1 !important; 
-    padding-bottom: 50px !important; 
+    display: flex !important; flex-direction: column !important; overflow-y: auto !important; 
+    overflow-x: hidden !important; flex: 1 !important; padding-bottom: 50px !important; 
     -webkit-overflow-scrolling: touch;
   }
-  
   #sidebar { width: 100% !important; max-width: none !important; height: auto !important; flex: none !important; overflow: visible !important; border-right: none !important; border-bottom: 1px solid var(--border) !important; }
   #sidebar-scroll { overflow: visible !important; height: auto !important; padding-bottom: 20px !important; }
   #export-bar { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; z-index: 500 !important; background: var(--bg1) !important; box-shadow: var(--shadow) !important; border-top: 1px solid var(--border) !important; }
   #resize-handle { display: none !important; }
-  
   #right-col { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; flex: none !important; }
   #settings-panel { border-top: none !important; border-bottom: 1px solid var(--border) !important; order: 1; }
-  
   #settings-panel-body { padding: 8px 10px 10px !important; }
   .settings-grid { grid-template-columns: 1fr 1fr !important; gap: 10px 12px !important; }
   .sg2 { gap: 3px !important; }
@@ -694,19 +679,14 @@ select {
   .wm-select-wrap select { max-width: none !important; flex: 1 !important; font-size: 11.5px !important; padding: 4px 6px !important; }
   .dpick { gap: 3px !important; }
   .dopt { padding: 3px 6px !important; font-size: 10.5px !important; }
-  
   #preview { display: flex !important; height: auto !important; min-height: 50vh !important; overflow: visible !important; order: 2; }
   #preview-bar { position: sticky !important; top: 0 !important; z-index: 100 !important; }
   #preview-vp { display: flex !important; flex-direction: column !important; align-items: center !important; overflow: visible !important; height: auto !important; padding: 14px !important; }
-  
   #dia-panel { width: 95vw !important; max-height: 88vh !important; overflow-y: auto !important; }
   #dia-canvas { width: 100% !important; height: auto !important; aspect-ratio: 520 / 320 !important; }
 }
 
-/* ── NARROW SCREEN LOGO TEXT ── */
-@media (max-width: 500px) {
-    .logo-text { display: none !important; }
-}
+@media (max-width: 500px) { .logo-text { display: none !important; } }
 
 /* ── PREVIEW PAPER CSS ── */
 .qp-page {
@@ -727,7 +707,8 @@ select {
 .qp-info { display: flex; justify-content: space-between; font-family: var(--font-tt); font-size: calc(var(--p-fsize) - 0.5pt); padding-bottom: 3pt; line-height: 1.3; }
 .qp-sec-hdr { text-align: center; font-weight: bold; padding: 3pt 0 1pt; line-height: 1.2; break-after: avoid; page-break-after: avoid; }
 .qp-sec-row { display: flex; justify-content: space-between; font-weight: bold; padding-bottom: 1pt; line-height: 1.2; break-after: avoid; page-break-after: avoid; }
-.qp-q { margin-bottom: 2.5pt; line-height: var(--p-lh); white-space: pre-wrap; break-inside: avoid; page-break-inside: avoid; }
+
+.qp-q { margin-bottom: 4pt; break-inside: avoid; page-break-inside: avoid; }
 .qp-q-mcq-opts {
   display: flex; justify-content: space-evenly;
   text-align: center; margin-top: 1pt; gap: 4pt;
@@ -756,32 +737,21 @@ select {
   #info, #guide, #ov, #toasts, #dia-modal,
   .no-print { display: none !important; }
   
-  #main, #right-col, #preview {
-    display: block !important;
-    overflow: visible !important;
-    height: auto !important;
-    background: #fff !important;
-  }
-  #preview-vp {
-    display: block !important;
-    overflow: visible !important;
-    background: #fff !important;
-    padding: 0 !important;
-  }
+  #main, #right-col, #preview { display: block !important; overflow: visible !important; height: auto !important; background: #fff !important; }
+  #preview-vp { display: block !important; overflow: visible !important; background: #fff !important; padding: 0 !important; }
   .pp-wrap { transform: none !important; margin-bottom: 0 !important; }
   .pp { box-shadow: none !important; page-break-after: always; }
   .pp:last-child { page-break-after: auto; }
   
   .qp-page { height: auto !important; border: none !important; }
-  .qp-page.preview-zero { width: 210mm !important; min-height: 297mm !important; }
-  .qp-page:not(.preview-zero) { width: 297mm !important; min-height: 210mm !important; }
+  .qp-page.preview-mono { width: 210mm !important; min-height: 297mm !important; }
+  .qp-page:not(.preview-mono) { width: 297mm !important; min-height: 210mm !important; }
   .qp-set { height: auto !important; }
 }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div id="topbar">
   <a class="logo" href="#" onclick="return false" title="Double click icon for glow mode">
     <div class="logo-icon">
@@ -807,11 +777,8 @@ select {
   </div>
 </div>
 
-<!-- MAIN WORKSPACE -->
 <div id="main">
-  <!-- SIDEBAR (Left) -->
   <aside id="sidebar">
-    <!-- IMPORT STRIP & MENU -->
     <div id="import-strip">
       <div class="dropdown" id="menu-dropdown">
         <button class="btn btn-ghost btn-sm" onclick="this.parentElement.classList.toggle('open')">
@@ -832,7 +799,6 @@ select {
       <button class="btn btn-ghost btn-sm no-print" id="ocr-prompt-quick" title="Copy AI prompt">🤖 OCR Prompt</button>
     </div>
 
-    <!-- IMPORT DRAWER PANEL -->
     <div id="import-drawer">
       <div class="import-drawer-inner">
         <div class="import-tabs">
@@ -860,9 +826,7 @@ select {
       </div>
     </div>
 
-    <!-- SCROLLABLE EDITOR AREA -->
     <div id="sidebar-scroll">
-      <!-- Exam Info Card -->
       <div class="card">
         <div class="card-hdr open" data-tgt="ei-body">
           <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -906,10 +870,8 @@ select {
         </div>
       </div>
 
-      <!-- Sections Container -->
       <div id="secs"></div>
 
-      <!-- Add Section Button -->
       <div style="display:flex; justify-content:center;">
         <button class="btn btn-accent" id="add-sec" style="padding: 10px 30px;">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Section (বিভাগ)
@@ -917,7 +879,6 @@ select {
       </div>
     </div>
 
-    <!-- EXPORT BAR -->
     <div id="export-bar">
       <div style="display:flex; gap:6px">
         <a class="btn btn-ghost btn-sm" id="ex-qpf" title="Save .qpf backup">
@@ -935,9 +896,7 @@ select {
 
   <div id="resize-handle" title="Drag to resize"></div>
 
-  <!-- RIGHT COLUMN (Settings + Preview) -->
   <div id="right-col">
-    <!-- TOP SETTINGS PANEL -->
     <div id="settings-panel">
       <div id="settings-panel-header" class="open" onclick="toggleSettingsPanel()">
         <div id="settings-panel-title">
@@ -969,7 +928,7 @@ select {
             <div class="sg2-label"><span>Page Margin</span> <span class="slider-val" id="s-mg-v">1.0 cm</span></div>
             <div class="slider-wrap">
               <button class="slider-btn" data-slider="s-mg" data-dir="-1">−</button>
-              <input type="range" id="s-mg" min="3" max="20" value="10" step="1"/>
+              <input type="range" id="s-mg" min="0" max="25" value="10" step="1"/>
               <button class="slider-btn" data-slider="s-mg" data-dir="1">+</button>
             </div>
           </div>
@@ -1024,15 +983,14 @@ select {
       </div>
     </div>
 
-    <!-- PREVIEW AREA -->
     <div id="preview">
       <div id="preview-bar">
         <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
           <div class="pill-group" id="pv-mode">
-            <div class="pill" data-m="zero">0-mirror</div>
-            <div class="pill on" data-m="mirror2">2-mirror</div>
-            <div class="pill" data-m="mirror4">4-mirror</div>
-            <div class="pill" data-m="continuous">Continuous</div>
+            <div class="pill" data-m="mono">Mono</div>
+            <div class="pill on" data-m="double">Double</div>
+            <div class="pill" data-m="quad">Quad</div>
+            <div class="pill" data-m="flow">Flow</div>
           </div>
           
           <button id="ans-space-btn" title="Toggle blank space below questions for writing answers">
@@ -1051,13 +1009,11 @@ select {
         </div>
       </div>
       <div id="preview-vp">
-        <!-- Dynamic content injected here -->
-      </div>
+        </div>
     </div>
   </div>
 </div>
 
-<!-- DIAGRAM MODAL -->
 <div id="dia-modal">
   <div id="dia-panel">
     <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
@@ -1068,6 +1024,10 @@ select {
         <button class="btn btn-ghost btn-sm dia-t" data-t="rect">□ Rect</button>
         <button class="btn btn-ghost btn-sm dia-t" data-t="circle">○ Circle</button>
         <button class="btn btn-ghost btn-sm dia-t" data-t="arrow">→ Arrow</button>
+        
+        <button class="btn btn-ghost btn-sm" id="dia-load-img">🖼 Load Image</button>
+        <input type="file" id="dia-file" accept="image/*" hidden/>
+        
         <button class="btn btn-danger btn-sm" id="dia-clr">🗑 Clear</button>
         <input type="color" id="dia-col" value="#111111" style="width:26px;height:26px;border:1px solid var(--border2);border-radius:4px;background:none;cursor:pointer;padding:1px"/>
         <select id="dia-w" style="font-size:11px; padding:3px 6px; width:58px">
@@ -1086,10 +1046,8 @@ select {
   </div>
 </div>
 
-<!-- OVERLAY -->
 <div id="ov"></div>
 
-<!-- INFO PANEL (Original OCR Tools) -->
 <div id="info" role="dialog" aria-modal="true" aria-label="AI and Formatting Tools">
   <div class="info-hdr">
     <span style="font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--t1)">
@@ -1104,12 +1062,12 @@ select {
       <div class="info-sec-ttl">What is this / এটি কী?</div>
       <div class="info-item">
         <div class="iico b">📝</div>
-        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with multiple print layouts (1-page, booklet, mirror sets). Everything runs locally.<br><span style="color:var(--t2); font-size:11px;">এটি একটি প্রশ্নপত্র তৈরি করার টুল। সবকিছু লোকালি কাজ করে।</span></p>
+        <p class="info-p"><strong>প্রশ্নপত্র Maker</strong> creates exam papers with multiple print layouts (Mono, Double, Quad, Flow). Everything runs locally.<br><span style="color:var(--t2); font-size:11px;">এটি একটি প্রশ্নপত্র তৈরি করার টুল। সবকিছু লোকালি কাজ করে।</span></p>
       </div>
     </div>
 
     <div>
-      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম (Manual Typing)</div>
+      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম</div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> : Math equations<br><span style="color:var(--t2); font-size:11px;">গণিতের সমীকরণ রেন্ডার করে।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:H2O]</code> : Chemistry formulas<br><span style="color:var(--t2); font-size:11px;">রাসায়নিক সংকেত (অটো সাবস্ক্রিপ্ট)।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> : Superscript (x²)<br><span style="color:var(--t2); font-size:11px;">সুপারস্ক্রিপ্ট লেখার জন্য।</span></p></div>
@@ -1155,7 +1113,6 @@ select {
   </div>
 </div>
 
-<!-- GUIDE PANEL (Beginner's Guide) -->
 <div id="guide" role="dialog" aria-modal="true" aria-label="Beginner's Guide">
   <div class="info-hdr">
     <span style="font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--t1)">
@@ -1187,7 +1144,7 @@ select {
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>⊞ Table / টেবিল:</strong> Insert typing tables.<br><span style="color:var(--t2); font-size:11px;">টেবিল তৈরি করতে ক্লিক করুন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>✏ Diagram / চিত্র:</strong> Draw directly on the paper!<br><span style="color:var(--t2); font-size:11px;">সরাসরি ডায়াগ্রাম বা ছবি আঁকুন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>🏷 Labeled Diagram:</strong> Add images with pointer labels. AI leaves these blank for teachers to fill.<br><span style="color:var(--t2); font-size:11px;">পয়েন্টার সহ লেবেলযুক্ত ছবি যোগ করুন।</span></p></div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Ans Space (New!):</strong> Automatically adds blank writing space below questions (except MCQs). Customize per-section gap.<br><span style="color:var(--t2); font-size:11px;">উত্তরের জন্য নিজে থেকেই ফাঁকা জায়গা যোগ করে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>Ans Space (New!):</strong> Automatically adds blank writing space below questions (except MCQs and 1 mark questions). Customize per-section or per-question gap.<br><span style="color:var(--t2); font-size:11px;">উত্তরের জন্য নিজে থেকেই ফাঁকা জায়গা যোগ করে।</span></p></div>
     </div>
 
     <div>
@@ -1197,7 +1154,7 @@ select {
 
     <div>
       <div class="info-sec-ttl">5. 🎨 Paper Settings / পেপার সেটিংস</div>
-      <div class="step"><div class="sn">→</div><p class="info-p"><strong>View Modes:</strong> 0-mirror (single), 2-mirror (half page), 4-mirror (quarters), or Continuous.<br><span style="color:var(--t2); font-size:11px;">৪টি প্রিন্ট লেআউট - সিঙ্গেল, ২-মিরর, ৪-মিরর, কন্টিনিউয়াস।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><strong>View Modes:</strong> Mono (1-page), Double (2-mirror), Quad (4-mirror), or Flow (Continuous).<br><span style="color:var(--t2); font-size:11px;">৪টি প্রিন্ট লেআউট - মোনো, ডাবল, কোয়াড, ফ্লো।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Orientation:</strong> Auto-switches based on mode, or force Portrait/Landscape.<br><span style="color:var(--t2); font-size:11px;">পোর্ট্রেট বা ল্যান্ডস্কেপ মোড বেছে নিন।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Auto-fit:</strong> Magically shrinks/expands to fit 1 page!<br><span style="color:var(--t2); font-size:11px;">পেজ ফিট করতে সাইজ ও মার্জিন অটো ঠিক করে।</span></p></div>
       <div class="step"><div class="sn">→</div><p class="info-p"><strong>Watermark / জলছাপ:</strong> Add your school logo to the background.<br><span style="color:var(--t2); font-size:11px;">স্কুলের লোগো আপলোড করুন।</span></p></div>
@@ -1222,14 +1179,10 @@ select {
   </div>
 </div>
 
-<!-- TOASTS -->
 <div id="toasts"></div>
 
-<!-- EXTERNAL LIBRARIES -->
 <script src="libs/jszip.min.js"></script>
 <script src="libs/katex.min.js"></script>
-
-
 
 
 <script>
@@ -1315,11 +1268,27 @@ const PROMPT_TXT = `You are a QPF formatter. The text below is rough notes or a 
 /* ── STATE ── */
 const S = {
   topTitle: 'Test no. 1',
-  klass: '', subject: '', time: 30, inst: '', fullMarks: 0,
-  paperLang: 'full-bn', fontSize: 11, lineHeight: 1.45, margin: 1.0,
-  divider: 'dotted', wmSrc: 'none', wmData: null, wmOpacity: 7, wmSize: 65,
-  sections: [], zoom: 0.55, viewMode: 'mirror2', autoFit: null, autoFitDirty: false, wmCustomData: null,
-  orient: {zero:'portrait', mirror2:'landscape', mirror4:'landscape', continuous:'portrait'},
+  klass: '', 
+  subject: '', 
+  time: 30, 
+  inst: '', 
+  fullMarks: 0,
+  paperLang: 'full-bn', 
+  fontSize: 11, 
+  lineHeight: 1.45, 
+  margin: 1.0,
+  divider: 'dotted', 
+  wmSrc: 'none', 
+  wmData: null, 
+  wmOpacity: 7, 
+  wmSize: 65,
+  sections: [], 
+  zoom: 0.55, 
+  viewMode: 'mirror2', 
+  autoFit: null, 
+  autoFitDirty: false, 
+  wmCustomData: null,
+  orient: { zero:'portrait', mirror2:'landscape', mirror4:'landscape', continuous:'portrait' },
   orientOverride: 'auto',
   ansSpace: false
 };
@@ -1339,6 +1308,14 @@ const bn = n => String(Math.round(Number(n)||0)).split('').map(c =>
 const sl = i => (S.paperLang === 'full-en') ? (EN_L[i] || String(i + 1)) : (BN_L[i] || String(i + 1));
 const ol = (i, st) => (st === 'en') ? (EN_O[i] || '?') : (BN_O[i] || '?');
 
+function getPtrLbl(type, i) {
+    if(type === 'A') return String.fromCharCode(65 + i);
+    if(type === 'a') return String.fromCharCode(97 + i);
+    if(type === 'i') return ['i','ii','iii','iv','v','vi','vii','viii','ix','x'][i] || (i+1);
+    if(type === 'bn') return BN_L[i] || (i+1);
+    return String(i + 1);
+}
+
 const cv = (n, v) => document.documentElement.style.setProperty(n, v);
 
 function applyVars() {
@@ -1348,7 +1325,9 @@ function applyVars() {
   cv('--p-margin', (af ? af.margin : S.margin) + 'cm');
 }
 
-function getHdgs() { return S.paperLang === 'full-en' ? HDGS_EN : HDGS_BN; }
+function getHdgs() { 
+  return S.paperLang === 'full-en' ? HDGS_EN : HDGS_BN; 
+}
 
 function exFname(ext) {
   const t = (S.topTitle || 'QuestionPaper').replace(/[/\\?%*:|"<>]/g, '').trim();
@@ -1375,15 +1354,20 @@ function recalc() {
   
   S.fullMarks = S.sections.reduce((t, s, idx) => {
     let actualCount = 0;
-    for(let i=0; i<s.questions.length; i++) {
+    for(let i = 0; i < s.questions.length; i++) {
         actualCount++;
         if(s.questions[i].isOrNext) i++;
     }
-    if (s.answerAny && s.answerAny >= actualCount) s.answerAny = null;
+    
+    if (s.answerAny && s.answerAny >= actualCount) {
+        s.answerAny = null;
+    }
+    
     if(actualCount > 0) {
         statsStr += `[${sl(idx)}: ${bn(actualCount)}] `;
         totalQ += actualCount;
     }
+    
     const countedQ = (s.answerAny && s.answerAny < actualCount) ? s.answerAny : actualCount;
     return t + (s.mpq || 0) * countedQ;
   }, 0);
@@ -1411,6 +1395,7 @@ function initTheme() {
     setTheme(cur === 'dark' ? 'light' : 'dark');
   };
 }
+
 function setTheme(t) {
   document.documentElement.dataset.theme = t;
   localStorage.setItem('qpm-theme', t);
@@ -1436,14 +1421,17 @@ function initSliderButtons() {
       if (!slId) return;
       const sl = $(slId);
       if (!sl) return;
+      
       const dir = +btn.dataset.dir;
       const step = parseFloat(sl.step) || 1;
       const min = parseFloat(sl.min);
       const max = parseFloat(sl.max);
       const cur = parseFloat(sl.value);
+      
       sl.value = Math.min(max, Math.max(min, +(cur + dir * step).toFixed(4)));
       sl.dispatchEvent(new Event('input', { bubbles: true }));
     };
+    
     btn.addEventListener('click', fire);
     btn.addEventListener('mousedown', () => { hold = setInterval(fire, 120); });
     btn.addEventListener('mouseup', () => clearInterval(hold));
@@ -1486,25 +1474,38 @@ function initSettings() {
       if (pwd) {
           const hash = await hashPassword(pwd.trim());
           if (hash === DEFAULT_WM_HASH) {
-              S.wmSrc = 'default'; _lastWmSrc = 'default';
-              toast('Watermark applied.', 'success'); sched();
+              S.wmSrc = 'default';
+              _lastWmSrc = 'default';
+              toast('Watermark applied.', 'success');
+              sched();
           } else {
               toast('Access Denied: Incorrect Password', 'error');
-              e.target.value = _lastWmSrc; S.wmSrc = _lastWmSrc;
+              e.target.value = _lastWmSrc;
+              S.wmSrc = _lastWmSrc;
           }
-      } else { e.target.value = _lastWmSrc; }
+      } else {
+          e.target.value = _lastWmSrc;
+      }
     } else {
-      S.wmSrc = 'none'; _lastWmSrc = 'none'; sched();
+      S.wmSrc = 'none';
+      _lastWmSrc = 'none';
+      sched();
     }
   });
   
   $('wm-file').addEventListener('change', e => {
     const f = e.target.files[0]; 
-    if (!f) { $('s-wmsrc').value = _lastWmSrc; return; }
+    if (!f) {
+      $('s-wmsrc').value = _lastWmSrc;
+      return;
+    }
     const r = new FileReader();
     r.onload = ev => {
-      S.wmCustomData = ev.target.result; S.wmSrc = 'custom'; _lastWmSrc = 'custom';
-      sched(); toast('Watermark updated', 'success');
+      S.wmCustomData = ev.target.result;
+      S.wmSrc = 'custom';
+      _lastWmSrc = 'custom';
+      sched();
+      toast('Watermark updated', 'success');
     };
     r.readAsDataURL(f);
   });
@@ -1516,17 +1517,22 @@ function initSettings() {
       $$('#s-plang .pill').forEach(x => x.classList.remove('on'));
       p.classList.add('on');
       S.paperLang = newLang;
+      
       const oldHdgs = oldLang === 'full-en' ? HDGS_EN : HDGS_BN;
       const newHdgs = newLang === 'full-en' ? HDGS_EN : HDGS_BN;
+      
       S.sections.forEach(sec => {
         const idx = oldHdgs.indexOf(sec.heading);
-        if(idx !== -1) sec.heading = newHdgs[idx];
+        if(idx !== -1) {
+          sec.heading = newHdgs[idx];
+        }
       });
-      rebuildSecs(); sched();
+      rebuildSecs();
+      sched();
     }
   }));
 
-  // Answer Space Toggle
+  // Answer Space Toggle Event Listener
   $('ans-space-btn').addEventListener('click', (e) => {
       S.ansSpace = !S.ansSpace;
       e.currentTarget.classList.toggle('active', S.ansSpace);
@@ -1539,7 +1545,11 @@ function initSettings() {
 function initExamInfo() {
   $('f-tt').addEventListener('input', e => { S.topTitle = e.target.value; sched(); });
   $('f-cls').addEventListener('input', e => { S.klass = e.target.value; sched(); });
-  $('f-subj').addEventListener('input', e => { S.subject = e.target.value; $('subj-warn').style.display = e.target.value.length > 26 ? 'inline' : 'none'; sched(); });
+  $('f-subj').addEventListener('input', e => { 
+    S.subject = e.target.value; 
+    $('subj-warn').style.display = e.target.value.length > 26 ? 'inline' : 'none';
+    sched(); 
+  });
   $('f-time').addEventListener('input', e => { S.time = parseInt(e.target.value) || 30; sched(); });
   $('f-inst').addEventListener('input', e => { S.inst = e.target.value; sched(); });
 }
@@ -1547,7 +1557,10 @@ function initExamInfo() {
 function openImportDrawer(tab) {
   const d = $('import-drawer');
   const isOpen = d.classList.contains('open');
-  if (isOpen && tab === currentImportTab()) { d.classList.remove('open'); return; }
+  if (isOpen && tab === currentImportTab()) {
+    d.classList.remove('open'); 
+    return;
+  }
   d.classList.add('open');
   switchImportTab(tab);
 }
@@ -1565,6 +1578,7 @@ function switchImportTab(tab) {
 
 function initImport() {
   $('close-drawer').addEventListener('click', () => $('import-drawer').classList.remove('open'));
+  
   $('qpf-apply').addEventListener('click', () => {
     const txt = $('qpf-ta').value.trim();
     if (!txt) { toast('Paste QPF text first.', 'warn'); return; }
@@ -1574,11 +1588,13 @@ function initImport() {
       $('import-drawer').classList.remove('open');
     } catch (e) {
       toast('Parse error: ' + e.message, 'error');
+      console.error('QPF Parsing Error:', e);
     }
   });
 
   $('qpf-clear').addEventListener('click', () => $('qpf-ta').value = '');
   $('qpf-file').addEventListener('change', e => loadQPFFile(e.target.files[0]));
+  
   const dz = $('drop-zone');
   dz.addEventListener('click', () => $('qpf-file2').click());
   $('qpf-file2').addEventListener('change', e => loadQPFFile(e.target.files[0]));
@@ -1586,13 +1602,18 @@ function initImport() {
   dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.classList.remove('drag-over');
-    if (e.dataTransfer.files[0]) loadQPFFile(e.dataTransfer.files[0]);
+    const f = e.dataTransfer.files[0]; 
+    if (f) loadQPFFile(f);
   });
+
   $('ocr-prompt-quick').addEventListener('click', () => copyPrompt('img'));
   
+  // Close menu dropdown if clicked outside
   document.addEventListener('click', e => {
     const dropdown = $('menu-dropdown');
-    if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) dropdown.classList.remove('open');
+    if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
   });
 }
 
@@ -1615,8 +1636,9 @@ function switchPromptTab(tab) {
 
 function copyPrompt(which) {
   const txt = which === 'img' ? PROMPT_IMG : PROMPT_TXT;
-  navigator.clipboard.writeText(txt).then(() => { toast(which === 'img' ? 'Image prompt copied!' : 'Draft prompt copied!', 'success'); })
-  .catch(() => {
+  navigator.clipboard.writeText(txt).then(() => {
+    toast(which === 'img' ? 'Image prompt copied!' : 'Draft prompt copied!', 'success');
+  }).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
@@ -1631,6 +1653,7 @@ function getActiveOrient() {
 function fitZoom() {
   const vp = $('preview-vp');
   const vpW = vp.clientWidth - 40;
+  
   const ori = getActiveOrient();
   const pageW = ori === 'portrait' ? Math.round(210 * 3.7795) : Math.round(297 * 3.7795);
   
@@ -1686,6 +1709,7 @@ function initResize() {
   handle.addEventListener('mousedown', startDrag);
   document.addEventListener('mousemove', doDrag);
   document.addEventListener('mouseup', endDrag);
+
   handle.addEventListener('touchstart', startDrag, { passive: true });
   document.addEventListener('touchmove', doDrag, { passive: true });
   document.addEventListener('touchend', endDrag);
@@ -1693,16 +1717,25 @@ function initResize() {
 
 function syncFields() {
   const set = (id, v) => { const e = $(id); if (e) e.value = (v !== undefined && v !== null) ? v : ''; };
-  set('f-tt', S.topTitle); set('f-cls', S.klass); set('f-subj', S.subject); set('f-time', S.time); set('f-inst', S.inst);
+  
+  set('f-tt', S.topTitle);
+  set('f-cls', S.klass);
+  set('f-subj', S.subject);
+  set('f-time', S.time);
+  set('f-inst', S.inst);
+  
   if ($('s-fs')) { $('s-fs').value = S.fontSize; $('s-fs-v').textContent = S.fontSize + ' pt'; }
   if ($('s-lh')) { $('s-lh').value = S.lineHeight; $('s-lh-v').textContent = S.lineHeight.toFixed(2); }
   if ($('s-mg')) { $('s-mg').value = S.margin * 10; $('s-mg-v').textContent = S.margin.toFixed(1) + ' cm'; }
+  
   $$('.dopt').forEach(o => {
       if(o.parentElement.id === 's-orient') o.classList.toggle('on', o.dataset.v === S.orientOverride);
       else o.classList.toggle('on', o.dataset.d === S.divider);
   });
+  
   $$('#s-plang .pill').forEach(p => p.classList.toggle('on', p.dataset.v === S.paperLang));
   $$('#pv-mode .pill').forEach(p => p.classList.toggle('on', p.dataset.m === S.viewMode));
+  
   $('subj-warn').style.display = S.subject.length > 26 ? 'inline' : 'none';
   $('ans-space-btn').classList.toggle('active', S.ansSpace);
   $('ans-space-btn').textContent = S.ansSpace ? 'Ans Space: ON' : 'Ans Space: OFF';
@@ -1711,7 +1744,11 @@ function syncFields() {
 function showAutoFitBtn() {
   const btn = $('autofit-btn');
   if (!btn) return;
-  if (S.autoFitDirty && S.sections.length > 0) btn.style.display = 'flex';
+  
+  if (S.autoFitDirty && S.sections.length > 0) {
+     btn.style.display = 'flex';
+  }
+  
   if (S.autoFit) {
     btn.classList.add('active');
     btn.title = `Auto-fit Active (${S.autoFit.fontSize}pt · LH${S.autoFit.lineHeight.toFixed(2)} · ${S.autoFit.margin.toFixed(1)}cm)`;
@@ -1721,7 +1758,9 @@ function showAutoFitBtn() {
   }
 }
 
-function clearAutoFit() { if (S.autoFit) { S.autoFit = null; showAutoFitBtn(); } }
+function clearAutoFit() {
+  if (S.autoFit) { S.autoFit = null; showAutoFitBtn(); }
+}
 
 /* ── SECTION BUILDER ── */
 function rebuildSecs() {
@@ -1740,24 +1779,35 @@ function mkSecCard(sec, idx) {
     actualCount++;
     if(sec.questions[i].isOrNext) i++;
   }
+  
   const countedQ = (sec.answerAny && sec.answerAny < actualCount) ? sec.answerAny : actualCount;
   const total = (sec.mpq || 0) * countedQ;
   
   let typeLabel = sec.type;
-  for (let i = 0; i < TYPES.length; i++) { if (TYPES[i].v === sec.type) { typeLabel = TYPES[i].l; break; } }
+  for (let i = 0; i < TYPES.length; i++) {
+    if (TYPES[i].v === sec.type) {
+      typeLabel = TYPES[i].l;
+      break;
+    }
+  }
   
   const card = document.createElement('div');
   card.className = 'card sc-card';
   card.dataset.si = idx;
 
   let headingOptions = '';
-  hdgs.forEach(h => { headingOptions += `<option value="${esc(h)}" ${h === sec.heading ? 'selected' : ''}>${h.slice(0, 26)}</option>`; });
+  hdgs.forEach(h => {
+    headingOptions += `<option value="${esc(h)}" ${h === sec.heading ? 'selected' : ''}>${h.slice(0, 26)}</option>`;
+  });
   headingOptions += `<option value="__c" ${!hdgs.includes(sec.heading) && sec.heading ? 'selected' : ''}>Custom…</option>`;
 
   let typeOptions = '';
-  TYPES.forEach(t => { typeOptions += `<option value="${t.v}" ${t.v === sec.type ? 'selected' : ''}>${t.l}</option>`; });
+  TYPES.forEach(t => {
+    typeOptions += `<option value="${t.v}" ${t.v === sec.type ? 'selected' : ''}>${t.l}</option>`;
+  });
 
   const isLinking = _linkMode.active && _linkMode.secId === sec.id;
+
   let footerHtml = '';
   let linkModeHTML = '';
   
@@ -1771,7 +1821,10 @@ function mkSecCard(sec, idx) {
   } else {
     footerHtml = `
       <div style="display:flex; gap:6px;">
-        <button class="btn btn-ghost btn-sm add-q no-print" style="flex:1;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add question</button>
+        <button class="btn btn-ghost btn-sm add-q no-print" style="flex:1;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 
+          Add question
+        </button>
         <button class="btn btn-accent btn-sm start-link no-print" title="Link two questions with OR">🔗 Link OR</button>
       </div>`;
   }
@@ -1787,7 +1840,9 @@ function mkSecCard(sec, idx) {
       <div style="display:flex; gap:3px" class="no-print">
         <button class="btn btn-ghost btn-xs move-sec-up" title="Move Up">↑</button>
         <button class="btn btn-ghost btn-xs move-sec-dn" title="Move Down">↓</button>
-        <button class="btn btn-danger btn-sm del-sec" title="Delete section" style="margin-left:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+        <button class="btn btn-danger btn-sm del-sec" title="Delete section" style="margin-left:4px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        </button>
       </div>
     </div>
     <div class="card-body" id="bd${sec.id}">
@@ -1806,7 +1861,7 @@ function mkSecCard(sec, idx) {
         </div>
         <div class="fgrp" style="flex:1 1 70px; min-width:60px;">
           <label class="flabel" title="Leave blank = all questions required">Answer Any</label>
-          <input type="number" class="sec-aany" value="${sec.answerAny||''}" min="1" placeholder="all"/>
+          <input type="number" class="sec-aany" value="${sec.answerAny||''}" min="1" placeholder="all" title="How many questions student must answer (blank = all)"/>
         </div>
         <div class="fgrp" style="flex:1 1 70px; min-width:60px; display:${(S.ansSpace && sec.type !== 'mcq') ? 'flex' : 'none'};">
           <label class="flabel" title="Height of blank space in mm">Ans Gap(mm)</label>
@@ -1826,6 +1881,7 @@ function mkSecCard(sec, idx) {
     </div>
   `;
 
+  // Explicit Card Toggle Logic targeted perfectly
   card.querySelector('.card-hdr').addEventListener('click', e => {
     if (e.target.closest('button')) return; 
     const h = e.currentTarget;
@@ -1836,15 +1892,25 @@ function mkSecCard(sec, idx) {
     h.classList.toggle('open', !o);
   });
 
+  // Section Ordering
   card.querySelector('.move-sec-up').addEventListener('click', e => {
-    if (idx > 0) { [S.sections[idx-1], S.sections[idx]] = [S.sections[idx], S.sections[idx-1]]; rebuildSecs(); sched(); }
+    if (idx > 0) {
+      [S.sections[idx-1], S.sections[idx]] = [S.sections[idx], S.sections[idx-1]];
+      rebuildSecs(); sched();
+    }
   });
+  
   card.querySelector('.move-sec-dn').addEventListener('click', e => {
-    if (idx < S.sections.length - 1) { [S.sections[idx+1], S.sections[idx]] = [S.sections[idx], S.sections[idx+1]]; rebuildSecs(); sched(); }
+    if (idx < S.sections.length - 1) {
+      [S.sections[idx+1], S.sections[idx]] = [S.sections[idx], S.sections[idx+1]];
+      rebuildSecs(); sched();
+    }
   });
+
   card.querySelector('.del-sec').addEventListener('click', e => {
     if (S.sections.length <= 1) { toast('Keep at least one section.', 'warn'); return; }
-    S.sections = S.sections.filter(s => s.id !== sec.id); rebuildSecs(); sched();
+    S.sections = S.sections.filter(s => s.id !== sec.id);
+    rebuildSecs(); sched();
   });
 
   const hs = card.querySelector('.sec-hdg');
@@ -1852,7 +1918,9 @@ function mkSecCard(sec, idx) {
     if (e.target.value === '__c') {
       const c = prompt('Custom heading:', '');
       if (c) sec.heading = c; else { hs.value = sec.heading; return; }
-    } else { sec.heading = e.target.value; }
+    } else {
+      sec.heading = e.target.value;
+    }
     rebuildSecs(); sched();
   });
 
@@ -1863,19 +1931,30 @@ function mkSecCard(sec, idx) {
     rebuildSecs(); sched();
   });
 
-  card.querySelector('.sec-mpq').addEventListener('input', e => { sec.mpq = parseFloat(e.target.value) || 1; recalc(); sched(); });
+  card.querySelector('.sec-mpq').addEventListener('input', e => {
+    sec.mpq = parseFloat(e.target.value) || 1;
+    recalc(); sched();
+  });
+
   card.querySelector('.sec-aany').addEventListener('input', e => {
-    const v = parseInt(e.target.value); sec.answerAny = (v && v > 0 && v < actualCount) ? v : null; recalc(); sched();
+    const v = parseInt(e.target.value);
+    sec.answerAny = (v && v > 0 && v < actualCount) ? v : null;
+    recalc(); sched();
   });
   
   const agInp = card.querySelector('.sec-ag');
   if(agInp) {
-      agInp.addEventListener('input', e => { sec.ansGap = parseInt(e.target.value) || 0; sched(); });
+      agInp.addEventListener('input', e => {
+          sec.ansGap = parseInt(e.target.value) || 0;
+          sched();
+      });
   }
 
   card.querySelectorAll('.sec-os .pill').forEach(p => p.addEventListener('click', () => {
     card.querySelectorAll('.sec-os .pill').forEach(x => x.classList.remove('on'));
-    p.classList.add('on'); sec.os = p.dataset.v; sched();
+    p.classList.add('on');
+    sec.os = p.dataset.v;
+    sched();
   }));
 
   if (isLinking) {
@@ -1884,24 +1963,29 @@ function mkSecCard(sec, idx) {
       if(_linkMode.sel.length !== 2) { toast('Select exactly 2 questions.', 'warn'); return; }
       const q1Idx = sec.questions.findIndex(q => q.id === _linkMode.sel[0]);
       const q2Idx = sec.questions.findIndex(q => q.id === _linkMode.sel[1]);
-      const first = Math.min(q1Idx, q2Idx), second = Math.max(q1Idx, q2Idx);
+      const first = Math.min(q1Idx, q2Idx);
+      const second = Math.max(q1Idx, q2Idx);
+      
       const q2 = sec.questions.splice(second, 1)[0];
       sec.questions.splice(first + 1, 0, q2);
       sec.questions[first].isOrNext = true;
+      
       _linkMode = { active: false, secId: null, sel: [] };
       rebuildSecs(); sched();
     });
     card.querySelector('.cancel-link').addEventListener('click', () => {
-      _linkMode = { active: false, secId: null, sel: [] }; rebuildSecs();
+      _linkMode = { active: false, secId: null, sel: [] };
+      rebuildSecs();
     });
   } else {
     card.classList.remove('link-active');
     card.querySelector('.start-link').addEventListener('click', () => {
       if (sec.questions.length < 2) { toast('Need at least 2 questions to link.', 'warn'); return; }
-      _linkMode = { active: true, secId: sec.id, sel: [] }; rebuildSecs();
+      _linkMode = { active: true, secId: sec.id, sel: [] };
+      rebuildSecs();
     });
     card.querySelector('.add-q').addEventListener('click', () => {
-      sec.questions.push({ id: uid(), text: '', options: ['','','',''], img: null, imgSize: 60, extra: [], isOrNext: false });
+      sec.questions.push({ id: uid(), text: '', options: ['','','',''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false });
       rebuildSecs(); 
     });
   }
@@ -1916,13 +2000,16 @@ function renderQList(sec, si, cont) {
     cont.innerHTML = '<div style="font-size:11px;color:var(--t3);padding:8px 0 4px;text-align:center">No questions yet — click below to add</div>';
     return;
   }
+  
   let qNum = 1;
   const isLinking = _linkMode.active && _linkMode.secId === sec.id;
   
   sec.questions.forEach((q, qi) => {
     const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
     cont.appendChild(mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking));
-    if (!isOrChild && !q.isOrNext) { qNum++; } else if (isOrChild && !q.isOrNext) { qNum++; }
+    
+    if (!isOrChild && !q.isOrNext) { qNum++; }
+    else if (isOrChild && !q.isOrNext) { qNum++; }
   });
 }
 
@@ -1930,10 +2017,18 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
   const w = document.createElement('div');
   w.className = 'qitem';
   const num = `${bn(si+1)}.${bn(qNum)})`;
+  
+  // ensure new properties exist on old structures
   if(q.imgSize === undefined) q.imgSize = 60;
+  if(!q.imgAlign) q.imgAlign = 'right';
   
   let typeLabel = sec.type;
-  for (let i = 0; i < TYPES.length; i++) { if (TYPES[i].v === sec.type) { typeLabel = TYPES[i].l; break; } }
+  for (let i = 0; i < TYPES.length; i++) {
+    if (TYPES[i].v === sec.type) {
+      typeLabel = TYPES[i].l;
+      break;
+    }
+  }
   
   const hdrHtml = `
       <div class="qitem-hdr">
@@ -1979,7 +2074,8 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
                <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                  <div class="slider-wrap"><span style="font-size:9px;color:var(--t3)">Align:</span>
                    <button class="btn btn-ghost btn-xs set-img-align" data-val="left" style="background:${q.imgAlign==='left'?'var(--accent)':'transparent'};color:${q.imgAlign==='left'?'#fff':'var(--t2)'}">L</button>
-                   <button class="btn btn-ghost btn-xs set-img-align" data-val="right" style="background:${q.imgAlign!=='left'?'var(--accent)':'transparent'};color:${q.imgAlign!=='left'?'#fff':'var(--t2)'}">R</button>
+                   <button class="btn btn-ghost btn-xs set-img-align" data-val="center" style="background:${q.imgAlign==='center'?'var(--accent)':'transparent'};color:${q.imgAlign==='center'?'#fff':'var(--t2)'}">C</button>
+                   <button class="btn btn-ghost btn-xs set-img-align" data-val="right" style="background:${q.imgAlign==='right'?'var(--accent)':'transparent'};color:${q.imgAlign==='right'?'#fff':'var(--t2)'}">R</button>
                  </div>
                  <div class="slider-wrap"><span style="font-size:9px;color:var(--t3)">Size:</span> <input type="range" class="qi-size" min="20" max="100" value="${q.imgSize}"> <span style="font-size:9px;color:var(--t3)" class="qi-sv">${q.imgSize}%</span></div>
                </div>` : ''}
@@ -2007,7 +2103,7 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
     w.querySelector('.add-lbl-q').addEventListener('click', () => addExtraLabeled(q, w.querySelector('.extra-cont')));
   }
   
-  // Clean Squeeze toggle logic
+  // Question Squeeze toggle logic
   const toggleBtn = w.querySelector('.toggle-ex');
   const bodyWrap = w.querySelector('.q-body-wrap');
   if (toggleBtn && bodyWrap) {
@@ -2021,31 +2117,62 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
   if (q.isOrNext) {
       const qact = w.querySelector('.q-actions') || w.querySelector('.q-body-wrap');
       qact.insertAdjacentHTML('beforeend', `<button class="btn btn-ghost btn-xs unlink-q no-print" style="margin-top:4px;" title="Remove OR link">Unlink 🔗</button>`);
-      w.querySelector('.unlink-q').addEventListener('click', () => { q.isOrNext = false; rebuildSecs(); });
+      w.querySelector('.unlink-q').addEventListener('click', () => {
+          q.isOrNext = false;
+          rebuildSecs(); 
+      });
   }
 
+  // Handle Link Selection Mode visual states
   if (isLinking) {
     const isSelected = _linkMode.sel.includes(q.id);
     w.style.cursor = 'pointer';
     w.style.border = isSelected ? '2px solid var(--accent)' : '1px dashed var(--border2)';
     if(isSelected) w.style.background = 'rgba(91,80,240,.06)';
     
+    // Prevent normal interaction and capture clicks
     w.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
-      if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; 
-      if(isSelected) { _linkMode.sel = _linkMode.sel.filter(id => id !== q.id); } 
-      else if (_linkMode.sel.length < 2) { _linkMode.sel.push(q.id); }
+      if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; 
+      
+      if(isSelected) {
+          _linkMode.sel = _linkMode.sel.filter(id => id !== q.id);
+      } else if (_linkMode.sel.length < 2) {
+          _linkMode.sel.push(q.id);
+      }
       rebuildSecs();
     }, true);
   }
 
-  w.querySelector('.del-q').addEventListener('click', () => { sec.questions = sec.questions.filter(x => x.id !== q.id); rebuildSecs(); });
-  w.querySelector('.move-q-up').addEventListener('click', () => { if (qi > 0) { [sec.questions[qi-1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi-1]]; rebuildSecs(); } });
-  w.querySelector('.move-q-dn').addEventListener('click', () => { if (qi < sec.questions.length - 1) { [sec.questions[qi+1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi+1]]; rebuildSecs(); } });
+  w.querySelector('.del-q').addEventListener('click', () => {
+    sec.questions = sec.questions.filter(x => x.id !== q.id);
+    rebuildSecs(); 
+  });
+
+  w.querySelector('.move-q-up').addEventListener('click', () => {
+    if (qi > 0) {
+      [sec.questions[qi-1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi-1]];
+      rebuildSecs(); 
+    }
+  });
+
+  w.querySelector('.move-q-dn').addEventListener('click', () => {
+    if (qi < sec.questions.length - 1) {
+      [sec.questions[qi+1], sec.questions[qi]] = [sec.questions[qi], sec.questions[qi+1]];
+      rebuildSecs(); 
+    }
+  });
+
   w.querySelector('.q-txt').addEventListener('input', e => { q.text = e.target.value; sched(); });
 
   if (sec.type === 'mcq') {
-    w.querySelectorAll('.opt-f').forEach(inp => { inp.addEventListener('input', e => { q.options[+e.target.dataset.i] = e.target.value; sched(); }); });
+    w.querySelectorAll('.opt-f').forEach(inp => {
+      inp.addEventListener('input', e => {
+        q.options[+e.target.dataset.i] = e.target.value;
+        sched();
+      });
+    });
+    
     const slot = w.querySelector('.img-slot');
     const fi = w.querySelector('.qi-file');
     slot.addEventListener('click', () => fi.click());
@@ -2053,7 +2180,12 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
       const f = e.target.files[0]; 
       if (!f) return;
       const r = new FileReader();
-      r.onload = ev => { q.img = ev.target.result; rebuildSecs(); sched(); };
+      r.onload = ev => {
+        q.img = ev.target.result;
+        slot.innerHTML = `<img src="${ev.target.result}" alt=""/>`;
+        rebuildSecs(); // rebuild to show slider
+        sched();
+      };
       r.readAsDataURL(f);
     });
     
@@ -2065,6 +2197,7 @@ function mkQItem(q, qi, sec, si, cont, qNum, isOrChild, isLinking) {
             sched();
         });
     }
+
     w.querySelectorAll('.set-img-align').forEach(btn => {
         btn.addEventListener('click', (e) => {
             q.imgAlign = e.currentTarget.dataset.val;
@@ -2107,14 +2240,19 @@ function renderExtras(q, cont) {
       let rowsHtml = '';
       ex.rows.forEach((row, ri) => {
         rowsHtml += '<tr>';
-        row.forEach((c, ci) => { rowsHtml += `<td><input type="text" class="bn-field tbl-cell" value="${esc(c)}" data-r="${ri}" data-c="${ci}" style="width:${Math.floor(100/cc)}%;min-width:50px"/></td>`; });
+        row.forEach((c, ci) => {
+          rowsHtml += `<td><input type="text" class="bn-field tbl-cell" value="${esc(c)}" data-r="${ri}" data-c="${ci}" style="width:${Math.floor(100/cc)}%;min-width:50px"/></td>`;
+        });
         rowsHtml += '</tr>';
       });
 
       d.innerHTML = `${alignUI}${del}<div style="font-size:9px;color:var(--t3);margin-bottom:4px">⊞ Table ${rc}×${cc}</div><div class="inline-tbl-wrap"><table class="inline-tbl">${rowsHtml}</table></div>`;
       
       d.querySelectorAll('.tbl-cell').forEach(inp => {
-        inp.addEventListener('input', e => { ex.rows[+e.target.dataset.r][+e.target.dataset.c] = e.target.value; sched(); });
+        inp.addEventListener('input', e => {
+          ex.rows[+e.target.dataset.r][+e.target.dataset.c] = e.target.value;
+          sched();
+        });
       });
     } else if (ex.type === 'diagram') {
       d.innerHTML = `${alignUI}${del}${szSlider}<div style="font-size:9px;color:var(--t3);margin-bottom:3px">✏ Diagram</div><img src="${ex.png}" style="max-height:70px;max-width:100%;object-fit:contain;display:block;margin:0 auto;"/>`;
@@ -2139,14 +2277,47 @@ function renderExtras(q, cont) {
             </div>
         </div>
         <div style="flex:1;">
-            <div style="font-size:10px; font-weight:600; color:var(--t2)">Pointers: <button class="btn btn-ghost btn-xs ptr-add" data-xi="${idx}">+ Add</button></div>
+            <div style="font-size:10px; font-weight:600; color:var(--t2); display:flex; align-items:center; gap:4px; margin-bottom:4px;">
+              Pointers: <button class="btn btn-ghost btn-xs ptr-add" data-xi="${idx}">+ Add</button>
+              <select class="ptr-type-sel" data-xi="${idx}" style="font-size:9px; padding:2px; height:20px; width:auto;">
+                 <option value="1" ${ex.ptrType==='1'?'selected':''}>1, 2</option>
+                 <option value="A" ${ex.ptrType==='A'?'selected':''}>A, B</option>
+                 <option value="a" ${ex.ptrType==='a'?'selected':''}>a, b</option>
+                 <option value="i" ${ex.ptrType==='i'?'selected':''}>i, ii</option>
+                 <option value="bn" ${ex.ptrType==='bn'?'selected':''}>ক, খ</option>
+              </select>
+            </div>
             <div class="ptr-list">${ptrsHtml}</div>
         </div>
       </div>`;
       
-      d.querySelector('.ptr-add').addEventListener('click', (e) => { ex.pointers.push({label:'', blank:true}); renderExtras(q, cont); sched(); });
-      d.querySelectorAll('.ptr-del').forEach(btn => { btn.addEventListener('click', e => { ex.pointers.splice(+e.target.dataset.pi, 1); renderExtras(q, cont); sched(); }); });
-      d.querySelectorAll('.ptr-lbl').forEach(inp => { inp.addEventListener('input', e => { ex.pointers[+e.target.dataset.pi].label = e.target.value; sched(); }); });
+      // Auto-Increment Logic
+      d.querySelector('.ptr-add').addEventListener('click', (e) => { 
+          const currentCount = ex.pointers.length;
+          const nextLabel = getPtrLbl(ex.ptrType || 'i', currentCount);
+          ex.pointers.push({label: nextLabel, blank:true}); 
+          renderExtras(q, cont); 
+          sched(); 
+      });
+      
+      d.querySelector('.ptr-type-sel').addEventListener('change', (e) => {
+          ex.ptrType = e.target.value;
+          sched();
+      });
+      
+      d.querySelectorAll('.ptr-del').forEach(btn => {
+          btn.addEventListener('click', e => {
+              ex.pointers.splice(+e.target.dataset.pi, 1);
+              renderExtras(q, cont);
+              sched();
+          });
+      });
+      d.querySelectorAll('.ptr-lbl').forEach(inp => {
+          inp.addEventListener('input', e => {
+              ex.pointers[+e.target.dataset.pi].label = e.target.value;
+              sched();
+          });
+      });
       const slot = d.querySelector('.ptr-img-slot');
       const fi = d.querySelector('.lbl-file');
       slot.addEventListener('click', () => fi.click());
@@ -2154,26 +2325,51 @@ function renderExtras(q, cont) {
         const f = e.target.files[0]; 
         if (!f) return;
         const r = new FileReader();
-        r.onload = ev => { ex.data = ev.target.result; renderExtras(q, cont); sched(); };
+        r.onload = ev => {
+          ex.data = ev.target.result;
+          renderExtras(q, cont); sched();
+        };
         r.readAsDataURL(f);
       });
     }
 
-    d.querySelector('.extra-del').addEventListener('click', e => { q.extra.splice(+e.target.dataset.xi, 1); renderExtras(q, cont); sched(); });
-    d.querySelectorAll('.extra-align-btn').forEach(btn => { btn.addEventListener('click', e => { q.extra[+e.target.dataset.xi].align = e.target.dataset.val; renderExtras(q, cont); sched(); }); });
-    d.querySelectorAll('.ex-size-inp').forEach(inp => { inp.addEventListener('input', e => { q.extra[+e.target.dataset.xi].size = parseInt(e.target.value); sched(); }); });
+    d.querySelector('.extra-del').addEventListener('click', e => {
+      q.extra.splice(+e.target.dataset.xi, 1);
+      renderExtras(q, cont);
+      sched();
+    });
+    
+    d.querySelectorAll('.extra-align-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        q.extra[+e.target.dataset.xi].align = e.target.dataset.val;
+        renderExtras(q, cont);
+        sched();
+      });
+    });
+    
+    // Live preview update on slider drag
+    d.querySelectorAll('.ex-size-inp').forEach(inp => { 
+        inp.addEventListener('input', e => { 
+            q.extra[+e.target.dataset.xi].size = parseInt(e.target.value); 
+            sched(); 
+        }); 
+    });
     
     cont.appendChild(d);
   });
 }
 
 function addExtraImg(q, cont) {
-  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
   inp.addEventListener('change', e => {
     const f = e.target.files[0]; 
     if (!f) return;
     const r = new FileReader();
-    r.onload = ev => { q.extra.push({ type: 'image', data: ev.target.result, size: 60 }); renderExtras(q, cont); sched(); };
+    r.onload = ev => {
+      q.extra.push({ type: 'image', data: ev.target.result, size: 60, align: 'right' });
+      renderExtras(q, cont); sched();
+    };
     r.readAsDataURL(f);
   });
   document.body.appendChild(inp); inp.click(); inp.remove();
@@ -2182,12 +2378,16 @@ function addExtraImg(q, cont) {
 function addExtraTbl(q, cont) {
   const rows = parseInt(prompt('Number of rows?', '3') || '3');
   const cols = parseInt(prompt('Number of columns?', '3') || '3');
-  if (!rows || !cols || rows < 1 || cols < 1 || rows > 30 || cols > 12) { toast('Invalid table size.', 'warn'); return; }
-  q.extra.push({ type: 'table', rows: Array.from({ length: rows }, () => Array(cols).fill('')) }); renderExtras(q, cont); sched();
+  if (!rows || !cols || rows < 1 || cols < 1 || rows > 30 || cols > 12) {
+    toast('Invalid table size.', 'warn'); return;
+  }
+  q.extra.push({ type: 'table', rows: Array.from({ length: rows }, () => Array(cols).fill('')), align: 'center' });
+  renderExtras(q, cont); sched();
 }
 
 function addExtraLabeled(q, cont) {
-    q.extra.push({ type: 'labeled', data: null, align: 'center', size: 60, pointers: [{label: 'i', blank: true}] }); renderExtras(q, cont); sched();
+    q.extra.push({ type: 'labeled', data: null, align: 'right', size: 60, pointers: [{label: 'i', blank: true}], ptrType: 'i' });
+    renderExtras(q, cont); sched();
 }
 
 /* ── DIAGRAM TOOL ── */
@@ -2196,75 +2396,132 @@ let _dQ = null, _dCont = null, _drawing = false, _snap = null, _sx = 0, _sy = 0,
 function openDia(q, cont) {
   _dQ = q; _dCont = cont;
   const cv = $('dia-canvas');
-  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
   _snap = null; _tool = 'free';
   
   $$('.dia-t').forEach(b => b.classList.remove('on'));
   if ($$('.dia-t')[0]) $$('.dia-t')[0].classList.add('on');
+  
   $('dia-modal').classList.add('show');
 
   const pos = e => {
     const r = cv.getBoundingClientRect();
     const ce = e.touches ? e.touches[0] : e;
-    return { x: (ce.clientX - r.left) * (cv.width / r.width), y: (ce.clientY - r.top) * (cv.height / r.height) };
+    return { 
+      x: (ce.clientX - r.left) * (cv.width / r.width), 
+      y: (ce.clientY - r.top) * (cv.height / r.height) 
+    };
   };
 
   const down = e => {
     _drawing = true;
     const p = pos(e); _sx = p.x; _sy = p.y;
-    _snap = cv.getContext('2d').getImageData(0,0,cv.width,cv.height);
-    cv.getContext('2d').beginPath();
-    cv.getContext('2d').moveTo(p.x, p.y);
+    _snap = ctx.getImageData(0,0,cv.width,cv.height);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
   };
 
   const move = e => {
     if (!_drawing) return;
     const p = pos(e);
-    const ctx = cv.getContext('2d');
     const col = $('dia-col').value;
     const lw = parseInt($('dia-w').value);
     
     ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     
-    if (_tool === 'free') { ctx.lineTo(p.x, p.y); ctx.stroke(); return; }
+    if (_tool === 'free') {
+      ctx.lineTo(p.x, p.y); ctx.stroke(); return;
+    }
     
-    ctx.putImageData(_snap, 0, 0); ctx.beginPath();
+    ctx.putImageData(_snap, 0, 0);
+    ctx.beginPath();
     
-    if (_tool === 'line') { ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke(); }
-    else if (_tool === 'rect') { ctx.strokeRect(_sx, _sy, p.x - _sx, p.y - _sy); }
-    else if (_tool === 'circle') {
+    if (_tool === 'line') {
+      ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke();
+    } else if (_tool === 'rect') {
+      ctx.strokeRect(_sx, _sy, p.x - _sx, p.y - _sy);
+    } else if (_tool === 'circle') {
       const rx = Math.abs(p.x - _sx) / 2, ry = Math.abs(p.y - _sy) / 2;
       const cx = _sx + (p.x - _sx) / 2, cy = _sy + (p.y - _sy) / 2;
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI); ctx.stroke();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI);
+      ctx.stroke();
     } else if (_tool === 'arrow') {
-      const dx = p.x - _sx, dy = p.y - _sy; const ang = Math.atan2(dy, dx);
+      const dx = p.x - _sx, dy = p.y - _sy;
+      const ang = Math.atan2(dy, dx);
       ctx.moveTo(_sx, _sy); ctx.lineTo(p.x, p.y); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
       ctx.lineTo(p.x - 13 * Math.cos(ang - 0.42), p.y - 13 * Math.sin(ang - 0.42));
       ctx.lineTo(p.x - 13 * Math.cos(ang + 0.42), p.y - 13 * Math.sin(ang + 0.42));
-      ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+      ctx.closePath();
+      ctx.fillStyle = col; ctx.fill();
     }
   };
 
   const up = () => { _drawing = false; };
+
   cv.onmousedown = down; cv.onmousemove = move; cv.onmouseup = up;
-  cv.ontouchstart = e => { e.preventDefault(); down(e); }; cv.ontouchmove = e => { e.preventDefault(); move(e); }; cv.ontouchend = up;
+  cv.ontouchstart = e => { e.preventDefault(); down(e); };
+  cv.ontouchmove = e => { e.preventDefault(); move(e); };
+  cv.ontouchend = up;
+  
+  // Hook up "Load Image" logic for the canvas
+  const loadBtn = $('dia-load-img');
+  const fileInp = $('dia-file');
+  
+  // Remove old listeners to prevent multiple fires when opening different diagrams
+  const newLoadBtn = loadBtn.cloneNode(true);
+  loadBtn.parentNode.replaceChild(newLoadBtn, loadBtn);
+  const newFileInp = fileInp.cloneNode(true);
+  fileInp.parentNode.replaceChild(newFileInp, fileInp);
+  
+  newLoadBtn.addEventListener('click', () => newFileInp.click());
+  newFileInp.addEventListener('change', e => {
+      const f = e.target.files[0]; 
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => { 
+          const img = new Image();
+          img.onload = () => {
+              ctx.clearRect(0,0,cv.width,cv.height);
+              
+              // Scale to fit canvas while maintaining aspect ratio
+              const scale = Math.min(cv.width / img.width, cv.height / img.height);
+              const x = (cv.width / 2) - (img.width / 2) * scale;
+              const y = (cv.height / 2) - (img.height / 2) * scale;
+              
+              ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+          };
+          img.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+  });
 }
 
 $$('.dia-t').forEach(b => {
   b.addEventListener('click', () => {
     if (!b.dataset.t) return;
     $$('.dia-t').forEach(x => x.classList.remove('on'));
-    b.classList.add('on'); _tool = b.dataset.t;
+    b.classList.add('on');
+    _tool = b.dataset.t;
   });
 });
 
-$('dia-clr').addEventListener('click', () => { $('dia-canvas').getContext('2d').clearRect(0,0,520,320); });
+$('dia-clr').addEventListener('click', () => {
+  $('dia-canvas').getContext('2d').clearRect(0,0,520,320);
+});
+
 $('dia-save').addEventListener('click', () => {
   const png = $('dia-canvas').toDataURL('image/png');
-  if (_dQ) { _dQ.extra.push({ type: 'diagram', png: png, size: 60 }); renderExtras(_dQ, _dCont); sched(); }
+  if (_dQ) {
+    _dQ.extra.push({ type: 'diagram', png: png, size: 60, align: 'center' });
+    renderExtras(_dQ, _dCont);
+    sched();
+  }
   $('dia-modal').classList.remove('show');
 });
+
 $('dia-cancel').addEventListener('click', () => $('dia-modal').classList.remove('show'));
 $('dia-modal').addEventListener('click', e => { if (e.target === $('dia-modal')) $('dia-modal').classList.remove('show'); });
 
@@ -2279,8 +2536,9 @@ function runAutoFit() {
     document.body.appendChild(mDiv);
   }
 
+  // Determine target max height based on orient map
   const isPortrait = getActiveOrient() === 'portrait';
-  const PAGE_H = isPortrait ? 1122 : 793; 
+  const PAGE_H = isPortrait ? 1122 : 793; // Height mm -> px approx
   let maxAvailH = PAGE_H;
   if(S.viewMode === 'mirror4') maxAvailH = PAGE_H / 2;
   
@@ -2293,9 +2551,14 @@ function runAutoFit() {
     document.documentElement.style.setProperty('--p-margin', m + 'cm');
     mDiv.innerHTML = buildSet();
     
-    if(S.viewMode === 'zero' || S.viewMode === 'continuous') { mDiv.style.width = isPortrait ? '210mm' : '297mm'; } 
-    else if (S.viewMode === 'mirror2') { mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)'; } 
-    else if (S.viewMode === 'mirror4') { mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)'; }
+    // Width simulation
+    if(S.viewMode === 'zero' || S.viewMode === 'continuous') {
+        mDiv.style.width = isPortrait ? '210mm' : '297mm';
+    } else if (S.viewMode === 'mirror2') {
+        mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)';
+    } else if (S.viewMode === 'mirror4') {
+        mDiv.style.width = isPortrait ? 'calc((210mm - 1.2cm) / 2)' : 'calc((297mm - 1.2cm) / 2)';
+    }
     
     mDiv.style.padding = m + 'cm';
     mDiv.style.fontFamily = 'var(--font-bn)';
@@ -2305,6 +2568,7 @@ function runAutoFit() {
   }
 
   let h = measure(fs, lh, mg);
+  
   if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
   while (lh > lhMin && h > maxAvailH) { lh = +(lh - 0.05).toFixed(3); h = measure(fs, lh, mg); }
@@ -2316,9 +2580,11 @@ function runAutoFit() {
   while (mg > mgMin && h > maxAvailH) { mg = +(mg - 0.1).toFixed(2); h = measure(fs, lh, mg); }
   if (h <= maxAvailH) { applyAutoFit(fs, lh, mg); return; }
 
+  // Adjust warning for infinite pages
   const FILL_TARGET = maxAvailH * 1.6;
   while ((fs < fsMax || lh < lhMax) && h < FILL_TARGET) {
-    if (lh < lhMax) lh = +(lh + 0.05).toFixed(3); else if (fs < fsMax) fs = +(fs + 0.5).toFixed(1);
+    if (lh < lhMax) lh = +(lh + 0.05).toFixed(3);
+    else if (fs < fsMax) fs = +(fs + 0.5).toFixed(1);
     h = measure(fs, lh, mg);
   }
   
@@ -2332,7 +2598,9 @@ function applyAutoFit(fs, lh, mg) {
   if ($('s-fs')) { $('s-fs').value = fs; $('s-fs-v').textContent = fs + ' pt'; }
   if ($('s-lh')) { $('s-lh').value = lh; $('s-lh-v').textContent = lh.toFixed(2); }
   if ($('s-mg')) { $('s-mg').value = mg * 10; $('s-mg-v').textContent = mg.toFixed(1) + ' cm'; }
-  applyVars(); showAutoFitBtn(); sched();
+  applyVars();
+  showAutoFitBtn();
+  sched();
   toast(`Auto-fit: ${fs}pt · LH${lh.toFixed(2)} · ${mg.toFixed(1)}cm`, 'success');
 }
 
@@ -2341,7 +2609,9 @@ function applyAutoFit(fs, lh, mg) {
 function renderTok(t) {
   if (!t) return '';
   t = t.replace(/\[EQ:([^\]]+)\]/g, (_, eq) => {
-    try { if (typeof katex !== 'undefined') return katex.renderToString(eq, { throwOnError: false, displayMode: false }); } catch (e) {}
+    try {
+      if (typeof katex !== 'undefined') return katex.renderToString(eq, { throwOnError: false, displayMode: false });
+    } catch (e) { console.warn("Katex error", e); }
     return `<i>${esc(eq)}</i>`;
   });
   t = t.replace(/\[CHEM:([^\]]+)\]/g, (_, f) => `<i>${f.replace(/(\d+)/g, '<sub>$1</sub>')}</i>`);
@@ -2360,13 +2630,18 @@ function render() {
     const has = S.sections.length || S.subject || S.klass || S.topTitle;
     
     if (!has) { 
-      vp.innerHTML = `<div class="empty-ph" id="ph"><div class="ei">📄</div>Fill in exam info and add sections<br>to see the live preview here.</div>`; 
+      vp.innerHTML = `
+        <div class="empty-ph" id="ph">
+          <div class="ei">📄</div>
+          Fill in exam info and add sections<br>to see the live preview here.
+        </div>`; 
       return; 
     }
 
     let measDiv = document.getElementById('__meas__rv');
     if (!measDiv) {
-      measDiv = document.createElement('div'); measDiv.id = '__meas__rv';
+      measDiv = document.createElement('div');
+      measDiv.id = '__meas__rv';
       measDiv.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;top:-9999px;left:0;overflow:hidden;';
       document.body.appendChild(measDiv);
     }
@@ -2374,18 +2649,20 @@ function render() {
     const curMg = S.autoFit ? S.autoFit.margin : S.margin;
     const curFs = S.autoFit ? S.autoFit.fontSize : S.fontSize;
     const curLh = S.autoFit ? S.autoFit.lineHeight : S.lineHeight;
+    
     const isPortrait = getActiveOrient() === 'portrait';
     
+    // Page dimensions calculation for measurement
     let usableW, availH_PX;
     if(S.viewMode === 'zero' || S.viewMode === 'continuous') {
-        usableW = `calc(${isPortrait?'210mm':'297mm'} - ${curMg * 2}cm)`;
-        availH_PX = Math.round((isPortrait?297:210) * 3.7795) - (curMg * 37.795 * 2) - 3;
+        usableW = `calc(${isPortrait ? '210mm' : '297mm'} - ${curMg * 2}cm)`;
+        availH_PX = Math.round((isPortrait ? 297 : 210) * 3.7795) - (curMg * 37.795 * 2) - 3;
     } else if (S.viewMode === 'mirror2') {
-        usableW = `calc((${isPortrait?'210mm':'297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
-        availH_PX = Math.round((isPortrait?297:210) * 3.7795) - (curMg * 37.795 * 2) - 3;
+        usableW = `calc((${isPortrait ? '210mm' : '297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
+        availH_PX = Math.round((isPortrait ? 297 : 210) * 3.7795) - (curMg * 37.795 * 2) - 3;
     } else if (S.viewMode === 'mirror4') {
-        usableW = `calc((${isPortrait?'210mm':'297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
-        availH_PX = Math.round(((isPortrait?297:210) - 12) / 2 * 3.7795) - (curMg * 37.795 * 2) - 3;
+        usableW = `calc((${isPortrait ? '210mm' : '297mm'} - 1.2cm) / 2 - ${curMg * 2}cm)`;
+        availH_PX = Math.round(((isPortrait ? 297 : 210) - 12) / 2 * 3.7795) - (curMg * 37.795 * 2) - 3;
     }
 
     measDiv.style.width = usableW;
@@ -2401,20 +2678,35 @@ function render() {
     for (let i = 0; i < blocks.length; i++) {
       let testHTML = currentHTML + blocks[i];
       measDiv.innerHTML = testHTML;
-      if (measDiv.scrollHeight > availH_PX && currentHTML !== '') { logicalPages.push(currentHTML); currentHTML = blocks[i]; } 
-      else { currentHTML = testHTML; }
+
+      if (measDiv.scrollHeight > availH_PX && currentHTML !== '') {
+        logicalPages.push(currentHTML);
+        currentHTML = blocks[i];
+      } else {
+        currentHTML = testHTML;
+      }
     }
     if (currentHTML) logicalPages.push(currentHTML);
 
     vp.innerHTML = '';
+
+    // Route rendering based on mode
     let renderedHTML = '';
-    if (S.viewMode === 'zero') renderedHTML = buildZeroPageHTML(logicalPages, isPortrait);
-    else if (S.viewMode === 'mirror2') renderedHTML = buildMirror2PageHTML(logicalPages, isPortrait);
-    else if (S.viewMode === 'mirror4') renderedHTML = buildMirror4PageHTML(logicalPages, isPortrait);
-    else if (S.viewMode === 'continuous') renderedHTML = buildContinuousSheets(logicalPages, isPortrait);
+    if (S.viewMode === 'zero') {
+      renderedHTML = buildZeroPageHTML(logicalPages, isPortrait);
+    } else if (S.viewMode === 'mirror2') {
+      renderedHTML = buildMirror2PageHTML(logicalPages, isPortrait);
+    } else if (S.viewMode === 'mirror4') {
+      renderedHTML = buildMirror4PageHTML(logicalPages, isPortrait);
+    } else if (S.viewMode === 'continuous') {
+      renderedHTML = buildContinuousSheets(logicalPages, isPortrait);
+    }
     
     vp.innerHTML = renderedHTML;
-    setTimeout(() => { checkFit(logicalPages.length); }, 10);
+
+    setTimeout(() => {
+      checkFit(logicalPages.length);
+    }, 10);
 
   } catch (error) {
     console.error("Rendering Error:", error);
@@ -2427,10 +2719,12 @@ function wmHtmlGenerator() {
     const wmStyle = `opacity:${S.wmOpacity / 100};pointer-events:none;z-index:5;`;
     return wmSrc ? `<div class="qp-wm" style="${wmStyle}"><img src="${wmSrc}" style="max-width:${S.wmSize}%;max-height:${S.wmSize}%" onerror="this.style.display='none'"/></div>` : '';
 }
+
 function buildDivHTML() {
   const d = S.divider;
   if (d === 'solid') return `<div class="qp-div" style="width:.15cm;border-left:.5pt solid #bbb"></div>`;
   if (d === 'text') return `<div class="qp-div" style="border-left: 1px dashed #999; position: relative; width: .25cm;"><div style="position:absolute; top:10%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div><div style="position:absolute; top:50%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div><div style="position:absolute; top:90%; left:-6px; font-size:14px; color:#666; transform: rotate(-90deg); display: inline-block;">✂</div></div>`;
+  
   const ch = d === 'dotted' ? '·' : (d === 'dashed' ? '-' : '✂');
   const rows = Array.from({length: 38}, () => `<div style="line-height:1">${ch}</div>`).join('');
   return `<div class="qp-div">${rows}</div>`;
@@ -2440,8 +2734,11 @@ function wrapPageNode(htmlString, zoomFactor, isPortrait) {
     const wrap = document.createElement('div');
     wrap.className = 'pp-wrap';
     wrap.style.transform = `scale(${zoomFactor})`;
+    
+    // Negative margin compensation logic based on orientation height
     const pageH_MM = isPortrait ? 297 : 210;
     wrap.style.marginBottom = `-${(pageH_MM * (1 - zoomFactor) * 3.7795) - 24}px`;
+    
     wrap.innerHTML = `<div class="pp">${htmlString}</div>`;
     return wrap.outerHTML;
 }
@@ -2450,9 +2747,17 @@ function buildZeroPageHTML(pages, isPortrait) {
     const mg = (S.autoFit ? S.autoFit.margin : S.margin);
     const wmHTML = wmHtmlGenerator();
     let res = '';
+    
     const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+
     pages.forEach(p => {
-        const h = `<div class="qp-page preview-zero" style="${styleDims}"><div class="qp-set" style="padding:${mg}cm; color:#111; width:100%;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div></div>`;
+        const h = `
+        <div class="qp-page preview-zero" style="${styleDims}">
+            <div class="qp-set" style="padding:${mg}cm; color:#111; width:100%;">
+                ${wmHTML}
+                <div style="position:relative; z-index:10; height:100%;">${p}</div>
+            </div>
+        </div>`;
         res += wrapPageNode(h, S.zoom, isPortrait);
     });
     return res;
@@ -2463,7 +2768,9 @@ function buildMirror2PageHTML(pages, isPortrait) {
     const wmHTML = wmHtmlGenerator();
     const divHTML = buildDivHTML();
     let res = '';
+    
     const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+
     pages.forEach(p => {
         const setBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
         const h = `<div class="qp-page preview-mirror2" style="${styleDims}">${setBlock}${divHTML}${setBlock}</div>`;
@@ -2476,13 +2783,24 @@ function buildMirror4PageHTML(pages, isPortrait) {
     const mg = (S.autoFit ? S.autoFit.margin : S.margin);
     const wmHTML = wmHtmlGenerator();
     let res = '';
+    
     const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+
     pages.forEach(p => {
         const setBlockQuad1 = `<div class="qp-set q-quad-1" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
         const setBlockQuad2 = `<div class="qp-set q-quad-2" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
         const setBlockQuad3 = `<div class="qp-set q-quad-3" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
         const setBlockQuad4 = `<div class="qp-set q-quad-4" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${p}</div></div>`;
-        const h = `<div class="qp-page preview-mirror4" style="${styleDims}"><div class="qp-set-wrapper">${setBlockQuad1}${setBlockQuad2}${setBlockQuad3}${setBlockQuad4}</div></div>`;
+        
+        const h = `
+        <div class="qp-page preview-mirror4" style="${styleDims}">
+            <div class="qp-set-wrapper">
+                ${setBlockQuad1}
+                ${setBlockQuad2}
+                ${setBlockQuad3}
+                ${setBlockQuad4}
+            </div>
+        </div>`;
         res += wrapPageNode(h, S.zoom, isPortrait);
     });
     return res;
@@ -2493,45 +2811,74 @@ function buildContinuousSheets(pages, isPortrait) {
     const wmHTML = wmHtmlGenerator();
     const divHTML = buildDivHTML();
     let res = '';
+    
     const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
     
+    // Booklet printing: if multiple pages, group into pairs for folded printing.
+    // If only 1 page, fallback to trivial rendering
     if(pages.length === 1) {
-        const h = `<div class="qp-page preview-continuous" style="${styleDims} justify-content: flex-end;"><div class="qp-set" style="max-width:50%; padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${pages[0]}</div></div></div>`;
+        const h = `
+        <div class="qp-page preview-continuous" style="${styleDims} justify-content: flex-end;">
+            <div class="qp-set" style="max-width:50%; padding:${mg}cm; color:#111;">
+                ${wmHTML}
+                <div style="position:relative; z-index:10; height:100%;">${pages[0]}</div>
+            </div>
+        </div>`;
         res += wrapPageNode(h, S.zoom, isPortrait);
         return res;
     }
     
+    // Ensure logical pages is multiple of 4 for a perfect signature fold
     let paddedPages = [...pages];
-    while(paddedPages.length % 4 !== 0) { paddedPages.push(''); }
+    while(paddedPages.length % 4 !== 0) {
+        paddedPages.push(''); // Blank pages for imposition
+    }
     
     const sheetCount = paddedPages.length / 2; 
     let outSheets = [];
+    
+    // Basic 2-up imposition (Left and Right logic for fold)
+    // Real booklet imposition logic for folded center
     const total = paddedPages.length;
     for (let i = 0; i < sheetCount; i++) {
         let leftPage, rightPage;
-        if (i % 2 === 0) { leftPage = paddedPages[total - 1 - (i/2)]; rightPage = paddedPages[i/2]; } 
-        else { leftPage = paddedPages[Math.floor(i/2) + 1]; rightPage = paddedPages[total - 2 - Math.floor(i/2)]; }
+        // Even indices are Outer sheets (e.g. 4 and 1), Odd indices are Inner sheets (e.g. 2 and 3)
+        if (i % 2 === 0) {
+            leftPage = paddedPages[total - 1 - (i/2)];
+            rightPage = paddedPages[i/2];
+        } else {
+            leftPage = paddedPages[Math.floor(i/2) + 1];
+            rightPage = paddedPages[total - 2 - Math.floor(i/2)];
+        }
         
         const LBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${leftPage}</div></div>`;
         const RBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${rightPage}</div></div>`;
+        
         const h = `<div class="qp-page preview-continuous" style="${styleDims}">${LBlock}${divHTML}${RBlock}</div>`;
         outSheets.push(h);
     }
-    outSheets.forEach(sheet => { res += wrapPageNode(sheet, S.zoom, isPortrait); });
+    
+    outSheets.forEach(sheet => {
+        res += wrapPageNode(sheet, S.zoom, isPortrait);
+    });
     return res;
 }
 
 function buildExtH(q) {
   let floatH = '';
   let bottomH = '';
+  
   (q.extra || []).forEach(ex => {
     const align = ex.align || 'center';
     let style = '';
     let isFloat = false;
 
-    if (align === 'right') { style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;'; isFloat = true; } 
-    else if (align === 'left') { style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;'; isFloat = true; } 
-    else { style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;'; }
+    // Standard elements can still float, but Labeled Diagrams are strictly blocked below text
+    if (ex.type !== 'labeled') {
+        if (align === 'right') { style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;'; isFloat = true; } 
+        else if (align === 'left') { style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;'; isFloat = true; } 
+        else { style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;'; }
+    }
 
     let inner = '';
     const szPct = ex.size || 60;
@@ -2541,26 +2888,53 @@ function buildExtH(q) {
     } else if (ex.type === 'diagram' && ex.png) {
         inner = `<img src="${ex.png}" style="max-width:${szPct}%;max-height:36mm;object-fit:contain"/>`;
     } else if (ex.type === 'table') {
-        let t = `<table class="qp-itable" style="${isFloat ? 'margin:0' : 'margin:2pt auto'}">`;
+        let t = `<table class="qp-itable" style="${ex.align==='center'?'margin:2pt auto':'margin:0'}">`;
         ex.rows.forEach(row => { t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`; });
         t += `</table>`; inner = t;
     } else if (ex.type === 'labeled') {
         let pts = '';
         if(ex.pointers && ex.pointers.length > 0) {
-            pts = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:4pt; text-align:left; font-size:calc(var(--p-fsize) - 1pt); width:100%;">`;
-            ex.pointers.forEach(p => { pts += `<div>${esc(p.label)}) ____________</div>`; });
+            // Auto-filling CSS Grid for pointers
+            pts = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; text-align:left; font-size:calc(var(--p-fsize) - 1pt); width:100%; align-content:start;">`;
+            ex.pointers.forEach(p => { 
+                let lbl = p.label ? esc(p.label) + ')' : '';
+                pts += `<div style="display:flex; align-items:flex-end; gap:4px; white-space:nowrap;">
+                          <span>${lbl}</span>
+                          <span style="flex:1; border-bottom:0.75pt solid #333; min-width:30px; display:inline-block; margin-bottom:3px;"></span>
+                        </div>`; 
+            });
             pts += `</div>`;
         }
         
-        let containerStyle = isFloat ? 'display:flex; flex-direction:column; gap:4pt; align-items:center;' : 'display:flex; flex-direction:row; justify-content:center; gap:8pt; align-items:center; width:100%;';
-        let imgPart = ex.data ? `<img src="${ex.data}" style="max-width:${isFloat ? '100%' : szPct+'%'};max-height:40mm;object-fit:contain"/>` : '';
-        let ptsPart = `<div style="flex:1; min-width:0;">${pts}</div>`;
-        inner = `<div style="${containerStyle}">${imgPart}${ptsPart}</div>`;
+        let imgPart = ex.data ? `<img src="${ex.data}" style="width:100%; max-height:50mm; object-fit:contain; display:block;"/>` : '';
+        
+        // Strict Grid Layout overriding standard Floats
+        if (align === 'left') {
+            inner = `<div style="display:grid; grid-template-columns: ${szPct}% 1fr; gap:16px; align-items:start; width:100%; margin-top:8px;">
+                        <div>${imgPart}</div>
+                        <div style="padding-top:4px;">${pts}</div>
+                     </div>`;
+        } else if (align === 'right') {
+            inner = `<div style="display:grid; grid-template-columns: 1fr ${szPct}%; gap:16px; align-items:start; width:100%; margin-top:8px;">
+                        <div style="padding-top:4px;">${pts}</div>
+                        <div>${imgPart}</div>
+                     </div>`;
+        } else {
+            inner = `<div style="display:flex; flex-direction:column; gap:12px; align-items:center; width:100%; margin-top:8px;">
+                        <div style="width:${szPct}%;">${imgPart}</div>
+                        <div style="width:100%;">${pts}</div>
+                     </div>`;
+        }
     }
 
-    const wrapper = `<div style="${style}">${inner}</div>`;
-    if (isFloat) floatH += wrapper; else bottomH += wrapper;
+    if (ex.type === 'labeled') {
+        bottomH += inner; 
+    } else {
+        const wrapper = `<div style="${style}">${inner}</div>`;
+        if (isFloat) floatH += wrapper; else bottomH += wrapper;
+    }
   });
+  
   return { floats: floatH, bottom: bottomH };
 }
 
@@ -2580,6 +2954,7 @@ function buildSet(asBlocks = false) {
   const fm = S.fullMarks;
   
   let blocks = [];
+  
   let h = `<div class="qp-title" style="font-size:14pt">${esc(S.topTitle || 'Question Paper')}</div>`;
   
   if (S.subject.length > 22) {
@@ -2589,7 +2964,9 @@ function buildSet(asBlocks = false) {
         <span>${classLabel}: ${klass}</span>
         <span>${timeLabel}: ${isBn ? bn(S.time) : S.time} ${timeUnit}</span>
       </div>
-      <div style="text-align:center;font-family:var(--font-tt);font-size:${fsPt};padding-bottom:2pt;">${subjectLabel}: ${subj}</div>`;
+      <div style="text-align:center;font-family:var(--font-tt);font-size:${fsPt};padding-bottom:2pt;">
+        ${subjectLabel}: ${subj}
+      </div>`;
   } else {
     h += `
       <div class="qp-info" style="font-size:${fsPt}">
@@ -2604,86 +2981,91 @@ function buildSet(asBlocks = false) {
 
   S.sections.forEach((sec, idx) => {
     const L = sl(idx);
+    
     let actualCount = 0;
-    for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
+    for(let i=0; i<sec.questions.length; i++) {
+        actualCount++;
+        if(sec.questions[i].isOrNext) i++; 
+    }
 
     const countedQ = (sec.answerAny && sec.answerAny < actualCount) ? sec.answerAny : actualCount;
     const tot = (sec.mpq || 0) * countedQ;
     const mfNum = isBn ? `${bn(sec.mpq)} × ${bn(countedQ)} = ${bn(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
+    
     const secPrefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
     const anyNote = sec.answerAny ? (isBn ? ` (যেকোনো ${bn(sec.answerAny)}টি)` : ` (any ${sec.answerAny})`) : '';
 
-    let secHdr = `<div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div><div class="qp-sec-row" style="font-size:${fsPt}"><span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}${anyNote}</span><span>${mfNum}</span></div>`;
+    let secHdr = `
+      <div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div>
+      <div class="qp-sec-row" style="font-size:${fsPt}">
+        <span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}${anyNote}</span>
+        <span>${mfNum}</span>
+      </div>`;
     blocks.push(secHdr);
 
-    if (!sec.questions.length) { blocks.push(`<div style="color:#aaa;font-size:8pt;line-height:var(--p-lh)">(no questions)</div>`); return; }
+    if (!sec.questions.length) {
+        blocks.push(`<div style="color:#aaa;font-size:8pt;line-height:var(--p-lh)">(no questions)</div>`);
+        return;
+    }
 
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
       const numStr = isBn ? `${bn(idx+1)}.${bn(qCounter)})` : `${idx+1}.${qCounter})`;
       const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
-      const numH = isOrChild ? `<span style="opacity:0">${numStr}</span>` : `<b>${numStr}</b>`;
       
-      let qTextEscaped = esc(q.text).replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
+      const numH = `<div style="flex-shrink:0; font-weight:bold; margin-right:4pt; ${isOrChild ? 'opacity:0;' : ''}">${numStr}</div>`;
+      
+      let qTextEscaped = esc(q.text);
+      qTextEscaped = qTextEscaped.replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
       const finalRenderedText = renderTok(qTextEscaped);
-      let qTextHtml = `<div style="flex:1; min-width:0; text-align:justify;">${numH} ${finalRenderedText}</div>`;
+      
+      let qTextHtml = `<div style="flex:1; min-width:0; text-align:justify;">${finalRenderedText}</div>`;
 
       let imgHtml = '', oph = '', bottomHtml = '', leftHtml = '', rightHtml = '';
       
       if (sec.type === 'mcq') {
         const opts = (q.options || ['','','','']).slice(0, 4);
-        let maxLen = 0; opts.forEach(o => { if (o.length > maxLen) maxLen = o.length; });
+        let maxLen = 0;
+        opts.forEach(o => { if (o.length > maxLen) maxLen = o.length; });
+        
         const ls = sec.os === 'en' ? EN_O : BN_O;
-        let optsHtml = ''; opts.forEach((opt, i) => { optsHtml += `<span>(${ls[i]}) ${renderTok(esc(opt))}</span>`; });
-        if (maxLen <= 13) oph = `<div class="qp-q-mcq-opts">${optsHtml}</div>`;
-        else if (maxLen <= 25) oph = `<div class="qp-q-mcq-opts g2">${optsHtml}</div>`;
-        else oph = `<div class="qp-q-mcq-opts g1">${optsHtml}</div>`;
+        let optsHtml = '';
+        opts.forEach((opt, i) => { optsHtml += `<span>(${ls[i]}) ${renderTok(esc(opt))}</span>`; });
+        
+        if (maxLen <= 13) oph = `<div class="qp-q-mcq-opts" style="margin-left: 18pt;">${optsHtml}</div>`;
+        else if (maxLen <= 25) oph = `<div class="qp-q-mcq-opts g2" style="margin-left: 18pt;">${optsHtml}</div>`;
+        else oph = `<div class="qp-q-mcq-opts g1" style="margin-left: 18pt;">${optsHtml}</div>`;
         
         if(q.img) {
             let iH = `<img src="${q.img}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
             if(q.imgAlign === 'left') leftHtml += `<div style="width:${q.imgSize||60}%;">${iH}</div>`;
+            else if(q.imgAlign === 'center') bottomHtml += `<div style="text-align:center; width:100%; margin-top:4pt;">${iH}</div>`;
             else rightHtml += `<div style="width:${q.imgSize||60}%; text-align:right;">${iH}</div>`;
         }
       }
 
-      // Extras Logic via Flex
-      (q.extra || []).forEach(ex => {
-          let inner = '';
-          const szPct = ex.size || 60;
-          if (ex.type === 'image' && ex.data) inner = `<img src="${ex.data}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
-          else if (ex.type === 'diagram' && ex.png) inner = `<img src="${ex.png}" style="max-width:100%; max-height:40mm; object-fit:contain;"/>`;
-          else if (ex.type === 'table') {
-              let t = `<table class="qp-itable" style="${ex.align==='center'?'margin:2pt auto':'margin:0'}">`;
-              ex.rows.forEach(row => { t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`; });
-              inner = t + `</table>`;
-          } else if (ex.type === 'labeled') {
-              let pts = '';
-              if(ex.pointers && ex.pointers.length > 0) {
-                  pts = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:4pt; text-align:left; font-size:calc(var(--p-fsize) - 1pt); width:100%;">`;
-                  ex.pointers.forEach(p => { pts += `<div>${esc(p.label)}) ____________</div>`; });
-                  pts += `</div>`;
-              }
-              let imgPart = ex.data ? `<img src="${ex.data}" style="max-width:100%;max-height:40mm;object-fit:contain"/>` : '';
-              inner = `<div style="display:flex; flex-direction:${ex.align==='center'?'row':'column'}; gap:8pt; align-items:center; width:100%;">
-                          ${imgPart} <div style="flex:1; min-width:0; width:100%;">${pts}</div>
-                       </div>`;
-          }
+      // Extras Logic
+      const ext = buildExtH(q);
+      leftHtml += ext.floats.includes('float:left') ? ext.floats : '';
+      rightHtml += ext.floats.includes('float:right') ? ext.floats : '';
+      bottomHtml += ext.bottom;
 
-          if (ex.align === 'left') leftHtml += `<div style="width:${szPct}%;">${inner}</div>`;
-          else if (ex.align === 'right') rightHtml += `<div style="width:${szPct}%; text-align:right;">${inner}</div>`;
-          else bottomHtml += `<div style="text-align:center; width:100%; margin-top:4pt;">${inner}</div>`;
-      });
-
-      // Construct Flex Layout
-      let mainBlock = `<div style="display:flex; flex-direction:row; align-items:flex-start; gap:8pt;">`;
-      if (leftHtml) mainBlock += `<div style="flex-shrink:0;">${leftHtml}</div>`;
-      mainBlock += qTextHtml;
-      if (rightHtml) mainBlock += `<div style="flex-shrink:0;">${rightHtml}</div>`;
+      // Construct Complete Flex Layout
+      let mainBlock = `<div style="display:flex; flex-direction:row; align-items:flex-start; width: 100%;">`;
+      mainBlock += numH; 
+      
+      let flexContent = `<div style="flex: 1; display:flex; flex-direction:row; gap:8pt; min-width:0;">`;
+      if (leftHtml) flexContent += `<div style="flex-shrink:0;">${leftHtml}</div>`;
+      flexContent += qTextHtml;
+      if (rightHtml) flexContent += `<div style="flex-shrink:0;">${rightHtml}</div>`;
+      flexContent += `</div>`;
+      
+      mainBlock += flexContent;
       mainBlock += `</div>`;
 
       // Answer Space Logic
       let spaceH = '';
-      if (S.ansSpace && sec.type !== 'mcq') {
+      if (S.ansSpace && sec.type !== 'mcq' && sec.mpq > 1) {
           const gap = sec.ansGap || (sec.type === 'long' ? 80 : sec.type === 'descriptive' ? 40 : 20);
           if (gap > 0) spaceH = `<div style="height:${gap}mm; width:100%"></div>`;
       }
@@ -2692,7 +3074,11 @@ function buildSet(asBlocks = false) {
       let orH = (q.isOrNext && qi < sec.questions.length - 1) ? `<div style="text-align:center; font-weight:bold; margin: 2pt 0; font-size:calc(var(--p-fsize) - 1pt)">${isBn ? 'অথবা' : 'OR'}</div>` : '';
       blocks.push(`<div style="font-size:${fsPt};line-height:var(--p-lh)">${qHTML + orH}</div>`);
 
-      if (!isOrChild && !q.isOrNext) { qCounter++; } else if (isOrChild && !q.isOrNext) { qCounter++; }
+      if (!isOrChild && !q.isOrNext) {
+          qCounter++;
+      } else if (isOrChild && !q.isOrNext) {
+          qCounter++;
+      }
     });
   });
   
@@ -2706,32 +3092,54 @@ function parseQPF(rawText) {
     const lines = rawText.replace(/^\uFEFF/, '').split(/\r?\n/).map(l => l.trim());
     const stripped = [];
     let inFence = false;
-    for (const l of lines) { if (/^```/.test(l)) { inFence = !inFence; continue; } if (!inFence) stripped.push(l); }
+    
+    for (const l of lines) {
+      if (/^```/.test(l)) { inFence = !inFence; continue; }
+      if (!inFence) stripped.push(l);
+    }
 
     const newState = {
-      topTitle: 'Test no. XXX', klass: '', subject: '', time: 30, inst: '',
-      fontSize: 11, lineHeight: 1.45, margin: 1.0, divider: 'dotted', paperLang: 'full-bn', wmSrc: 'none',
+      topTitle: 'Test no. XXX',
+      klass: '', subject: '', time: 30, inst: '',
+      fontSize: 11, lineHeight: 1.45, margin: 1.0,
+      divider: 'dotted', paperLang: 'full-bn', wmSrc: 'none',
       sections: []
     };
+
     let mode = '', curSec = null, curQ = null, inTable = false, inLabeled = false;
 
     const flushQ = () => { if (curQ && curSec) { curSec.questions.push(curQ); curQ = null; } };
     const flushSec = () => { flushQ(); if (curSec) { newState.sections.push(curSec); curSec = null; } };
 
     for (const raw of stripped) {
-      const cleanLine = raw.replace(/\s+/g, ' ').replace(/\s+\/\/.*$/, ''); 
-      if (!cleanLine || cleanLine.startsWith('//')) continue;
-      
+      const line = raw.replace(/\s+/g, ' ');
+      const cleanLine = line.replace(/\s+\/\/.*$/, ''); 
+
+      if (!line || line.startsWith('//')) continue;
+
       const secMatch = cleanLine.replace(/\s/g, '').match(/^##SECTION_([A-Z]+)$/i);
-      if (secMatch) { flushSec(); curSec = { id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] }; mode = 'sec'; continue; }
+      if (secMatch) {
+        flushSec();
+        curSec = { id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] };
+        mode = 'sec';
+        continue;
+      }
       
       if (cleanLine.replace(/\s/g, '') === '##META') { mode = 'meta'; continue; }
       if (cleanLine.replace(/\s/g, '') === '##END') { flushSec(); break; }
 
       const ci = cleanLine.indexOf(':');
       if (ci < 0) {
-        if (cleanLine === 'LABELED_START' && curQ) { curQ.extra.push({ type: 'labeled', data: null, align: 'center', size: 60, pointers: [] }); inLabeled = true; continue; }
-        if (cleanLine === 'LABELED_END' && curQ) { inLabeled = false; continue; }
+        if (cleanLine === 'LABELED_START' && curQ) {
+            curQ.extra.push({ type: 'labeled', data: null, align: 'right', size: 60, pointers: [], ptrType: 'i' });
+            inLabeled = true;
+            continue;
+        }
+        if (cleanLine === 'LABELED_END' && curQ) {
+            inLabeled = false;
+            continue;
+        }
+
         if (curQ && !inTable && !inLabeled && mode === 'sec') curQ.text += `\n${cleanLine}`; 
         if (inTable && curQ) {
           const lastEx = curQ.extra[curQ.extra.length - 1];
@@ -2745,7 +3153,9 @@ function parseQPF(rawText) {
       }
 
       const k = cleanLine.slice(0, ci).trim().toUpperCase();
-      let v = cleanLine.slice(ci + 1).trim().replace(/\[BR\]/gi, '\n');
+      let v = cleanLine.slice(ci + 1).trim();
+
+      v = v.replace(/\[BR\]/gi, '\n');
 
       if (mode === 'meta') {
         if (k === 'TOP_TITLE') newState.topTitle = v;
@@ -2762,10 +3172,14 @@ function parseQPF(rawText) {
       } else if (mode === 'sec' && curSec) {
         if (k === 'TABLE_START' && curQ) {
           const dims = v.split('x').map(x => parseInt(x.trim()) || 2);
-          const r = Math.min(dims[0], 30); const c = Math.min(dims[1] || dims[0], 12);
-          curQ.extra.push({ type: 'table', rows: Array.from({ length: r }, () => Array(c).fill('')) }); inTable = true; continue;
+          const r = Math.min(dims[0], 30);
+          const c = Math.min(dims[1] || dims[0], 12);
+          curQ.extra.push({ type: 'table', rows: Array.from({ length: r }, () => Array(c).fill('')), align: 'center' });
+          inTable = true;
+          continue;
         }
         if (k === 'TABLE_END') { inTable = false; continue; }
+        
         if (inTable && curQ) {
           const lastEx = curQ.extra[curQ.extra.length - 1];
           if (lastEx && lastEx.type === 'table') {
@@ -2775,51 +3189,80 @@ function parseQPF(rawText) {
           }
           continue;
         }
+        
         if (inLabeled && curQ) {
             if (k === 'POINTER') {
                 const lastEx = curQ.extra[curQ.extra.length - 1];
                 if(lastEx && lastEx.type === 'labeled') {
-                    const pts = v.split(':'); const lbl = pts[0] && !pts[0].includes('___') ? pts[0].trim() : '';
+                    const pts = v.split(':');
+                    const lbl = pts[0] && !pts[0].includes('___') ? pts[0].trim() : '';
                     lastEx.pointers.push({label: lbl, blank: true});
                 }
             }
             continue;
         }
+
         if (k === 'HEADING') curSec.heading = v;
-        else if (k === 'TYPE') { const typeMap = { 'mcq': 'mcq', 'short': 'short', 'descriptive': 'descriptive', 'long': 'long', 'sa': 'short', 'la': 'long', 'desc': 'descriptive' }; curSec.type = typeMap[v.toLowerCase()] || 'short'; }
+        else if (k === 'TYPE') {
+          const typeMap = { 'mcq': 'mcq', 'short': 'short', 'descriptive': 'descriptive', 'long': 'long', 'sa': 'short', 'la': 'long', 'desc': 'descriptive' };
+          curSec.type = typeMap[v.toLowerCase()] || 'short';
+        }
         else if (k === 'MARKS_PER_Q' || k === 'MARKS') curSec.mpq = parseFloat(v) || 1;
         else if (k === 'OPT_STYLE') curSec.os = v === 'en' ? 'en' : 'bn';
         else if (k === 'ANSWER_ANY' || k === 'ANSWERANY') { const aVal = parseInt(v); if (aVal > 0) curSec.answerAny = aVal; }
-        else if (k === 'Q') { flushQ(); curQ = { id: uid(), text: v, options: ['', '', '', ''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false }; inTable = false; }
+        else if (k === 'Q') {
+          flushQ();
+          curQ = { id: uid(), text: v, options: ['', '', '', ''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false };
+          inTable = false;
+        }
         else if (k === 'OR_NEXT') { if(curQ) curQ.isOrNext = (v.toLowerCase() === 'true'); }
         else if (k === 'Q_IMAGE' || k === 'Q_IMAGE_MCQ') { if (curQ && v.length > 10) curQ.img = v; }
-        else if (k === 'Q_IMAGE_BELOW') { if (curQ && v.length > 10) curQ.extra.push({ type: 'image', data: v, size: 60, align: 'center' }); }
+        else if (k === 'Q_IMAGE_BELOW') { if (curQ && v.length > 10) curQ.extra.push({ type: 'image', data: v, size: 60, align: 'right' }); }
         else {
-          const OPT_KEYS = { 'OP_K': 0, 'OPT_K': 0, 'OP_KH': 1, 'OPT_KH': 1, 'OP_G': 2, 'OPT_G': 2, 'OP_GH': 3, 'OPT_GH': 3 };
+          const OPT_KEYS = {
+            'OP_K': 0, 'OPT_K': 0, 'OP_KH': 1, 'OPT_KH': 1, 'OP_G': 2, 'OPT_G': 2, 'OP_GH': 3, 'OPT_GH': 3
+          };
           if (OPT_KEYS[k] !== undefined && curQ) curQ.options[OPT_KEYS[k]] = v;
         }
       }
     }
+    
     flushSec();
 
     if (newState.sections.length === 0) throw new Error("No sections identified.");
+
     newState.sections.forEach(sec => {
       let actualCount = 0;
-      for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
+      for(let i=0; i<sec.questions.length; i++) {
+        actualCount++;
+        if(sec.questions[i].isOrNext) i++; 
+      }
       if (sec.answerAny && sec.answerAny >= actualCount) sec.answerAny = null;
     });
 
     Object.assign(S, newState);
     S.autoFit = null;
-    syncFields(); rebuildSecs(); recalc(); applyVars(); sched(10);
-  } catch (err) { throw new Error(err.message || "Failed to process QPF text."); }
+
+    syncFields(); 
+    rebuildSecs(); 
+    recalc(); 
+    applyVars(); 
+    sched(10);
+
+  } catch (err) {
+    throw new Error(err.message || "Failed to process QPF text.");
+  }
 }
 
 /* ── EXPORTS ── */
 function safeDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = filename; a.target = '_blank';
-  document.body.appendChild(a); a.click();
+  const a = document.createElement('a');
+  a.href = url; 
+  a.download = filename; 
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
 }
 
@@ -2840,21 +3283,25 @@ $('ex-qpf').addEventListener('click', (e) => {
       const safeText = q.text.replace(/\n/g, ' [BR] ');
       o += `Q: ${safeText}\n`;
       if(q.isOrNext) o += `OR_NEXT: true\n`;
+      
       if (sec.type === 'mcq') {
         ['OP_K', 'OP_KH', 'OP_G', 'OP_GH'].forEach((opKey, i) => o += `${opKey}: ${q.options[i]||''}\n`);
-        if (q.img) o += `Q_IMAGE_MCQ: [base64_image — ${Math.round(q.img.length/1000)}KB]\n`;
+        if (q.img) o += `Q_IMAGE_MCQ: [base64_image]\n`;
       }
       (q.extra || []).forEach(ex => {
         if (ex.type === 'table') {
           const colsCount = ex.rows[0] ? ex.rows[0].length : 0;
           o += `TABLE_START: ${ex.rows.length}x${colsCount}\n`;
-          ex.rows.forEach(r => o += `${r.join(' | ')}\n`); o += `TABLE_END\n`;
+          ex.rows.forEach(r => o += `${r.join(' | ')}\n`);
+          o += `TABLE_END\n`;
         }
-        if (ex.type === 'image') o += `Q_IMAGE_BELOW: [base64_image — ${Math.round((ex.data||'').length/1000)}KB]\n`;
+        if (ex.type === 'image') o += `Q_IMAGE_BELOW: [base64_image]\n`;
         if (ex.type === 'diagram') o += `// DIAGRAM: [embedded PNG]\n`;
         if (ex.type === 'labeled') {
             o += `LABELED_START\n`;
-            (ex.pointers || []).forEach(ptr => { o += `POINTER: ${ptr.label ? ptr.label + ' : ___' : 'Part ___ : ___'}\n`; });
+            (ex.pointers || []).forEach(ptr => {
+                o += `POINTER: ${ptr.label ? ptr.label + ' : ___' : 'Part ___ : ___'}\n`;
+            });
             o += `LABELED_END\n`;
         }
       });
@@ -2866,10 +3313,15 @@ $('ex-qpf').addEventListener('click', (e) => {
   if (_lastQpfUrl) URL.revokeObjectURL(_lastQpfUrl);
   const blob = new Blob([o], { type: 'text/plain;charset=utf-8' });
   _lastQpfUrl = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = _lastQpfUrl; a.download = exFname('qpf'); a.click();
+  
+  const a = document.createElement('a');
+  a.href = _lastQpfUrl;
+  a.download = exFname('qpf');
+  a.click();
   toast('QPF backup saved!', 'success');
 });
 
+// ODT Export
 $('ex-odt').addEventListener('click', async (e) => {
   e.preventDefault(); 
   if (typeof JSZip === 'undefined') { toast('JSZip loading...', 'warn'); return; }
@@ -2895,35 +3347,60 @@ $('ex-odt').addEventListener('click', async (e) => {
   const center = txt => p(xe(txt), 'Center');
   
   body += center(S.topTitle);
-  const fmLabel = isBn ? 'পূর্ণমান' : 'Full Marks', timeLabel = isBn ? 'সময়' : 'Time', timeUnit = isBn ? 'মিনিট' : 'min';
+  const fmLabel = isBn ? 'পূর্ণমান' : 'Full Marks';
+  const timeLabel = isBn ? 'সময়' : 'Time';
+  const timeUnit = isBn ? 'মিনিট' : 'min';
+  
   body += p(`<text:span text:style-name="InfoLeft">${xe(fmLabel)}: ${xe(numF(S.fullMarks))}</text:span><text:tab/>${xe(S.klass ? 'শ্রেণি: '+S.klass : '')} — ${xe(S.subject)}<text:tab/>${xe(timeLabel)}: ${xe(numF(S.time))} ${xe(timeUnit)}`, 'InfoRow');
+  
   if (S.inst) body += p(`<text:span text:style-name="Italic">${xe(S.inst)}</text:span>`, 'Body');
 
   S.sections.forEach((sec, idx) => {
     const L = sl(idx);
     let actualCount = 0;
-    for(let i=0; i<sec.questions.length; i++) { actualCount++; if(sec.questions[i].isOrNext) i++; }
+    for(let i=0; i<sec.questions.length; i++) {
+        actualCount++;
+        if(sec.questions[i].isOrNext) i++; 
+    }
     const countedQ = (sec.answerAny && sec.answerAny < actualCount) ? sec.answerAny : actualCount;
     const tot = (sec.mpq||0)*countedQ;
+    const prefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
     const mf = isBn ? `${numF(sec.mpq)} × ${numF(countedQ)} = ${numF(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
     
-    body += center(isBn ? `বিভাগ '${L}'` : `Section '${L}'`);
+    body += center(prefix);
     body += p(`<text:span text:style-name="BoldSpan">${xe(sec.heading)}</text:span><text:tab/>${xe(mf)}`, 'SecRow');
     
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
       const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
-      const contentStr = isOrChild ? `   ${q.text}` : `${isBn ? `${numF(idx+1)}.${numF(qCounter)})` : `${idx+1}.${qCounter})`} ${q.text}`; 
+      const numStr = isBn ? `${numF(idx+1)}.${numF(qCounter)})` : `${idx+1}.${qCounter})`;
+      
+      const contentStr = isOrChild ? `   ${q.text}` : `${numStr} ${q.text}`; 
       body += para(contentStr);
       
       if (sec.type === 'mcq') {
-        const ls = sec.os === 'en' ? EN_O : BN_O; const opts = q.options.slice(0, 4);
+        const ls = sec.os === 'en' ? EN_O : BN_O;
+        const opts = q.options.slice(0, 4);
         const maxLen = Math.max(0, ...opts.map(o => o.length));
-        if (maxLen <= 25) body += p(opts.map((o,i) => `(${xe(ls[i])}) ${xe(o)}`).join('<text:tab/>'), 'MCQOpts');
-        else { body += p(`(${xe(ls[0])}) ${xe(opts[0])}<text:tab/>(${xe(ls[1])}) ${xe(opts[1])}`, 'MCQOpts'); body += p(`(${xe(ls[2])}) ${xe(opts[2])}<text:tab/>(${xe(ls[3])}) ${xe(opts[3])}`, 'MCQOpts'); }
+        
+        if (maxLen <= 25) {
+          body += p(opts.map((o,i) => `(${xe(ls[i])}) ${xe(o)}`).join('<text:tab/>'), 'MCQOpts');
+        } else {
+          body += p(`(${xe(ls[0])}) ${xe(opts[0])}<text:tab/>(${xe(ls[1])}) ${xe(opts[1])}`, 'MCQOpts');
+          body += p(`(${xe(ls[2])}) ${xe(opts[2])}<text:tab/>(${xe(ls[3])}) ${xe(opts[3])}`, 'MCQOpts');
+        }
       }
-      if (q.isOrNext && qi < sec.questions.length - 1) body += center(isBn ? 'অথবা' : 'OR');
-      if (!isOrChild && !q.isOrNext) qCounter++; else if (isOrChild && !q.isOrNext) qCounter++;
+
+      if (q.isOrNext && qi < sec.questions.length - 1) {
+          const orText = isBn ? 'অথবা' : 'OR';
+          body += center(orText);
+      }
+      
+      if (!isOrChild && !q.isOrNext) {
+          qCounter++;
+      } else if (isOrChild && !q.isOrNext) {
+          qCounter++;
+      }
       
       (q.extra || []).forEach(ex => {
         if (ex.type === 'table') {
@@ -2932,7 +3409,9 @@ $('ex-odt').addEventListener('click', async (e) => {
           body += `<table:table-column table:number-columns-repeated="${colsCount}"/>`;
           ex.rows.forEach(row => {
             body += `<table:table-row>`;
-            row.forEach(cell => { body += `<table:table-cell office:value-type="string" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"><text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${xe(cell)}</text:p></table:table-cell>`; });
+            row.forEach(cell => {
+              body += `<table:table-cell office:value-type="string" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"><text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">${xe(cell)}</text:p></table:table-cell>`;
+            });
             body += `</table:table-row>`;
           });
           body += `</table:table>`;
@@ -2942,6 +3421,7 @@ $('ex-odt').addEventListener('click', async (e) => {
   });
 
   const TAB_STYLE = `<style:tab-stops><style:tab-stop style:position="${TAB1}" style:type="left"/><style:tab-stop style:position="${TAB2}" style:type="left"/><style:tab-stop style:position="${TAB3}" style:type="left"/></style:tab-stops>`;
+  
   z.file('content.xml', `<?xml version="1.0" encoding="UTF-8"?><office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" office:version="1.3"><office:automatic-styles><style:style style:name="Center" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.08cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="DM Serif Text,serif"/></style:style><style:style style:name="InfoRow" style:family="paragraph"><style:paragraph-properties fo:text-align="justify" fo:margin-bottom="0.08cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="DM Serif Text,serif"/></style:style><style:style style:name="SecHeading" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-top="0.12cm" fo:margin-bottom="0.04cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="SecRow" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.04cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Body" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.06cm" fo:text-align="justify" fo:line-height="${Math.round(S.lineHeight*100)}%"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="MCQOpts" style:family="paragraph"><style:paragraph-properties fo:text-align="center" fo:margin-bottom="0.05cm">${TAB_STYLE}</style:paragraph-properties><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Bold" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.06cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-weight="bold" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="Italic" style:family="paragraph"><style:paragraph-properties fo:margin-bottom="0.04cm"/><style:text-properties fo:font-size="${S.fontSize}pt" fo:font-style="italic" fo:font-family="Tiro Bangla,serif"/></style:style><style:style style:name="BoldSpan" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style><style:style style:name="InfoLeft" style:family="text"><style:text-properties fo:font-weight="bold"/></style:style></office:automatic-styles><office:body><office:text>\n${body}</office:text></office:body></office:document-content>`);
   
   const blob = await z.generateAsync({type:'blob', mimeType:'application/vnd.oasis.opendocument.text', compression:'DEFLATE'});
@@ -2951,9 +3431,12 @@ $('ex-odt').addEventListener('click', async (e) => {
 
 function triggerPrint() {
   const origTitle = document.title;
+  
+  // Set orientation dynamically
   const ori = getActiveOrient();
   document.documentElement.classList.remove('print-portrait', 'print-landscape');
   document.documentElement.classList.add('print-' + ori);
+
   document.title = exFname('pdf').replace('.pdf', '');
   
   setTimeout(() => {
@@ -2966,38 +3449,95 @@ function triggerPrint() {
 }
 
 /* ── GLOBAL LISTENERS ── */
-document.addEventListener('click', e => {
-  const h = e.target.closest('.card-hdr[data-tgt]'); 
-  if (!h || e.target.closest('.move-sec-up, .move-sec-dn, .del-sec')) return;
-  const b = $(h.dataset.tgt); 
-  if (!b) return;
-  const o = !b.classList.contains('hide'); b.classList.toggle('hide', o); h.classList.toggle('open', !o);
-});
-
 function initInfo() {
-  $('info-btn').addEventListener('click', () => { $('guide').classList.remove('show'); $('info').classList.add('show'); $('ov').classList.add('show'); });
-  $('guide-btn').addEventListener('click', () => { $('info').classList.remove('show'); $('guide').classList.add('show'); $('ov').classList.add('show'); });
-  $('info-close').addEventListener('click', closePanels); $('guide-close').addEventListener('click', closePanels); $('ov').addEventListener('click', closePanels);
+  $('info-btn').addEventListener('click', () => { 
+    $('guide').classList.remove('show'); 
+    $('info').classList.add('show'); 
+    $('ov').classList.add('show'); 
+  });
+  
+  $('guide-btn').addEventListener('click', () => { 
+    $('info').classList.remove('show'); 
+    $('guide').classList.add('show'); 
+    $('ov').classList.add('show'); 
+  });
+  
+  $('info-close').addEventListener('click', closePanels);
+  $('guide-close').addEventListener('click', closePanels);
+  $('ov').addEventListener('click', closePanels);
 }
-function closePanels() { $('info').classList.remove('show'); $('guide').classList.remove('show'); $('ov').classList.remove('show'); }
-function initExports() { $('ex-pdf').addEventListener('click', triggerPrint); }
+
+function closePanels() { 
+  $('info').classList.remove('show'); 
+  $('guide').classList.remove('show'); 
+  $('ov').classList.remove('show'); 
+}
+
+function initExports() {
+  $('ex-pdf').addEventListener('click', triggerPrint);
+}
 
 /* ── BOOTSTRAP ── */
 function init() {
-  initTheme(); applyVars(); initSettings(); initExamInfo(); initImport(); initZoom(); initResize(); initSliderButtons(); initInfo(); initExports();
-  document.querySelector('.logo').addEventListener('dblclick', (e) => { e.preventDefault(); document.body.classList.toggle('glow-mode'); toast('Hidden glow mode toggled!', 'success'); });
-  $('add-sec').addEventListener('click', () => {
-    if (S.sections.length >= 10) { toast('Maximum 10 sections.', 'warn'); return; }
-    const i = S.sections.length; const hdgs = getHdgs();
-    S.sections.push({ id: uid(), heading: hdgs[Math.min(i, 3)], type: ['mcq','short','descriptive','long'][Math.min(i, 3)], mpq: [1,1,2,3][Math.min(i, 3)], os: 'bn', answerAny: null, questions: [] });
-    rebuildSecs(); sched();
+  initTheme();
+  applyVars();
+  initSettings();
+  initExamInfo();
+  initImport();
+  initZoom();
+  initResize();
+  initSliderButtons();
+  initInfo();
+  initExports();
+  
+  // Hidden Glow Trigger Option
+  document.querySelector('.logo').addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    document.body.classList.toggle('glow-mode');
+    toast('Hidden glow mode toggled!', 'success');
   });
   
-  S.sections.push({ id: uid(), heading: HDGS_BN[0], type: 'mcq', mpq: 1, os: 'bn', answerAny: null, questions: [] });
-  rebuildSecs(); setTimeout(fitZoom, 250); sched(10);
-  let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitZoom, 200); });
+  $('add-sec').addEventListener('click', () => {
+    if (S.sections.length >= 10) { toast('Maximum 10 sections.', 'warn'); return; }
+    const i = S.sections.length;
+    const hdgs = getHdgs();
+    S.sections.push({
+      id: uid(),
+      heading: hdgs[Math.min(i, 3)],
+      type: ['mcq','short','descriptive','long'][Math.min(i, 3)],
+      mpq: [1,1,2,3][Math.min(i, 3)],
+      os: 'bn',
+      answerAny: null,
+      questions: []
+    });
+    rebuildSecs(); 
+    sched();
+  });
+  
+  S.sections.push({
+    id: uid(),
+    heading: HDGS_BN[0],
+    type: 'mcq',
+    mpq: 1,
+    os: 'bn',
+    answerAny: null,
+    questions: []
+  });
+  
+  rebuildSecs();
+  setTimeout(fitZoom, 250);
+  sched(10);
+  
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitZoom, 200);
+  });
+  
   console.log('%cপ্রশ্নপত্র Maker — Ready ✓', 'color:#9d95f7; font-size:13px; font-weight:bold;');
 }
 
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 </script>
+</body>
+</html>
