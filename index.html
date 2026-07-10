@@ -579,14 +579,19 @@ select {
 .extra-block { border: 1px solid var(--border2); border-radius: var(--r2); padding: 7px; margin-top: 4px; position: relative; }
 .extra-del { position: absolute; top: 4px; right: 5px; background: none; border: none; color: var(--red); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; z-index:20; }
 
-.inline-tbl-wrap { overflow-x: auto; border-radius: var(--r3); }
+.inline-tbl-wrap { overflow-x: auto; border-radius: var(--r3); padding-bottom: 4px; }
 .inline-tbl { border-collapse: collapse; min-width: 100%; }
 .inline-tbl td { border: 1px solid var(--border2); padding: 0; }
 .inline-tbl td input {
-  border: none; background: transparent; box-shadow: none; min-width: 58px;
-  padding: 4px 6px; font-size: 11.5px; color: var(--t1); font-family: var(--font-bn);
+  border: none; background: transparent; box-shadow: none; min-width: 120px;
+  box-sizing: border-box;
+  padding: 6px 8px; font-size: 12.5px; color: var(--t1); font-family: var(--font-bn);
 }
 .inline-tbl td input:focus { outline: none; background: rgba(91,80,240,.06); }
+
+/* Force preview table to wrap long text and fit screen */
+.qp-itable { border-collapse: collapse; margin: 2pt auto; font-size: calc(var(--p-fsize) - 1pt); width: 100%; table-layout: fixed; }
+.qp-itable td { border: .5pt solid #555; padding: 1.5pt 4pt; text-align: center; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
 
 /* Pointers list for labeled diagrams */
 .ptr-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
@@ -751,8 +756,8 @@ select {
 }
 .qp-q-mcq-opts.g2 { display: grid; grid-template-columns: 1fr 1fr; text-align: center; }
 .qp-q-mcq-opts.g1 { display: flex; flex-direction: column; align-items: flex-start; padding-left: 8pt; }
-.qp-itable { border-collapse: collapse; margin: 2pt auto; font-size: calc(var(--p-fsize) - 1pt); }
-.qp-itable td { border: .5pt solid #555; padding: 1.5pt 4pt; text-align: center; }
+.qp-itable { border-collapse: collapse; margin: 2pt auto; font-size: calc(var(--p-fsize) - 1pt); width: 100%; table-layout: fixed; }
+.qp-itable td { border: .5pt solid #555; padding: 1.5pt 4pt; text-align: center; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
 
 /* ══════════════════════════════════════════
    @MEDIA PRINT STRICT A4 OVERRIDE
@@ -1294,7 +1299,7 @@ const TYPES = [
 
 const SEC_QPF = ['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA','JHA','NYA'];
 
-const PROMPT_IMG = `You are a highly advanced data-extraction algorithm processing an exam paper. Use your most advanced reasoning and transcription capabilities. Extract and format STRICTLY according to the schema below.
+const PROMPT_IMG = `You are a highly advanced data-extraction algorithm processing an exam paper (which may be printed or handwritten). Use your most advanced reasoning and transcription capabilities. Extract and format STRICTLY according to the schema below.
 
 CRITICAL RULES:
 1. OUTPUT: Output raw plain text ONLY. Do NOT use markdown code blocks, backticks, or any fences. Start output directly with "// Question Paper Format v1.1".
@@ -1306,8 +1311,9 @@ CRITICAL RULES:
 7. BLANKS: Transcribe fill-in-the-blank lines (long dashes, underscores) as "________।" (Bengali) or "________." (English).
 8. TRUE/FALSE: For True/False questions: write the full sentence, add "।" or ".", then append "(সত্য/মিথ্যা)" for Bengali or "(T/F)" for English. Never both.
 9. INSTRUCTIONS: For sections with "answer any N" or "যেকোনো N টি" instruction, set ANSWER_ANY: N in that section block.
-10. SUB-PARTS (a, b, c or i, ii, iii): Do this ONLY if there are written part-by-part marks in the uploaded sample. Start each sub-part on a NEW LINE by using standard newlines and indenting with spaces. Set MARKS_PER_Q to the total. Append the breakdown like (1+3+1) at the very end of the Q: text.
-11. HEADINGS: Auto-generate HEADING based on TYPE and MARKS_PER_Q:
+10. SUB-PARTS: Do this ONLY if there are written part-by-part marks in the uploaded sample. Start each sub-part on a NEW LINE, indenting with spaces. Set MARKS_PER_Q to the total. Append the breakdown like (1+3+1) at the very end of the Q: text.
+11. LABELED DIAGRAMS (CRITICAL): If the image contains a diagram with dashed pointer lines for labeling, use the LABELED_START and LABELED_END tokens. For each pointer line, output POINTER: [Label] : ___ where [Label] is the letter/number pointing to the blank (e.g., A, B, i, ii). Do NOT guess the answers.
+12. HEADINGS: Auto-generate HEADING based on TYPE and MARKS_PER_Q:
     - TYPE mcq, any marks → সঠিক উত্তরটি নির্বাচন করো:
     - TYPE short, MARKS_PER_Q 1 → সংক্ষিপ্ত উত্তর দাও:
     - TYPE short, MARKS_PER_Q 2 → নীচের প্রশ্নগুলির উত্তর দাও:
@@ -1326,7 +1332,7 @@ MARGIN: 1.0
 DIVIDER: dotted
 
 ##SECTION_KA
-HEADING: [auto-generate per rule 11]
+HEADING: [auto-generate per rule 12]
 TYPE: [mcq | short | descriptive | long]
 MARKS_PER_Q: [numeric, total per question including sub-parts]
 OPT_STYLE: [bn | en]
@@ -1349,7 +1355,10 @@ x[SUP:2] for superscript
 TABLE_START: 3x2
 col1 | col2 | col3
 ...rows...
-TABLE_END`;
+TABLE_END
+LABELED_START
+POINTER: Part ___ : ___
+LABELED_END`;
 
 const PROMPT_TXT = `You are a highly advanced QPF (Question Paper Format) conversion algorithm. The user will provide rough text, drafts, or uncategorized notes. Convert it to strict QPF format v1.1.
 
@@ -1387,6 +1396,7 @@ Q: State and prove the Cayley-Hamilton theorem.
 OR_NEXT: true
 Q: Explain the central force orbital mechanics of the Two-Body Problem.
 ##END`;
+
 
 
 
@@ -2824,57 +2834,72 @@ function buildQuadPageHTML(pages, isPortrait) {
 }
 
 function buildFlowSheets(pages, isPortrait) {
-    const mg = (S.autoFit ? S.autoFit.margin : S.margin);
-    const wmHTML = wmHtmlGenerator();
-    const divHTML = buildDivHTML();
-    let res = '';
-    
-    const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
-    
-    if(pages.length === 1) {
-        const h = `
-        <div class="qp-page preview-flow" style="${styleDims} justify-content: flex-end;">
-            <div class="qp-set" style="max-width:50%; padding:${mg}cm; color:#111;">
-                ${wmHTML}
-                <div style="position:relative; z-index:10; height:100%;">${pages[0]}</div>
-            </div>
-        </div>`;
-        res += wrapPageNode(h, S.zoom, isPortrait);
-        return res;
-    }
-    
-    let paddedPages = [...pages];
-    while(paddedPages.length % 4 !== 0) {
-        paddedPages.push(''); 
-    }
-    
-    const sheetCount = paddedPages.length / 2; 
-    let outSheets = [];
-    
-    const total = paddedPages.length;
-    for (let i = 0; i < sheetCount; i++) {
-        let leftPage, rightPage;
-        if (i % 2 === 0) {
-            // Front of the sheet: Highest remaining page on left, lowest on right
-            leftPage = paddedPages[total - 1 - i];
-            rightPage = paddedPages[i];
-        } else {
-            // Back of the sheet: Lowest remaining page on left, highest on right
-            leftPage = paddedPages[i];
-            rightPage = paddedPages[total - 1 - i];
-        }
-        
-        const LBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${leftPage}</div></div>`;
-        const RBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${rightPage}</div></div>`;
-        
-        const h = `<div class="qp-page preview-flow" style="${styleDims}">${LBlock}${divHTML}${RBlock}</div>`;
-        outSheets.push(h);
-    }
-    
-    outSheets.forEach(sheet => {
-        res += wrapPageNode(sheet, S.zoom, isPortrait);
-    });
-    return res;
+  const mg = (S.autoFit ? S.autoFit.margin : S.margin);
+  const wmHTML = wmHtmlGenerator();
+  const divHTML = buildDivHTML();
+  let res = '';
+  
+  const styleDims = isPortrait ? 'width: 210mm !important; min-height: 297mm !important;' : 'width: 297mm !important; min-height: 210mm !important;';
+  
+  if(pages.length === 1) {
+      const h = `
+      <div class="qp-page preview-flow" style="${styleDims} justify-content: flex-end;">
+          <div class="qp-set" style="max-width:50%; padding:${mg}cm; color:#111; position:relative;">
+              ${wmHTML}
+              <div style="position:relative; z-index:10; height:100%;">${pages[0]}</div>
+          </div>
+      </div>`;
+      res += wrapPageNode(h, S.zoom, isPortrait);
+      return res;
+  }
+  
+  let paddedPages = [...pages];
+  let originalLen = paddedPages.length;
+  
+  // Pad with blank pages to reach the next multiple of 4
+  while(paddedPages.length % 4 !== 0) {
+      paddedPages.push(''); 
+  }
+  
+  // Notify user if content spilled over a stable multiple of 4
+  if (originalLen > 4 && originalLen % 4 !== 0) {
+      toast(`Added blank pages to complete booklet. Use 'Auto-fit' to reduce extra pages.`, 'warn', 4500);
+  }
+  
+  const sheetCount = paddedPages.length / 2; 
+  let outSheets = [];
+  
+  const total = paddedPages.length;
+  for (let i = 0; i < sheetCount; i++) {
+      let leftPage, rightPage;
+      if (i % 2 === 0) {
+          // Front of the sheet: Highest remaining page on left, lowest on right
+          leftPage = paddedPages[total - 1 - i];
+          rightPage = paddedPages[i];
+      } else {
+          // Back of the sheet: Lowest remaining page on left, highest on right
+          leftPage = paddedPages[i];
+          rightPage = paddedPages[total - 1 - i];
+      }
+      
+      const LBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111; position:relative;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${leftPage}</div></div>`;
+      
+      // Add P.T.O. only to the front sheets (even indexes) with adjusted spacing, font size, and 70% opacity
+      let ptoHtml = '';
+      if (i % 2 === 0 && total > 2) {
+          ptoHtml = `<div style="position:absolute; bottom: calc(${mg}cm - 16px); right: ${mg}cm; font-size: var(--p-fsize); opacity: 0.7; font-weight: normal; z-index: 20;">P.T.O.</div>`;
+      }
+      
+      const RBlock = `<div class="qp-set" style="padding:${mg}cm; color:#111; position:relative;">${wmHTML}<div style="position:relative; z-index:10; height:100%;">${rightPage}</div>${ptoHtml}</div>`;
+      
+      const h = `<div class="qp-page preview-flow" style="${styleDims}">${LBlock}${divHTML}${RBlock}</div>`;
+      outSheets.push(h);
+  }
+  
+  outSheets.forEach(sheet => {
+      res += wrapPageNode(sheet, S.zoom, isPortrait);
+  });
+  return res;
 }
 
 function buildExtH(q) {
@@ -2886,9 +2911,12 @@ function buildExtH(q) {
     let style = '';
     let isFloat = false;
 
-    if (ex.type !== 'labeled') {
-        if (align === 'right') { style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 45%;'; isFloat = true; } 
-        else if (align === 'left') { style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 45%;'; isFloat = true; } 
+    if (ex.type === 'table') {
+        // Tables NEVER float. They always go to the next line.
+        isFloat = false;
+    } else if (ex.type !== 'labeled') {
+        if (align === 'right') { style = 'float:right; margin: 2pt 0 4pt 8pt; max-width: 55%;'; isFloat = true; } 
+        else if (align === 'left') { style = 'float:left; margin: 2pt 8pt 4pt 0; max-width: 55%;'; isFloat = true; } 
         else { style = 'text-align:center; margin:4pt 0; clear:both; width:100%; display:block;'; }
     }
 
@@ -2900,7 +2928,9 @@ function buildExtH(q) {
     } else if (ex.type === 'diagram' && ex.png) {
         inner = `<img src="${ex.png}" style="max-width:${szPct}%;max-height:36mm;object-fit:contain"/>`;
     } else if (ex.type === 'table') {
-        let t = `<table class="qp-itable" style="${ex.align==='center'?'margin:2pt auto':'margin:0'}">`;
+        // Uses margins to align left/right/center on the next line
+        let alignStyle = align === 'left' ? 'margin-right:auto;' : (align === 'right' ? 'margin-left:auto;' : 'margin:0 auto;');
+        let t = `<table class="qp-itable" style="${alignStyle} width:${szPct}%;">`;
         ex.rows.forEach(row => { t += `<tr>${row.map(c => `<td>${renderTok(esc(c))}</td>`).join('')}</tr>`; });
         t += `</table>`; inner = t;
     } else if (ex.type === 'labeled') {
@@ -2940,7 +2970,7 @@ function buildExtH(q) {
     if (ex.type === 'labeled') {
         bottomH += inner; 
     } else {
-        const wrapper = `<div style="${style}">${inner}</div>`;
+        const wrapper = isFloat ? `<div style="${style}">${inner}</div>` : `<div style="width:100%; margin-top:6pt;">${inner}</div>`;
         if (isFloat) floatH += wrapper; else bottomH += wrapper;
     }
   });
@@ -3023,10 +3053,10 @@ function buildSet(asBlocks = false) {
       const numStr = isBn ? `${bn(idx+1)}.${bn(qCounter)})` : `${idx+1}.${qCounter})`;
       const isOrChild = qi > 0 && sec.questions[qi-1].isOrNext;
       
-      const numH = `<div style="flex-shrink:0; font-weight:bold; margin-right:4pt; ${isOrChild ? 'opacity:0;' : ''}">${numStr}</div>`;
+      const numH = `<div style="flex-shrink:0; font-weight:normal; margin-right:4pt; ${isOrChild ? 'opacity:0;' : ''}">${numStr}</div>`;
       
       let qTextEscaped = esc(q.text);
-      qTextEscaped = qTextEscaped.replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:bold; margin-left:10px;">($1)</span>');
+      qTextEscaped = qTextEscaped.replace(/\s*[\(\[]([0-9০-৯\+\s]+)[\)\]]\s*$/, '<span style="float:right; font-weight:normal; margin-left:10px;">($1)</span>');
       const finalRenderedText = renderTok(qTextEscaped);
       
       let qTextHtml = `<div style="flex:1; min-width:0; text-align:justify;">${finalRenderedText}</div>`;
@@ -3063,9 +3093,9 @@ function buildSet(asBlocks = false) {
       mainBlock += numH; 
       
       let flexContent = `<div style="flex: 1; display:flex; flex-direction:row; gap:8pt; min-width:0;">`;
-      if (leftHtml) flexContent += `<div style="flex-shrink:0;">${leftHtml}</div>`;
+      if (leftHtml) flexContent += `<div style="flex-shrink:0; max-width:55%; overflow:hidden;">${leftHtml}</div>`;
       flexContent += qTextHtml;
-      if (rightHtml) flexContent += `<div style="flex-shrink:0;">${rightHtml}</div>`;
+      if (rightHtml) flexContent += `<div style="flex-shrink:0; max-width:55%; overflow:hidden;">${rightHtml}</div>`;
       flexContent += `</div>`;
       
       mainBlock += flexContent;
@@ -3212,8 +3242,20 @@ function parseQPF(rawText) {
                 const lastEx = curQ.extra[curQ.extra.length - 1];
                 if(lastEx && lastEx.type === 'labeled') {
                     const pts = v.split(':');
-                    const lbl = pts[0] && !pts[0].includes('___') ? pts[0].trim() : '';
-                    lastEx.pointers.push({label: lbl, blank: true});
+                    // Clean up the label, removing extra brackets or dots the AI might add
+                    let lbl = pts[0] && !pts[0].includes('___') ? pts[0].replace(/[\(\)\.]/g, '').trim() : '';
+                    
+                    // Smart detection: Check the first pointer to set the UI dropdown correctly
+                    if (lastEx.pointers.length === 0 && lbl) {
+                        const firstChar = lbl.charAt(0);
+                        if (/[A-Z]/.test(firstChar)) lastEx.ptrType = 'A';
+                        else if (/[ক-ঞ]/.test(firstChar)) lastEx.ptrType = 'bn';
+                        else if (['i','v','x'].includes(firstChar)) lastEx.ptrType = 'i';
+                        else if (/[a-z]/.test(firstChar)) lastEx.ptrType = 'a';
+                        else lastEx.ptrType = '1';
+                    }
+                    
+                    lastEx.pointers.push({label: lbl || '?', blank: true});
                 }
             }
             continue;
