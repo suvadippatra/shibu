@@ -228,7 +228,7 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
   <div class="info-body">
     <p><strong>1. Live Simulation:</strong> The box on the right represents the exact shape of your uploaded PDF. As you move the sliders, you will see a buttery-smooth preview of exactly how your watermark will sit.</p>
     <p><strong>2. Apply:</strong> Click "Apply & Download". The app will use your simulated math (converting center-rotations to baseline-rotations) to permanently bake the watermark into every page of the real PDF.</p>
-    <p><strong>Note on Default Logo:</strong> The default SVG logo requires a password to unlock. Ensure <code>watermark.svg</code> is uploaded to your root folder for this feature to work.</p>
+    <p><strong>Note on Default Logo:</strong> The default SVG logo requires a password to unlock.</p>
   </div>
 </div>
 
@@ -418,7 +418,7 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
         }, 'image/png');
       };
       img.onerror = () => {
-          toast('Error: watermark.svg not found in directory.', 'error');
+          toast('Error: watermark not found.', 'error');
           reject();
       };
       img.src = 'watermark.svg'; 
