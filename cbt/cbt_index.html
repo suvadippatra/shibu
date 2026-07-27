@@ -244,7 +244,7 @@
 
             <!-- Sticky Bottom Action Bar -->
             <div class="bottom-action-bar">
-                <button class="btn btn-success btn-block" style="padding: 1rem; font-weight: 800; font-size: 1.1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile & Generate Final HTML</button>
+                <button id="compileBtn" class="btn btn-success btn-block" style="padding: 1rem; font-weight: 800; font-size: 1.1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile & Generate Final HTML</button>
                 
                 <div id="downloadAreaHTML" class="download-box hidden">
                     <h3 style="color: var(--success); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">✅ Output Generated Successfully!</h3>
@@ -340,6 +340,7 @@
                             <option value="none">None (Original)</option>
                             <option value="grayscale">Grayscale</option>
                             <option value="bw">Black & White (Doc Scan)</option>
+                            <option value="color-scan">Color Scan (Clear Bg)</option>
                         </select>
                     </div>
                     <div style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border); margin-top: 0.5rem;">
@@ -486,6 +487,22 @@
 
         let activePreviewSection = 'Section A';
 
+        document.addEventListener('input', hideSuccessMessages);
+        document.addEventListener('change', hideSuccessMessages);
+
+        function hideSuccessMessages() {
+            const dHtml = document.getElementById('downloadAreaHTML');
+            if (dHtml && !dHtml.classList.contains('hidden')) {
+                dHtml.classList.add('hidden');
+                const compileBtn = document.getElementById('compileBtn');
+                if (compileBtn) compileBtn.innerHTML = '🚀 Compile & Generate Final HTML';
+            }
+            const dCbt = document.getElementById('downloadAreaCBT');
+            if (dCbt && !dCbt.classList.contains('hidden')) {
+                dCbt.classList.add('hidden');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             renderConstantsTable();
             document.getElementById('rules').value = appState.rules.join('\n');
@@ -597,6 +614,7 @@
         }
 
         function renderAllQuestions() {
+            hideSuccessMessages();
             const cont = document.getElementById('questionsListAll'); cont.innerHTML = '';
             
             appState.sections.forEach(secObj => {
@@ -720,7 +738,7 @@
             cropperInstance = new Cropper(document.getElementById('cropImage'), { 
                 viewMode: 1, autoCropArea: 0.9, 
                 ready: triggerCropPreview, 
-                crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 150); } 
+                crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 50); } 
             });
         }
 
@@ -734,7 +752,9 @@
             const filter = document.getElementById('filterSelect').value;
             const tc = document.createElement('canvas'); tc.width = canvas.width; tc.height = canvas.height;
             const ctx = tc.getContext('2d');
-            if (filter === 'grayscale') ctx.filter = 'grayscale(100%)'; else if (filter === 'bw') ctx.filter = 'grayscale(100%) contrast(200%)';
+            if (filter === 'grayscale') ctx.filter = 'grayscale(100%)'; 
+            else if (filter === 'bw') ctx.filter = 'grayscale(100%) contrast(200%)';
+            else if (filter === 'color-scan') ctx.filter = 'contrast(160%) brightness(110%) saturate(120%)';
             ctx.drawImage(canvas, 0, 0);
             
             const b64 = tc.toDataURL('image/jpeg', comp / 100); currentCropBase64 = b64;
@@ -905,6 +925,11 @@
             });
             Object.values(appState.questionsBySection).forEach(qs => qs.forEach(q => { while(q.options.length < 4) q.options.push(''); }));
             
+            if (appState.rules.length === 0) {
+                appState.rules = [...defaultRules];
+                document.getElementById('rules').value = appState.rules.join('\n');
+            }
+
             renderConstantsTable(); 
             renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); alert('Imported Successfully');
         }
@@ -939,7 +964,7 @@
 
                 // Parameter 5: Constants
                 let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
-                txt = txt.replace(/(<!-- PARAMETER 5 \(Global\): List of Constants\. -->\s*<div class="const-list">)[\s\S]*?(?=<\/div>\s*<\/div>\s*<\/div>\s*<!-- RESULT GATEWAY -->)/, `$1\n${cHtml}\n        `);
+                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
 
                 // Parameter 6: Reports Header
                 txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle} : ${appState.examSubtitle}</div>`);
@@ -950,9 +975,10 @@
                 txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
                 
                 // Parameter 8: Instructional Text
-                const rulesStr = appState.rules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
+                const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
+                const rulesStr = activeRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
-                txt = txt.replace(/const EXAM_S_HTML = `[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
+                txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
                 // Parameter 9: Core Question Bank with Markdown Bold Parsing
                 const qb = [];
@@ -970,6 +996,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.getElementById('downloadLinkHTML'); link.href = url; link.download = `${appState.examTitle.replace(/\s+/g, '_')}_Final.html`;
                 document.getElementById('downloadAreaHTML').classList.remove('hidden');
+                document.getElementById('compileBtn').innerHTML = '✅ Compiled Successfully! (Click to re-compile)';
                 
             } catch (e) {
                 alert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
@@ -980,19 +1007,26 @@
             let sectionStr = '';
             appState.sections.forEach(s => { sectionStr += `[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`; });
 
-            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract questions from the provided document (PDF/Images) and format them EXACTLY into the strict plain-text .CBT format specified below. Do not add conversational text, explanations, or any other formatting.
+            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document (PDF/Images) and format them EXACTLY into the strict plain-text .CBT format specified below. Do not add conversational text, explanations, or any other formatting.
 
 CRITICAL EXTRACTION RULES:
-1. STRICT FORMATTING: You must output plain text following the exact tags: [SECTION:Name], Q:, O:, A:, and T:.
-2. IMAGES/DIAGRAMS: Completely IGNORE all images, graphs, or visual diagrams. Do NOT mention them, do NOT write placeholders. Just skip them and extract the text as normal. The user will manually insert images later.
-3. TEXT EMPHASIS: If a word is bolded or needs emphasis, wrap it in double asterisks like **this**. NEVER use HTML tags (no <b>, <strong>, etc.).
-4. SCIENTIFIC NOTATION (CRITICAL): You must use proper Unicode characters for all scientific and mathematical expressions.
-   - Use superscripts for powers (e.g., x², 10⁻⁴).
-   - Use subscripts for chemical formulas (e.g., H₂O, CO₂).
-   - Use proper symbols (e.g., α, β, γ, θ, π, √, ∑, ∫).
-5. TABLES: If a table exists within a question, convert it into a raw, minified HTML <table> string and place it on a single line starting with 'T: '. Do not use markdown tables.
-6. NUMBERING: Do NOT include question numbers in the 'Q:' line (e.g., write "What is...", NOT "1. What is...").
-7. OPTIONS & ANSWERS: Options must be prefixed with 'O: '. The correct answer must be identified by a single letter (A, B, C, or D) prefixed with 'A: '.
+1. NEVER SKIP A QUESTION (CRITICAL): You MUST extract every single question in the exact sequential order they appear. DO NOT skip any questions, even if they consist entirely of images.
+2. IMAGE-ONLY QUESTIONS OR OPTIONS (CRITICAL): If a question or its options consist entirely of an image, diagram, or are missing text, you MUST output a single dot '.' in place of the text. 
+   - For example, if Question 5 is just an image with 4 image options, you MUST write:
+     Q: .
+     O: .
+     O: .
+     O: .
+     O: .
+     A: A
+   - DO NOT skip the question. There must always be exactly 1 'Q:' and exactly 4 'O:' lines per question.
+3. VERBATIM EXTRACTION: Copy the exact text for the questions and options. Do not paraphrase.
+4. STRICT FORMATTING: You must output plain text following the exact tags: [SECTION:Name], Q:, O:, A:, and T:.
+5. IMAGES/DIAGRAMS: Completely IGNORE extracting visual data. Just use the dot '.' placeholder if no text is present.
+6. TEXT EMPHASIS: If a word is bolded, wrap it in double asterisks like **this**. NEVER use HTML tags.
+7. SCIENTIFIC NOTATION: Use proper Unicode characters for scientific/math expressions (e.g., x², 10⁻⁴, H₂O, α, β, ∑, ∫).
+8. TABLES: If a table exists, convert it into a minified HTML <table> string on a single line starting with 'T: '.
+9. NUMBERING: Do NOT include question numbers in the 'Q:' line (e.g., write "What is...", NOT "1. What is...").
 
 FORMAT BLUEPRINT TO FOLLOW:
 [EXAM_INFO]
@@ -1007,7 +1041,7 @@ O: Option D text
 A: B
 T: <table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>
 
-Now, parse the attached document and output ONLY the raw .CBT code.`;
+Now, parse the attached document and output ONLY the raw .CBT code. NEVER SKIP A QUESTION.`;
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
