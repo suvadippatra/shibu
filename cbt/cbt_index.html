@@ -33,6 +33,10 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
         }
 
+        html, body {
+            overscroll-behavior: none; /* Locks pull-to-refresh and horizontal swipe gestures */
+        }
+
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; }
         
         .hidden { display: none !important; }
@@ -379,8 +383,12 @@
                 <h2>📌 Import / Export .CBT Data</h2>
                 <button class="modal-close" onclick="closeModal('pasteModal')">✕</button>
             </div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('cbtFileUpload').click()">📂 Browse .CBT File</button>
+                <input type="file" id="cbtFileUpload" accept=".cbt,.txt" style="display: none;" onchange="handleCBTFileUpload(event)">
+            </div>
             <div class="form-group">
-                <textarea id="cbtInput" class="form-control" placeholder="Paste CBT code here to import..." style="min-height: 280px; font-family: monospace; font-size: 0.85rem; line-height: 1.4;"></textarea>
+                <textarea id="cbtInput" class="form-control" placeholder="Or paste CBT code here to import..." style="min-height: 200px; font-family: monospace; font-size: 0.85rem; line-height: 1.4;"></textarea>
             </div>
             <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 1.5rem; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px;">
@@ -657,7 +665,7 @@
         }
 
         function addQuestion(sec) {
-            appState.questionsBySection[sec].push({ text: '', options: ['', '', '', ''], correct: 0, image: '', originalImage: '', table: '' });
+            appState.questionsBySection[sec].push({ text: '', options: ['', '', '', ''], correct: 0, image: '', table: '' });
             renderAllQuestions(); renderMarksTable(); renderPreviewContent();
             const idx = appState.questionsBySection[sec].length - 1;
             setTimeout(() => { const block = document.getElementById(`qblock-${sec}-${idx}`); if(block){ block.scrollIntoView({behavior:'smooth', block:'center'}); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } }, 100);
@@ -682,37 +690,53 @@
             else { alert(`Question ${qNum} not found in ${sec}. Valid range is 1 to ${(appState.questionsBySection[sec] || []).length}`); }
         }
 
+        // ==========================================
+        // CROPPER & IMAGE MEMORY OPTIMIZATION
+        // ==========================================
         let cropperInstance = null; let currentImageData = null; let currentCropBase64 = null; let cropTimeout = null;
+        
         function handleNewImageUpload(evt, sec, idx, isOption, optIdx) {
             const file = evt.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => { currentImageData = { sec, idx, isOption, optIdx, original: e.target.result }; openCropModalWithData(e.target.result); };
+            reader.onload = (e) => { 
+                currentImageData = { sec, idx, isOption, optIdx }; 
+                openCropModalWithData(e.target.result); 
+            };
             reader.readAsDataURL(file); evt.target.value = '';
         }
 
         function editOrReplaceImage(sec, idx) {
             const q = appState.questionsBySection[sec][idx];
-            if (confirm("Do you want to edit the existing image? (Click OK to Edit, Cancel to clear and upload a new one).")) {
-                if(q && q.originalImage) { currentImageData = { sec, idx, isOption:false, optIdx:0, original: q.originalImage }; openCropModalWithData(q.originalImage); }
+            if (confirm("Do you want to edit the existing compressed image? (Click OK to Edit, Cancel to clear and upload a new one).")) {
+                if(q && q.image) { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
             } else { removeImage(sec, idx); document.getElementById(`imgInput-${sec}-${idx}`).click(); }
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); updateQuestion(sec, idx, 'originalImage', 0, ''); renderAllQuestions(); }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); }
 
         function openCropModalWithData(imgSrc) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
             document.getElementById('compSlider').value = 80; document.getElementById('compLabel').innerText = 80; document.getElementById('filterSelect').value = 'none';
             if (cropperInstance) cropperInstance.destroy();
-            cropperInstance = new Cropper(document.getElementById('cropImage'), { viewMode: 1, autoCropArea: 0.9, ready: triggerCropPreview, crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 150); } });
+            cropperInstance = new Cropper(document.getElementById('cropImage'), { 
+                viewMode: 1, autoCropArea: 0.9, 
+                ready: triggerCropPreview, 
+                crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 150); } 
+            });
         }
 
         function triggerCropPreview() {
-            if (!cropperInstance) return; const canvas = cropperInstance.getCroppedCanvas(); if (!canvas) return;
+            if (!cropperInstance) return; 
+            // Heavily restrict max canvas size to prevent memory crashes on 4K image uploads
+            const canvas = cropperInstance.getCroppedCanvas({ fillColor: '#fff', maxWidth: 1200, maxHeight: 1200 }); 
+            if (!canvas) return;
+            
             const comp = parseInt(document.getElementById('compSlider').value); document.getElementById('compLabel').innerText = comp;
             const filter = document.getElementById('filterSelect').value;
             const tc = document.createElement('canvas'); tc.width = canvas.width; tc.height = canvas.height;
             const ctx = tc.getContext('2d');
             if (filter === 'grayscale') ctx.filter = 'grayscale(100%)'; else if (filter === 'bw') ctx.filter = 'grayscale(100%) contrast(200%)';
             ctx.drawImage(canvas, 0, 0);
+            
             const b64 = tc.toDataURL('image/jpeg', comp / 100); currentCropBase64 = b64;
             document.getElementById('estSize').innerText = Math.round((b64.length * 3 / 4) / 1024) + ' KB';
         }
@@ -723,10 +747,15 @@
             if (isOption) {
                 const ex = appState.questionsBySection[sec][idx].options[optIdx];
                 updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
-            } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); updateQuestion(sec, idx, 'originalImage', 0, currentImageData.original); }
+            } else { 
+                updateQuestion(sec, idx, 'image', 0, currentCropBase64); 
+            }
             renderAllQuestions(); closeModal('cropModal');
         }
 
+        // ==========================================
+        // TABLE EDITOR
+        // ==========================================
         let currentTableData = null;
         function openTableModal(sec, idx, isEdit) { 
             currentTableData = { sec, idx }; 
@@ -757,6 +786,9 @@
         }
         function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); }
 
+        // ==========================================
+        // PREVIEW TABS
+        // ==========================================
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs');
             tabsContainer.innerHTML = '';
@@ -796,6 +828,9 @@
             area.innerHTML = html;
         }
 
+        // ==========================================
+        // EXPORT / IMPORT CBT Logic
+        // ==========================================
         function exportCBT() {
             let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\n`;
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
@@ -821,8 +856,19 @@
             document.getElementById('downloadAreaCBT').classList.remove('hidden');
         }
 
+        function handleCBTFileUpload(evt) {
+            const file = evt.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('cbtInput').value = e.target.result;
+            };
+            reader.readAsText(file);
+            evt.target.value = ''; // Reset input so same file can be uploaded again if needed
+        }
+
         function parseCBTFormat() {
-            const txt = document.getElementById('cbtInput').value; if(!txt.trim()) { alert('Paste content first'); return; }
+            const txt = document.getElementById('cbtInput').value; if(!txt.trim()) { alert('Paste content or load file first'); return; }
             const lines = txt.split('\n'); let mode = null, curSec = null, curQ = null;
             appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
             appState.audio = { bg: '', start: '', submit: '' };
@@ -850,11 +896,11 @@
                     const idx = tr.indexOf(':'); if(idx > 0) { appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
                 }
                 else if (mode === 'questions' && curSec) {
-                    if (tr.startsWith('Q:')) { curQ = { text: tr.substring(2).trim().replace(/\\n/g, '\n'), options: [], correct: 0, image: '', table: '', originalImage: '' }; appState.questionsBySection[curSec].push(curQ); }
+                    if (tr.startsWith('Q:')) { curQ = { text: tr.substring(2).trim().replace(/\\n/g, '\n'), options: [], correct: 0, image: '', table: '' }; appState.questionsBySection[curSec].push(curQ); }
                     else if (tr.startsWith('O:') && curQ && curQ.options.length < 4) curQ.options.push(tr.substring(2).trim());
                     else if (tr.startsWith('A:') && curQ) curQ.correct = tr.substring(2).trim().toUpperCase().charCodeAt(0) - 65;
                     else if (tr.startsWith('T:') && curQ) curQ.table = tr.substring(2).trim();
-                    else if (tr.startsWith('I:') && curQ) { curQ.image = tr.substring(2).trim(); curQ.originalImage = tr.substring(2).trim(); }
+                    else if (tr.startsWith('I:') && curQ) { curQ.image = tr.substring(2).trim(); }
                 }
             });
             Object.values(appState.questionsBySection).forEach(qs => qs.forEach(q => { while(q.options.length < 4) q.options.push(''); }));
@@ -863,6 +909,9 @@
             renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); alert('Imported Successfully');
         }
 
+        // ==========================================
+        // FINAL COMPILATION
+        // ==========================================
         async function generateCBTHTML() {
             try {
                 // Ensure Last.html is in the exact same directory.
@@ -962,7 +1011,13 @@ Now, parse the attached document and output ONLY the raw .CBT code.`;
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            if (id === 'cropModal' && cropperInstance) {
+                cropperInstance.destroy(); // Free canvas memory immediately
+                cropperInstance = null;
+            }
+        }
         function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); alert('Copied!'); }
     </script>
 </body>
