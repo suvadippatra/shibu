@@ -1,4 +1,4 @@
-# প্রশ্নপত্র Maker — Question Paper Maker (preview version)
+# প্রশ্নপত্র Maker — Question Paper Maker (stable version 1.1)
 
 A browser-based tool for creating Bengali exam question papers.  
 Two identical sets print on one A4 landscape sheet — cut the centre line and distribute.  
