@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Question Paper Setter v4.1</title>
+    <title>CBT Question Paper Setter v4.2</title>
     
     <!-- Cropper.js for Image Cropping -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -34,7 +34,7 @@
         }
 
         html, body {
-            overscroll-behavior: none; /* Locks pull-to-refresh and horizontal swipe gestures */
+            overscroll-behavior: none; 
         }
 
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; }
@@ -114,6 +114,9 @@
         .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
         
+        /* NAT specific block */
+        .nat-config-block { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--primary); margin-bottom: 0.75rem; }
+        
         .qblock-media { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .q-img-preview-container, .q-table-preview-container { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.2rem 0.4rem; background: var(--bg-main); display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; box-shadow: var(--shadow); }
         .q-img-thumb { max-height: 40px; border-radius: 4px; object-fit: cover; }
@@ -130,11 +133,12 @@
         .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-hover); }
 
         .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); }
-        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); }
+        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); }
         .preview-question:last-child { border-bottom: none; }
-        .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
-        .preview-option { padding: 0.5rem 0.75rem; margin: 0.3rem 0; border-left: 4px solid var(--border); color: var(--text-muted); font-size: 0.9rem; background: var(--bg-main); border-radius: 0 4px 4px 0; }
+        .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
+        .preview-option { padding: 0.5rem 0.75rem; margin: 0.3rem 0; border-left: 4px solid var(--border); color: var(--text-muted); font-size: 0.9rem; background: var(--bg-main); border-radius: 0 4px 4px 0; white-space: pre-wrap; }
         .preview-option.correct { background: rgba(40, 167, 69, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
+        .preview-nat { background: rgba(61, 178, 212, 0.1); border-left: 4px solid var(--primary); padding: 0.5rem 0.75rem; color: var(--primary-dark); font-weight: 600; font-size: 0.9rem; border-radius: 0 4px 4px 0; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(3px); }
         .modal.active { display: flex; }
@@ -166,7 +170,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.1</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.2</span></div>
         <div class="navbar-actions">
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
             <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
@@ -180,9 +184,9 @@
         <div class="left-panel panel">
             <div class="left-content-scroll">
                 
-                <!-- Squeezable Exam Details Card -->
+                <!-- Exam Details Card -->
                 <details class="card" open>
-                    <summary>📋 Exam Details</summary>
+                    <summary>📋 Exam Details & Typography</summary>
                     <div class="card-inner">
                         <div class="input-row">
                             <div class="form-group"><label>Agency Name (Top Header)</label><input type="text" id="agencyName" class="form-control" value="Aapna Testing Agency" oninput="appState.agencyName = this.value;"></div>
@@ -192,14 +196,25 @@
                             <div class="form-group"><label>Subtitle (Date / Info)</label><input type="text" id="examSubtitle" class="form-control" value="C1 Booklet" oninput="appState.examSubtitle = this.value;"></div>
                             <div class="form-group"><label>Duration (Mins)</label><input type="number" id="duration" class="form-control" value="180" min="1" oninput="appState.duration = parseInt(this.value) || 90;"></div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label>Timer Mode</label>
-                            <select id="timerMode" class="form-control" onchange="appState.timerMode = this.value;"><option value="STOPWATCH">Stopwatch (Counts Up)</option><option value="COUNTDOWN">Countdown (Counts Down)</option></select>
+                        <div class="input-row" style="margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>Timer Mode</label>
+                                <select id="timerMode" class="form-control" onchange="appState.timerMode = this.value;"><option value="STOPWATCH">Stopwatch (Counts Up)</option><option value="COUNTDOWN">Countdown (Counts Down)</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Global Font Family</label>
+                                <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value);">
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="Calibri, sans-serif">Calibri</option>
+                                    <option value="Verdana, sans-serif">Verdana</option>
+                                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </details>
 
-                <!-- Squeezable Advanced Settings Card -->
+                <!-- Advanced Settings Card -->
                 <details class="card">
                     <summary>⚙️ Advanced Settings</summary>
                     <div class="card-inner">
@@ -211,7 +226,7 @@
                     </div>
                 </details>
 
-                <!-- Squeezable Sections & Marking Card -->
+                <!-- Sections & Marking Card -->
                 <details class="card" open>
                     <summary>📊 Sections & Marking (Auto-Counts)</summary>
                     <div class="card-inner">
@@ -223,6 +238,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <p style="font-size: 0.8rem; color: var(--danger); margin-top: 0.5rem; font-weight: 600;">* Note: NAT questions automatically override Negative marks to 0 during compilation.</p>
                     </div>
                 </details>
 
@@ -271,7 +287,6 @@
         </div>
     </div>
 
-    
     <!-- Rules & Audio Modal -->
     <div class="modal" id="rulesModal">
         <div class="modal-content">
@@ -419,7 +434,7 @@
                 <h2>🤖 AI Document Extraction Prompt</h2>
                 <button class="modal-close" onclick="closeModal('promptModal')">✕</button>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">Copy this explicit, token-efficient prompt and paste it into an AI LLM (like ChatGPT, Gemini, Claude) along with your PDF/Images to extract the raw questions perfectly. It handles scientific notations and tables automatically.</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">Copy this recalibrated prompt into an AI LLM (like ChatGPT, Gemini, Claude) along with your PDF/Images to extract the raw questions perfectly. It now handles Assertion/Reason line-breaks and NATs correctly.</p>
             <textarea id="aiPrompt" class="form-control" readonly style="min-height: 350px; font-family: monospace; font-size: 0.85rem; background: var(--bg-main); border: 2px solid var(--primary);"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
@@ -436,8 +451,8 @@
                 <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Welcome to the Question Paper Setter!</h3>
                 <p style="margin-bottom: 1rem;">This tool allows you to visually construct professional computer-based tests and export them as standalone, offline-capable exam files.</p>
                 
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">1. Adding & Managing Sections</h4>
-                <p style="margin-bottom: 0.5rem;">Use the green <strong>➕ Add New Section</strong> button next to the search bar. The Marks table at the top will automatically track the number of questions. You can configure positive/negative marks and attempt limits directly in the Marking Table.</p>
+                <h4 style="color: var(--primary-dark); margin-top: 1rem;">1. Question Types (MCQ vs NAT)</h4>
+                <p style="margin-bottom: 0.5rem;">Use the dropdown on each question block to select its type. If you choose NAT, the multiple-choice options will vanish, and you can provide an exact value or an acceptable range (e.g., "2.5-3.5") as the correct answer. NATs do not deduct negative marks.</p>
                 
                 <h4 style="color: var(--primary-dark); margin-top: 1rem;">2. Formatting Text & Options</h4>
                 <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
@@ -458,12 +473,10 @@
 
     <script>
         const defaultRules = [
-            "The examination will consist of Objective Type Questions (MCQs).",
+            "The examination will consist of Objective Type Questions (MCQs) and Numerical Answer Types (NATs).",
             "Total Duration: 180 Minutes.",
-            "The examination console is equipped with specific tools to aid your performance. A Zoom Slider is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An On-Screen Scientific Calculator is available for mathematical computations; please note that physical calculators are strictly prohibited. You may also access a Table of Universal Constants at any time by clicking the respective icon.",
-            "The examination launches in Full-Screen Mode to maintain integrity and focus. You may exit or re-enter this mode using the Full-Screen icon. A Headphone Icon is provided for audio management. If the administrator has enabled background audio (e.g., focus waves or alerts), clicking this icon will toggle playback. If no audio is configured, a brief notification will indicate that no music is set.",
-            "A dedicated Timer is displayed in the top-right corner. Depending on the specific exam configuration, this will function either as a countdown timer (indicating time remaining) or a stopwatch (indicating time elapsed).",
-            "Use of the Scribble Pad is permitted for rough work. Do not write on the console."
+            "The examination console is equipped with specific tools to aid your performance. A Zoom Slider is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An On-Screen Scientific Calculator is available for mathematical computations. You may also access a Table of Universal Constants at any time.",
+            "For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers."
         ];
 
         const defaultConstants = [
@@ -491,7 +504,7 @@
 
         const appState = {
             agencyName: 'Aapna Testing Agency', examTitle: 'Mock Exam', examSubtitle: 'C1 Booklet',
-            duration: 180, timerMode: 'STOPWATCH', 
+            duration: 180, timerMode: 'STOPWATCH', fontName: 'Arial, sans-serif',
             rules: [...defaultRules],
             constants: JSON.parse(JSON.stringify(defaultConstants)),
             audio: { bg: '', start: '', submit: '' },
@@ -540,7 +553,6 @@
             else { right.classList.add('hidden-panel'); left.classList.add('expanded'); btn.innerText = '👁️ Show Preview'; }
         }
 
-        // Helper to map double asterisks into bold
         function parseBold(str) {
             if(!str) return '';
             return str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
@@ -664,7 +676,11 @@
             const div = document.createElement('div');
             div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
 
-            const optsHtml = `<div class="options-grid">` + (q.options || ['','','','']).map((opt, oi) => `
+            const isNAT = q.type === 'NAT';
+            const optsDisplay = isNAT ? 'none' : 'grid';
+            const natDisplay = isNAT ? 'block' : 'none';
+
+            const optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">` + (q.options || ['','','','']).map((opt, oi) => `
                 <div class="qblock-option-item">
                     <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi})">
                     <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
@@ -676,6 +692,13 @@
                 </div>
             `).join('') + `</div>`;
 
+            const natHtml = `
+                <div class="nat-config-block" style="display: ${natDisplay};">
+                    <label style="font-weight:600; font-size:0.85rem; color:var(--primary-dark);">Correct Answer (Exact Value or Range):</label>
+                    <input type="text" class="form-control" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value)">
+                </div>
+            `;
+
             const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit Table</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
@@ -683,9 +706,16 @@
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold text** to emphasize." oninput="updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem;" onclick="event.stopPropagation(); if(confirm('Delete Question ${idx+1}?')){ appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); renderPreviewContent(); }">✕ Delete</button>
+                    
+                    <select class="form-control" style="width: auto; margin-left: 0.5rem; font-weight: 600;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
+                        <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option>
+                        <option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
+                    </select>
+                    
+                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); if(confirm('Delete Question ${idx+1}?')){ appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); renderPreviewContent(); }">✕</button>
                 </div>
                 ${optsHtml}
+                ${natHtml}
                 <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.75rem;">
                     <button class="btn btn-secondary btn-sm" style="border-radius: 6px;" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🖼️ Add Main Image</button>
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
@@ -697,7 +727,7 @@
         }
 
         function addQuestion(sec) {
-            appState.questionsBySection[sec].push({ text: '', options: ['', '', '', ''], correct: 0, image: '', table: '' });
+            appState.questionsBySection[sec].push({ type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' });
             renderAllQuestions(); renderMarksTable(); renderPreviewContent();
             const idx = appState.questionsBySection[sec].length - 1;
             setTimeout(() => { const block = document.getElementById(`qblock-${sec}-${idx}`); if(block){ block.scrollIntoView({behavior:'smooth', block:'center'}); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } }, 100);
@@ -705,7 +735,13 @@
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'option') q.options[optIdx] = value; else if (field === 'correct') q.correct = parseInt(value); else q[field] = value;
+            if (field === 'option') q.options[optIdx] = value; 
+            else if (field === 'correct') q.correct = parseInt(value); 
+            else if (field === 'type') {
+                q.type = value;
+                renderAllQuestions(); // Re-render to toggle inputs
+            }
+            else q[field] = value;
             if (activePreviewSection === sec) renderPreviewContent();
         }
 
@@ -758,7 +794,6 @@
 
         function triggerCropPreview() {
             if (!cropperInstance) return; 
-            // Heavily restrict max canvas size to prevent memory crashes on 4K image uploads
             const canvas = cropperInstance.getCroppedCanvas({ fillColor: '#fff', maxWidth: 1200, maxHeight: 1200 }); 
             if (!canvas) return;
             
@@ -774,7 +809,6 @@
             const b64 = tc.toDataURL('image/jpeg', comp / 100); currentCropBase64 = b64;
             document.getElementById('estSize').innerText = Math.round((b64.length * 3 / 4) / 1024) + ' KB';
             
-            // Instantly update visual preview frame
             document.getElementById('liveCropPreviewImg').src = b64;
         }
         function updateCropPreview() { triggerCropPreview(); }
@@ -859,7 +893,12 @@
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${parseBold(q.text) || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
-                (q.options || []).forEach((opt, oi) => { html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${String.fromCharCode(65 + oi)}.</strong> ${parseBold(opt) || '<span style="color:#aaa;">...</span>'}</div>`; });
+                
+                if (q.type === 'NAT') {
+                    html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
+                } else {
+                    (q.options || []).forEach((opt, oi) => { html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${String.fromCharCode(65 + oi)}.</strong> ${parseBold(opt) || '<span style="color:#aaa;">...</span>'}</div>`; });
+                }
                 html += `</div>`;
             });
             area.innerHTML = html;
@@ -869,7 +908,7 @@
         // EXPORT / IMPORT CBT Logic
         // ==========================================
         function exportCBT() {
-            let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\n`;
+            let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\nFont: ${appState.fontName}\n`;
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
             if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
             if (appState.audio.start) out += `AudioStart: ${appState.audio.start}\n`;
@@ -880,9 +919,15 @@
             appState.sections.forEach(s => {
                 out += `\n[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`;
                 (appState.questionsBySection[s.name] || []).forEach(q => {
+                    out += `QType: ${q.type || 'MCQ'}\n`;
                     out += `Q: ${q.text.replace(/\n/g, '\\n')}\n`;
-                    q.options.forEach(o => out += `O: ${o.replace(/\n/g, '')}\n`);
-                    out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
+                    
+                    if (q.type === 'NAT') {
+                        out += `A: ${q.correctNat || ''}\n`;
+                    } else {
+                        q.options.forEach(o => out += `O: ${o.replace(/\n/g, '')}\n`);
+                        out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
+                    }
                     if (q.table) out += `T: ${q.table.replace(/\n/g, '')}\n`;
                     if (q.image) out += `I: ${q.image}\n`;
                 });
@@ -901,7 +946,7 @@
                 document.getElementById('cbtInput').value = e.target.result;
             };
             reader.readAsText(file);
-            evt.target.value = ''; // Reset input so same file can be uploaded again if needed
+            evt.target.value = ''; 
         }
 
         function parseCBTFormat() {
@@ -924,6 +969,7 @@
                     if (tr.startsWith('Subtitle:')) { document.getElementById('examSubtitle').value = tr.substring(9).trim(); appState.examSubtitle = tr.substring(9).trim(); }
                     if (tr.startsWith('Duration:')) { document.getElementById('duration').value = parseInt(tr.substring(9)); appState.duration = parseInt(tr.substring(9)); }
                     if (tr.startsWith('Timer:')) { document.getElementById('timerMode').value = tr.substring(6).trim(); appState.timerMode = tr.substring(6).trim(); }
+                    if (tr.startsWith('Font:')) { document.getElementById('fontSelect').value = tr.substring(5).trim(); appState.fontName = tr.substring(5).trim(); document.documentElement.style.setProperty('--preview-font', appState.fontName); }
                     if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
                     if (tr.startsWith('AudioBg:')) { appState.audio.bg = tr.substring(8).trim(); document.getElementById('audioBg').value = appState.audio.bg; }
                     if (tr.startsWith('AudioStart:')) { appState.audio.start = tr.substring(11).trim(); document.getElementById('audioStart').value = appState.audio.start; }
@@ -933,14 +979,32 @@
                     const idx = tr.indexOf(':'); if(idx > 0) { appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
                 }
                 else if (mode === 'questions' && curSec) {
-                    if (tr.startsWith('Q:')) { curQ = { text: tr.substring(2).trim().replace(/\\n/g, '\n'), options: [], correct: 0, image: '', table: '' }; appState.questionsBySection[curSec].push(curQ); }
-                    else if (tr.startsWith('O:') && curQ && curQ.options.length < 4) curQ.options.push(tr.substring(2).trim());
-                    else if (tr.startsWith('A:') && curQ) curQ.correct = tr.substring(2).trim().toUpperCase().charCodeAt(0) - 65;
+                    if (tr.startsWith('QType:')) {
+                        // Preemptively create the question object if QType appears before Q
+                        curQ = { type: tr.substring(6).trim(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                    }
+                    else if (tr.startsWith('Q:')) { 
+                        if (!curQ || curQ.text !== '') {
+                            curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                        }
+                        curQ.text = tr.substring(2).trim().replace(/\\n/g, '\n');
+                        appState.questionsBySection[curSec].push(curQ); 
+                    }
+                    else if (tr.startsWith('O:') && curQ && curQ.type !== 'NAT') {
+                        curQ.options.push(tr.substring(2).trim());
+                    }
+                    else if (tr.startsWith('A:') && curQ) {
+                        if (curQ.type === 'NAT') {
+                            curQ.correctNat = tr.substring(2).trim();
+                        } else {
+                            curQ.correct = tr.substring(2).trim().toUpperCase().charCodeAt(0) - 65;
+                        }
+                    }
                     else if (tr.startsWith('T:') && curQ) curQ.table = tr.substring(2).trim();
                     else if (tr.startsWith('I:') && curQ) { curQ.image = tr.substring(2).trim(); }
                 }
             });
-            Object.values(appState.questionsBySection).forEach(qs => qs.forEach(q => { while(q.options.length < 4) q.options.push(''); }));
+            Object.values(appState.questionsBySection).forEach(qs => qs.forEach(q => { if(q.type !== 'NAT') { while(q.options.length < 4) q.options.push(''); } }));
             
             if (appState.rules.length === 0) {
                 appState.rules = [...defaultRules];
@@ -987,9 +1051,10 @@
                 txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle} : ${appState.examSubtitle}</div>`);
                 txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle} - ${appState.examSubtitle}$2`);
                 
-                // Parameter 7: Timer Config
+                // Parameter 7 & 10: Timer & Font Config
                 txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
                 txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
+                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
                 
                 // Parameter 8: Instructional Text
                 const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
@@ -997,12 +1062,19 @@
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
-                // Parameter 9: Core Question Bank with Markdown Bold Parsing
+                // Parameter 9: Core Question Bank Formatting 
                 const qb = [];
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => ({
-                        id: i + 1, text: parseBold(q.text), img: q.image || '', table: q.table || '',
-                        options: q.options.map(o => parseBold(o)), correct: q.correct, marksCorrect: sec.marks, marksWrong: sec.negative
+                        id: i + 1, 
+                        type: q.type || 'MCQ', 
+                        text: parseBold(q.text), 
+                        img: q.image || '', 
+                        table: q.table || '',
+                        options: q.type !== 'NAT' ? q.options.map(o => parseBold(o)) : [], 
+                        correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
+                        marksCorrect: sec.marks, 
+                        marksWrong: q.type === 'NAT' ? 0 : sec.negative // OVERRIDE: 0 negative marking for NATs
                     }));
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
@@ -1024,48 +1096,42 @@
             let sectionStr = '';
             appState.sections.forEach(s => { sectionStr += `[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`; });
 
-            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document (PDF/Images) and format them EXACTLY into the strict plain-text .CBT format specified below. Do not add conversational text, explanations, or any other formatting.
+            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. NEVER SKIP A QUESTION (CRITICAL): You MUST extract every single question in the exact sequential order they appear. DO NOT skip any questions, even if they consist entirely of images.
-2. IMAGE-ONLY QUESTIONS OR OPTIONS (CRITICAL): If a question or its options consist entirely of an image, diagram, or are missing text, you MUST output a single dot '.' in place of the text. 
-   - For example, if Question 5 is just an image with 4 image options, you MUST write:
-     Q: .
-     O: .
-     O: .
-     O: .
-     O: .
-     A: A
-   - DO NOT skip the question. There must always be exactly 1 'Q:' and exactly 4 'O:' lines per question.
-3. VERBATIM EXTRACTION: Copy the exact text for the questions and options. Do not paraphrase.
-4. STRICT FORMATTING: You must output plain text following the exact tags: [SECTION:Name], Q:, O:, A:, and T:.
-5. IMAGES/DIAGRAMS: Completely IGNORE extracting visual data. Just use the dot '.' placeholder if no text is present.
-6. TEXT EMPHASIS: If a word is bolded, wrap it in double asterisks like **this**. NEVER use HTML tags.
-7. SCIENTIFIC NOTATION: Use proper Unicode characters for scientific/math expressions (e.g., x², 10⁻⁴, H₂O, α, β, ∑, ∫).
-8. TABLES: If a table exists, convert it into a minified HTML <table> string on a single line starting with 'T: '.
-9. NUMBERING: Do NOT include question numbers in the 'Q:' line (e.g., write "What is...", NOT "1. What is...").
+1. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
+2. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text.
+3. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
+4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
+5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
+   Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
+6. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
 
 FORMAT BLUEPRINT TO FOLLOW:
 [EXAM_INFO]
 Agency: ${appState.agencyName}
 Title: ${appState.examTitle}
 
-${sectionStr}Q: Text of the question here (use **bold** where needed)
+${sectionStr}QType: MCQ
+Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
 O: Option A text
 O: Option B text
 O: Option C text
 O: Option D text
 A: B
-T: <table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>
 
-Now, parse the attached document and output ONLY the raw .CBT code. NEVER SKIP A QUESTION.`;
+QType: NAT
+Q: The value of the charge is ____________ C.
+A: 2.5-2.6
+
+Now, parse the attached document and output ONLY the raw .CBT code.`;
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
             if (id === 'cropModal' && cropperInstance) {
-                cropperInstance.destroy(); // Free canvas memory immediately
+                cropperInstance.destroy(); 
                 cropperInstance = null;
             }
         }
