@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +17,7 @@
             --nta-grey: #e9ecef;
             --text-dark: #2d3436;
             --border-color: #dfe6e9;
+            --q-font: Arial, sans-serif; 
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -50,7 +52,7 @@
         .avatar-grid { display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
         .avatar-option { font-size: 2.2rem; cursor: pointer; border: 3px solid transparent; border-radius: 50%; padding: 10px; transition: all 0.2s; background: #f8f9fa; }
         .avatar-option.selected { border-color: var(--primary); background: #e3f2fd; transform: scale(1.15); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .inp-name { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; }
+        .inp-name { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; cursor: pointer; background: #fff; }
 
         /* --- INSTRUCTION PAGE --- */
         .instruction-container { width: 90%; max-width: 1000px; height: 90%; background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
@@ -167,19 +169,34 @@
         .section-tab:hover { opacity: 1; }
         .section-tab.active { background: var(--primary); color: white; opacity: 1; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); position: relative; top: 2px; }
         
-        .question-content { font-size: 1.15rem; line-height: 1.7; color: var(--text-dark); margin-bottom: 25px; }
+        .question-content { 
+            font-size: 1.15rem; 
+            line-height: 1.5; 
+            color: var(--text-dark); 
+            margin-bottom: 12px; 
+            white-space: pre-wrap; 
+            font-family: var(--q-font);
+        }
         .q-num-inline { font-weight: 800; color: #000; margin-right: 5px; }
         .question-content img { max-width: 100%; height: auto; display: block; margin: 15px 0; border:1px solid #eee; border-radius: 4px; }
         
-        .question-content table { border-collapse: collapse; margin: 15px 0; width: 100%; max-width: 600px; }
-        .question-content th, .question-content td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
+        .table-container { margin: 15px 0; overflow-x: auto; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #dfe6e9; font-family: var(--q-font); }
+        .question-content table { border-collapse: collapse; width: 100%; max-width: 800px; background: white; }
+        .question-content th, .question-content td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; font-size: 1rem; }
         .question-content th { background-color: #f8f9fa; font-weight: 600; }
 
-        .option-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; }
+        .option-item { 
+            display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; white-space: pre-wrap; 
+            font-family: var(--q-font);
+        }
         .option-item:hover { background: #f8f9fa; border-color: var(--primary); }
         .option-item.selected { background: #e3f2fd; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
         .option-item img { max-height: 150px; max-width: 100%; display: block; border: 1px solid #ccc; border-radius: 4px; }
         
+        .nat-container { margin-bottom: 25px; padding: 15px; background: #f8f9fa; border: 1px dashed var(--primary); border-radius: 8px; max-width: 400px;}
+        .nat-input { width: 100%; padding: 12px 15px; border: 2px solid #b2bec3; border-radius: 6px; font-size: 1.2rem; font-weight: bold; font-family: monospace; cursor: pointer; background: white; color: var(--text-dark); transition: border-color 0.2s; }
+        .nat-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(61,178,212,0.2); outline: none;}
+
         .footer-bar { height: 60px; flex-shrink: 0; border-top: 1px solid var(--border-color); background: #fff; display: flex; align-items: center; padding: 0 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 10; gap: 10px; }
         .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: white; font-size: 0.9rem; white-space: nowrap; }
         .btn-nav { background: var(--primary); }
@@ -265,6 +282,7 @@
         }
         .fp-head { background: #0056b3; color: white; padding: 8px 12px; cursor: move; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .fp-body { padding: 10px; background: #e0e0e0; max-height: 450px; overflow-y: auto; }
+        
         #calc-panel { width: 450px; }
         .calc-display-area { background: white; border: 1px solid #999; padding: 5px; margin-bottom: 5px; position:relative;}
         .calc-input { width: 100%; border: none; text-align: right; font-size: 1.2rem; outline: none; background:transparent;}
@@ -276,19 +294,86 @@
         .sc-btn:active { background: #ccc; }
         .sc-btn.dark { background: #e0e0e0; } .sc-btn.red { color: #cc0000; } .sc-btn.blue { color: blue; }
         
-        /* Constants Style */
-        .const-list { display: flex; flex-direction: column; gap: 8px; padding: 5px; }
-        .const-card { background: transparent; padding: 5px 0; border: none; border-bottom: 1px dashed #ccc; border-radius: 0; box-shadow: none; font-size: 0.95rem; font-family: 'Segoe UI', serif; }
-        .const-card:last-child { border-bottom: none; }
-        .const-text-line { color: #2d3436; }
-        .const-text-line strong { color: #000; }
-
         .calc-help { position: absolute; top: 45px; right: 10px; width: 320px; max-height: 350px; background: #fff; border: 1px solid #999; border-radius: 6px; padding: 15px; font-size: 0.8rem; display: none; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.4); overflow-y: auto; text-align: left; color: #333; line-height: 1.4; }
         .calc-help h4 { margin-top: 0; margin-bottom: 10px; color: var(--primary); border-bottom: 1px solid #ccc; padding-bottom: 5px; }
         .calc-help p { margin-bottom: 10px; }
         .calc-help strong { display: block; margin-top: 10px; margin-bottom: 5px; color: #000; border-bottom: 1px dotted #ccc; }
         .calc-help ul { padding-left: 20px; margin: 5px 0; }
         .calc-help li { margin-bottom: 5px; }
+
+        /* RE-ENGINEERED VIRTUAL KEYBOARD */
+        #vk-panel { 
+            width: 95vw; max-width: 800px; 
+            background: #909ca3; 
+            border: 4px solid #b7c5ce; 
+            border-radius: 6px; 
+            z-index: 2500; 
+            padding: 0;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        
+        .vk-inner-wrap {
+            display: flex;
+            padding: 8px;
+            background: #8e9fae;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .vk-grid-area { flex: 1; }
+        
+        .vk-row { 
+            display: flex; 
+            gap: 4px; 
+            margin-bottom: 4px; 
+            justify-content: center; 
+        }
+
+        .vk-btn { 
+            flex: 1; 
+            background: #e8e0c3; 
+            border: 1px solid #333; 
+            border-radius: 2px; 
+            font-weight: bold; 
+            color: #111; 
+            font-size: 1.1rem; 
+            padding: 10px 0; 
+            cursor: pointer; 
+            box-shadow: 1px 1px 0 #111; 
+            user-select: none; 
+            text-align: center;
+            transition: none; 
+            font-family: monospace;
+        }
+
+        .vk-btn:active { 
+            transform: translate(1px, 1px); 
+            box-shadow: none; 
+            background: #d4ccb0;
+        }
+
+        .vk-btn-dark { background: #b0bec5; }
+        .vk-btn-dark:active { background: #9eaab0; }
+        
+        .vk-btn-wide { flex: 1.5; }
+        .vk-btn-wider { flex: 2; }
+        .vk-btn-space { flex: 6; }
+        
+        .vk-side-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            width: 70px; 
+            margin-left: 8px; 
+            padding-left: 8px;
+            border-left: 2px solid #758694;
+        }
+
+        /* Constants Style */
+        .const-list { display: flex; flex-direction: column; gap: 8px; padding: 5px; }
+        .const-card { background: transparent; padding: 5px 0; border: none; border-bottom: 1px dashed #ccc; border-radius: 0; box-shadow: none; font-size: 0.95rem; font-family: 'Segoe UI', serif; }
+        .const-card:last-child { border-bottom: none; }
+        .const-text-line { color: #2d3436; }
+        .const-text-line strong { color: #000; }
 
         /* --- SUBMISSION & REPORT --- */
         .modal-card { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
@@ -324,7 +409,7 @@
         /* Question List */
         .print-section-title { text-align: center; font-weight: bold; font-size: 0.9rem; background: #f0f0f0; padding: 5px; margin: 20px 0 10px 0; border-radius: 4px; border: 1px solid #ddd; }
         .print-q-block { margin-bottom: 20px; break-inside: avoid; page-break-inside: avoid; }
-        .print-q-text { font-size: 1rem; font-weight: 600; color: #000; margin-bottom: 10px; width: 100%; padding-top: 10px; border-top: 1px dotted #ccc; }
+        .print-q-text { font-size: 1rem; font-weight: 600; color: #000; margin-bottom: 10px; width: 100%; padding-top: 10px; border-top: 1px dotted #ccc; white-space: pre-wrap; font-family: var(--q-font); }
         .print-q-text img { display: block; max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #eee; }
         
         .print-q-text table { border-collapse: collapse; margin: 10px 0; width: 100%; border: 1px solid #999; }
@@ -333,7 +418,7 @@
         .print-q-block:first-child .print-q-text { border-top: none; }
         .print-q-body { display: flex; gap: 20px; }
         .print-opt-col { flex: 0 0 70%; display: flex; flex-direction: column; gap: 4px; padding: 0; border: none; }
-        .print-opt-item { font-size: 0.9rem; padding: 4px 8px; border-radius: 3px; border: 1px solid transparent; }
+        .print-opt-item { font-size: 0.9rem; padding: 4px 8px; border-radius: 3px; border: 1px solid transparent; white-space: pre-wrap; font-family: var(--q-font); }
         .po-correct { background-color: #fff; color: #155724; font-weight:bold; border: 1px solid #c3e6cb; } 
         .po-wrong-sel { border: 1px solid #f5c6cb; color: #721c24; }
         .po-neutral { color: #555; }
@@ -415,6 +500,9 @@
             .header-row-line { flex-direction: column; gap: 2px; }
             .header-row-line strong { width: auto; }
             .header-photo { margin: 15px auto 0; }
+            
+            /* Mobile adjustment for VK to fit screen width */
+            .vk-btn { font-size: 0.9rem; padding: 8px 0; }
         }
 
         @media (max-width: 480px) {
@@ -584,7 +672,8 @@
         <p style="color:#666; margin-bottom: 30px;">Did you bring your id card, two passport photo and transparent watter bottle?</p>
         
         <div class="login-card">
-            <input type="text" id="user-name" class="inp-name" placeholder="Enter Candidate Name" autocomplete="off">
+            <!-- Input for Name with Virtual Keyboard trigger -->
+            <input type="text" id="user-name" class="inp-name" placeholder="Enter Candidate Name (Tap for Keyboard)" autocomplete="off" readonly onclick="openVK('login')">
             <p style="color:#666; font-size:0.9rem;">Select Avatar</p>
             <div class="avatar-grid">
                 <div class="avatar-option" onclick="selectAvatar(this, '👨‍⚕️')">👨‍⚕️</div>
@@ -732,7 +821,128 @@
         </div>
     </div>
     
-    <!-- Updated Constants Panel -->
+    <!-- RE-ENGINEERED VIRTUAL KEYBOARD PANEL -->
+    <div id="vk-panel" class="float-panel">
+        <div class="fp-head" id="vk-drag-handle" style="background: #3a4750; color: #fff; cursor: move; user-select: none;">
+            Virtual Input Keyboard
+            <span onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="closeVK()" style="cursor:pointer; font-size:1.2rem; margin-left:auto;">&times;</span>
+        </div>
+        
+        <div class="vk-inner-wrap">
+            <div id="vk-main-area" class="vk-grid-area">
+                
+                <!-- QWERTY Alpha Layout -->
+                <div id="vk-alpha-container" style="display:flex; flex-direction:column; gap:4px;">
+                    <div class="vk-row">
+                        <button class="vk-btn" onclick="vkType('`')">`</button>
+                        <button class="vk-btn" onclick="vkType('1')">1</button>
+                        <button class="vk-btn" onclick="vkType('2')">2</button>
+                        <button class="vk-btn" onclick="vkType('3')">3</button>
+                        <button class="vk-btn" onclick="vkType('4')">4</button>
+                        <button class="vk-btn" onclick="vkType('5')">5</button>
+                        <button class="vk-btn" onclick="vkType('6')">6</button>
+                        <button class="vk-btn" onclick="vkType('7')">7</button>
+                        <button class="vk-btn" onclick="vkType('8')">8</button>
+                        <button class="vk-btn" onclick="vkType('9')">9</button>
+                        <button class="vk-btn" onclick="vkType('0')">0</button>
+                        <button class="vk-btn" onclick="vkType('-')">-</button>
+                        <button class="vk-btn" onclick="vkType('=')">=</button>
+                        <button class="vk-btn vk-btn-wide" onclick="vkBackspace()">⌫</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn vk-btn-wide" onclick="vkType(' ')">Tab</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('q')">q</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('w')">w</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('e')">e</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('r')">r</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('t')">t</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('y')">y</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('u')">u</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('i')">i</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('o')">o</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('p')">p</button>
+                        <button class="vk-btn" onclick="vkType('[')">[</button>
+                        <button class="vk-btn" onclick="vkType(']')">]</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn vk-btn-wider" onclick="toggleVKShift()">Caps</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('a')">a</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('s')">s</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('d')">d</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('f')">f</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('g')">g</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('h')">h</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('j')">j</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('k')">k</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('l')">l</button>
+                        <button class="vk-btn" onclick="vkType(';')">;</button>
+                        <button class="vk-btn" onclick="vkType('\'')">'</button>
+                        <button class="vk-btn" onclick="vkType('\\')">\</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn vk-btn-wide" onclick="toggleVKShift()">Shift</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('z')">z</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('x')">x</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('c')">c</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('v')">v</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('b')">b</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('n')">n</button>
+                        <button class="vk-btn vk-letter" onclick="vkType('m')">m</button>
+                        <button class="vk-btn" onclick="vkType(',')">,</button>
+                        <button class="vk-btn" onclick="vkType('.')">.</button>
+                        <button class="vk-btn" onclick="vkType('/')">/</button>
+                        <button class="vk-btn vk-btn-wide" onclick="toggleVKShift()">Shift</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn vk-btn-wide" onclick="vkType(' ')">Ctrl</button>
+                        <button class="vk-btn" onclick="vkType(' ')">Win</button>
+                        <button class="vk-btn" onclick="vkType(' ')">Alt</button>
+                        <button class="vk-btn vk-btn-space" onclick="vkType(' ')"> </button>
+                        <button class="vk-btn" onclick="vkType(' ')">AltGr</button>
+                        <button class="vk-btn" onclick="vkType(' ')">Fn</button>
+                    </div>
+                </div>
+
+                <!-- Numeric Numpad Layout -->
+                <div id="vk-num-container" style="display:none; flex-direction:column; gap:4px; max-width: 350px; margin: 0 auto;">
+                    <div class="vk-row">
+                        <button class="vk-btn" onclick="vkType('7')">7</button>
+                        <button class="vk-btn" onclick="vkType('8')">8</button>
+                        <button class="vk-btn" onclick="vkType('9')">9</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn" onclick="vkType('4')">4</button>
+                        <button class="vk-btn" onclick="vkType('5')">5</button>
+                        <button class="vk-btn" onclick="vkType('6')">6</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn" onclick="vkType('1')">1</button>
+                        <button class="vk-btn" onclick="vkType('2')">2</button>
+                        <button class="vk-btn" onclick="vkType('3')">3</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn" onclick="vkType('0')">0</button>
+                        <button class="vk-btn" onclick="vkType('.')">.</button>
+                        <button class="vk-btn" onclick="vkType('-')">-</button>
+                    </div>
+                    <div class="vk-row">
+                        <button class="vk-btn vk-btn-wider" style="background:#e57373;" onclick="vkBackspace()">⌫ Backspace</button>
+                        <button class="vk-btn vk-btn-wider" style="background:#b0bec5;" onclick="vkClear()">Clear All</button>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Side Control Panel -->
+            <div class="vk-side-panel">
+                <button class="vk-btn vk-btn-dark" onclick="toggleVKMode('alpha')">Abc</button>
+                <button class="vk-btn vk-btn-dark" onclick="toggleVKMode('num')">123</button>
+                <button class="vk-btn vk-btn-dark" style="margin-top:auto;" onclick="closeVK()">Hide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Constants Panel -->
     <div id="const-panel" class="float-panel" style="width:400px;">
         <div class="fp-head" id="const-drag-handle">Fundamental Physical Constants <span onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="toggleFloat('const-panel')" style="cursor:pointer; font-size:1.2rem; margin-left:auto;">&times;</span></div>
         <div class="fp-body">
@@ -811,6 +1021,9 @@
     // PARAMETER 7 (Global): Timer/Stopwatch Configuration. 
     const TIMER_MODE = 'STOPWATCH'; 
     const EXAM_DURATION_MINS = 180; 
+    
+    // PARAMETER 10 (Global): Font Family for Questions & Options. (e.g., 'Calibri', 'Verdana', 'Arial', 'Times New Roman')
+    const Q_FONT_FAMILY = "Arial, sans-serif";
 
     /* === SOUNDS & HEADPHONE LOOP CONFIG === */
     const BG_AUDIO_LOOP = false; 
@@ -822,51 +1035,22 @@
     const EXAM_S_HTML = `
         <div class="inst-section">
             <h3>Exam Layout & Instructions</h3>
-            <p>1. The examination will consist of <strong>Objective Type Questions (MCQs)</strong>.<br>
+            <p>1. The examination will consist of <strong>Objective Type Questions (MCQs)</strong> and Numerical Answer Types (NATs).<br>
             2. Total Duration: <strong>180 Minutes</strong>.<br>
-            3. The examination console is equipped with specific tools to aid your performance. A <strong>Zoom Slider</strong> is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An <strong>On-Screen Scientific Calculator</strong> is available for mathematical computations; please note that physical calculators are strictly prohibited. You may also access a <strong>Table of Universal Constants</strong> at any time by clicking the respective icon.<br>
-            4. The examination launches in <strong>Full-Screen Mode</strong> to maintain integrity and focus. You may exit or re-enter this mode using the Full-Screen icon. A <strong>Headphone Icon</strong> is provided for audio management. If the administrator has enabled background audio (e.g., focus waves or alerts), clicking this icon will toggle playback. If no audio is configured, a brief notification will indicate that no music is set.<br>
-            5. A dedicated <strong>Timer</strong> is displayed in the top-right corner. Depending on the specific exam configuration, this will function either as a countdown timer (indicating time remaining) or a stopwatch (indicating time elapsed).<br>
-            6. Use of the <strong>Scribble Pad</strong> is permitted for rough work. Do not write on the console.</p>
-        </div>
-        <div class="inst-section">
-            <p>Please familiarize yourself with the status indicators used in the Question Palette:<br>
-            <span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br>
-            <span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br>
-            <span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br>
-            <span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br>
-            <span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p>
-            <br>
-            <p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p>
-        </div>
-        <div class="inst-section">
-            <p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p>
-            <h3>Marking Scheme</h3>
-            <table class="scheme-table">  
-                <thead>
-                    <tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr>
-                </thead>
-                <tbody id="scheme-table-body"></tbody>
-                <tfoot id="scheme-table-foot"></tfoot>
-            </table>
+            3. The examination console is equipped with specific tools to aid your performance. A <strong>Zoom Slider</strong> is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An <strong>On-Screen Scientific Calculator</strong> is available for mathematical computations. You may also access a <strong>Table of Universal Constants</strong> at any time.<br>
+            4. For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers.</p>
         </div>
     `;
 
     // PARAMETER 9 (Section Level & Question Level): Core Question Bank structure.
     const QUESTION_BANK = [
-        { sectionTitle: "Section A: Physics", marksCorrect: 5, marksWrong: 1, maxAttempts: 1, 
+        { sectionTitle: "Section A: Demonstration", marksCorrect: 5, marksWrong: 1, maxAttempts: 4, 
         questions: [ 
-                { id:1, text:"Demo Q1 (Physics A)", img:"", options:["A","B","C","D"], correct:0 },
-                { id:2, text:"Demo Q2 (Physics A) [Attempting this too will cause one to be dropped]", img:"", options:["A","B","C","D"], correct:0 }
+                { id:1, type: "MCQ", text:"Given below are two statements:\n**Statement I:** The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n**Statement II:** Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:", img:"", options:["Statement I is correct but Statement II is incorrect.","Statement I is incorrect but Statement II is correct.","Both Statement I and Statement II are correct.","Both Statement I and Statement II are incorrect."], correct:2 },
+                { id:2, type: "MCQ", text:"Match List-I with List-II:", table: "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>", options:["A-II, B-III, C-I, D-IV","A-I, B-IV, C-II, D-III","A-III, B-I, C-IV, D-II","A-IV, B-II, C-III, D-I"], correct:0 },
+                { id:3, type: "NAT", text:"The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .", img:"", options:[], correct:"2.5-3.5" }
             ]
-        },
-        { sectionTitle: "Section B: Physics", marksCorrect: 4, marksWrong: 1, maxAttempts: 2, questions: [ { id:3, text:"Demo Q3", img:"", options:["A","B","C","D"], correct:0 }, { id:4, text:"Demo Q4", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section A: Chemistry", marksCorrect: 4, marksWrong: 1, questions: [ { id:5, text:"Demo Q5", img:"", options:["A","B","C","D"], correct:0 }, { id:6, text:"Demo Q6", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section B: Chemistry", marksCorrect: 4, marksWrong: 1, questions: [ { id:7, text:"Demo Q7", img:"", options:["A","B","C","D"], correct:0 }, { id:8, text:"Demo Q8", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section A: Biology", marksCorrect: 4, marksWrong: 1, questions: [ { id:9, text:"Demo Q9", img:"", options:["A","B","C","D"], correct:0 }, { id:10, text:"Demo Q10", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section B: Biology", marksCorrect: 4, marksWrong: 1, questions: [ { id:11, text:"Demo Q11", img:"", options:["A","B","C","D"], correct:0 }, { id:12, text:"Demo Q12", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section A: Zoology", marksCorrect: 4, marksWrong: 1, questions: [ { id:13, text:"Demo Q13", img:"", options:["A","B","C","D"], correct:0 }, { id:14, text:"Demo Q14", img:"", options:["A","B","C","D"], correct:0 } ] },
-        { sectionTitle: "Section B: Zoology", marksCorrect: 4, marksWrong: 1, questions: [ { id:15, text:"Demo Q15", img:"", options:["A","B","C","D"], correct:0 }, { id:16, text:"Demo Q16", img:"", options:["A","B","C","D"], correct:0 } ] }
+        }
     ];
 
     // ==========================================================
@@ -880,6 +1064,7 @@
     let activeSectionIndex = 0; 
     
     window.onload = function() {
+        document.documentElement.style.setProperty('--q-font', Q_FONT_FAMILY);
         if(document.getElementById('s-content-area')) {
             document.getElementById('s-content-area').innerHTML = EXAM_S_HTML;
             generateSchemeTable();
@@ -971,6 +1156,8 @@
                 id: globalQIndex++,
                 section: sec.sectionTitle,
                 text: q.text,
+                type: q.type || 'MCQ', 
+                table: q.table || '',  
                 options: q.options,
                 correct: q.correct,
                 img: q.img,
@@ -1035,8 +1222,10 @@
         switchSection(0); 
         initTabScroll();
         startTimer();
+        
         makeDraggable(document.getElementById("calc-panel"), document.getElementById("calc-drag-handle"));
         makeDraggable(document.getElementById("const-panel"), document.getElementById("const-drag-handle"));
+        makeDraggable(document.getElementById("vk-panel"), document.getElementById("vk-drag-handle")); 
         
         const btn = document.getElementById('sidebar-toggle-btn');
         if (window.innerWidth <= 768) {
@@ -1185,6 +1374,11 @@
         }
         lastSwitchTime = Date.now();
     }
+    
+    function fmtText(txt) {
+        if (!txt) return '';
+        return txt.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+    }
 
     function loadQuestion(idx) {
         updateTimeSpent(); 
@@ -1211,17 +1405,28 @@
         if(status[currQ] === 'not-visited') { status[currQ] = 'not-ans'; }
 
         const q = QUESTIONS[idx];
-        let imgHtml = '';
-        if(q.img) {
-            imgHtml = `<img src="${q.img}" alt="Question Image" onerror="this.style.display='none'">`;
+        let imgHtml = q.img ? `<img src="${q.img}" alt="Question Image" onerror="this.style.display='none'">` : '';
+        let tableHtml = q.table ? `<div class="table-container">${q.table}</div>` : ''; 
+
+        let dynamicInputHtml = '';
+        if (q.type === 'NAT') {
+            const ansVal = answers[idx] !== undefined ? answers[idx] : '';
+            dynamicInputHtml = `
+                <div class="nat-container">
+                    <input type="text" id="nat-input-${idx}" class="nat-input" 
+                           value="${ansVal}" placeholder="Tap to open keyboard" 
+                           readonly onclick="openVK(${idx})">
+                </div>
+            `;
+        } else {
+            dynamicInputHtml = q.options.map((o,i) => `<div class="option-item ${answers[idx]===i?'selected':''}" onclick="selectOpt(${i})">${fmtText(o)}</div>`).join('');
+            closeVK(); 
         }
 
         document.getElementById('q-render-area').innerHTML = `
-            <div class="question-content">
-                <span class="q-num-inline">Question ${idx + 1}:</span> ${q.text}
-                ${imgHtml}
-            </div>` + 
-            q.options.map((o,i) => `<div class="option-item ${answers[idx]===i?'selected':''}" onclick="selectOpt(${i})">${o}</div>`).join('');
+            <div class="question-content"><span class="q-num-inline">Question ${idx + 1}:</span> ${fmtText(q.text.trim())}${imgHtml}${tableHtml}</div>
+            ${dynamicInputHtml}
+        `;
         
         updateAllVisibleBtns(); 
 
@@ -1232,12 +1437,10 @@
             submitBtn.style.display = 'block';
             saveBtn.innerText = 'Save';
             saveBtn.disabled = false;
-            saveBtn.classList.remove('btn-disabled');
         } else {
             submitBtn.style.display = 'none';
             saveBtn.innerText = 'Save & Next';
             saveBtn.disabled = false;
-            saveBtn.classList.remove('btn-disabled');
         }
     }
 
@@ -1249,16 +1452,22 @@
     }
     
     function handleAction(a) {
+        const hasAnswer = answers[currQ] !== undefined && answers[currQ] !== '';
+        
         if(a==='save') {
-             status[currQ] = answers[currQ]!==undefined ? 'ans' : 'not-ans';
+             status[currQ] = hasAnswer ? 'ans' : 'not-ans';
         }
         if(a==='review') {
-            status[currQ] = answers[currQ]!==undefined ? 'rev-ans' : 'rev';
+            status[currQ] = hasAnswer ? 'rev-ans' : 'rev';
         }
         if(a==='clear') { 
             delete answers[currQ]; 
             delete finalTimes[currQ];
             status[currQ] = 'not-ans'; 
+            
+            const natInput = document.getElementById(`nat-input-${currQ}`);
+            if (natInput) natInput.value = '';
+            
             loadQuestion(currQ); 
             return; 
         }
@@ -1393,7 +1602,28 @@
                             let mCor = (typeof q.marksCorrect === 'number') ? q.marksCorrect : 4;
                             let mWro = (typeof q.marksWrong === 'number') ? q.marksWrong : 1;
                             
-                            if(userAns === q.correct) { 
+                            let isCorrect = false;
+                            
+                            if (q.type === 'NAT') {
+                                const uAnsStr = String(userAns).trim().toLowerCase();
+                                const cAnsStr = String(q.correct).trim().toLowerCase();
+                                const rangeMatch = cAnsStr.match(/^(-?\d+(?:\.\d+)?)\s*(?:to|-|~|:)\s*(-?\d+(?:\.\d+)?)$/);
+                                
+                                if (rangeMatch) {
+                                    const min = parseFloat(rangeMatch[1]);
+                                    const max = parseFloat(rangeMatch[2]);
+                                    const uVal = parseFloat(uAnsStr);
+                                    if (!isNaN(uVal)) {
+                                        isCorrect = (uVal >= min && uVal <= max);
+                                    }
+                                } else {
+                                    isCorrect = (uAnsStr === cAnsStr);
+                                }
+                            } else {
+                                isCorrect = (userAns === q.correct);
+                            }
+
+                            if(isCorrect) { 
                                 correct++; 
                                 score += mCor; 
                             } else { 
@@ -1466,7 +1696,28 @@
             const userAns = answers[i];
             const stat = status[i];
             const isAttempted = (stat === 'ans' || stat === 'rev-ans');
-            const isCorrect = userAns === q.correct;
+            
+            let isCorrect = false;
+            
+            if (q.type === 'NAT') {
+                const uAnsStr = String(userAns).trim().toLowerCase();
+                const cAnsStr = String(q.correct).trim().toLowerCase();
+                const rangeMatch = cAnsStr.match(/^(-?\d+(?:\.\d+)?)\s*(?:to|-|~|:)\s*(-?\d+(?:\.\d+)?)$/);
+                
+                if (rangeMatch) {
+                    const min = parseFloat(rangeMatch[1]);
+                    const max = parseFloat(rangeMatch[2]);
+                    const uVal = parseFloat(uAnsStr);
+                    if (!isNaN(uVal)) {
+                        isCorrect = (uVal >= min && uVal <= max);
+                    }
+                } else {
+                    isCorrect = (uAnsStr === cAnsStr);
+                }
+            } else {
+                isCorrect = (userAns === q.correct);
+            }
+
             const timeVal = finalTimes[i] ? Math.round(finalTimes[i]) : 0;
             
             let evaluated = false;
@@ -1486,33 +1737,38 @@
             }
             
             let optionsHTML = '';
-            q.options.forEach((opt, oIdx) => {
-                let optClass = 'po-neutral';
-                if (oIdx === q.correct) optClass = 'po-correct';
-                else if (userAns === oIdx && !isCorrect) optClass = 'po-wrong-sel';
-                
-                if(userAns === oIdx && !evaluated) optClass = 'po-neutral';
-                
-                optionsHTML += `<div class="print-opt-item ${optClass}">${String.fromCharCode(65+oIdx)}. ${opt}</div>`;
-            });
             
-            let imgHtml = '';
-            if(q.img) {
-                imgHtml = `<img src="${q.img}" alt="Question Image">`;
+            if (q.type === 'NAT') {
+                let optClass = isCorrect ? 'po-correct' : (userAns ? 'po-wrong-sel' : 'po-neutral');
+                if(!evaluated && isAttempted) optClass = 'po-neutral';
+                optionsHTML = `<div class="print-opt-item ${optClass}">Your Input: <strong>${userAns || '-'}</strong><br><span style="color:#555; font-size:0.85rem;">Correct Answer: ${q.correct}</span></div>`;
+            } else {
+                q.options.forEach((opt, oIdx) => {
+                    let optClass = 'po-neutral';
+                    if (oIdx === q.correct) optClass = 'po-correct';
+                    else if (userAns === oIdx && !isCorrect) optClass = 'po-wrong-sel';
+                    
+                    if(userAns === oIdx && !evaluated) optClass = 'po-neutral';
+                    
+                    optionsHTML += `<div class="print-opt-item ${optClass}">${String.fromCharCode(65+oIdx)}. ${fmtText(opt)}</div>`;
+                });
             }
+            
+            let imgHtml = q.img ? `<img src="${q.img}" alt="Question Image">` : '';
+            let tableHtml = q.table ? `<div style="margin: 10px 0;">${q.table}</div>` : '';
 
-            let outcomeStr = !isAttempted ? '-' : (evaluated ? String.fromCharCode(65+userAns) : 'Not Evaluated (Limit Reached)');
+            let outcomeStr = !isAttempted ? '-' : (evaluated ? (q.type === 'NAT' ? 'Filled' : String.fromCharCode(65+userAns)) : 'Not Evaluated');
             
             const metaHTML = `
                 <div class="meta-block" style="${!evaluated && isAttempted ? 'grid-column: 1 / -1;' : ''}"><strong>Selected</strong><span>${outcomeStr}</span></div>
-                ${!evaluated && isAttempted ? '' : `<div class="meta-block"><strong>Correct</strong><span>${String.fromCharCode(65+q.correct)}</span></div>`}
+                ${!evaluated && isAttempted ? '' : `<div class="meta-block"><strong>Correct</strong><span>${q.type === 'NAT' ? 'Value' : String.fromCharCode(65+q.correct)}</span></div>`}
                 <div class="meta-block"><strong>Marks</strong><span style="color:${marks>0?'green':(marks<0?'red':'black')}">${marks>0?'+'+marks:marks}</span></div>
                 <div class="meta-block"><strong>Time</strong><span>${timeVal > 0 ? timeVal + 's' : '-'}</span></div>
             `;
 
             const block = document.createElement('div');
             block.className = 'print-q-block';
-            block.innerHTML = `<div class="print-q-text">Q${q.id}. ${q.text}${imgHtml}</div><div class="print-q-body"><div class="print-opt-col">${optionsHTML}</div><div class="print-meta-col">${metaHTML}</div></div>`;
+            block.innerHTML = `<div class="print-q-text">Q${q.id}. ${fmtText(q.text)}${imgHtml}${tableHtml}</div><div class="print-q-body"><div class="print-opt-col">${optionsHTML}</div><div class="print-meta-col">${metaHTML}</div></div>`;
             list.appendChild(block);
         });
     }
@@ -1533,17 +1789,18 @@
         }, 500); 
     }
 
-    // Dynamic scale propagation across Question Area, Floating Panels, and Info Modal
     function applyZoom(v) { 
         document.getElementById('zoom-target').style.transform = `scale(${v})`; 
         document.getElementById('zoom-target').style.width = `${100/v}%`; 
 
         const calc = document.getElementById('calc-panel');
         const consts = document.getElementById('const-panel');
+        const vk = document.getElementById('vk-panel');
         const infoTarget = document.getElementById('info-modal-target');
 
         calc.style.transform = `scale(${v})`;
         consts.style.transform = `scale(${v})`;
+        vk.style.transform = `scale(${v})`;
         
         if (infoTarget) {
             infoTarget.style.transform = `scale(${v})`;
@@ -1553,8 +1810,154 @@
     function toggleFullScreen(elem) { if (!document.fullscreenElement) { if (elem.requestFullscreen) { elem.requestFullscreen(); } else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } } else { if (document.exitFullscreen) document.exitFullscreen(); } }
     function toggleFloat(id) { const el = document.getElementById(id); if(!el.style.left) { el.style.top="80px"; el.style.left="50px"; } el.style.display = el.style.display==='block'?'none':'block'; }
     function toggleCalcHelp() { const h = document.getElementById('calc-help-box'); h.style.display = h.style.display==='block'?'none':'block'; }
-    function makeDraggable(elmnt, handle) { let pos1=0, pos2=0, pos3=0, pos4=0; handle.onmousedown = dragStart; handle.ontouchstart = dragStart; function dragStart(e) { e.preventDefault(); if (e.type === "touchstart") { pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY; } else { pos3 = e.clientX; pos4 = e.clientY; } document.onmouseup = closeDrag; document.onmousemove = elementDrag; document.ontouchend = closeDrag; document.ontouchmove = elementDrag; } function elementDrag(e) { e.preventDefault(); let clientX, clientY; if (e.type === "touchmove") { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } else { clientX = e.clientX; clientY = e.clientY; } pos1 = pos3 - clientX; pos2 = pos4 - clientY; pos3 = clientX; pos4 = clientY; let newTop = elmnt.offsetTop - pos2; let newLeft = elmnt.offsetLeft - pos1; if(newTop < 0) newTop = 0; if(newTop > window.innerHeight - 50) newTop = window.innerHeight - 50; if(newLeft < -(elmnt.offsetWidth - 50)) newLeft = -(elmnt.offsetWidth - 50); if(newLeft > window.innerWidth - 50) newLeft = window.innerWidth - 50; elmnt.style.top = newTop + "px"; elmnt.style.left = newLeft + "px"; } function closeDrag() { document.onmouseup = null; document.onmousemove = null; document.ontouchend = null; document.ontouchmove = null; } }
+    
+    function makeDraggable(elmnt, handle) { 
+        let pos1=0, pos2=0, pos3=0, pos4=0; 
+        handle.onmousedown = dragStart; 
+        handle.ontouchstart = dragStart; 
+        
+        function dragStart(e) { 
+            e.preventDefault(); 
+            if (elmnt.style.transform && elmnt.style.transform !== 'none') {
+                const rect = elmnt.getBoundingClientRect();
+                elmnt.style.transform = 'none';
+                elmnt.style.top = rect.top + 'px';
+                elmnt.style.left = rect.left + 'px';
+                elmnt.style.bottom = 'auto'; 
+            }
 
+            if (e.type === "touchstart") { 
+                pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY; 
+            } else { 
+                pos3 = e.clientX; pos4 = e.clientY; 
+            } 
+            document.onmouseup = closeDrag; document.onmousemove = elementDrag; 
+            document.ontouchend = closeDrag; document.ontouchmove = elementDrag; 
+        } 
+        function elementDrag(e) { 
+            e.preventDefault(); 
+            let clientX, clientY; 
+            if (e.type === "touchmove") { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
+            else { clientX = e.clientX; clientY = e.clientY; } 
+            
+            pos1 = pos3 - clientX; pos2 = pos4 - clientY; 
+            pos3 = clientX; pos4 = clientY; 
+            
+            let newTop = elmnt.offsetTop - pos2; let newLeft = elmnt.offsetLeft - pos1; 
+            
+            if(newTop < 0) newTop = 0; 
+            if(newTop > window.innerHeight - 50) newTop = window.innerHeight - 50; 
+            if(newLeft < -(elmnt.offsetWidth - 50)) newLeft = -(elmnt.offsetWidth - 50); 
+            if(newLeft > window.innerWidth - 50) newLeft = window.innerWidth - 50; 
+            
+            elmnt.style.top = newTop + "px"; elmnt.style.left = newLeft + "px"; 
+        } 
+        function closeDrag() { 
+            document.onmouseup = null; document.onmousemove = null; 
+            document.ontouchend = null; document.ontouchmove = null; 
+        } 
+    }
+
+    /* --- ENHANCED VIRTUAL KEYBOARD HANDLERS --- */
+    let vkTarget = null;
+    let vkShift = false;
+
+    function openVK(target) {
+        vkTarget = target;
+        const el = document.getElementById('vk-panel');
+        el.style.display = 'block'; 
+
+        el.style.transform = 'none';
+
+        if (target === 'login') {
+            const rect = el.getBoundingClientRect();
+            let leftPos = (window.innerWidth - rect.width) / 2;
+            let topPos = window.innerHeight - rect.height - 20;
+            
+            el.style.left = Math.max(10, leftPos) + "px";
+            el.style.top = Math.max(10, topPos) + "px";
+            el.style.bottom = 'auto';
+            
+            toggleVKMode('alpha'); 
+        } else {
+            if (!el.style.top || el.style.top === "") {
+                const rect = el.getBoundingClientRect();
+                let leftPos = (window.innerWidth - rect.width) / 2;
+                let topPos = window.innerHeight - rect.height - 20;
+                
+                el.style.left = Math.max(10, leftPos) + "px";
+                el.style.top = Math.max(10, topPos) + "px";
+                el.style.bottom = 'auto';
+            }
+            toggleVKMode('num');
+            if (answers[target] === undefined) answers[target] = '';
+        }
+    }
+
+    function closeVK() { document.getElementById('vk-panel').style.display = 'none'; vkTarget = null; }
+    
+    function toggleVKMode(mode) {
+        document.getElementById('vk-num-container').style.display = mode === 'num' ? 'flex' : 'none';
+        document.getElementById('vk-alpha-container').style.display = mode === 'alpha' ? 'flex' : 'none';
+    }
+
+    function toggleVKShift() {
+        vkShift = !vkShift;
+        const letters = document.querySelectorAll('.vk-letter');
+        letters.forEach(btn => {
+            const char = btn.innerText;
+            btn.innerText = vkShift ? char.toUpperCase() : char.toLowerCase();
+        });
+    }
+
+    function vkType(char) {
+        if (vkTarget === null) return;
+        
+        let finalChar = char;
+        if (vkShift && char.length === 1 && char.match(/[a-z]/i)) {
+            finalChar = char.toUpperCase();
+        }
+
+        if (vkTarget === 'login') {
+            const inp = document.getElementById('user-name');
+            inp.value += finalChar;
+        } else {
+            if (currQ !== vkTarget) return;
+            answers[vkTarget] += finalChar;
+            status[vkTarget] = 'ans';
+            document.getElementById(`nat-input-${vkTarget}`).value = answers[vkTarget];
+            finalTimes[vkTarget] = timeSpent[vkTarget];
+        }
+    }
+    
+    function vkBackspace() {
+        if (vkTarget === null) return;
+        
+        if (vkTarget === 'login') {
+            const inp = document.getElementById('user-name');
+            inp.value = inp.value.slice(0, -1);
+        } else {
+            if (currQ !== vkTarget || !answers[vkTarget]) return;
+            answers[vkTarget] = String(answers[vkTarget]).slice(0, -1);
+            if (answers[vkTarget] === '') status[vkTarget] = 'not-ans';
+            document.getElementById(`nat-input-${vkTarget}`).value = answers[vkTarget];
+        }
+    }
+
+    function vkClear() {
+        if (vkTarget === null) return;
+        
+        if (vkTarget === 'login') {
+            document.getElementById('user-name').value = '';
+        } else {
+            if (currQ !== vkTarget) return;
+            answers[vkTarget] = '';
+            status[vkTarget] = 'not-ans';
+            document.getElementById(`nat-input-${vkTarget}`).value = '';
+        }
+    }
+
+    /* Calculator state logic */
     let calcState = { display: '0', firstOp: null, waitingForSecondOp: false, operator: null, memory: 0, angleMode: 'deg' };
     function updateDisplay() { document.getElementById('calc-result').value = calcState.display; }
     function calcInput(digit) { if (calcState.waitingForSecondOp) { calcState.display = digit; calcState.waitingForSecondOp = false; } else { calcState.display = calcState.display === '0' ? digit : calcState.display + digit; } updateDisplay(); }
@@ -1574,3 +1977,4 @@
 </script>
 </body>
 </html>
+
