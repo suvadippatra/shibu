@@ -53,6 +53,14 @@
         
         .left-panel { flex: 1; border-right: 1px solid var(--border); max-width: 60%; display: flex; flex-direction: column; overflow: hidden; }
         .left-panel.expanded { max-width: 100%; border-right: none; }
+        
+        /* Specific rule for Two-Column layout when Preview is Hidden in Landscape */
+        @media (min-width: 1025px) {
+            .left-panel.expanded .left-content-scroll { column-count: 2; column-gap: 1.5rem; padding-right: 1rem; }
+            .left-panel.expanded .card, .left-panel.expanded .question-block { break-inside: avoid-column; margin-bottom: 1.5rem; }
+            .left-panel.expanded .bottom-action-bar { column-span: all; break-inside: avoid-column;}
+        }
+
         .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; }
         
         .right-panel { flex: 0 0 40%; background: var(--bg-main); display: flex; flex-direction: column; border-left: 1px solid var(--border); transition: all 0.3s ease; }
@@ -90,11 +98,11 @@
         .table input { width: 100%; padding: 0.4rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; background: var(--bg-input); color: var(--text-main); }
         .table input:focus { border-color: var(--primary); outline: none; }
 
-        .search-bar { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-card); padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; margin-bottom: 1rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+        .search-bar { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-card); padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; margin-bottom: 1rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; break-inside: avoid-column; }
         .search-bar::-webkit-scrollbar { display: none; }
         .sec-stats { font-size: 0.8rem; color: var(--primary); background: rgba(61, 178, 212, 0.15); padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600; margin-left: 0.5rem; }
 
-        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; }
+        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; break-inside: avoid-column; }
         .question-block.active { border-left-color: var(--primary); background: var(--bg-hover); box-shadow: 0 0 0 1px rgba(61, 178, 212, 0.2); }
         @keyframes flashHighlight { 0% { box-shadow: 0 0 0 4px var(--primary); transform: scale(1.01); } 100% { box-shadow: none; transform: scale(1); } }
         .highlight-flash { animation: flashHighlight 1.5s ease-out; z-index: 5; position: relative; }
@@ -114,7 +122,6 @@
         .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
         
-        /* NAT specific block */
         .nat-config-block { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--primary); margin-bottom: 0.75rem; }
         
         .qblock-media { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
@@ -122,7 +129,7 @@
         .q-img-thumb { max-height: 40px; border-radius: 4px; object-fit: cover; }
         .table-overlay { font-weight: 700; color: var(--info); }
 
-        .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; }
+        .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; break-inside: avoid-column; }
         
         .engine-config { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--primary); margin-bottom: 0.5rem; }
         .engine-title { font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
@@ -164,7 +171,6 @@
         .editor-table th, .editor-table td { border: 1px solid var(--border); padding: 0.5rem; text-align: center; min-width: 60px; font-size: 0.9rem; }
         .editor-table th { background: var(--bg-card); font-weight: 700; color: var(--primary); }
 
-        /* Tabs for Modals */
         .tab-nav { display: flex; border-bottom: 2px solid var(--primary); margin-bottom: 1rem; }
         .tab-btn { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--text-muted); background: transparent; border: none; font-size: 0.95rem; transition: 0.2s; }
         .tab-btn.active { color: var(--primary); background: rgba(61, 178, 212, 0.1); border-radius: 6px 6px 0 0; }
@@ -199,11 +205,11 @@
                     <summary>📋 Exam Details & Typography</summary>
                     <div class="card-inner">
                         <div class="input-row">
-                            <div class="form-group"><label>Agency Name (Top Header)</label><input type="text" id="agencyName" class="form-control" value="Aapna Testing Agency" oninput="appState.agencyName = this.value;"></div>
-                            <div class="form-group"><label>Exam Title (Tab & Headers)</label><input type="text" id="examTitle" class="form-control" value="Mock Exam" oninput="appState.examTitle = this.value; generateAIPrompt();"></div>
+                            <div class="form-group"><label>Agency Name (Top Header)</label><input type="text" id="agencyName" class="form-control" value="Aapna Testing Agency" oninput="appState.agencyName = this.value; renderPreviewContent();"></div>
+                            <div class="form-group"><label>Exam Title (Tab & Headers)</label><input type="text" id="examTitle" class="form-control" value="Mock Exam" oninput="appState.examTitle = this.value; generateAIPrompt(); renderPreviewContent();"></div>
                         </div>
                         <div class="input-row">
-                            <div class="form-group"><label>Subtitle (Date / Info)</label><input type="text" id="examSubtitle" class="form-control" value="C1 Booklet" oninput="appState.examSubtitle = this.value;"></div>
+                            <div class="form-group"><label>Subtitle (Date / Info)</label><input type="text" id="examSubtitle" class="form-control" value="C1 Booklet" oninput="appState.examSubtitle = this.value; renderPreviewContent();"></div>
                             <div class="form-group"><label>Duration (Mins)</label><input type="number" id="duration" class="form-control" value="180" min="1" oninput="appState.duration = parseInt(this.value) || 90;"></div>
                         </div>
                         <div class="input-row" style="margin-bottom: 0;">
@@ -213,7 +219,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Global Font Family</label>
-                                <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value);">
+                                <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value); renderPreviewContent();">
                                     <option value="Arial, sans-serif">Arial</option>
                                     <option value="Calibri, sans-serif">Calibri</option>
                                     <option value="Verdana, sans-serif">Verdana</option>
@@ -268,13 +274,12 @@
 
             <div class="bottom-action-bar">
                 
-                <!-- NEW: Math Compilation Engine Selector -->
                 <div class="engine-config" id="compileConfigBox">
                     <div class="engine-title">⚙️ Mathematics Compilation Engine</div>
                     <div class="engine-options">
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" onchange="appState.renderEngine = this.value"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; renderPreviewContent();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" onchange="appState.renderEngine = this.value; renderPreviewContent();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; renderPreviewContent();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
                     </div>
                 </div>
 
@@ -456,7 +461,7 @@
                 <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (Basic)</button>
             </div>
             <p id="prompt-desc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
-                This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It avoids breaking structural formats and handles NATs perfectly.
+                This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It strictly forbids hallucinatory span tags and handles NATs perfectly.
             </p>
             <textarea id="aiPrompt" class="form-control" readonly style="min-height: 350px; font-family: monospace; font-size: 0.85rem; background: var(--bg-main); border: 2px solid var(--primary);"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
@@ -571,6 +576,43 @@
         function escapeHTML(str) {
             if(!str) return '';
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        
+        // Processes LaTeX conditionally. Unescapes < and > ONLY inside math blocks so KaTeX can read them
+        function processMath(text, engine) {
+            if (!text) return '';
+            
+            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                let isDisplay = !!displayMath;
+                
+                // Unescape < and > ONLY within the LaTeX boundaries to allow KaTeX to parse it
+                let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+                if (engine === 'MATHML' || engine === 'PREVIEW') {
+                    try {
+                        return katex.renderToString(unescapedMath, { 
+                            displayMode: isDisplay, 
+                            output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', 
+                            throwOnError: false 
+                        });
+                    } catch(e) {
+                        return `<span style="color:red">[Math Error]</span>`;
+                    }
+                } else if (engine === 'HTML_FALLBACK') {
+                    let str = unescapedMath;
+                    str = str.replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←');
+                    str = str.replace(/\\pi/g, 'π').replace(/\\sigma/g, 'σ').replace(/\\alpha/g, 'α').replace(/\\beta/g, 'β');
+                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^(.)/g, '<sup>$1</sup>');
+                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_(.)/g, '<sub>$1</sub>');
+                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
+                    str = str.replace(/\\/g, ''); // strip remaining backslashes
+                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
+                } else if (engine === 'KATEX_ONLINE') {
+                    return match; // Leave raw delimiters for CDN injection later
+                }
+                return match;
+            });
         }
 
         function updateRulesData() {
@@ -720,7 +762,7 @@
             div.innerHTML = `
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
-                    <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold text** to emphasize." oninput="updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
+                    <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold text** to emphasize. Math goes in $ signs." oninput="updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
                     
                     <select class="form-control" style="width: auto; margin-left: 0.5rem; font-weight: 600;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                         <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option>
@@ -866,43 +908,6 @@
         }
         function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); }
 
-        // Processes LaTeX selectively based on the engine chosen
-        function processMath(text, engine) {
-            if (!text) return '';
-            
-            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
-                let math = displayMath || inlineMath;
-                let isDisplay = !!displayMath;
-                
-                // Unescape < and > ONLY within the LaTeX boundaries to allow KaTeX to parse it
-                let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-
-                if (engine === 'MATHML' || engine === 'PREVIEW') {
-                    try {
-                        return katex.renderToString(unescapedMath, { 
-                            displayMode: isDisplay, 
-                            output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', 
-                            throwOnError: false 
-                        });
-                    } catch(e) {
-                        return `<span style="color:red">[Math Error]</span>`;
-                    }
-                } else if (engine === 'HTML_FALLBACK') {
-                    let str = unescapedMath;
-                    str = str.replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←');
-                    str = str.replace(/\\pi/g, 'π').replace(/\\sigma/g, 'σ').replace(/\\alpha/g, 'α').replace(/\\beta/g, 'β');
-                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^(.)/g, '<sup>$1</sup>');
-                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_(.)/g, '<sub>$1</sub>');
-                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
-                    str = str.replace(/\\/g, ''); // strip remaining backslashes
-                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
-                } else if (engine === 'KATEX_ONLINE') {
-                    return match; // Leave raw delimiters for CDN injection later
-                }
-                return match;
-            });
-        }
-
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs');
             tabsContainer.innerHTML = '';
@@ -934,19 +939,19 @@
             let html = '';
             qs.forEach((q, idx) => {
                 
-                // 1. Escape the HTML strictly
-                let formattedText = escapeHTML(q.text);
+                // 1. Escape HTML entirely
+                let processedText = escapeHTML(q.text);
                 
-                // 2. Process LaTeX explicitly
+                // 2. Conditionally pass Math (PREVIEW mode forces visual rendering of both MathML and KaTeX for author feedback)
+                let previewEngine = (appState.renderEngine === 'HTML_FALLBACK') ? 'HTML_FALLBACK' : 'PREVIEW';
                 if(appState.mathMode === 'LATEX') {
-                    formattedText = processMath(formattedText, 'PREVIEW');
+                    processedText = processMath(processedText, previewEngine);
                 }
                 
-                // 3. Process Bold Text and Line Breaks
-                formattedText = parseBold(formattedText);
-                formattedText = formattedText.replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
+                // 3. Bold Text Formatting and Paragraph creation
+                processedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                 
-                html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${formattedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
+                html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
@@ -955,9 +960,9 @@
                 } else {
                     (q.options || []).forEach((opt, oi) => { 
                         let safeOpt = escapeHTML(opt);
-                        if(appState.mathMode === 'LATEX') safeOpt = processMath(safeOpt, 'PREVIEW');
+                        if(appState.mathMode === 'LATEX') safeOpt = processMath(safeOpt, previewEngine);
                         safeOpt = parseBold(safeOpt);
-                        // Using explicit number structure mirroring Last.html
+                        
                         html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${oi + 1}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}</div>`; 
                     });
                 }
@@ -1046,7 +1051,7 @@
                         if (!curQ || curQ.text !== '') {
                             curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
                         }
-                        // Explicitly remove AI hallucinated span tags here
+                        // Stripping hallucinated span tags immediately upon import
                         let cleanedText = tr.substring(2).trim().replace(/\\n/g, '\n').replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
                         curQ.text = cleanedText;
                         appState.questionsBySection[curSec].push(curQ); 
@@ -1059,7 +1064,6 @@
                         if (curQ.type === 'NAT') {
                             curQ.correctNat = tr.substring(2).trim();
                         } else {
-                            // Grab only the first actual letter to avoid hallucinated tags matching incorrectly
                             let letter = tr.substring(2).trim().replace(/[^a-zA-Z]/g, '').charAt(0);
                             if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
                         }
@@ -1085,10 +1089,12 @@
                 const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
                 let txt = await resp.text();
 
-                // Replace Headings
+                // Parameter 1 & 2: Titles
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName}</h2>`);
                 txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle}</h1>`);
+                
+                // Parameter 3 & 4: Subtitles & Headers
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle}</span>`);
@@ -1101,26 +1107,26 @@
                     txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
                 }
 
-                // Constants
+                // Parameter 5: Constants
                 let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
                 txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
 
-                // Reports Header
+                // Parameter 6: Reports Header
                 txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle} : ${appState.examSubtitle}</div>`);
                 txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle} - ${appState.examSubtitle}$2`);
                 
-                // Timer & Font Config
+                // Parameter 7 & 10: Timer & Font Config
                 txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
                 txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
                 txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
                 
-                // Instructional Text
+                // Parameter 8: Instructional Text
                 const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
                 const rulesStr = activeRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
-                // Handle External KaTeX scripts if requested
+                // Process Online KaTeX Dependency if Selected
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
@@ -1130,17 +1136,16 @@
                 txt = txt.replace(/<!-- PARAMETER 11 \(KaTeX CSS\) -->/i, katexCSS);
                 txt = txt.replace(/<!-- PARAMETER 12 \(KaTeX JS\) -->/i, katexJS);
 
-                // Build Core Question Bank
+                // Parameter 9: Core Question Bank (Executing Strict Formatting & Math Parsing)
                 const qb = [];
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
                         
-                        // Execute formatting logic EXACTLY as requested:
-                        // 1. Escape HTML
+                        // 1. Strict HTML Escape
                         let processedText = escapeHTML(q.text);
                         let processedOptions = q.options.map(o => escapeHTML(o));
                         
-                        // 2. Parse Math based on Engine Selection
+                        // 2. Unescape & Parse Math blocks explicitly
                         if (appState.mathMode === 'LATEX') {
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
@@ -1166,7 +1171,6 @@
                 }
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
 
-                // Create Download
                 const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
                 const url = URL.createObjectURL(blob);
                 const link = document.getElementById('downloadLinkHTML'); link.href = url; link.download = `${appState.examTitle.replace(/\s+/g, '_')}_Final.html`;
@@ -1185,7 +1189,7 @@
             
             if (mode === 'LATEX') {
                 document.getElementById('tab-btn-latex').classList.add('active');
-                document.getElementById('prompt-desc').innerText = "This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It avoids breaking structural formats and handles NATs perfectly.";
+                document.getElementById('prompt-desc').innerText = "This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It strictly forbids hallucinatory span tags and handles NATs perfectly.";
                 document.getElementById('compileConfigBox').style.display = 'block';
             } else {
                 document.getElementById('tab-btn-html').classList.add('active');
@@ -1204,7 +1208,8 @@
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
 CRITICAL MATH RULES:
-- You MUST extract all mathematical equations, variables, and scientific notation using standard LaTeX wrapped in $ (inline) or $$ (display block). Example: $B \\rightarrow E$
+- You MUST extract all mathematical equations, variables, and scientific notation using standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
+- Example: $B \\rightarrow E$
 - DO NOT use LaTeX arrays or matrices. If an equation has a complex matrix or piecewise bracket, write a single dot '.' so the author knows to upload an image.`;
             } else {
                 modeSpecificRules = `
@@ -1218,10 +1223,13 @@ CRITICAL MATH RULES:
 
 CRITICAL EXTRACTION RULES:
 1. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
-2. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
-3. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
-4. TEXT EMPHASIS: Wrap bold parts in double asterisks.
-5. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
+2. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text.
+3. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
+4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
+5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
+   Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
+6. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
+7. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
