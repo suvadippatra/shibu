@@ -9,9 +9,10 @@
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
-    <!-- KaTeX (Local JS from your repo, CDN for CSS just for authoring preview) -->
+    <!-- KaTeX for Live Authoring Preview (Loads CSS from CDN for fonts, JS locally) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="../libs/katex.min.js"></script>
+    <!-- Local JS fallback to CDN to prevent silent failures -->
+    <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,13 +57,17 @@
         
         .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; }
         
-        /* BULLETPROOF 2-COLUMN GRID SYSTEM */
+        /* BULLETPROOF 2-COLUMN MASONRY SYSTEM */
         @media (min-width: 1025px) {
             .left-panel.expanded #questionsListAll details[open] .card-inner {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                align-items: start;
+                column-count: 2;
+                column-gap: 1.5rem;
+                display: block; /* Overrides any previous grid/flex settings */
+            }
+            .question-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 1rem;
             }
             .left-panel.expanded .bottom-action-bar { border-top: 2px solid var(--primary); }
         }
@@ -191,7 +196,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.4</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.4 (Math Engine)</span></div>
         <div class="navbar-actions">
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
             <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
