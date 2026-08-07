@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- PARAMETER 1 (Global): Exam Name. Update this string to dynamically change the browser tab title. -->
     <title>My_Test</title>
+    
+    <!-- PARAMETER 11 (KaTeX CSS) -->
+    
     <style>
         :root {
             --primary: #3db2d4; 
@@ -170,9 +173,9 @@
         
         .question-content { 
             font-size: 1.15rem; 
-            line-height: 1.5; 
+            line-height: 1.6; 
             color: var(--text-dark); 
-            margin-bottom: 12px; 
+            margin-bottom: 15px; 
             white-space: pre-wrap; 
             font-family: var(--q-font);
         }
@@ -300,7 +303,6 @@
         .calc-help ul { padding-left: 20px; margin: 5px 0; }
         .calc-help li { margin-bottom: 5px; }
 
-        /* RE-ENGINEERED VIRTUAL KEYBOARD */
         #vk-panel { 
             width: 95vw; max-width: 800px; 
             background: #909ca3; 
@@ -820,7 +822,6 @@
         </div>
     </div>
     
-    <!-- RE-ENGINEERED VIRTUAL KEYBOARD PANEL -->
     <div id="vk-panel" class="float-panel">
         <div class="fp-head" id="vk-drag-handle" style="background: #3a4750; color: #fff; cursor: move; user-select: none;">
             Virtual Input Keyboard
@@ -1047,7 +1048,7 @@
         questions: [ 
                 { id:1, type: "MCQ", text:"Given below are two statements:\n**Statement I:** The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n**Statement II:** Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:", img:"", options:["Statement I is correct but Statement II is incorrect.","Statement I is incorrect but Statement II is correct.","Both Statement I and Statement II are correct.","Both Statement I and Statement II are incorrect."], correct:2 },
                 { id:2, type: "MCQ", text:"Match List-I with List-II:", table: "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>", options:["A-II, B-III, C-I, D-IV","A-I, B-IV, C-II, D-III","A-III, B-I, C-IV, D-II","A-IV, B-II, C-III, D-I"], correct:0 },
-                { id:3, type: "NAT", text:"The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .", img:"", options:[], correct:"2.5-3.5" }
+                { id:3, type: "NAT", text:"The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .", img:"", options:[], correct:"2.5" }
             ]
         }
     ];
@@ -1374,9 +1375,12 @@
         lastSwitchTime = Date.now();
     }
     
+    // Formatting parser: Adds <br> before numbered statements and bolding
     function fmtText(txt) {
         if (!txt) return '';
-        return txt.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+        let formatted = txt.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1'); 
+        return formatted;
     }
 
     function loadQuestion(idx) {
@@ -1418,10 +1422,16 @@
                 </div>
             `;
         } else {
-            dynamicInputHtml = q.options.map((o,i) => `<div class="option-item ${answers[idx]===i?'selected':''}" onclick="selectOpt(${i})">${fmtText(o)}</div>`).join('');
+            // Added structural numbering span for the options
+            dynamicInputHtml = q.options.map((o,i) => `
+                <div class="option-item ${answers[idx]===i?'selected':''}" onclick="selectOpt(${i})">
+                    <span style="font-weight:bold; margin-right:8px;">${i + 1}.</span>${fmtText(o)}
+                </div>
+            `).join('');
             closeVK(); 
         }
 
+        // Structural refinement: Flattened literal injection to prevent whitespace parsing artifacts
         document.getElementById('q-render-area').innerHTML = `
             <div class="question-content"><span class="q-num-inline">Question ${idx + 1}:</span> ${fmtText(q.text.trim())}${imgHtml}${tableHtml}</div>
             ${dynamicInputHtml}
@@ -1749,7 +1759,7 @@
                     
                     if(userAns === oIdx && !evaluated) optClass = 'po-neutral';
                     
-                    optionsHTML += `<div class="print-opt-item ${optClass}">${String.fromCharCode(65+oIdx)}. ${fmtText(opt)}</div>`;
+                    optionsHTML += `<div class="print-opt-item ${optClass}"><strong>${oIdx + 1}.</strong> ${fmtText(opt)}</div>`;
                 });
             }
             
@@ -1974,6 +1984,5 @@
     function calcMem(op) { let val = parseFloat(calcState.display); switch(op) { case 'MC': calcState.memory = 0; break; case 'MR': calcState.display = String(calcState.memory); break; case 'MS': calcState.memory = val; break; case 'M+': calcState.memory += val; break; case 'M-': calcState.memory -= val; break; } if(op === 'MR') calcState.waitingForSecondOp = true; updateDisplay(); }
 
 </script>
-<!-- PARAMETER 12 (KaTeX JS) -->
 </body>
 </html>
