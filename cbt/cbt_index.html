@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Question Paper Setter v4.2</title>
+    <title>CBT Question Paper Setter v4.3 (Math Engine)</title>
     
     <!-- Cropper.js for Image Cropping -->
-  <!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-    <!-- Cropper.js (local copy) -->
-    <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
-    <script src="vendor/cropper/cropper.min.js"></script>
+    <!-- KaTeX for LaTeX Parsing and Live Preview during Authoring -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,12 +37,8 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
         }
 
-        html, body {
-            overscroll-behavior: none; 
-        }
-
+        html, body { overscroll-behavior: none; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; }
-        
         .hidden { display: none !important; }
 
         .navbar { background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 1rem; }
@@ -126,7 +122,14 @@
         .q-img-thumb { max-height: 40px; border-radius: 4px; object-fit: cover; }
         .table-overlay { font-weight: 700; color: var(--info); }
 
-        .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem 0; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; }
+        .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; }
+        
+        /* Engine Config Styles */
+        .engine-config { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--primary); margin-bottom: 0.5rem; }
+        .engine-title { font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .engine-options { display: flex; flex-direction: column; gap: 0.4rem; }
+        .engine-label { font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-main); }
+        
         .download-box { background: var(--bg-hover); border: 2px dashed var(--success); padding: 1rem; border-radius: var(--radius-md); text-align: center; animation: fadeDown 0.4s ease-out; }
         @keyframes fadeDown { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
 
@@ -162,6 +165,11 @@
         .editor-table th, .editor-table td { border: 1px solid var(--border); padding: 0.5rem; text-align: center; min-width: 60px; font-size: 0.9rem; }
         .editor-table th { background: var(--bg-card); font-weight: 700; color: var(--primary); }
 
+        /* Tabs for Modals */
+        .tab-nav { display: flex; border-bottom: 2px solid var(--primary); margin-bottom: 1rem; }
+        .tab-btn { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--text-muted); background: transparent; border: none; font-size: 0.95rem; transition: 0.2s; }
+        .tab-btn.active { color: var(--primary); background: rgba(61, 178, 212, 0.1); border-radius: 6px 6px 0 0; }
+
         @media (max-width: 1024px) {
             .main { flex-direction: column; height: auto; overflow: visible; }
             .left-panel { max-width: 100%; border-right: none; padding-bottom: 1rem; overflow: visible; }
@@ -174,11 +182,11 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.2</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.3</span></div>
         <div class="navbar-actions">
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
             <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
-            <button class="btn-icon" onclick="openModal('promptModal')" title="Copy AI Prompt">🤖 AI Prompt</button>
+            <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖 AI Prompt</button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌 Import / Export</button>
             <button class="btn-icon" onclick="openModal('helpModal')" title="Help">❓ Help</button>
         </div>
@@ -265,6 +273,16 @@
 
             <!-- Sticky Bottom Action Bar -->
             <div class="bottom-action-bar">
+                
+                <div class="engine-config" id="compileConfigBox">
+                    <div class="engine-title">⚙️ Mathematics Compilation Engine</div>
+                    <div class="engine-options">
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" onchange="appState.renderEngine = this.value"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
+                        <label class="engine-label"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
+                    </div>
+                </div>
+
                 <button id="compileBtn" class="btn btn-success btn-block" style="padding: 1rem; font-weight: 800; font-size: 1.1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile & Generate Final HTML</button>
                 
                 <div id="downloadAreaHTML" class="download-box hidden">
@@ -438,7 +456,13 @@
                 <h2>🤖 AI Document Extraction Prompt</h2>
                 <button class="modal-close" onclick="closeModal('promptModal')">✕</button>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">Copy this recalibrated prompt into an AI LLM (like ChatGPT, Gemini, Claude) along with your PDF/Images to extract the raw questions perfectly. It now handles Assertion/Reason line-breaks and NATs correctly.</p>
+            <div class="tab-nav">
+                <button class="tab-btn active" id="tab-btn-latex" onclick="switchPrompt('LATEX')">Physics / Math (LaTeX)</button>
+                <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (HTML Fallback)</button>
+            </div>
+            <p id="prompt-desc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+                This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It avoids breaking structural formats and handles NATs perfectly.
+            </p>
             <textarea id="aiPrompt" class="form-control" readonly style="min-height: 350px; font-family: monospace; font-size: 0.85rem; background: var(--bg-main); border: 2px solid var(--primary);"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
@@ -458,18 +482,12 @@
                 <h4 style="color: var(--primary-dark); margin-top: 1rem;">1. Question Types (MCQ vs NAT)</h4>
                 <p style="margin-bottom: 0.5rem;">Use the dropdown on each question block to select its type. If you choose NAT, the multiple-choice options will vanish, and you can provide an exact value or an acceptable range (e.g., "2.5-3.5") as the correct answer. NATs do not deduct negative marks.</p>
                 
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">2. Formatting Text & Options</h4>
-                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
-                    <li><strong>Bold Text:</strong> Wrap text in double asterisks like <code>**this**</code> to emphasize words. Do not use HTML tags.</li>
-                    <li><strong>Images:</strong> Click the 🖼️ button on the main question OR next to any Option. The built-in Cropper lets you compress images drastically and apply Black & White scanner filters to save space.</li>
-                    <li><strong>Tables:</strong> Click the 📊 button to draw a responsive grid inside a question. Click Edit later to change its contents.</li>
-                </ul>
+                <h4 style="color: var(--primary-dark); margin-top: 1rem;">2. Mathematical Expressions (LaTeX)</h4>
+                <p style="margin-bottom: 0.5rem;">You can now type raw LaTeX wrapped in <code>$</code> (inline) or <code>$$</code> (display block). The live preview panel will instantly render it using KaTeX. When you click Compile, you can choose to hardcode these as native MathML for beautiful offline viewing!</p>
+                
+                <h4 style="color: var(--primary-dark); margin-top: 1rem;">3. Complex Failsafe (Images)</h4>
+                <p style="margin-bottom: 0.5rem;">If a question has massive matrices, diagrams, or organic chemistry structures, simply type a dot <code>.</code> in the question box and upload a cropped image of the full question using the 🖼️ button. This guarantees 100% fidelity.</p>
 
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">3. Previewing the Exam</h4>
-                <p style="margin-bottom: 0.5rem;">The right panel displays a live preview of the current section. Select a tab at the top of the preview panel to view all questions exactly as the student will see them. The preview updates instantly as you type.</p>
-
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">4. Generating Final Output</h4>
-                <p style="margin-bottom: 0.5rem;">Once ready, click the large <strong>🚀 Compile</strong> button at the bottom left. This merges your questions, rules, images, and audio into a single HTML exam file. You can also use the "Import/Export CBT" button to save your raw work-in-progress data to continue editing later.</p>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('helpModal')">Got it!</button>
         </div>
@@ -494,21 +512,13 @@
             { name: "Permeability of free space (μ₀)", value: "4π × 10⁻⁷ T·m/A" },
             { name: "Coulomb's constant (1/4πε₀)", value: "9 × 10⁹ N·m²/C²" },
             { name: "Rydberg constant (RH)", value: "1.097 × 10⁷ m⁻¹" },
-            { name: "Bohr radius (a₀)", value: "0.529 × 10⁻¹⁰ m" },
-            { name: "Mass of electron (mₑ)", value: "9.1 × 10⁻³¹ kg" },
-            { name: "Mass of proton (mₚ)", value: "1.672 × 10⁻²⁷ kg" },
-            { name: "Mass of neutron (mₙ)", value: "1.675 × 10⁻²⁷ kg" },
-            { name: "Universal gas constant (R)", value: "8.314 J/(mol·K)" },
-            { name: "Faraday constant (F)", value: "96485 C/mol" },
-            { name: "Stefan-Boltzmann constant (σ)", value: "5.67 × 10⁻⁸ W/(m²·K⁴)" },
-            { name: "Wien's displacement constant (b)", value: "2.898 × 10⁻³ m·K" },
-            { name: "Atomic mass unit (1 u or amu)", value: "1.66 × 10⁻²⁷ kg (931.5 MeV)" },
-            { name: "Bohr magneton (μB)", value: "9.27 × 10⁻²⁴ J/T" }
+            { name: "Bohr radius (a₀)", value: "0.529 × 10⁻¹⁰ m" }
         ];
 
         const appState = {
             agencyName: 'Aapna Testing Agency', examTitle: 'Mock Exam', examSubtitle: 'C1 Booklet',
             duration: 180, timerMode: 'STOPWATCH', fontName: 'Arial, sans-serif',
+            mathMode: 'LATEX', renderEngine: 'MATHML', // New tracking variables for dual mode
             rules: [...defaultRules],
             constants: JSON.parse(JSON.stringify(defaultConstants)),
             audio: { bg: '', start: '', submit: '' },
@@ -619,7 +629,7 @@
             
             if (activePreviewSection === oldName) activePreviewSection = newName;
             
-            renderMarksTable(); renderAllQuestions(); generateAIPrompt(); renderPreviewTabs();
+            renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
         }
 
         function addNewSection() {
@@ -627,7 +637,7 @@
             if (appState.questionsBySection[newName]) return;
             appState.sections.push({ name: newName, marks: 4, negative: 1, maxAttempts: 0 });
             appState.questionsBySection[newName] = [];
-            renderMarksTable(); renderAllQuestions(); generateAIPrompt(); renderPreviewTabs();
+            renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
             setTimeout(() => { document.getElementById(`details-${newName}`)?.scrollIntoView({behavior: 'smooth'}); }, 100);
         }
 
@@ -639,7 +649,7 @@
                 
                 if (activePreviewSection === secName) activePreviewSection = appState.sections[0]?.name || '';
                 
-                renderMarksTable(); renderAllQuestions(); generateAIPrompt(); renderPreviewTabs();
+                renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
             }
         }
 
@@ -862,8 +872,57 @@
         function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); }
 
         // ==========================================
-        // PREVIEW TABS
+        // LATEX AND PREVIEW PARSING
         // ==========================================
+        function processMathForPreview(text) {
+            if (!text) return '';
+            if (appState.mathMode !== 'LATEX') return text;
+            
+            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                try {
+                    return katex.renderToString(math, { displayMode: !!displayMath, throwOnError: false });
+                } catch(e) {
+                    return `<span style="color:red">[Math Error]</span>`;
+                }
+            });
+        }
+
+        function processMathForExport(text, engine) {
+            if (!text) return '';
+            if (engine === 'KATEX_ONLINE') return text; // Leave $...$ intact for injection
+
+            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                let isDisplay = !!displayMath;
+                
+                if (engine === 'MATHML') {
+                    try {
+                        return katex.renderToString(math, { displayMode: isDisplay, output: 'mathml', throwOnError: false });
+                    } catch (e) {
+                        return match; 
+                    }
+                } else if (engine === 'HTML_FALLBACK') {
+                    let str = math;
+                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
+                    str = str.replace(/_\{?(.*?)\}?/g, '<sub>$1</sub>');
+                    str = str.replace(/\^\{?(.*?)\}?/g, '<sup>$1</sup>');
+                    str = str.replace(/\\pi/g, 'π');
+                    str = str.replace(/\\alpha/g, 'α');
+                    str = str.replace(/\\beta/g, 'β');
+                    str = str.replace(/\\theta/g, 'θ');
+                    str = str.replace(/\\gamma/g, 'γ');
+                    str = str.replace(/\\lambda/g, 'λ');
+                    str = str.replace(/\\times/g, '×');
+                    str = str.replace(/\\cdot/g, '⋅');
+                    str = str.replace(/\\rightarrow/g, '→');
+                    str = str.replace(/\\infty/g, '∞');
+                    str = str.replace(/\\/g, ''); 
+                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
+                }
+            });
+        }
+
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs');
             tabsContainer.innerHTML = '';
@@ -894,14 +953,20 @@
 
             let html = '';
             qs.forEach((q, idx) => {
-                html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${parseBold(q.text) || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
+                // Apply KaTeX parsing for the live preview
+                let safeText = parseBold(processMathForPreview(q.text));
+                
+                html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${safeText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
                     html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
                 } else {
-                    (q.options || []).forEach((opt, oi) => { html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${String.fromCharCode(65 + oi)}.</strong> ${parseBold(opt) || '<span style="color:#aaa;">...</span>'}</div>`; });
+                    (q.options || []).forEach((opt, oi) => { 
+                        let safeOpt = parseBold(processMathForPreview(opt));
+                        html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${String.fromCharCode(65 + oi)}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}</div>`; 
+                    });
                 }
                 html += `</div>`;
             });
@@ -912,7 +977,7 @@
         // EXPORT / IMPORT CBT Logic
         // ==========================================
         function exportCBT() {
-            let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\nFont: ${appState.fontName}\n`;
+            let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\nFont: ${appState.fontName}\nMathMode: ${appState.mathMode}\n`;
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
             if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
             if (appState.audio.start) out += `AudioStart: ${appState.audio.start}\n`;
@@ -974,6 +1039,7 @@
                     if (tr.startsWith('Duration:')) { document.getElementById('duration').value = parseInt(tr.substring(9)); appState.duration = parseInt(tr.substring(9)); }
                     if (tr.startsWith('Timer:')) { document.getElementById('timerMode').value = tr.substring(6).trim(); appState.timerMode = tr.substring(6).trim(); }
                     if (tr.startsWith('Font:')) { document.getElementById('fontSelect').value = tr.substring(5).trim(); appState.fontName = tr.substring(5).trim(); document.documentElement.style.setProperty('--preview-font', appState.fontName); }
+                    if (tr.startsWith('MathMode:')) { appState.mathMode = tr.substring(9).trim(); generateAIPrompt(); }
                     if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
                     if (tr.startsWith('AudioBg:')) { appState.audio.bg = tr.substring(8).trim(); document.getElementById('audioBg').value = appState.audio.bg; }
                     if (tr.startsWith('AudioStart:')) { appState.audio.start = tr.substring(11).trim(); document.getElementById('audioStart').value = appState.audio.start; }
@@ -984,7 +1050,6 @@
                 }
                 else if (mode === 'questions' && curSec) {
                     if (tr.startsWith('QType:')) {
-                        // Preemptively create the question object if QType appears before Q
                         curQ = { type: tr.substring(6).trim(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
                     }
                     else if (tr.startsWith('Q:')) { 
@@ -1020,7 +1085,7 @@
         }
 
         // ==========================================
-        // FINAL COMPILATION
+        // FINAL COMPILATION (WITH MATH INJECTION)
         // ==========================================
         async function generateCBTHTML() {
             try {
@@ -1028,12 +1093,10 @@
                 const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
                 let txt = await resp.text();
 
-                // Parameter 1 & 2: Titles
+                // Parameters 1, 2, 3, 4: Titles and Headers
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName}</h2>`);
                 txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle}</h1>`);
-                
-                // Parameter 3 & 4: Subtitles & Headers
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle}</span>`);
@@ -1042,7 +1105,6 @@
                 txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
                 txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
                 txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
-                
                 if (!appState.audio.bg) {
                     txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
                 }
@@ -1066,20 +1128,40 @@
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
-                // Parameter 9: Core Question Bank Formatting 
+                // Parameter 11 & 12: KaTeX CDN Injection
+                let katexCSS = '';
+                let katexJS = '';
+                if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
+                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">';
+                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
+                }
+                txt = txt.replace(/<!-- PARAMETER 11 \(KaTeX CSS\) -->/i, katexCSS);
+                txt = txt.replace(/<!-- PARAMETER 12 \(KaTeX JS\) -->/i, katexJS);
+
+                // Parameter 9: Core Question Bank with Mathematical Compilation
                 const qb = [];
                 for (const sec of appState.sections) {
-                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => ({
-                        id: i + 1, 
-                        type: q.type || 'MCQ', 
-                        text: parseBold(q.text), 
-                        img: q.image || '', 
-                        table: q.table || '',
-                        options: q.type !== 'NAT' ? q.options.map(o => parseBold(o)) : [], 
-                        correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
-                        marksCorrect: sec.marks, 
-                        marksWrong: q.type === 'NAT' ? 0 : sec.negative // OVERRIDE: 0 negative marking for NATs
-                    }));
+                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
+                        let processedText = q.text;
+                        let processedOptions = [...q.options];
+                        
+                        if (appState.mathMode === 'LATEX') {
+                            processedText = processMathForExport(q.text, appState.renderEngine);
+                            processedOptions = q.options.map(o => processMathForExport(o, appState.renderEngine));
+                        }
+
+                        return {
+                            id: i + 1, 
+                            type: q.type || 'MCQ', 
+                            text: processedText, 
+                            img: q.image || '', 
+                            table: q.table || '',
+                            options: q.type !== 'NAT' ? processedOptions : [], 
+                            correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
+                            marksCorrect: sec.marks, 
+                            marksWrong: q.type === 'NAT' ? 0 : sec.negative
+                        };
+                    });
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
@@ -1096,9 +1178,42 @@
             }
         }
 
+        function switchPrompt(mode) {
+            appState.mathMode = mode;
+            document.getElementById('tab-btn-latex').classList.remove('active');
+            document.getElementById('tab-btn-html').classList.remove('active');
+            
+            if (mode === 'LATEX') {
+                document.getElementById('tab-btn-latex').classList.add('active');
+                document.getElementById('prompt-desc').innerText = "This prompt explicitly commands the AI to extract all math using $ and $$ delimiters. It avoids breaking structural formats and handles NATs perfectly.";
+                document.getElementById('compileConfigBox').style.display = 'block';
+            } else {
+                document.getElementById('tab-btn-html').classList.add('active');
+                document.getElementById('prompt-desc').innerText = "This legacy prompt forbids LaTeX and forces the AI to use raw Unicode and basic HTML <sup> and <sub> tags.";
+                document.getElementById('compileConfigBox').style.display = 'none';
+            }
+            generateAIPrompt();
+            renderPreviewTabs(); // Re-render preview based on mode
+        }
+
         function generateAIPrompt() {
             let sectionStr = '';
             appState.sections.forEach(s => { sectionStr += `[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`; });
+
+            let modeSpecificRules = '';
+            if (appState.mathMode === 'LATEX') {
+                modeSpecificRules = `
+CRITICAL MATH RULES:
+- You MUST extract all mathematical equations, variables, and scientific notation using standard LaTeX wrapped in $ (inline) or $$ (display block).
+- DO NOT use LaTeX arrays or matrices. If an equation has a complex matrix or piecewise bracket, write a single dot '.' so the author knows to upload an image.
+- DO NOT hallucinate structural tags like [span_0]. Output only plain text.`;
+            } else {
+                modeSpecificRules = `
+CRITICAL MATH RULES:
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
+- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.`;
+            }
 
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
@@ -1110,6 +1225,7 @@ CRITICAL EXTRACTION RULES:
 5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
    Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
 6. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
+${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
 [EXAM_INFO]
@@ -1131,6 +1247,11 @@ A: 2.5-2.6
 Now, parse the attached document and output ONLY the raw .CBT code.`;
         }
 
+        function openPromptModal() {
+            switchPrompt(appState.mathMode); // Refresh tab state before opening
+            openModal('promptModal');
+        }
+
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
@@ -1143,3 +1264,16 @@ Now, parse the attached document and output ONLY the raw .CBT code.`;
     </script>
 </body>
 </html>
+```
+
+### Necessary Instructions for `Last.html`
+
+To fully complete this pipeline, `Last.html` requires exactly **two specific string replacements**. You do not need the entire file—simply locate these exact positions and inject the parameter markers so the compiler can find them.
+
+```html:Update Head:Last.html
+<!-- ... existing code ... -->
+    <title>My_Test</title>
+    <!-- PARAMETER 11 (KaTeX CSS) -->
+    
+    <!-- Cropper.js (local copy) -->
+<!-- ... existing code ... -->
