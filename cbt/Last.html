@@ -1974,6 +1974,6 @@
     function calcMem(op) { let val = parseFloat(calcState.display); switch(op) { case 'MC': calcState.memory = 0; break; case 'MR': calcState.display = String(calcState.memory); break; case 'MS': calcState.memory = val; break; case 'M+': calcState.memory += val; break; case 'M-': calcState.memory -= val; break; } if(op === 'MR') calcState.waitingForSecondOp = true; updateDisplay(); }
 
 </script>
+<!-- PARAMETER 12 (KaTeX JS) -->
 </body>
 </html>
-
