@@ -1066,12 +1066,30 @@
     let qCounter = 0;
     let activeSectionIndex = 0; 
     
+    // CRITICAL MATH RENDER: Triggers KaTeX auto-render on newly injected innerHTML if active.
+    function triggerMathRender() {
+        if (window.renderMathInElement) {
+            try {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            } catch (e) {
+                console.warn("Math rendering failed: ", e);
+            }
+        }
+    }
+
     window.onload = function() {
         document.documentElement.style.setProperty('--q-font', Q_FONT_FAMILY);
         if(document.getElementById('s-content-area')) {
             document.getElementById('s-content-area').innerHTML = EXAM_S_HTML;
             generateSchemeTable();
             generateInfoModalTable();
+            triggerMathRender(); // Render instructions if they have math
         }
     };
     
@@ -1381,7 +1399,7 @@
     function fmtText(txt) {
         if (!txt) return '';
         let formatted = txt.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
-        // Structure fix: add spacing before numbered points
+        // Handle list numbering line breaks safely.
         formatted = formatted.replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1'); 
         return formatted;
     }
@@ -1452,6 +1470,9 @@
             saveBtn.innerText = 'Save & Next';
             saveBtn.disabled = false;
         }
+        
+        // Critical Render call for KaTeX Online Mode
+        triggerMathRender();
     }
 
     function selectOpt(i) { 
@@ -1781,6 +1802,9 @@
             block.innerHTML = `<div class="print-q-text">Q${q.id}. ${fmtText(q.text)}${imgHtml}${tableHtml}</div><div class="print-q-body"><div class="print-opt-col">${optionsHTML}</div><div class="print-meta-col">${metaHTML}</div></div>`;
             list.appendChild(block);
         });
+        
+        // Critical Render call for KaTeX Online Mode in Report
+        triggerMathRender();
     }
 
     function showDetailedSheet() { document.getElementById('result-gateway').classList.add('hidden'); document.getElementById('detailed-sheet-view').style.display = 'block'; }
@@ -1909,6 +1933,9 @@
     function toggleVKMode(mode) {
         document.getElementById('vk-num-container').style.display = mode === 'num' ? 'flex' : 'none';
         document.getElementById('vk-alpha-container').style.display = mode === 'alpha' ? 'flex' : 'none';
+        document.getElementById('vk-tab-num').classList.remove('active');
+        document.getElementById('vk-tab-alpha').classList.remove('active');
+        document.getElementById(`vk-tab-${mode}`).classList.add('active');
     }
 
     function toggleVKShift() {
