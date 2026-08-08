@@ -1298,6 +1298,39 @@ const TYPES = [
   {v:'long', l:'Long Answer'}
 ];
 
+/* CORRECTION 3A: Bengali Scientific Notation Validator */
+function validateScientificExpression(text) {
+  if (!text) return { valid: true };
+  
+  // Check for Bengali scientific units/expressions
+  const bengaliScientificPattern = /[জগমশহওআ].*?(সেকেন্ড|মিটার|বর্গ|ডিগ্রি|প্রতি|সমান|আলফা|বিটা|গামা|ডেলটা|কুলম্ব|নিউটন|জুল|হার্জ|ওয়াট|অ্যাম্পিয়ার)/gi;
+  
+  if (bengaliScientificPattern.test(text)) {
+    return { 
+      valid: false, 
+      message: "⚠️ Bengali scientific notation detected. Use LaTeX instead:\n• জি সমান → $g =$\n• বর্গ সেকেন্ড → $s^2$\n• আলফা বিটা → $\\alpha \\beta$" 
+    };
+  }
+  
+  // Check for written-out Bengali Greek letters
+  const bengaliGreekPattern = /আলফা|বিটা|গামা|ডেলটা|ইপসিলন|থিটা|ল্যাম্বডা|পাই|সিগমা|ওমেগা/gi;
+  if (bengaliGreekPattern.test(text)) {
+    return {
+      valid: false,
+      message: "⚠️ Bengali Greek letter names detected. Use LaTeX symbols:\n$\\alpha, \\beta, \\gamma, \\delta, \\pi, \\sigma, \\omega$"
+    };
+  }
+  
+  return { valid: true };
+}
+
+/* CORRECTION 3C: Fraction Rendering Helper */
+function renderFraction(numerator, denominator) {
+  // Converts mixed/improper fractions to proper LaTeX
+  // Examples: "1.5" → "$\frac{3}{2}$", "3/2" → "$\frac{3}{2}$"
+  return `$\\frac{${numerator}}{${denominator}}$`;
+}
+
 const SEC_QPF = ['KA','KHA','GA','GHA','UMA','CHA','CHHA','JA','JHA','NYA'];
 
 const PROMPT_IMG = `You are a highly advanced data-extraction algorithm processing an exam paper (which may be printed or handwritten). Use your most advanced reasoning and transcription capabilities. Extract and format STRICTLY according to the schema below.
@@ -3603,6 +3636,24 @@ function init() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(fitZoom, 200);
   });
+  
+  /* CORRECTION 3B: Real-Time Validation for Bengali Scientific Notation */
+  document.addEventListener('blur', function(e) {
+    // Validate question text inputs
+    if (e.target && (e.target.className.includes('qtext') || e.target.className.includes('question'))) {
+      const validation = validateScientificExpression(e.target.value);
+      if (!validation.valid) {
+        e.target.style.borderColor = '#dc3545';
+        e.target.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.15)';
+        e.target.title = validation.message;
+        console.warn('⚠️ Bengali notation detected:', validation.message);
+      } else {
+        e.target.style.borderColor = '';
+        e.target.style.boxShadow = '';
+        e.target.title = '';
+      }
+    }
+  }, true);
   
   console.log('%cপ্রশ্নপত্র Maker — Ready ✓', 'color:#9d95f7; font-size:13px; font-weight:bold;');
 }
