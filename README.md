@@ -1,288 +1,215 @@
-# প্রশ্নপত্র Maker — Question Paper Maker (stable version 1.1)
+# প্রশ্নপত্র Maker — CBT/QP Suite
 
-A browser-based tool for creating Bengali exam question papers.  
-Two identical sets print on one A4 landscape sheet — cut the centre line and distribute.  
-**No server. No login. Fully offline after first load.**
+A fully offline-capable, single-file web toolset for Bengali academic question paper authoring and NTA-style computer-based test generation. No backend, no database, no installation — just open in a browser.
+
+**Version:** v4.4.1 · **Updated:** August 2026 · **Status:** Production Ready
 
 ---
 
-## Repository Structure
+## What's in This Repository
 
 ```
-/
-├── index.html              — Main application (single page)
-├── app.js                  — All application logic
-├── style.css               — Styling, print CSS, CSS variables
-├── fonts/
-│   ├── TiroBangla-Regular.woff2     — Bengali body font (REQUIRED)
-│   ├── TiroBangla-Italic.woff2
-│   ├── DMSerifText-Regular.woff2    — Title font
-│   ├── Spectral-Regular.woff2       — Subtitle font
-│   └── Outfit-Variable.woff2        — UI font
-├── watermark/
-│   └── default.png         — Default watermark image (replace with your own)
-├── libs/
-│   └── jszip.min.js        — JSZip library for ODT export (optional, CDN fallback)
-└── README.md               — This file
-```
-
-### Getting the Fonts
-
-Download these from Google Fonts and place in `/fonts/`:
-
-| File | Google Fonts URL |
-|------|-----------------|
-| TiroBangla-Regular.woff2 | fonts.google.com/specimen/Tiro+Bangla |
-| DMSerifText-Regular.woff2 | fonts.google.com/specimen/DM+Serif+Text |
-| Spectral-Regular.woff2 | fonts.google.com/specimen/Spectral |
-| Outfit-Variable.woff2 | fonts.google.com/specimen/Outfit |
-
-> If fonts are missing, Google Fonts CDN is used as fallback (requires internet).
-
----
-
-## How to Use
-
-### Method 1 — Fill the Form
-
-1. Open `index.html` in Chrome or Edge
-2. Fill in **Exam Information** (class, subject, time)
-3. Click **Add Section** to add each বিভাগ
-4. Choose question type (MCQ or others) and add questions
-5. Watch the **live preview** on the right update
-6. Click **Print / PDF** — set paper to A4 Landscape, No margins
-
-### Method 2 — OCR + QPF Paste (Fast)
-
-1. Take a photo of an existing question paper
-2. Use the **Gemini / ChatGPT prompt** below
-3. Copy the AI output, click **Paste QPF** in the tool header
-4. Paste and click **Apply & Fill Form**
-5. Review and export
-
-### Method 3 — Upload .qpf Backup
-
-1. Click **Upload .qpf** in the header
-2. Select a previously exported `.qpf` file
-3. All fields auto-fill — edit and re-export
-
----
-
-## Printing Instructions
-
-In Chrome's print dialog:
-- **Paper**: A4
-- **Orientation**: Landscape
-- **Margins**: None
-- **Background graphics**: ✅ Enabled (for watermark)
-- **Scale**: 100%
-
-After printing, cut along the dotted centre line.  
-For 2-page papers: print both pages, lay sheets side by side, then cut each.
-
----
-
-## .qpf Format Specification
-
-`.qpf` is a plain UTF-8 text file. Human-readable, OCR-friendly.  
-Structural markers use English. Question content uses Bengali Unicode.
-
-### Full Format
-
-```
-// Question Paper Format v1.0
-// Lines starting with // are comments — ignored by parser
-
-##META
-TEACHER: Shibanjan Bera
-TEST_NO: 28
-CLASS: VII(WBBSE)
-SUBJECT: Science
-FULL_MARKS: 20
-TIME: 30
-FONT_SIZE: 11
-MARGIN: 1.0
-DIVIDER: dotted
-SEC_LANG: bn
-WATERMARK: default
-
-##SECTION_KA
-HEADING: সঠিক উত্তরটি নির্বাচন করো:
-TYPE: mcq
-MARKS_PER_Q: 1
-OPT_STYLE: bn
-
-Q: নিচের কোনটি লিপিড জাতীয় খাদ্যের উৎস?
-OP_K: চিনি
-OP_KH: মাছের তেল
-OP_G: গম
-OP_GH: সয়াবিন
-Q_IMAGE: (optional — filename or omit)
-
-Q: কোন ভিটামিনের অভাবে কুঁজো হয়ে যাওয়া বা হাড়ের বিকৃতি ঘটে?
-OP_K: ভিটামিন A
-OP_KH: ভিটামিন C
-OP_G: ভিটামিন D
-OP_GH: ভিটামিন K
-
-##SECTION_KHA
-HEADING: সংক্ষিপ্ত উত্তর দাও:
-TYPE: short
-MARKS_PER_Q: 1
-
-Q: শূন্যস্থান পূরণ করো: গাজর ও পাকা আমে প্রচুর পরিমাণে ভিটামিন ______ থাকে।
-Q: চিপস বা কুড়কুড়ে জাতীয় খাবারে প্রচুর পরিমাণে কৃত্রিম ক্ষতিকারক রং ও স্বাদ থাকে। (ঠিক না ভুল লেখো)
-
-##SECTION_GA
-HEADING: নীচের প্রশ্নগুলির উত্তর দাও:
-TYPE: descriptive
-MARKS_PER_Q: 2
-
-Q: খাদ্যতন্তু বা রাফেজ (Roughage) আমাদের শরীরে কী কী কাজ করে?
-Q_IMAGE_BELOW: (optional base64 or filename)
-
-Q: রাতকানা ও স্কার্ভি রোগের লক্ষণগুলি কী কী?
-TABLE_START: 2x3
-রোগ | কারণ | লক্ষণ
-রাতকানা | ভিটামিন A | রাতে দেখতে না পাওয়া
-স্কার্ভি | ভিটামিন C | মাড়ি থেকে রক্ত পড়া
-TABLE_END
-
-##SECTION_GHA
-HEADING: দীর্ঘ উত্তরধর্মী প্রশ্ন:
-TYPE: long
-MARKS_PER_Q: 3
-
-Q: কোয়াশিওরকর ও ম্যারাসমাস রোগের মধ্যে দুটি প্রধান পার্থক্য লেখো।
-Q: আমাদের শরীরে জলের তিনটি গুরুত্বপূর্ণ ভূমিকা আলোচনা করো।
-DIAGRAM_SVG: (optional — base64 encoded SVG string)
-
-##END
+shibu/
+├── index.html                   # QP Maker — main question paper authoring tool
+├── add-watermark.html           # PDF watermark adder
+├── pdf-colour-invert.html       # PDF colour inverter (dark mode for print)
+├── pdf-merge.html               # PDF merger tool
+├── pdf-watermark-detect.html    # PDF watermark detector/analyser
+│
+├── cbt/
+│   ├── cbt_index.html           # CBT Maker — NTA-style exam builder
+│   ├── Last.html                # CBT exam output template (used at runtime)
+│   └── vendor/
+│       └── cropper/             # Bundled image cropper (offline)
+│           ├── cropper.min.css
+│           └── cropper.min.js
+│
+├── libs/                        # Bundled JS libraries (offline)
+│   ├── fontkit.umd.min.js       # Font embedding for DOCX export
+│   ├── jszip.min.js             # ZIP/DOCX file generation
+│   ├── katex.min.js             # Math rendering (offline fallback)
+│   └── pdf-lib.min.js           # PDF manipulation engine
+│
+├── fonts/                       # Embedded Bengali/Latin fonts
+│   ├── TiroBangla.woff2         # Bengali body font
+│   └── DMSerifText.woff2        # Latin heading font
+│
+├── logo.png                     # App logo
+├── watermark.svg                # Default watermark graphic
+└── watermark/
+    └── default.png              # Alternative watermark image
 ```
 
 ---
 
-### Token Reference (Special Content in Question Text)
+## Tools Overview
 
-Use these tokens inside any `Q:` line:
+### 1. QP Maker — `index.html`
 
-| Token | Output | Example |
-|-------|--------|---------|
-| `[SUB:2]` | Subscript | H[SUB:2]O → H₂O |
-| `[SUP:2]` | Superscript | x[SUP:2] → x² |
-| `[CHEM:H2SO4]` | Chemical formula (auto-subscript) | H₂SO₄ |
-| `[EQ:F=ma]` | Equation (italic) | *F=ma* |
-| `[SYM:alpha]` | Greek/special symbol | α |
-| `[SYM:ohm]` | Ohm symbol | Ω |
-| `[SYM:degree]` | Degree symbol | ° |
-| `[SYM:arrow]` | Arrow | → |
-| `[SYM:darrow]` | Double arrow | ⇌ |
-| `[SYM:pm]` | Plus-minus | ± |
-| `[SYM:sqrt]` | Square root | √ |
+The primary question paper authoring environment for Bengali-medium academic content.
 
-**All symbol names:** alpha, beta, gamma, delta, epsilon, theta, lambda, mu, pi, sigma, omega, ohm, degree, infinity, arrow, darrow, times, div, approx, pm, neq, leq, geq, sqrt, micro
+**Core capabilities:**
+- Author MCQ, NAT (Numerical Answer Type), and Labeled-Diagram questions in Bengali and English
+- Full LaTeX math support via KaTeX (local or CDN) and MathML
+- Multiple print/view modes: 0-mirror portrait, 2-mirror landscape, 4-mirror landscape, continuous portrait
+- Export to DOCX (with embedded fonts), printable HTML, and QPF (custom format)
+- OCR integration and QPF import for digitising printed question papers
+- Answer space controls and size sliders for layout customisation
+- Watermark support with custom SVG or PNG overlays
+- **New in v4.4.1:** Real-time Bengali scientific notation validator — warns when Bengali words like `জি সমান` are used instead of LaTeX (`$g = 9.8\text{ m/s}^2$`), with inline tooltip suggestions and red border feedback
 
----
-
-### Section Names in QPF
-
-Section block headers use Bengali letter names spelled in English:
-
-| Bengali | QPF block name |
-|---------|---------------|
-| ক | `##SECTION_KA` |
-| খ | `##SECTION_KHA` |
-| গ | `##SECTION_GA` |
-| ঘ | `##SECTION_GHA` |
-| ঙ | `##SECTION_UMA` |
-| চ | `##SECTION_CHA` |
+**Navigation links from QP Maker:**
+- → PDF Merge
+- → CBT Maker (`cbt/cbt_index.html`)
 
 ---
 
-### Type Values
+### 2. CBT Maker — `cbt/cbt_index.html`
 
-| Type | Meaning |
-|------|---------|
-| `mcq` | Multiple choice — requires `OP_K`, `OP_KH`, `OP_G`, `OP_GH` |
-| `short` | Short answer (1–2 lines) |
-| `descriptive` | Medium answer (3–5 lines) |
-| `long` | Long/essay answer |
+Builds NTA/TCS-style Computer-Based Test HTML files with a full exam UI.
 
----
+**Core capabilities:**
+- Multi-section exam builder (Section A, B, C with configurable marks and negative marking)
+- MCQ and NAT question types with image support and Cropper.js integration
+- Math rendering: Native MathML, KaTeX (local), KaTeX (CDN/online), Pure HTML fallback
+- AI-assisted question extraction with a customisable prompt (sends to any LLM)
+- Generates a self-contained single HTML exam file (`Last.html`-based output)
+- Timer, calculator, physical constants panel, and question palette in generated exam
 
-### Divider Options
+**New in v4.4.1 (9 bug fixes applied):**
 
-`DIVIDER:` can be: `dotted` · `dashed` · `solid` · `text`
-
----
-
-## OCR Prompts
-
-### Gemini / ChatGPT Prompt (Photo → QPF)
-
-Copy this prompt exactly. Upload the question paper photo and send with this text:
-
-```
-You are a question paper digitizer. Analyze this image of a printed question paper and extract ALL content into the .qpf format below. Follow every rule strictly.
-
-RULES:
-1. Start with ##META. Extract: TEACHER (look for "by [name]" near the title), TEST_NO (the number near "Test no."), CLASS, SUBJECT, FULL_MARKS (the number after "Full Marks:"), TIME (number only, in minutes).
-2. Set FONT_SIZE: 11, MARGIN: 1.0, DIVIDER: dotted, SEC_LANG: bn, WATERMARK: default.
-3. For each section (বিভাগ ক / খ / গ / ঘ etc.), create a ##SECTION_[NAME] block. Map: ক→KA, খ→KHA, গ→GA, ঘ→GHA, ঙ→UMA.
-4. Inside each section: HEADING (exact Bengali instruction text), TYPE (mcq if options ক/খ/গ/ঘ or a/b/c/d appear; short if 1 mark without options; descriptive if 2 marks; long if 3+ marks), MARKS_PER_Q (the first number in the marks formula like "১ × ৪ = ৪"), OPT_STYLE (bn if Bengali options ক/খ/গ/ঘ, else en).
-5. For each question write Q: followed by the EXACT Bengali text. Preserve all Bengali Unicode exactly.
-6. For MCQ questions, immediately after Q: write OP_K, OP_KH, OP_G, OP_GH with option text only (no ক/খ prefix).
-7. For subscripts use [SUB:x], superscripts use [SUP:x], chemical formulas use [CHEM:formula], equations use [EQ:text], Greek letters use [SYM:name].
-8. If a question contains a table, write TABLE_START:rows×cols, then each row with pipe | separating cells, then TABLE_END.
-9. End with ##END.
-10. Output ONLY the .qpf content. No explanation. No markdown fences. No extra text. Start directly with // Question Paper Format v1.0.
-```
+| Fix | Description |
+|-----|-------------|
+| **1A** | KaTeX Online engine now renders correctly (was returning raw `\frac{}{}` text) |
+| **1B** | MCQ correct-answer changes sync instantly to preview (no compile needed) |
+| **1C** | NAT answer field changes sync instantly to preview |
+| **1D** | Preview engine now uses the actual `appState.renderEngine` (was hardcoded) |
+| **1E** | Preview section headers match output — true WYSIWYG authoring |
+| **1F** | MCQ options layout responsively: 3–4 per row (short), 2 per row (medium), 1 per row (long) |
+| **1G** | Enhanced AI extraction prompt explicitly forbids Bengali scientific notation; new "✏️ Corrections" modal with Bengali→LaTeX lookup table |
 
 ---
 
-### Shorter Prompt (if AI truncates long output)
+### 3. CBT Output Template — `cbt/Last.html`
 
-```
-Extract this question paper image to .qpf format v1.0. Rules: ##META block with TEACHER/TEST_NO/CLASS/SUBJECT/FULL_MARKS/TIME/FONT_SIZE:11/MARGIN:1.0/DIVIDER:dotted/SEC_LANG:bn/WATERMARK:default. Then ##SECTION_KA/KHA/GA/GHA blocks with HEADING/TYPE/MARKS_PER_Q/OPT_STYLE. Q: lines for each question, OP_K/OP_KH/OP_G/OP_GH for MCQ options. Use [SUB:x][SUP:x][CHEM:x][EQ:x][SYM:name] for special content. TABLE_START:rows×cols...TABLE_END for tables. End with ##END. Output only the raw text, no fences.
-```
+This file is used at runtime by `cbt_index.html` as the base for generated exam HTML. Do not delete it.
+
+**New in v4.4.1:**
+- **2A:** `Q_FONT_FAMILY` parameter now respected by the template renderer
+- **2B:** Math engine detection framework — output now adapts KaTeX/MathML injection based on what was selected in CBT Maker
 
 ---
 
-## Development Notes
+### 4. PDF Tools
 
-### Build Steps
-
-| Step | File | Description |
+| Tool | File | Description |
 |------|------|-------------|
-| ✅ Step 1 | index.html, style.css, app.js | Foundation, layout, info panel, settings |
-| 🔲 Step 2 | app.js | QPF format lock + CSS variable system |
-| 🔲 Step 3 | app.js | Section & question builders (MCQ + non-MCQ) |
-| 🔲 Step 4 | app.js | Table editor, diagram canvas, image insertion |
-| 🔲 Step 5 | app.js | Full QPF parser |
-| 🔲 Step 6 | app.js | Preview renderer + overflow/fit logic |
-| 🔲 Step 7 | style.css | Print CSS refinement |
-| 🔲 Step 8 | app.js | ODT exporter (via JSZip) |
-| 🔲 Step 9 | app.js | QPF exporter + filename logic |
-| 🔲 Step 10 | README.md | Final documentation |
+| PDF Merge | `pdf-merge.html` | Combine multiple PDFs into one, with drag-reorder |
+| PDF Colour Invert | `pdf-colour-invert.html` | Invert PDF colours for dark-mode-friendly print |
+| PDF Watermark Detect | `pdf-watermark-detect.html` | Analyse PDF structure to identify and locate watermarks |
+| Add Watermark | `add-watermark.html` | Apply a custom SVG or PNG watermark to a PDF |
 
-### Performance Design
-
-- **50–80ms debounce** on all preview updates — no lag while typing
-- **State-driven rendering** — all UI reads from `STATE` object
-- **No framework** — vanilla JS only, zero build step
-- **Image caching** — images stored as base64 in STATE, not re-read from disk
-- **ResizeObserver** — diagram and image heights measured reactively
-
-### Browser Support
-
-Tested in: Chrome 120+, Edge 120+  
-PDF export: Chrome/Edge only (best print engine)  
-ODT export: All modern browsers  
-Fonts: Requires Google Fonts CDN OR local font files in `/fonts/`
+All PDF tools use `pdf-lib.min.js` from the local `libs/` folder and work fully offline.
 
 ---
 
-## License
+## Hosting on GitHub Pages
 
-MIT — Free to use, modify, and host.  
-Fonts are subject to their respective licenses (SIL Open Font License for all Google Fonts used).
+This repository is designed to be hosted directly on GitHub Pages with zero configuration.
+
+1. Push to your repository's `main` branch
+2. Enable GitHub Pages: **Settings → Pages → Source: Deploy from branch → main / root**
+3. Access at `https://<username>.github.io/<repo-name>/`
+
+**Entry point:** `index.html` (QP Maker)  
+**CBT entry:** `cbt/cbt_index.html`
+
+### CDN dependencies (requires internet)
+
+The following are loaded from CDN when internet is available:
+
+| Resource | Used by | Purpose |
+|----------|---------|---------|
+| KaTeX CSS v0.16.8 (jsDelivr) | `index.html`, `cbt/cbt_index.html` | Math equation styling |
+| Plus Jakarta Sans (Google Fonts) | `index.html` | UI font (falls back to system sans-serif offline) |
+| KaTeX JS v0.16.8 (jsDelivr) | `cbt/cbt_index.html` | Online math fallback if local fails |
+
+All other assets (PDF-lib, JSZip, fontkit, KaTeX JS for QP Maker, Bengali fonts) are bundled in `libs/` and `fonts/` for full offline use.
+
+---
+
+## Browser Compatibility
+
+| Browser | Support |
+|---------|---------|
+| Chrome / Chromium 90+ | ✅ Full |
+| Firefox 88+ | ✅ Full |
+| Edge 90+ | ✅ Full |
+| Safari 14+ | ✅ Full |
+| Mobile Chrome / Firefox | ✅ Responsive |
+
+**Minimum requirement:** ES2020 support (optional chaining, nullish coalescing, etc.)
+
+---
+
+## Known Limitations
+
+- **No server-side processing.** Everything runs in the browser. PDF operations on very large files (>50 MB) may be slow on low-end hardware.
+- **TiroBangla italic:** Only one `TiroBangla.woff2` file is bundled (no separate italic variant). Both regular and italic `@font-face` declarations point to the same file — text renders correctly, but italic styling may not appear visually distinct.
+- **Plus Jakarta Sans offline:** The UI font loads from Google Fonts CDN. Offline, the browser falls back to `Inter` or system UI fonts — layout is unaffected.
+- **Image cropping in CBT Maker** requires `vendor/cropper/` to exist relative to `cbt/cbt_index.html`.
+- **KaTeX CSS is CDN-only.** The `katex.min.css` file is not bundled locally. Without internet, math equation styling will be absent (equations still render but may look unstyled).
+
+---
+
+## Local Development
+
+No build step required. Open any HTML file directly in a browser, or use a local server:
+
+```bash
+# Python
+python3 -m http.server 8080
+
+# Node
+npx serve .
+```
+
+Then open `http://localhost:8080/`.
+
+> **Note:** Serve from `localhost` rather than `file://` — some browser security restrictions block font loading and WASM from `file://` origins.
+
+---
+
+## Changelog
+
+### v4.4.1 — August 2026
+- Fixed: KaTeX Online rendering in CBT Maker (equations were displayed as raw LaTeX text)
+- Fixed: Preview now updates instantly when MCQ/NAT answers are changed (no compile required)
+- Fixed: Preview render engine was hardcoded; now uses the user's actual engine selection
+- Fixed: MCQ option layout is now responsive (1–4 per row based on content length)
+- Fixed: WYSIWYG section headers added to preview panel
+- Fixed: `index.html` was missing `</body></html>` closing tags
+- Fixed: Font filenames in `index.html` corrected to match bundled files (`TiroBangla.woff2`, `DMSerifText.woff2`)
+- Fixed: `katex.min.css` now loaded from CDN (file was not bundled in `libs/`)
+- Added: Bengali scientific notation validator in QP Maker with real-time red-border feedback and LaTeX tooltip suggestions
+- Added: `renderFraction()` LaTeX fraction rendering helper in QP Maker
+- Added: "✏️ Corrections" modal in CBT Maker with Bengali→LaTeX conversion lookup table and SI units reference
+- Added: Enhanced AI extraction prompt that explicitly forbids Bengali notation for scientific units and Greek letters
+- Added: Font type parameter (`Q_FONT_FAMILY`) support in `Last.html` output template
+- Added: Math engine detection in `Last.html` (output adapts to KaTeX/MathML based on CBT Maker selection)
+
+### v4.4.0 — May 2026
+- Initial CBT/QP Maker release with multi-section support, LaTeX math, DOCX export, QPF format, and PDF tools
+
+---
+
+## Credits
+
+Developed by [Suvadip Patra](https://github.com/suvadippatra)  
+Built for Indian academic contexts — Bengali-medium question paper authoring and NTA-style CBT generation.
+
+Libraries used: [pdf-lib](https://pdf-lib.js.org/) · [KaTeX](https://katex.org/) · [JSZip](https://stuk.github.io/jszip/) · [fontkit](https://github.com/foliojs/fontkit) · [Cropper.js](https://fengyuanchen.github.io/cropperjs/)
+
+---
+
+*Last updated: August 8, 2026*
