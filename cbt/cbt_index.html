@@ -6,12 +6,11 @@
     <title>CBT Question Paper Setter v4.4 (Math Engine)</title>
     
     <!-- Cropper.js (Local Copy based on your repo tree) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='18'>CBT</text></svg>"/>
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
     <!-- KaTeX for Live Authoring Preview (Loads CSS from CDN for fonts, JS locally) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <link rel="stylesheet" href="../libs/katex.min.css">
     <!-- Local JS fallback to CDN to prevent silent failures -->
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
 
@@ -400,7 +399,7 @@
                 <button class="modal-close" onclick="closeModal('cropModal')">✕</button>
             </div>
             <div class="crop-workspace">
-                <div class="crop-main"><img id="cropImage" src="" alt="Image to crop" style="max-width: 100%; display: block;"></div>
+                <div class="crop-main"><img id="cropImage" src="" style="max-width: 100%; display: block;" alt="Image to crop"></div>
                 <div class="crop-sidebar">
                     <div class="form-group">
                         <label>Compression / Quality (<span id="compLabel">80</span>%)</label>
@@ -417,7 +416,7 @@
                     </div>
                     
                     <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem;">Live Output Preview:</div>
-                    <img id="liveCropPreviewImg" class="live-crop-output" src="" alt="Crop preview">
+                    <img id="liveCropPreviewImg" class="live-crop-output" src="">
 
                     <div style="background: var(--bg-input); padding: 0.75rem; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border); margin-top: auto;">
                         <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.2rem;">Est. Final Size</div>
@@ -697,7 +696,7 @@
                     try {
                         return katex.renderToString(unescapedMath, { 
                             displayMode: isDisplay, 
-                            output: 'htmlAndMathml', 
+                            output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', 
                             throwOnError: false 
                         });
                     } catch(e) {
@@ -861,7 +860,7 @@
                 </div>
             `;
 
-            const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" alt="Question image" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
+            const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit Table</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
             div.innerHTML = `
@@ -976,7 +975,7 @@
             if (!currentCropBase64) return; const { sec, idx, isOption, optIdx } = currentImageData;
             if (isOption) {
                 const ex = appState.questionsBySection[sec][idx].options[optIdx];
-                updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" alt="Cropped image" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
+                updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
             } else { 
                 updateQuestion(sec, idx, 'image', 0, currentCropBase64); 
             }
@@ -1060,7 +1059,7 @@
                 
                 // CORRECTION 1E: Add data-length attribute for dynamic MCQ layout (1F will use CSS)
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
-                if (q.image) html += `<img src="${q.image}" alt="Question image" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
+                if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
