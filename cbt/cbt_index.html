@@ -6,6 +6,7 @@
     <title>CBT Question Paper Setter v4.4 (Math Engine)</title>
     
     <!-- Cropper.js (Local Copy based on your repo tree) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='18'>CBT</text></svg>"/>
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
@@ -158,9 +159,32 @@
         .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); }
         .preview-question:last-child { border-bottom: none; }
         .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
-        .preview-option { padding: 0.5rem 0.75rem; margin: 0.3rem 0; border-left: 4px solid var(--border); color: var(--text-muted); font-size: 0.9rem; background: var(--bg-main); border-radius: 0 4px 4px 0; white-space: pre-wrap; }
+        
+        /* CORRECTION 1F: Dynamic MCQ Option Layout - Responsive flex container */
+        .preview-mcq-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .preview-option { 
+            flex: 1 1 calc(50% - 0.4rem); 
+            min-width: 200px; 
+            padding: 0.5rem 0.75rem; 
+            border-left: 4px solid var(--border); 
+            color: var(--text-muted); 
+            font-size: 0.9rem; 
+            background: var(--bg-main); 
+            border-radius: 0 4px 4px 0; 
+            white-space: pre-wrap;
+            margin: 0;
+        }
+        .preview-option[data-length="long"] { flex: 1 1 100%; min-width: auto; }
+        .preview-option[data-length="medium"] { flex: 1 1 calc(50% - 0.4rem); }
+        .preview-option[data-length="short"] { flex: 1 1 calc(33% - 0.5rem); }
+        
         .preview-option.correct { background: rgba(40, 167, 69, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(61, 178, 212, 0.1); border-left: 4px solid var(--primary); padding: 0.5rem 0.75rem; color: var(--primary-dark); font-weight: 600; font-size: 0.9rem; border-radius: 0 4px 4px 0; }
+        
+        @media (max-width: 768px) {
+            .preview-option { flex: 1 1 100%; min-width: auto; }
+            .preview-option[data-length="short"] { flex: 1 1 100%; }
+        }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(3px); }
         .modal.active { display: flex; }
@@ -201,6 +225,7 @@
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
             <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
             <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖 AI Prompt</button>
+            <button class="btn-icon" onclick="openModal('correctionsModal')" title="LaTeX & Scientific Notation Guide">✏️ Corrections</button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌 Import / Export</button>
             <button class="btn-icon" onclick="openModal('helpModal')" title="Help">❓ Help</button>
         </div>
@@ -375,7 +400,7 @@
                 <button class="modal-close" onclick="closeModal('cropModal')">✕</button>
             </div>
             <div class="crop-workspace">
-                <div class="crop-main"><img id="cropImage" src="" style="max-width: 100%; display: block;"></div>
+                <div class="crop-main"><img id="cropImage" src="" alt="Image to crop" style="max-width: 100%; display: block;"></div>
                 <div class="crop-sidebar">
                     <div class="form-group">
                         <label>Compression / Quality (<span id="compLabel">80</span>%)</label>
@@ -392,7 +417,7 @@
                     </div>
                     
                     <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem;">Live Output Preview:</div>
-                    <img id="liveCropPreviewImg" class="live-crop-output" src="">
+                    <img id="liveCropPreviewImg" class="live-crop-output" src="" alt="Crop preview">
 
                     <div style="background: var(--bg-input); padding: 0.75rem; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border); margin-top: auto;">
                         <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.2rem;">Est. Final Size</div>
@@ -474,6 +499,76 @@
             </p>
             <textarea id="aiPrompt" class="form-control" readonly style="min-height: 350px; font-family: monospace; font-size: 0.85rem; background: var(--bg-main); border: 2px solid var(--primary);"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- Manual Correction Guide Modal (CORRECTION 1G - POINT 8) -->
+    <div class="modal" id="correctionsModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>✏️ Manual Correction Guide for LaTeX & Scientific Notation</h2>
+                <button class="modal-close" onclick="closeModal('correctionsModal')">✕</button>
+            </div>
+            <div style="max-height: 500px; overflow-y: auto; font-size: 0.9rem; color: var(--text-main); line-height: 1.7; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">🚫 Common Bengali Scientific Notation Issues:</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <thead>
+                        <tr style="background: var(--bg-hover);">
+                            <th style="border: 1px solid var(--border); padding: 0.5rem; text-align: left;">❌ WRONG (Bengali)</th>
+                            <th style="border: 1px solid var(--border); padding: 0.5rem; text-align: left;">✅ CORRECT (LaTeX)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;">জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড</td>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$g = 9.8 \\text{ m/s}^2$</code></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;">আলফা বিটা গামা</td>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$\\alpha \\beta \\gamma$</code></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;">চার্জ = 1.6 গুণ 10 এর মাইনাস 19 পাওয়ার কুলম্ব</td>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$q = 1.6 \\times 10^{-19} \\text{ C}$</code></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;">ডেলটা E এর সমান</td>
+                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$\\Delta E =$</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">🔧 How to Fix in CBT Maker:</h3>
+                <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                    <li><strong>Identify Bengali notation:</strong> Look for questions with Bengali units (সেকেন্ড, মিটার, কুলম্ব, etc.)</li>
+                    <li><strong>Click on the question:</strong> Open the question editor in the left panel</li>
+                    <li><strong>Replace manually:</strong> Use the LaTeX format from the table above</li>
+                    <li><strong>Verify in preview:</strong> Check that the preview renders correctly before compiling</li>
+                    <li><strong>Update AI Prompt:</strong> Copy the enhanced prompt (click "AI Prompt" button) to prevent this in future extractions</li>
+                </ol>
+
+                <h3 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">📋 Common SI Units in LaTeX:</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <tr>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem; background: var(--bg-hover);"><code>\\text{ m}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">meter</td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem; background: var(--bg-hover);"><code>\\text{ kg}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">kilogram</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;"><code>\\text{ s}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">second</td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem; background: var(--bg-hover);"><code>\\text{ C}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">coulomb</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem; background: var(--bg-hover);"><code>\\text{ J}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">joule</td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;"><code>\\text{ N}</code></td>
+                        <td style="border: 1px solid var(--border); padding: 0.4rem;">newton</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -602,7 +697,7 @@
                     try {
                         return katex.renderToString(unescapedMath, { 
                             displayMode: isDisplay, 
-                            output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', 
+                            output: 'htmlAndMathml', 
                             throwOnError: false 
                         });
                     } catch(e) {
@@ -618,7 +713,8 @@
                     str = str.replace(/\\/g, ''); // strip remaining backslashes
                     return `<span style="font-family: serif;"><i>${str}</i></span>`;
                 } else if (engine === 'KATEX_ONLINE') {
-                    return match; // Leave raw delimiters for CDN injection later
+                    // Return properly delimited LaTeX for CDN KaTeX to process
+                    return (isDisplay ? '$$' : '$') + unescapedMath + (isDisplay ? '$$' : '$');
                 }
                 return match;
             });
@@ -765,7 +861,7 @@
                 </div>
             `;
 
-            const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
+            const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" alt="Question image" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit Table</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
             div.innerHTML = `
@@ -880,7 +976,7 @@
             if (!currentCropBase64) return; const { sec, idx, isOption, optIdx } = currentImageData;
             if (isOption) {
                 const ex = appState.questionsBySection[sec][idx].options[optIdx];
-                updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
+                updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" alt="Cropped image" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
             } else { 
                 updateQuestion(sec, idx, 'image', 0, currentCropBase64); 
             }
@@ -945,14 +1041,16 @@
                 return;
             }
 
-            let html = '';
+            // CORRECTION 1E: Build preview with section header for WYSIWYG layout
+            let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
+            
             qs.forEach((q, idx) => {
                 
                 // 1. Escape HTML entirely
                 let processedText = escapeHTML(q.text);
                 
-                // 2. Conditionally pass Math (PREVIEW mode forces visual rendering of both MathML and KaTeX for author feedback)
-                let previewEngine = (appState.renderEngine === 'HTML_FALLBACK') ? 'HTML_FALLBACK' : 'PREVIEW';
+                // 2. Conditionally pass Math - Use the ACTUAL selected rendering engine so preview matches output
+                let previewEngine = appState.renderEngine; // CORRECTION 1D: Use actual engine, not fake 'PREVIEW' mode
                 if(appState.mathMode === 'LATEX') {
                     processedText = processMath(processedText, previewEngine);
                 }
@@ -960,20 +1058,25 @@
                 // 3. Bold Text Formatting and Paragraph creation
                 processedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                 
+                // CORRECTION 1E: Add data-length attribute for dynamic MCQ layout (1F will use CSS)
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
-                if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
+                if (q.image) html += `<img src="${q.image}" alt="Question image" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
                     html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
                 } else {
+                    // CORRECTION 1F: Calculate option length for responsive layout
+                    html += `<div class="preview-mcq-container">`;
                     (q.options || []).forEach((opt, oi) => { 
                         let safeOpt = escapeHTML(opt);
                         if(appState.mathMode === 'LATEX') safeOpt = processMath(safeOpt, previewEngine);
                         safeOpt = parseBold(safeOpt);
                         
-                        html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}"><strong>${oi + 1}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}</div>`; 
+                        let optLength = safeOpt.length > 100 ? 'long' : (safeOpt.length > 50 ? 'medium' : 'short');
+                        html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}" data-length="${optLength}"><strong>${String.fromCharCode(65+oi)}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}</div>`; 
                     });
+                    html += `</div>`;
                 }
                 html += `</div>`;
             });
@@ -1216,11 +1319,17 @@
             let modeSpecificRules = '';
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
-CRITICAL MATH RULES:
-- You MUST extract all mathematical equations, variables, and scientific notation using standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
-- Example: $B \\rightarrow E$ or $\\frac{1}{2}$
-- If you do not use the $ signs, the system will fail.
-- DO NOT use LaTeX arrays or matrices. If an equation has a complex matrix or piecewise bracket, write a single dot '.' so the author knows to upload an image.`;
+CRITICAL MATH RULES (CORRECTION 1G - POINT 8):
+- You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
+- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা")
+- REQUIRED: Always use LaTeX for Greek letters ($\\\\alpha$, $\\\\beta$, $\\\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$)
+- Examples of CORRECT format:
+  * Gravitational acceleration: $g = 9.8 \\\\text{ m/s}^2$
+  * Charge: $q = 1.6 \\\\times 10^{-19} \\\\text{ C}$
+  * Wavelength: $\\\\lambda = 650 \\\\text{ nm}$
+  * Greek symbols: $\\\\alpha = 30°$, $\\\\beta_{xyz}$, $\\\\Delta E$
+- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
+- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT (see "Manual Correction Guide" below)`;
             } else {
                 modeSpecificRules = `
 CRITICAL MATH RULES:
@@ -1276,6 +1385,20 @@ Now, parse the attached document and output ONLY the raw .CBT code.`;
             }
         }
         function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); alert('Copied!'); }
+
+        // CORRECTION 1B: Real-Time MCQ Answer Sync - Re-render preview when MCQ correct option changes
+        document.addEventListener('change', function(e) {
+            if (e.target.name && e.target.name.startsWith('correct-')) {
+                renderPreviewContent(); // Re-render preview immediately
+            }
+        });
+
+        // CORRECTION 1C: Real-Time NAT Answer Sync - Re-render preview when NAT answer changes
+        document.addEventListener('input', function(e) {
+            if (e.target.classList && e.target.classList.contains('nat-answer-input')) {
+                renderPreviewContent(); // Re-render NAT updates immediately
+            }
+        });
     </script>
 </body>
 </html>
