@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Question Paper Setter v4.5 (Math Engine)</title>
+    <title>CBT Question Paper Setter v4.6 (Math Engine)</title>
     
     <!-- Cropper.js (Local Copy based on your repo tree) -->
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
@@ -134,7 +134,6 @@
         .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
         
-        /* New Delete Button Style for Dynamic Options */
         .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; font-size:1rem; color:var(--danger); transition: all 0.2s; }
         .opt-del-btn:hover { background:var(--danger); color:white; }
 
@@ -165,10 +164,9 @@
         .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); }
         .preview-question:last-child { border-bottom: none; }
         
-        /* Fixed bold text issue */
+        /* Normal weight font to prevent everything looking artificially bold */
         .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
         
-        /* Table rendering styles for preview */
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
         .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 8px 12px !important; text-align: left !important; }
         .preview-question th { background: var(--bg-input) !important; font-weight: 700 !important; color: var(--text-main) !important; }
@@ -220,7 +218,7 @@
         .tab-btn { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--text-muted); background: transparent; border: none; font-size: 0.95rem; transition: 0.2s; }
         .tab-btn.active { color: var(--primary); background: rgba(61, 178, 212, 0.1); border-radius: 6px 6px 0 0; }
 
-        /* Custom Toast & Confirm System */
+        /* Custom Toast System */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 20px; border-radius: 8px; color: white; box-shadow: var(--shadow-lg); font-weight: 600; animation: fadeDown 0.3s ease-out; font-size: 0.9rem; }
         
@@ -236,7 +234,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.5 (Math Engine)</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.6 (Math Engine)</span></div>
         <div class="navbar-actions">
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
             <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
@@ -499,7 +497,7 @@
             </div>
             <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 1.5rem; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px;">
-                    <!-- Auto-Sync export directly downloads latest data -->
+                    <!-- Auto-Sync export directly downloads latest data without needing intermediate steps -->
                     <button class="btn btn-primary btn-block" style="padding: 0.8rem;" onclick="exportAndDownloadCBT()">⬇️ Export & Download Latest .CBT</button>
                 </div>
                 <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
@@ -590,7 +588,7 @@
                 <h4 style="color: var(--primary-dark); margin-top: 1rem;">1. The Missing Math Bug (`$`)</h4>
                 <p style="margin-bottom: 0.5rem;">If an equation looks like raw code (e.g. <code>\frac{1}{2}</code>) in the preview, it means the AI forgot to wrap it in dollar signs. To fix it, manually add the <code>$</code> signs like this: <code>$\frac{1}{2}$</code>.</p>
                 <h4 style="color: var(--primary-dark); margin-top: 1rem;">2. Performance Tip (Live Preview)</h4>
-                <p style="margin-bottom: 0.5rem;">The preview panel updates 300ms after you finish typing to ensure smooth scrolling and save memory on large exams.</p>
+                <p style="margin-bottom: 0.5rem;">The preview panel automatically updates 300ms after you finish typing to ensure smooth scrolling and save memory on large exams.</p>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('helpModal')">Got it!</button>
         </div>
@@ -706,21 +704,15 @@
         
         function processMath(text, engine) {
             if (!text) return '';
-            
             return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
                 let math = displayMath || inlineMath;
                 let isDisplay = !!displayMath;
-                
                 let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
                     try {
-                        return katex.renderToString(unescapedMath, { 
-                            displayMode: isDisplay, 
-                            output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', 
-                            throwOnError: false 
-                        });
+                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', throwOnError: false });
                     } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
                 } else if (engine === 'HTML_FALLBACK') {
                     let str = unescapedMath;
@@ -841,12 +833,13 @@
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
             (q.options || []).forEach((opt, oi) => {
                 const removeBtn = q.options.length > 2 ? `<button class="opt-del-btn" onclick="event.stopPropagation(); removeOption('${sec}', ${idx}, ${oi})" title="Remove Option">✕</button>` : '';
+                let placeholderText = `Option ${String.fromCharCode(65 + oi)}`;
                 optsHtml += `
                 <div class="qblock-option-item">
                     <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi})">
                     <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                     <div class="option-input-wrap">
-                        <input type="text" value='${opt.replace(/'/g, "&#39;")}' placeholder="Option ${String.fromCharCode(65 + oi)}" oninput="updateQuestion('${sec}', ${idx}, 'option', ${oi}, this.value)">
+                        <input type="text" value='${opt.replace(/'/g, "&#39;")}' placeholder="${placeholderText}" oninput="updateQuestion('${sec}', ${idx}, 'option', ${oi}, this.value)">
                         <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image to Option">🖼️</button>
                         <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         ${removeBtn}
@@ -1113,10 +1106,8 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
 
-            // 0. BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] and (start_span) tags immediately
-            txt = txt.replace(/\[span_[^\]]*\]/gi, '');
-            txt = txt.replace(/\(start_span\)/gi, '');
-            txt = txt.replace(/\(end_span\)/gi, '');
+            // 0. BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] tags completely, regardless of surrounding text
+            txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
 
             txt = txt.replace(/\\n/g, '\n');
             txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2').replace(/(.)(O\s*:\s*)/gi, '$1\n$2').replace(/(.)(A\s*:\s*)/gi, '$1\n$2').replace(/(.)(I\s*:\s*)/gi, '$1\n$2');
@@ -1167,15 +1158,34 @@
                         curQ.text = tr.replace(/^Q\s*:/i, '').trim(); lastField = 'Q';
                     }
                     else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
-                        curQ.options.push(tr.replace(/^O\s*:/i, '').trim()); lastField = 'O';
+                        let cleanedOpt = tr.replace(/^O\s*:/i, '').trim();
+                        // CRITICAL FIX: If the option is entirely empty or tagged as [IMAGE_PLACEHOLDER], DO NOT skip it.
+                        // Reserve the seat so Option B doesn't shift up to become Option A!
+                        if (cleanedOpt === '' || cleanedOpt === '[IMAGE_PLACEHOLDER]') {
+                            curQ.options.push('[Attach Image Here]');
+                        } else {
+                            curQ.options.push(cleanedOpt);
+                        }
+                        lastField = 'O';
                     }
                     else if (/^A\s*:/i.test(tr) && curQ) {
-                        if (curQ.type === 'NAT') curQ.correctNat = tr.replace(/^A\s*:/i, '').trim();
-                        else { let letter = tr.replace(/^A\s*:/i, '').trim().replace(/[^a-zA-Z]/g, '').charAt(0); if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65; }
+                        if (curQ.type === 'NAT') {
+                            curQ.correctNat = tr.replace(/^A\s*:/i, '').trim();
+                        } else {
+                            let letter = tr.replace(/^A\s*:/i, '').trim().replace(/[^a-zA-Z]/g, '').charAt(0);
+                            if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
+                        }
                         lastField = 'A';
                     }
-                    else if (/^T\s*:/i.test(tr) && curQ) { curQ.table = tr.replace(/^T\s*:/i, '').trim(); lastField = 'T'; }
-                    else if (/^I\s*:/i.test(tr) && curQ) { curQ.image = tr.replace(/^I\s*:/i, '').trim(); lastField = 'I'; }
+                    else if (/^T\s*:/i.test(tr) && curQ) { 
+                        curQ.table = tr.replace(/^T\s*:/i, '').trim(); 
+                        lastField = 'T';
+                    }
+                    else if (/^I\s*:/i.test(tr) && curQ) { 
+                        let imgUrl = tr.replace(/^I\s*:/i, '').trim(); 
+                        if (imgUrl && imgUrl.length > 5) { curQ.image = imgUrl; }
+                        lastField = 'I';
+                    }
                     else {
                         if (curQ && tr) {
                             if (lastField === 'Q') curQ.text += '\n' + tr;
@@ -1290,39 +1300,36 @@
                 modeSpecificRules = `
 CRITICAL MATH RULES:
 - ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
-- DISPLAY MODE: All large, standalone equations MUST be wrapped in double dollar signs ($$ ... $$).
-- SUBSCRIPTS: Preserve all mathematical underscores (_). e.g., \\tilde{\\nu}_{\\text{C-H}}.
-- FORBIDDEN: NEVER write scientific units or constants in Bengali.
+- DISPLAY MODE: All large, standalone equations (like fractions or integrals) MUST be wrapped in double dollar signs ($$ ... $$) so they are not crushed on a single line.
+- SUBSCRIPTS: You MUST preserve all mathematical underscores (_). For example, write \\tilde{\\nu}_{\\text{C-H}}, absolutely never \\tilde{\\nu}{\\text{C-H}}.
+- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$, $J$).
-- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.`;
+- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
             } else {
                 modeSpecificRules = `
 CRITICAL HTML RULES:
 - ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
 - Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
-- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts.`;
+- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.`;
             }
 
-            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Extract EVERY question from the document into the .CBT format below.
+            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. HEADER EXTRACTION: Extract the Agency Name, Exam Title, and Subtitle directly from the top cover/header of the document into the [EXAM_INFO] block.
-2. MULTI-COLUMN & PAGE BREAKS: Follow multi-column layouts strictly top-to-bottom per column. If a question spans across a page bottom to the next page header, stitch them together. DO NOT truncate text.
-3. STATEMENT DISAMBIGUATION: Statements labeled A, B, C, D, E or I, II, III belong strictly inside the question body (Q:). ONLY choices following text like "Choose the correct answer" belong to options (O:).
-4. QUESTION TYPES: Classify as 'MCQ' or 'NAT'.
-5. DYNAMIC OPTIONS: Output exactly as many 'O:' lines as there are distinct choices. The 'A:' line must be a single letter (A, B, C...).
-6. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number.
-7. ABSOLUTELY NO ARTIFACTS: NEVER output [span_X], (start_span), (end_span), or any OCR bounding boxes under ANY circumstances.
-8. GRID OPTIONS: If options are arranged in multiple columns (e.g., (A) Wheat (B) Mango \\n (C) Gibbon (D) Petunia), read them strictly in A, B, C, D order. Each gets its own 'O:' line. Do NOT combine them.
-9. TABLES ON NEW LINE: Convert tables into an HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Place column titles in <th> tags.
-10. MULTI-STATEMENT: For "Assertion/Reason" or "Statement I/II", preserve the EXACT labels used in the document. DO NOT hallucinate labels. Prefix them with \\n** (e.g., \\n**Assertion A:**).
+1. TWO-COLUMN LAYOUT & MARGINS (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
+2. ANTI-TRUNCATION: NEVER cut off words or sentences (e.g., do not output "belong t" instead of "belong to"). Stitch text seamlessly if it wraps to the next line, column, or page.
+3. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
+4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE_PLACEHOLDER]' to reserve its seat. Do NOT skip the option line.
+5. MULTI-STATEMENT / ASSERTION: Copy the FULL text of statements and assertions exactly as they appear in the source. Do NOT summarize or cut off text with "**Statement**" or "**Assertion**". Preserve all context.
+6. GRID OPTIONS: If options are displayed side-by-side (e.g. (A) Wheat  (B) Mango), extract them individually onto their own dedicated 'O:' line. Do not merge them.
+7. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
+8. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
 [EXAM_INFO]
-Agency: (Extract from document)
-Title: (Extract from document)
-Subtitle: (Extract from document)
+Agency: ${appState.agencyName}
+Title: ${appState.examTitle}
 
 ${sectionStr}QType: MCQ
 Q: Match the following columns:
@@ -1333,10 +1340,16 @@ O: Option C text
 O: Option D text
 A: B
 
+QType: NAT
+Q: The value of the charge is ____________ C.
+A: 2.5-2.6
+
 Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text code block.`;
         }
 
-        function openPromptModal() { switchPrompt(appState.mathMode); openModal('promptModal'); }
+        function openPromptModal() {
+            openModal('promptModal');
+        }
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
