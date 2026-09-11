@@ -1316,12 +1316,20 @@ CRITICAL HTML RULES:
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. TWO-COLUMN LAYOUT & MARGINS (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
-2. ANTI-TRUNCATION: NEVER cut off words or sentences (e.g., do not output "belong t" instead of "belong to"). Stitch text seamlessly if it wraps to the next line, column, or page.
+1. TWO-COLUMN LAYOUT (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
+2. ANTI-TRUNCATION PROTOCOL: You are prone to stopping mid-sentence (e.g., stopping at "belong t"). Verify every sentence is complete. If a sentence wraps to the next line, column, or page, stitch it together seamlessly. NEVER output partial statements.
 3. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
 4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE_PLACEHOLDER]' to reserve its seat. Do NOT skip the option line.
-5. MULTI-STATEMENT / ASSERTION: Copy the FULL text of statements and assertions exactly as they appear in the source. Do NOT summarize or cut off text with "**Statement**" or "**Assertion**". Preserve all context.
-6. GRID OPTIONS: If options are displayed side-by-side (e.g. (A) Wheat  (B) Mango), extract them individually onto their own dedicated 'O:' line. Do not merge them.
+5. MULTI-STATEMENT / ASSERTION FORMATTING (CRITICAL):
+   - Do NOT summarize. Do NOT output just "**Statement**". Extract the COMPLETE sentences.
+   - You MUST format with bold tags and explicit line breaks EXACTLY like this:
+     **Assertion (A):** [Full text of assertion...]
+     **Reason (R):** [Full text of reason...]
+   - Or for Roman numeral statements:
+     **Statement I:** [Full text of statement...]
+     **Statement II:** [Full text of statement...]
+   - Add a blank line before the final "Choose the correct answer..." instruction.
+6. GRID OPTIONS: If options are displayed side-by-side (e.g. (A) Wheat (B) Mango), extract them individually onto their own dedicated 'O:' line. Do not merge them.
 7. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
 8. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
 ${modeSpecificRules}
