@@ -159,11 +159,11 @@
         .preview-question:last-child { border-bottom: none; }
         .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
         
-        .preview-mcq-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-        .preview-option { 
-            flex: 1 1 calc(50% - 0.4rem); 
-            min-width: 200px; 
-            padding: 0.5rem 0.75rem; 
+        .preview-question table { width: 100% !important; border-collapse: collapse !important; margin-top: 0.5rem; margin-bottom: 1rem; background: var(--bg-card); border: 1px solid var(--border) !important; }
+        .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 0.5rem !important; text-align: left; font-size: 0.85rem; }
+        .preview-question th { background: var(--bg-input); font-weight: 700; color: var(--primary-dark); }
+
+        /* CORRECTION 1F: Dynamic MCQ Option Layout - Responsive flex container */
             border-left: 4px solid var(--border); 
             color: var(--text-muted); 
             font-size: 0.9rem; 
@@ -192,6 +192,9 @@
         .modal-header h2 { margin: 0; font-size: 1.2rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
         .modal-close { background: var(--bg-main); border: 1px solid var(--border); width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text-main); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); transform: translateY(150%); opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 10000; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+        .toast.show { transform: translateY(0); opacity: 1; }
 
         .crop-workspace { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; flex: 1; min-height: 0; }
         .crop-main { background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); height: 100%; overflow: hidden; }
@@ -595,6 +598,24 @@
         </div>
     </div>
 
+    <!-- Global Alert/Confirm Modal -->
+    <div class="modal" id="sysModal" style="z-index: 9999;">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+                <h2 id="sysModalTitle">Notice</h2>
+                <button class="modal-close" onclick="closeModal('sysModal')">✕</button>
+            </div>
+            <p id="sysModalMsg" style="margin: 1rem 0; color: var(--text-main); font-size: 1rem; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
+                <button class="btn btn-secondary hidden" id="sysModalCancel">Cancel</button>
+                <button class="btn btn-primary" id="sysModalConfirm" style="min-width: 100px;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="sysToast" class="toast"><span>✓</span> <span id="toastMsg">Action successful</span></div>
+
     <script>
         const defaultRules = [
             "The examination will consist of Objective Type Questions (MCQs) and Numerical Answer Types (NATs).",
@@ -667,6 +688,34 @@
             const right = document.getElementById('rightPanel'); const left = document.querySelector('.left-panel'); const btn = document.getElementById('previewToggleBtn');
             if(previewIsVisible) { right.classList.remove('hidden-panel'); left.classList.remove('expanded'); btn.innerText = '👁️ Hide Preview'; } 
             else { right.classList.add('hidden-panel'); left.classList.add('expanded'); btn.innerText = '👁️ Show Preview'; }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('sysToast');
+            document.getElementById('toastMsg').innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function sysConfirm(msg, onConfirm) {
+            document.getElementById('sysModalTitle').innerText = 'Confirmation';
+            document.getElementById('sysModalMsg').innerText = msg;
+            const cancelBtn = document.getElementById('sysModalCancel');
+            const confirmBtn = document.getElementById('sysModalConfirm');
+            cancelBtn.classList.remove('hidden');
+            
+            cancelBtn.onclick = () => closeModal('sysModal');
+            confirmBtn.onclick = () => { closeModal('sysModal'); onConfirm(); };
+            
+            openModal('sysModal');
+        }
+
+        function sysAlert(msg) {
+            document.getElementById('sysModalTitle').innerText = 'Notice';
+            document.getElementById('sysModalMsg').innerText = msg;
+            document.getElementById('sysModalCancel').classList.add('hidden');
+            document.getElementById('sysModalConfirm').onclick = () => closeModal('sysModal');
+            openModal('sysModal');
         }
 
         function parseBold(str) {
@@ -767,7 +816,7 @@
 
         function handleSectionRename(idx, newName) {
             newName = newName.trim();
-            if(!newName || appState.questionsBySection[newName]) { alert("Invalid or duplicate section name."); renderMarksTable(); return; }
+            if(!newName || appState.questionsBySection[newName]) { sysAlert("Invalid or duplicate section name."); renderMarksTable(); return; }
             const oldName = appState.sections[idx].name;
             appState.sections[idx].name = newName;
             appState.questionsBySection[newName] = appState.questionsBySection[oldName];
@@ -789,14 +838,14 @@
 
         function deleteSection(evt, secName) {
             evt.stopPropagation();
-            if(confirm(`⚠️ WARNING: Are you sure you want to completely delete "${secName}" and ALL its questions?`)) {
+            sysConfirm(`⚠️ WARNING: Are you sure you want to completely delete "${secName}" and ALL its questions?`, () => {
                 appState.sections = appState.sections.filter(s => s.name !== secName);
                 delete appState.questionsBySection[secName];
                 
                 if (activePreviewSection === secName) activePreviewSection = appState.sections[0]?.name || '';
                 
                 renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
-            }
+            });
         }
 
         function renderAllQuestions() {
@@ -830,6 +879,14 @@
                 body.appendChild(addBtn);
             });
             renderMarksTable(); 
+        }
+
+        function deleteQuestion(sec, idx) {
+            sysConfirm(`Delete Question ${idx + 1}?`, () => {
+                appState.questionsBySection[sec].splice(idx, 1); 
+                renderAllQuestions(); 
+                renderPreviewContent();
+            });
         }
 
         function createQuestionBlock(sec, idx, q) {
@@ -872,7 +929,7 @@
                         <option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                     </select>
                     
-                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); if(confirm('Delete Question ${idx+1}?')){ appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); renderPreviewContent(); }">✕</button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); deleteQuestion('${sec}', ${idx})">✕</button>
                 </div>
                 ${optsHtml}
                 ${natHtml}
@@ -915,7 +972,7 @@
             if (!sec || isNaN(qNum) || qNum < 1) return;
             const idx = qNum - 1; const block = document.getElementById(`qblock-${sec}-${idx}`);
             if (block) { document.getElementById(`details-${sec}`).open = true; block.scrollIntoView({ behavior: 'smooth', block: 'center' }); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } 
-            else { alert(`Question ${qNum} not found in ${sec}. Valid range is 1 to ${(appState.questionsBySection[sec] || []).length}`); }
+            else { sysAlert(`Question ${qNum} not found in ${sec}. Valid range is 1 to ${(appState.questionsBySection[sec] || []).length}`); }
         }
 
         let cropperInstance = null; let currentImageData = null; let currentCropBase64 = null; let cropTimeout = null;
@@ -932,9 +989,12 @@
 
         function editOrReplaceImage(sec, idx) {
             const q = appState.questionsBySection[sec][idx];
-            if (confirm("Do you want to edit the existing compressed image? (Click OK to Edit, Cancel to clear and upload a new one).")) {
-                if(q && q.image) { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
-            } else { removeImage(sec, idx); document.getElementById(`imgInput-${sec}-${idx}`).click(); }
+            if(q && q.image) { 
+                currentImageData = { sec, idx, isOption:false, optIdx:0 }; 
+                openCropModalWithData(q.image); 
+            } else {
+                document.getElementById(`imgInput-${sec}-${idx}`).click();
+            }
         }
         function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); }
 
@@ -984,17 +1044,35 @@
         let currentTableData = null;
         function openTableModal(sec, idx, isEdit) { 
             currentTableData = { sec, idx }; 
+            const editorCont = document.getElementById('tblEditorContainer');
+            
             if(isEdit) {
-                const q = appState.questionsBySection[sec][idx];
-                document.getElementById('tblEditorContainer').innerHTML = q.table;
-                document.getElementById('tblEditorContainer').querySelectorAll('th, td').forEach(cell => cell.setAttribute('contenteditable', 'true'));
-            } else { document.getElementById('tblRows').value = 3; document.getElementById('tblCols').value = 2; drawTableEditor(); }
+                try {
+                    const q = appState.questionsBySection[sec][idx];
+                    let cleanHtml = (q.table || '').replace(/```html/gi, '').replace(/```/g, '').trim();
+                    
+                    // Failsafe: if there's raw text but no table tag, auto-wrap it into a table to prevent editor crash
+                    if (cleanHtml && !cleanHtml.toLowerCase().includes('<table')) {
+                        cleanHtml = `<table class="editor-table"><tr><td>${cleanHtml}</td></tr></table>`;
+                    }
+                    
+                    editorCont.innerHTML = cleanHtml;
+                    const tbl = editorCont.querySelector('table');
+                    if(tbl) tbl.classList.add('editor-table');
+                    editorCont.querySelectorAll('th, td').forEach(cell => cell.setAttribute('contenteditable', 'true'));
+                } catch (e) {
+                    console.error("Error loading table for edit:", e);
+                }
+            } else { 
+                document.getElementById('tblRows').value = 3; 
+                document.getElementById('tblCols').value = 2; 
+                drawTableEditor(); 
+            }
             openModal('tableModal'); 
         }
 
         function editOrReplaceTable(sec, idx) {
-            if (confirm("Edit existing table? (Click OK to Edit, Cancel to clear and draw a new one).")) { openTableModal(sec, idx, true); } 
-            else { removeTable(sec, idx); openTableModal(sec, idx, false); }
+            openTableModal(sec, idx, true);
         }
 
         function drawTableEditor() {
@@ -1045,11 +1123,15 @@
                 
                 // 1. Escape HTML entirely
                 let processedText = escapeHTML(q.text);
+                let processedTable = q.table || '';
                 
                 // 2. Conditionally pass Math - Use the ACTUAL selected rendering engine so preview matches output
                 let previewEngine = appState.renderEngine; 
                 if(appState.mathMode === 'LATEX') {
                     processedText = processMath(processedText, previewEngine);
+                    if (processedTable) {
+                        processedTable = processMath(processedTable, previewEngine);
+                    }
                 }
                 
                 // 3. Bold Text Formatting and Paragraph creation
@@ -1057,7 +1139,7 @@
                 
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
-                if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
+                if (processedTable) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${processedTable}</div>`;
                 
                 if (q.type === 'NAT') {
                     html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
@@ -1121,8 +1203,21 @@
         }
 
         function parseCBTFormat() {
-            const txt = document.getElementById('cbtInput').value; 
-            if(!txt.trim()) { alert('Paste content or load file first'); return; }
+            let txt = document.getElementById('cbtInput').value; 
+            if(!txt.trim()) { sysAlert('Paste content or load file first'); return; }
+            
+            // FIX 1: Convert AI hallucinated literal "\n" strings into actual newlines globally 
+            txt = txt.replace(/\\n/g, '\n');
+            
+            // FIX 2: Strip any markdown code blocks
+            txt = txt.replace(/```html/gi, '').replace(/```/g, '');
+            
+            // FIX 3: Force known AI tags onto new lines if it forgot to add a newline
+            txt = txt.replace(/(?:\n|\s+)(T\s*:\s*<table)/gi, '\nT: <table')
+                     .replace(/(?:\n|\s+)(O\s*:)/gi, '\nO:')
+                     .replace(/(?:\n|\s+)(A\s*:)/gi, '\nA:')
+                     .replace(/(?:\n|\s+)(QType\s*:)/gi, '\nQType:');
+
             const lines = txt.split('\n'); 
             
             // Fix: Stateful multiline string collection for generated AI tables/questions
@@ -1167,40 +1262,47 @@
                     const idx = tr.indexOf(':'); if(idx > 0) { appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
                 }
                 else if (mode === 'questions' && curSec) {
-                    if (tr.startsWith('QType:')) {
+                    const matchQType = tr.match(/^QType\s*:\s*(.*)/i);
+                    const matchQ = tr.match(/^Q\s*:\s*(.*)/i);
+                    const matchO = tr.match(/^O\s*:\s*(.*)/i);
+                    const matchA = tr.match(/^A\s*:\s*(.*)/i);
+                    const matchT = tr.match(/^T\s*:\s*(.*)/i);
+                    const matchI = tr.match(/^I\s*:\s*(.*)/i);
+
+                    if (matchQType) {
                         lastField = null;
-                        curQ = { type: tr.substring(6).trim(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                        curQ = { type: matchQType[1].trim() || 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
                     }
-                    else if (tr.startsWith('Q:')) { 
+                    else if (matchQ) { 
                         lastField = 'Q';
                         if (!curQ || curQ.text !== '') {
                             curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
                         }
-                        let cleanedText = tr.substring(2).trim().replace(/\\n/g, '\n').replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
+                        let cleanedText = matchQ[1].trim().replace(/\\n/g, '\n').replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
                         curQ.text = cleanedText;
                         appState.questionsBySection[curSec].push(curQ); 
                     }
-                    else if (tr.startsWith('O:') && curQ && curQ.type !== 'NAT') {
+                    else if (matchO && curQ && curQ.type !== 'NAT') {
                         lastField = 'O';
-                        let cleanedOpt = tr.substring(2).trim().replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
+                        let cleanedOpt = matchO[1].trim().replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
                         curQ.options.push(cleanedOpt);
                     }
-                    else if (tr.startsWith('A:') && curQ) {
+                    else if (matchA && curQ) {
                         lastField = 'A';
                         if (curQ.type === 'NAT') {
-                            curQ.correctNat = tr.substring(2).trim();
+                            curQ.correctNat = matchA[1].trim();
                         } else {
-                            let letter = tr.substring(2).trim().replace(/[^a-zA-Z]/g, '').charAt(0);
+                            let letter = matchA[1].trim().replace(/[^a-zA-Z]/g, '').charAt(0);
                             if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
                         }
                     }
-                    else if (tr.startsWith('T:') && curQ) {
+                    else if (matchT && curQ) {
                         lastField = 'T';
-                        curQ.table = tr.substring(2).trim();
+                        curQ.table = matchT[1].trim();
                     }
-                    else if (tr.startsWith('I:') && curQ) { 
+                    else if (matchI && curQ) { 
                         lastField = 'I';
-                        curQ.image = tr.substring(2).trim(); 
+                        curQ.image = matchI[1].trim(); 
                     }
                     else if (lastField && curQ) {
                         // Append multiline data! Handling AI formatting failures
@@ -1222,7 +1324,7 @@
             }
 
             renderConstantsTable(); 
-            renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); alert('Imported Successfully');
+            renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); showToast('Imported Successfully');
         }
 
         async function generateCBTHTML() {
@@ -1286,11 +1388,15 @@
                         // 1. Strict HTML Escape
                         let processedText = escapeHTML(q.text);
                         let processedOptions = q.options.map(o => escapeHTML(o));
+                        let processedTable = q.table || '';
                         
                         // 2. Unescape & Parse Math blocks explicitly
                         if (appState.mathMode === 'LATEX') {
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
+                            if (processedTable) {
+                                processedTable = processMath(processedTable, appState.renderEngine);
+                            }
                         }
 
                         // 3. Apply Markdown bold parsing & newline parsing
@@ -1302,7 +1408,7 @@
                             type: q.type || 'MCQ', 
                             text: finalFormattedText, 
                             img: q.image || '', 
-                            table: q.table || '',
+                            table: processedTable,
                             options: q.type !== 'NAT' ? finalFormattedOptions : [], 
                             correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
                             marksCorrect: sec.marks, 
@@ -1320,7 +1426,7 @@
                 document.getElementById('compileBtn').innerHTML = '✅ Compiled Successfully! (Click to re-compile)';
                 
             } catch (e) {
-                alert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
+                sysAlert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
             }
         }
 
@@ -1378,7 +1484,8 @@ CRITICAL EXTRACTION RULES:
 5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
    Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
 6. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-7. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
+7. TABLES: If the question contains a table, you MUST output it as a minified HTML <table> string ON A COMPLETELY NEW LINE starting EXACTLY with 'T: '. 
+   DO NOT output 'T: <table>' on the same line as the question text. Use a newline. Do not use Markdown blocks (\`\`\`html).
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
@@ -1388,6 +1495,7 @@ Title: ${appState.examTitle}
 
 ${sectionStr}QType: MCQ
 Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
+T: <table><tr><td>Cell 1</td></tr></table>
 O: Option A text
 O: Option B text
 O: Option C text
@@ -1414,7 +1522,7 @@ Now, parse the attached document and output ONLY the raw .CBT code.`;
                 cropperInstance = null;
             }
         }
-        function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); alert('Copied!'); }
+        function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); showToast('Prompt Copied!'); }
 
         document.addEventListener('change', function(e) {
             if (e.target.name && e.target.name.startsWith('correct-')) {
