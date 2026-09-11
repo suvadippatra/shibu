@@ -59,12 +59,11 @@
         
         .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; }
         
-        /* BULLETPROOF 2-COLUMN MASONRY SYSTEM */
         @media (min-width: 1025px) {
             .left-panel.expanded #questionsListAll details[open] .card-inner {
                 column-count: 2;
                 column-gap: 1.5rem;
-                display: block; /* Overrides any previous grid/flex settings */
+                display: block; 
             }
             .question-block {
                 break-inside: avoid;
@@ -161,7 +160,6 @@
         .preview-question:last-child { border-bottom: none; }
         .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
         
-        /* Table rendering styles for preview to ensure tables look good even if AI drops classes */
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
         .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 8px 12px !important; text-align: left !important; }
         .preview-question th { background: var(--bg-input) !important; font-weight: 700 !important; color: var(--text-main) !important; }
@@ -312,7 +310,6 @@
             </div>
 
             <div class="bottom-action-bar">
-                
                 <div class="engine-config" id="compileConfigBox">
                     <div class="engine-title">⚙️ Mathematics Compilation Engine</div>
                     <div class="engine-options">
@@ -681,13 +678,11 @@
             return str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
         }
 
-        // CRITICAL: Escapes HTML to fix A < B < C bug. 
         function escapeHTML(str) {
             if(!str) return '';
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
         
-        // CRITICAL: Processes LaTeX conditionally. Unescapes < and > ONLY inside math blocks so KaTeX can read them
         function processMath(text, engine) {
             if (!text) return '';
             
@@ -695,12 +690,12 @@
                 let math = displayMath || inlineMath;
                 let isDisplay = !!displayMath;
                 
-                // Unescape < and > ONLY within the LaTeX boundaries to allow KaTeX to parse it
                 let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') {
-                        return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                        // FIX: Removed infinite loop. Graceful fallback message instead.
+                        return `<span style="color:#dc3545; font-weight:bold; font-size:0.85rem; border:1px solid #dc3545; padding:2px 4px; border-radius:4px;" title="Could not load KaTeX. Please check your internet connection or the ../libs/ folder.">[Math Load Error]</span>`;
                     }
                     try {
                         return katex.renderToString(unescapedMath, { 
@@ -714,14 +709,12 @@
                 } else if (engine === 'HTML_FALLBACK') {
                     let str = unescapedMath;
                     
-                    // Comprehensive Greek Map
                     const greek = {
                         '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', 
                         '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ'
                     };
                     for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
                     
-                    // Physics & Math Operators
                     str = str.replace(/\\times/g, '×')
                              .replace(/\\cdot/g, '·')
                              .replace(/\\approx/g, '≈')
@@ -735,28 +728,22 @@
                              .replace(/\\langle/g, '⟨')
                              .replace(/\\rangle/g, '⟩');
                     
-                    // Vectors & Hats & Text
                     str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;');
                     str = str.replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;');
                     str = str.replace(/\\text\{([^}]+)\}/g, '$1');
                     
-                    // Standard functions
                     str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan')
                              .replace(/\\ln/g, 'ln').replace(/\\log/g, 'log').replace(/\\exp/g, 'exp');
                     
-                    // Subscripts & Superscripts
                     str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
                     str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
                     
-                    // Fractions
                     str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
                     
-                    // Strip remaining unparsed backslashes (but keep safe HTML entities intact)
                     str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
                     
                     return `<span style="font-family: serif;"><i>${str}</i></span>`;
                 } else if (engine === 'KATEX_ONLINE') {
-                    // Return properly delimited LaTeX for CDN KaTeX to process
                     return (isDisplay ? '$$' : '$') + unescapedMath + (isDisplay ? '$$' : '$');
                 }
                 return match;
@@ -1032,7 +1019,6 @@
             if(isEdit) {
                 const q = appState.questionsBySection[sec][idx];
                 try {
-                    // Make sure it has editor-table class so styling and editing works even if AI stripped it
                     let tblContent = q.table.trim();
                     if (!tblContent.startsWith('<table')) {
                         tblContent = `<table class="editor-table"><tr><td contenteditable="true">${tblContent}</td></tr></table>`;
@@ -1051,7 +1037,6 @@
         }
 
         function editOrReplaceTable(sec, idx) {
-            // Directly opens the table editor without confirmation to ensure easy editability
             openTableModal(sec, idx, true);
         }
 
@@ -1097,35 +1082,21 @@
                 return;
             }
 
-            // Await KaTeX load asynchronously to prevent ReferenceError ([Math Error])
-            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW')) {
-                if (typeof katex === 'undefined') {
-                    area.innerHTML = `<div style="text-align: center; color: #f39c12; margin-top: 3rem; font-weight: 600;">Loading Math Engine...</div>`;
-                    setTimeout(renderPreviewContent, 500);
-                    return;
-                }
-            }
-
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
             
             qs.forEach((q, idx) => {
                 
-                // 1. Escape HTML entirely
                 let processedText = escapeHTML(q.text);
-                
-                // 2. Conditionally pass Math - Use the ACTUAL selected rendering engine so preview matches output
                 let previewEngine = appState.renderEngine; 
                 if(appState.mathMode === 'LATEX') {
                     processedText = processMath(processedText, previewEngine);
                 }
                 
-                // 3. Bold Text Formatting and Paragraph creation
                 processedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                 
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 
-                // Print injected table for preview
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
@@ -1157,8 +1128,6 @@
                         ],
                         throwOnError: false
                     });
-                } else {
-                    setTimeout(renderPreviewContent, 500); // Retry if auto-render.min.js is still downloading
                 }
             }
         }
@@ -1209,10 +1178,7 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { alert('Paste content or load file first'); return; }
 
-            // PRE-PROCESSING: Fix AI formatting issues globally before parsing
-            // 1. Replace literal "\n" strings with actual newlines
             txt = txt.replace(/\\n/g, '\n');
-            // 2. Regex to strictly push tags onto new lines regardless of preceding whitespace
             txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2');
             txt = txt.replace(/(.)(O\s*:\s*)/gi, '$1\n$2');
             txt = txt.replace(/(.)(A\s*:\s*)/gi, '$1\n$2');
@@ -1220,7 +1186,7 @@
 
             const lines = txt.split('\n'); 
             let mode = null, curSec = null, curQ = null;
-            let lastField = null; // Important state tracker to capture multi-line AI hallucinations
+            let lastField = null; 
             
             appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
             appState.audio = { bg: '', start: '', submit: '' };
@@ -1296,7 +1262,6 @@
                         lastField = 'I';
                     }
                     else {
-                        // MULTI-LINE SUPPORT: If AI broke output across multiple lines, intelligently append to last known field
                         if (curQ && tr) {
                             if (lastField === 'Q') curQ.text += '\n' + tr;
                             else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
@@ -1318,21 +1283,18 @@
 
         async function generateCBTHTML() {
             try {
-                // Ensure Last.html is in the exact same directory.
+                // Requires the Last.html file in the same directory. Note: fails on file:/// without server due to strict CORS.
                 const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
                 let txt = await resp.text();
 
-                // Parameter 1 & 2: Titles
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName}</h2>`);
                 txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle}</h1>`);
                 
-                // Parameter 3 & 4: Subtitles & Headers
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle}</span>`);
                 
-                // Audio Configurations
                 txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
                 txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
                 txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
@@ -1340,51 +1302,42 @@
                     txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
                 }
 
-                // Parameter 5: Constants
                 let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
                 txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
 
-                // Parameter 6: Reports Header
                 txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle} : ${appState.examSubtitle}</div>`);
                 txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle} - ${appState.examSubtitle}$2`);
                 
-                // Parameter 7 & 10: Timer & Font Config
                 txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
                 txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
                 txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
                 
-                // Parameter 8: Instructional Text
                 const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
                 const rulesStr = activeRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
-                // Process Online KaTeX Dependency if Selected
+                // CRITICAL FIX: The CDN paths are hardcoded for offline output. No 'defer' attribute so they load synchronously and execute reliably.
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
-                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
+                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
+                    katexJS = `\n<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="if(typeof triggerMathRender === 'function') triggerMathRender();"><\/script>\n`;
                 }
-                txt = txt.replace(/<!-- PARAMETER 11 \(KaTeX CSS\) -->/i, katexCSS);
-                txt = txt.replace(/<!-- PARAMETER 12 \(KaTeX JS\) -->/i, katexJS);
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, katexCSS);
+                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, katexJS);
 
-                // Parameter 9: Core Question Bank (Executing Strict Formatting & Math Parsing)
                 const qb = [];
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
-                        
-                        // 1. Strict HTML Escape
                         let processedText = escapeHTML(q.text);
                         let processedOptions = q.options.map(o => escapeHTML(o));
                         
-                        // 2. Unescape & Parse Math blocks explicitly
                         if (appState.mathMode === 'LATEX') {
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
                         }
 
-                        // 3. Apply Markdown bold parsing & newline parsing
                         let finalFormattedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                         let finalFormattedOptions = processedOptions.map(o => parseBold(o));
 
@@ -1411,7 +1364,7 @@
                 document.getElementById('compileBtn').innerHTML = '✅ Compiled Successfully! (Click to re-compile)';
                 
             } catch (e) {
-                alert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
+                alert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file. Or open via local server instead of file:///.');
             }
         }
 
@@ -1441,36 +1394,35 @@
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
 CRITICAL MATH RULES:
+- ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
-- FATAL ERROR PREVENTION: NEVER leave inline variables naked in the options. E.g., 'O: \\omega' is STRICTLY FORBIDDEN. It MUST be 'O: $\\omega$'.
-- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা")
-- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$, $\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$)
-- Examples of CORRECT format:
-  * Gravitational acceleration: $g = 9.8 \\text{ m/s}^2$
-  * Charge: $q = 1.6 \\times 10^{-19} \\text{ C}$
-  * Wavelength: $\\lambda = 650 \\text{ nm}$
-  * Greek symbols: $\\alpha = 30°$, $\\beta_{xyz}$, $\\Delta E$
+- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
+- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$).
 - DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
-- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT (see "Manual Correction Guide" below)`;
+- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
             } else {
                 modeSpecificRules = `
-CRITICAL MATH RULES:
-- ABSOLUTELY NO LATEX. Do not use $ or \\frac.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
-- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.`;
+CRITICAL HTML RULES:
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
+- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.`;
             }
 
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
-2. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text.
+1. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
+2. NEVER SKIP A QUESTION: Extract every single question. If entirely an image, use a single dot '.' for text.
 3. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
-4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
-5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
-   Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
-6. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-7. TABLES ON NEW LINE: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line.
+4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range.
+5. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts.
+6. TABLES ON NEW LINE: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line.
+7. TABLE HEADERS: If extracting matching lists (e.g., List I and List II) or column data, you MUST place 'List I' and 'List II' inside <th> tags (e.g., <tr><th>List I</th><th>List II</th></tr>), never as normal text or <td>.
+8. MULTI-STATEMENT QUESTIONS: For "Statement I / II" or "Assertion / Reason", use a strict 3-tier format with forced newlines (\\n) and bold prefixes:
+   [Intro sentence]
+   \\n**Statement I:** [Text]
+   \\n**Statement II:** [Text]
+   \\n[Question prompt]
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
