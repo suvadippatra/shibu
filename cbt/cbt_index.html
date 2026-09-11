@@ -700,7 +700,14 @@
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') {
-                        return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                        // Prevent infinite loop if library fails to load completely
+                        if(!window.mathRetryCount) window.mathRetryCount = 0;
+                        if(window.mathRetryCount < 3) {
+                            window.mathRetryCount++;
+                            setTimeout(renderPreviewContent, 1000);
+                            return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                        }
+                        return `<span style="color:red; font-weight:bold;">[Math Error: Library not found]</span>`;
                     }
                     try {
                         return katex.renderToString(unescapedMath, { 
@@ -1097,15 +1104,6 @@
                 return;
             }
 
-            // Await KaTeX load asynchronously to prevent ReferenceError ([Math Error])
-            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW' || appState.renderEngine === 'KATEX_ONLINE')) {
-                if (typeof katex === 'undefined') {
-                    area.innerHTML = `<div style="text-align: center; color: #f39c12; margin-top: 3rem; font-weight: 600;">Loading Math Engine...</div>`;
-                    setTimeout(renderPreviewContent, 500);
-                    return;
-                }
-            }
-
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
             
             qs.forEach((q, idx) => {
@@ -1158,7 +1156,7 @@
                         throwOnError: false
                     });
                 } else {
-                    setTimeout(renderPreviewContent, 500); // Retry if auto-render.min.js is still downloading
+                    console.warn("Auto-render extension is not loaded yet.");
                 }
             }
         }
@@ -1363,10 +1361,12 @@
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">';
-                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
+                    // Critical Fix: Output HTML must use ABSOLUTE CDN URLs, not local paths
+                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
+                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"><\/script>\n`;
                 }
-                // Apply injection using wildcard regex to bypass variations like "- Injected by compiler"
+                
+                // Critical Fix: Match entire comment using wildcard regardless of trailing words
                 txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, katexCSS);
                 txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, katexJS);
 
