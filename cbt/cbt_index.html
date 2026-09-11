@@ -700,11 +700,8 @@
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') {
-                        if (!window.katexRetryQueued) {
-                            window.katexRetryQueued = true;
-                            setTimeout(() => { window.katexRetryQueued = false; renderPreviewContent(); }, 1500);
-                        }
-                        return `<span style="color:#f39c12; font-weight:bold; font-size:0.85rem;">[Loading Math Engine...]</span>`;
+                        // Removed infinite setTimeout loop. Fail gracefully if engine is unavailable.
+                        return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
                     }
                     try {
                         return katex.renderToString(unescapedMath, { 
@@ -1101,17 +1098,6 @@
                 return;
             }
 
-            // Await KaTeX load asynchronously to prevent ReferenceError ([Math Error])
-            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW' || appState.renderEngine === 'KATEX_ONLINE')) {
-                if (typeof katex === 'undefined') {
-                    if (!window.katexRetryQueued) {
-                        window.katexRetryQueued = true;
-                        setTimeout(() => { window.katexRetryQueued = false; renderPreviewContent(); }, 1500);
-                    }
-                    return; // Fail silently but queue a retry, preventing infinite loop lockup.
-                }
-            }
-
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
             
             qs.forEach((q, idx) => {
@@ -1153,7 +1139,7 @@
             
             area.innerHTML = html;
 
-            // Trigger auto-render for KaTeX Online mode in the preview pane
+            // Trigger auto-render for KaTeX Online mode in the preview pane safely
             if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
                 if (typeof renderMathInElement !== 'undefined') {
                     renderMathInElement(area, {
@@ -1163,11 +1149,6 @@
                         ],
                         throwOnError: false
                     });
-                } else {
-                    if (!window.katexRetryQueued) {
-                        window.katexRetryQueued = true;
-                        setTimeout(() => { window.katexRetryQueued = false; renderPreviewContent(); }, 1500);
-                    }
                 }
             }
         }
@@ -1372,14 +1353,15 @@
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    // Critical Fix: Output HTML must use ABSOLUTE CDN URLs, not local paths
                     katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
                     katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
                 
-                // Critical Fix: Match entire comment using wildcard regardless of trailing words
-                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, katexCSS);
-                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, katexJS);
+                // Replace ONLY the first instance to avoid duplication, then wipe any others globally to keep file clean
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS);
+                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS);
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, '');
+                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
 
                 // Parameter 9: Core Question Bank (Executing Strict Formatting & Math Parsing)
                 const qb = [];
@@ -1434,7 +1416,7 @@
             
             if (mode === 'LATEX') {
                 document.getElementById('tab-btn-latex').classList.add('active');
-                document.getElementById('prompt-desc').innerText = "CRITICAL: LLMs often break $ signs in their chat interface. Use this prompt to force the AI to use a raw text code block, preserving exact LaTeX formatting.";
+                document.getElementById('prompt-desc').innerText = "CRITICAL: The AI *must* wrap all math in $ signs or the compiler will ignore it. Copy this strict prompt to ensure perfect extraction without hallucinated span tags.";
                 document.getElementById('compileConfigBox').style.display = 'block';
             } else {
                 document.getElementById('tab-btn-html').classList.add('active');
@@ -1452,20 +1434,20 @@
             let modeSpecificRules = '';
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
-CRITICAL MATH RULES FOR LLMs (PREVENTING PARSE ERRORS):
-1. ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' is FATALLY WRONG. It MUST be 'O: $\\omega$'.
-2. RAW OUTPUT REQUIRED: Do NOT escape the dollar signs (do not use \\$). Use the exact symbol $.
-3. USE CODE BLOCK: To prevent your chat interface from rendering the math and breaking the text, you MUST wrap your final output completely inside a \`\`\`text code block.
-4. FORBIDDEN: NEVER write scientific units or constants in Bengali.
-5. REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$).
-6. NO MATRICES: DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.`;
+CRITICAL MATH RULES:
+- ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
+- DISPLAY MODE: All large, standalone equations (like fractions or integrals) MUST be wrapped in double dollar signs ($$ ... $$) so they are not crushed on a single line.
+- SUBSCRIPTS: You MUST preserve all mathematical underscores (_). For example, write \\tilde{\\nu}_{\\text{C-H}}, absolutely never \\tilde{\\nu}{\\text{C-H}}.
+- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
+- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$, $J$).
+- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
+- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
             } else {
                 modeSpecificRules = `
 CRITICAL HTML RULES:
-1. ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
-2. Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
-3. Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.
-4. To prevent formatting issues, wrap your final output completely inside a \`\`\`text code block.`;
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
+- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.`;
             }
 
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
@@ -1503,7 +1485,7 @@ QType: NAT
 Q: The value of the charge is ____________ C.
 A: 2.5-2.6
 
-Now, parse the attached document and output ONLY the raw .CBT code.`;
+Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text code block.`;
         }
 
         function openPromptModal() {
