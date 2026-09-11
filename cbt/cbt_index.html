@@ -1183,7 +1183,8 @@
                     }
                     else if (/^I\s*:/i.test(tr) && curQ) { 
                         let imgUrl = tr.replace(/^I\s*:/i, '').trim(); 
-                        if (imgUrl && imgUrl.length > 5) { curQ.image = imgUrl; }
+                        // SAFEGUARD: Ignore AI hallucinations like I: [Image of statements]
+                        if (imgUrl && imgUrl.length > 5 && !imgUrl.includes('[')) { curQ.image = imgUrl; }
                         lastField = 'I';
                     }
                     else {
@@ -1317,18 +1318,16 @@ CRITICAL HTML RULES:
 
 CRITICAL EXTRACTION RULES:
 1. TWO-COLUMN LAYOUT (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
-2. ANTI-TRUNCATION PROTOCOL: You are prone to stopping mid-sentence (e.g., stopping at "belong t"). Verify every sentence is complete. If a sentence wraps to the next line, column, or page, stitch it together seamlessly. NEVER output partial statements.
+2. VERBATIM TRANSCRIPTION (ANTI-TRUNCATION): You MUST extract EVERY SINGLE WORD of the question. If a question contains "Statement I" and "Statement II", you must transcribe the FULL text of both statements verbatim. NEVER summarize. NEVER skip sentences.
 3. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
 4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE_PLACEHOLDER]' to reserve its seat. Do NOT skip the option line.
-5. MULTI-STATEMENT / ASSERTION FORMATTING (CRITICAL):
-   - Do NOT summarize. Do NOT output just "**Statement**". Extract the COMPLETE sentences.
-   - You MUST format with bold tags and explicit line breaks EXACTLY like this:
+5. MULTI-STATEMENT / ASSERTION FORMATTING:
+   - Format with bold tags and explicit line breaks exactly like this:
      **Assertion (A):** [Full text of assertion...]
      **Reason (R):** [Full text of reason...]
    - Or for Roman numeral statements:
      **Statement I:** [Full text of statement...]
      **Statement II:** [Full text of statement...]
-   - Add a blank line before the final "Choose the correct answer..." instruction.
 6. GRID OPTIONS: If options are displayed side-by-side (e.g. (A) Wheat (B) Mango), extract them individually onto their own dedicated 'O:' line. Do not merge them.
 7. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
 8. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
@@ -1340,12 +1339,14 @@ Agency: ${appState.agencyName}
 Title: ${appState.examTitle}
 
 ${sectionStr}QType: MCQ
-Q: Match the following columns:
-T: <table><tr><th>Column I</th><th>Column II</th></tr><tr><td>A</td><td>B</td></tr></table>
-O: Option A text
-O: Option B text
-O: Option C text
-O: Option D text
+Q: Given below are two statements:
+**Statement I:** A dead organism does not grow.
+**Statement II:** A brain-dead patient has self-consciousness.
+In the light of the above statements, choose the most appropriate answer from the options given below:
+O: Statement I is correct but Statement II is incorrect.
+O: Statement I is incorrect but Statement II is correct.
+O: Both Statement I and Statement II are correct.
+O: Both Statement I and Statement II are incorrect.
 A: B
 
 QType: NAT
