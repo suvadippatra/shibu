@@ -102,7 +102,7 @@
 
         .table-responsive { overflow-x: auto; margin-bottom: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
         .table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--bg-card); }
-        .table th { background: var(--bg-input); border-bottom: 2px solid var(--border); padding: 0.6rem; text-align: left; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+        .table th { background: var(--bg-input); border-bottom: 2px solid var(--border); padding: 0.6rem; text-align: left; font-weight: 700; color: var(--primary); white-space: nowrap; }
         .table td { border-bottom: 1px solid var(--border); padding: 0.5rem 0.6rem; }
         .table input { width: 100%; padding: 0.4rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; background: var(--bg-input); color: var(--text-main); }
         .table input:focus { border-color: var(--primary); outline: none; }
@@ -159,11 +159,16 @@
         .preview-question:last-child { border-bottom: none; }
         .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
         
-        .preview-question table { width: 100% !important; border-collapse: collapse !important; margin-top: 0.5rem; margin-bottom: 1rem; background: var(--bg-card); border: 1px solid var(--border) !important; }
-        .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 0.5rem !important; text-align: left; font-size: 0.85rem; }
-        .preview-question th { background: var(--bg-input); font-weight: 700; color: var(--primary-dark); }
+        /* Table rendering styles for preview to ensure tables look good even if AI drops classes */
+        .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
+        .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 8px 12px !important; text-align: left !important; }
+        .preview-question th { background: var(--bg-input) !important; font-weight: 700 !important; color: var(--text-main) !important; }
 
-        /* CORRECTION 1F: Dynamic MCQ Option Layout - Responsive flex container */
+        .preview-mcq-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .preview-option { 
+            flex: 1 1 calc(50% - 0.4rem); 
+            min-width: 200px; 
+            padding: 0.5rem 0.75rem; 
             border-left: 4px solid var(--border); 
             color: var(--text-muted); 
             font-size: 0.9rem; 
@@ -193,17 +198,14 @@
         .modal-close { background: var(--bg-main); border: 1px solid var(--border); width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
 
-        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text-main); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); transform: translateY(150%); opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 10000; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
-        .toast.show { transform: translateY(0); opacity: 1; }
-
         .crop-workspace { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; flex: 1; min-height: 0; }
         .crop-main { background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); height: 100%; overflow: hidden; }
         .crop-sidebar { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; padding-right: 0.5rem; }
         .live-crop-output { width: 100%; height: 220px; object-fit: contain; background: #fff; border: 1px dashed var(--border); border-radius: var(--radius-sm); margin-top: 0.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
-        .editor-table { width: 100%; border-collapse: collapse; background: var(--bg-input); }
-        .editor-table th, .editor-table td { border: 1px solid var(--border); padding: 0.5rem; text-align: center; min-width: 60px; font-size: 0.9rem; }
-        .editor-table th { background: var(--bg-card); font-weight: 700; color: var(--primary); }
+        .editor-table { width: 100% !important; border-collapse: collapse !important; background: var(--bg-input) !important; }
+        .editor-table th, .editor-table td { border: 1px solid var(--border) !important; padding: 0.5rem !important; text-align: left !important; min-width: 60px !important; font-size: 0.9rem !important; }
+        .editor-table th { background: var(--bg-card) !important; font-weight: 700 !important; color: var(--primary) !important; }
 
         .tab-nav { display: flex; border-bottom: 2px solid var(--primary); margin-bottom: 1rem; }
         .tab-btn { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--text-muted); background: transparent; border: none; font-size: 0.95rem; transition: 0.2s; }
@@ -598,24 +600,6 @@
         </div>
     </div>
 
-    <!-- Global Alert/Confirm Modal -->
-    <div class="modal" id="sysModal" style="z-index: 9999;">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
-                <h2 id="sysModalTitle">Notice</h2>
-                <button class="modal-close" onclick="closeModal('sysModal')">✕</button>
-            </div>
-            <p id="sysModalMsg" style="margin: 1rem 0; color: var(--text-main); font-size: 1rem; line-height: 1.5;"></p>
-            <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
-                <button class="btn btn-secondary hidden" id="sysModalCancel">Cancel</button>
-                <button class="btn btn-primary" id="sysModalConfirm" style="min-width: 100px;">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="sysToast" class="toast"><span>✓</span> <span id="toastMsg">Action successful</span></div>
-
     <script>
         const defaultRules = [
             "The examination will consist of Objective Type Questions (MCQs) and Numerical Answer Types (NATs).",
@@ -688,34 +672,6 @@
             const right = document.getElementById('rightPanel'); const left = document.querySelector('.left-panel'); const btn = document.getElementById('previewToggleBtn');
             if(previewIsVisible) { right.classList.remove('hidden-panel'); left.classList.remove('expanded'); btn.innerText = '👁️ Hide Preview'; } 
             else { right.classList.add('hidden-panel'); left.classList.add('expanded'); btn.innerText = '👁️ Show Preview'; }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('sysToast');
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        function sysConfirm(msg, onConfirm) {
-            document.getElementById('sysModalTitle').innerText = 'Confirmation';
-            document.getElementById('sysModalMsg').innerText = msg;
-            const cancelBtn = document.getElementById('sysModalCancel');
-            const confirmBtn = document.getElementById('sysModalConfirm');
-            cancelBtn.classList.remove('hidden');
-            
-            cancelBtn.onclick = () => closeModal('sysModal');
-            confirmBtn.onclick = () => { closeModal('sysModal'); onConfirm(); };
-            
-            openModal('sysModal');
-        }
-
-        function sysAlert(msg) {
-            document.getElementById('sysModalTitle').innerText = 'Notice';
-            document.getElementById('sysModalMsg').innerText = msg;
-            document.getElementById('sysModalCancel').classList.add('hidden');
-            document.getElementById('sysModalConfirm').onclick = () => closeModal('sysModal');
-            openModal('sysModal');
         }
 
         function parseBold(str) {
@@ -816,7 +772,7 @@
 
         function handleSectionRename(idx, newName) {
             newName = newName.trim();
-            if(!newName || appState.questionsBySection[newName]) { sysAlert("Invalid or duplicate section name."); renderMarksTable(); return; }
+            if(!newName || appState.questionsBySection[newName]) { alert("Invalid or duplicate section name."); renderMarksTable(); return; }
             const oldName = appState.sections[idx].name;
             appState.sections[idx].name = newName;
             appState.questionsBySection[newName] = appState.questionsBySection[oldName];
@@ -838,14 +794,14 @@
 
         function deleteSection(evt, secName) {
             evt.stopPropagation();
-            sysConfirm(`⚠️ WARNING: Are you sure you want to completely delete "${secName}" and ALL its questions?`, () => {
+            if(confirm(`⚠️ WARNING: Are you sure you want to completely delete "${secName}" and ALL its questions?`)) {
                 appState.sections = appState.sections.filter(s => s.name !== secName);
                 delete appState.questionsBySection[secName];
                 
                 if (activePreviewSection === secName) activePreviewSection = appState.sections[0]?.name || '';
                 
                 renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
-            });
+            }
         }
 
         function renderAllQuestions() {
@@ -881,14 +837,6 @@
             renderMarksTable(); 
         }
 
-        function deleteQuestion(sec, idx) {
-            sysConfirm(`Delete Question ${idx + 1}?`, () => {
-                appState.questionsBySection[sec].splice(idx, 1); 
-                renderAllQuestions(); 
-                renderPreviewContent();
-            });
-        }
-
         function createQuestionBlock(sec, idx, q) {
             const div = document.createElement('div');
             div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
@@ -917,6 +865,7 @@
             `;
 
             const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
+            // Added class 'editor-table' in the preview visual to match editor styling if absent
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit Table</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
             div.innerHTML = `
@@ -929,7 +878,7 @@
                         <option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                     </select>
                     
-                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); deleteQuestion('${sec}', ${idx})">✕</button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); if(confirm('Delete Question ${idx+1}?')){ appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); renderPreviewContent(); }">✕</button>
                 </div>
                 ${optsHtml}
                 ${natHtml}
@@ -972,7 +921,7 @@
             if (!sec || isNaN(qNum) || qNum < 1) return;
             const idx = qNum - 1; const block = document.getElementById(`qblock-${sec}-${idx}`);
             if (block) { document.getElementById(`details-${sec}`).open = true; block.scrollIntoView({ behavior: 'smooth', block: 'center' }); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } 
-            else { sysAlert(`Question ${qNum} not found in ${sec}. Valid range is 1 to ${(appState.questionsBySection[sec] || []).length}`); }
+            else { alert(`Question ${qNum} not found in ${sec}. Valid range is 1 to ${(appState.questionsBySection[sec] || []).length}`); }
         }
 
         let cropperInstance = null; let currentImageData = null; let currentCropBase64 = null; let cropTimeout = null;
@@ -989,12 +938,9 @@
 
         function editOrReplaceImage(sec, idx) {
             const q = appState.questionsBySection[sec][idx];
-            if(q && q.image) { 
-                currentImageData = { sec, idx, isOption:false, optIdx:0 }; 
-                openCropModalWithData(q.image); 
-            } else {
-                document.getElementById(`imgInput-${sec}-${idx}`).click();
-            }
+            if (confirm("Do you want to edit the existing compressed image? (Click OK to Edit, Cancel to clear and upload a new one).")) {
+                if(q && q.image) { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
+            } else { removeImage(sec, idx); document.getElementById(`imgInput-${sec}-${idx}`).click(); }
         }
         function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); }
 
@@ -1044,34 +990,29 @@
         let currentTableData = null;
         function openTableModal(sec, idx, isEdit) { 
             currentTableData = { sec, idx }; 
-            const editorCont = document.getElementById('tblEditorContainer');
-            
             if(isEdit) {
+                const q = appState.questionsBySection[sec][idx];
                 try {
-                    const q = appState.questionsBySection[sec][idx];
-                    let cleanHtml = (q.table || '').replace(/```html/gi, '').replace(/```/g, '').trim();
-                    
-                    // Failsafe: if there's raw text but no table tag, auto-wrap it into a table to prevent editor crash
-                    if (cleanHtml && !cleanHtml.toLowerCase().includes('<table')) {
-                        cleanHtml = `<table class="editor-table"><tr><td>${cleanHtml}</td></tr></table>`;
+                    // Make sure it has editor-table class so styling and editing works even if AI stripped it
+                    let tblContent = q.table.trim();
+                    if (!tblContent.startsWith('<table')) {
+                        tblContent = `<table class="editor-table"><tr><td contenteditable="true">${tblContent}</td></tr></table>`;
+                    } else if (!tblContent.includes('editor-table')) {
+                        tblContent = tblContent.replace('<table', '<table class="editor-table"');
                     }
                     
-                    editorCont.innerHTML = cleanHtml;
-                    const tbl = editorCont.querySelector('table');
-                    if(tbl) tbl.classList.add('editor-table');
-                    editorCont.querySelectorAll('th, td').forEach(cell => cell.setAttribute('contenteditable', 'true'));
-                } catch (e) {
-                    console.error("Error loading table for edit:", e);
+                    document.getElementById('tblEditorContainer').innerHTML = tblContent;
+                    document.getElementById('tblEditorContainer').querySelectorAll('th, td').forEach(cell => cell.setAttribute('contenteditable', 'true'));
+                } catch(e) {
+                    console.error("Table parse error", e);
+                    document.getElementById('tblRows').value = 3; document.getElementById('tblCols').value = 2; drawTableEditor();
                 }
-            } else { 
-                document.getElementById('tblRows').value = 3; 
-                document.getElementById('tblCols').value = 2; 
-                drawTableEditor(); 
-            }
+            } else { document.getElementById('tblRows').value = 3; document.getElementById('tblCols').value = 2; drawTableEditor(); }
             openModal('tableModal'); 
         }
 
         function editOrReplaceTable(sec, idx) {
+            // Directly opens the table editor without confirmation to ensure easy editability
             openTableModal(sec, idx, true);
         }
 
@@ -1123,15 +1064,11 @@
                 
                 // 1. Escape HTML entirely
                 let processedText = escapeHTML(q.text);
-                let processedTable = q.table || '';
                 
                 // 2. Conditionally pass Math - Use the ACTUAL selected rendering engine so preview matches output
                 let previewEngine = appState.renderEngine; 
                 if(appState.mathMode === 'LATEX') {
                     processedText = processMath(processedText, previewEngine);
-                    if (processedTable) {
-                        processedTable = processMath(processedTable, previewEngine);
-                    }
                 }
                 
                 // 3. Bold Text Formatting and Paragraph creation
@@ -1139,7 +1076,9 @@
                 
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
-                if (processedTable) html += `<div style="margin: 0.75rem 0; overflow-x: auto; background: var(--bg-main); padding: 0.5rem; border-radius: 8px; border: 1px dashed var(--border);">${processedTable}</div>`;
+                
+                // Print injected table for preview
+                if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
                     html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
@@ -1178,7 +1117,7 @@
                     if (q.type === 'NAT') {
                         out += `A: ${q.correctNat || ''}\n`;
                     } else {
-                        q.options.forEach(o => out += `O: ${o.replace(/\n/g, '')}\n`);
+                        q.options.forEach(o => out += `O: ${o.replace(/\n/g, '\\n')}\n`);
                         out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
                     }
                     if (q.table) out += `T: ${q.table.replace(/\n/g, '')}\n`;
@@ -1204,33 +1143,29 @@
 
         function parseCBTFormat() {
             let txt = document.getElementById('cbtInput').value; 
-            if(!txt.trim()) { sysAlert('Paste content or load file first'); return; }
-            
-            // FIX 1: Convert AI hallucinated literal "\n" strings into actual newlines globally 
+            if(!txt.trim()) { alert('Paste content or load file first'); return; }
+
+            // PRE-PROCESSING: Fix AI formatting issues globally before parsing
+            // 1. Replace literal "\n" strings with actual newlines
             txt = txt.replace(/\\n/g, '\n');
-            
-            // FIX 2: Strip any markdown code blocks
-            txt = txt.replace(/```html/gi, '').replace(/```/g, '');
-            
-            // FIX 3: Force known AI tags onto new lines if it forgot to add a newline
-            txt = txt.replace(/(?:\n|\s+)(T\s*:\s*<table)/gi, '\nT: <table')
-                     .replace(/(?:\n|\s+)(O\s*:)/gi, '\nO:')
-                     .replace(/(?:\n|\s+)(A\s*:)/gi, '\nA:')
-                     .replace(/(?:\n|\s+)(QType\s*:)/gi, '\nQType:');
+            // 2. Regex to strictly push tags onto new lines regardless of preceding whitespace
+            txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2');
+            txt = txt.replace(/(.)(O\s*:\s*)/gi, '$1\n$2');
+            txt = txt.replace(/(.)(A\s*:\s*)/gi, '$1\n$2');
+            txt = txt.replace(/(.)(I\s*:\s*)/gi, '$1\n$2');
 
             const lines = txt.split('\n'); 
-            
-            // Fix: Stateful multiline string collection for generated AI tables/questions
-            let mode = null, curSec = null, curQ = null, lastField = null;
+            let mode = null, curSec = null, curQ = null;
+            let lastField = null; // Important state tracker to capture multi-line AI hallucinations
             
             appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
             appState.audio = { bg: '', start: '', submit: '' };
 
             lines.forEach(line => {
                 const tr = line.trim(); 
-                if (!tr) { lastField = null; return; }
+                if (!tr && lastField !== 'T' && lastField !== 'Q' && lastField !== 'O') return; 
                 if (tr.startsWith('#')) return;
-
+                
                 if (tr.startsWith('[EXAM_INFO]')) { mode = 'exam'; lastField = null; }
                 else if (tr.startsWith('[CONSTANTS]')) { mode = 'constants'; lastField = null; }
                 else if (tr.startsWith('[SECTION:')) {
@@ -1244,7 +1179,6 @@
                     }
                 }
                 else if (mode === 'exam') {
-                    lastField = null;
                     if (tr.startsWith('Agency:')) { document.getElementById('agencyName').value = tr.substring(7).trim(); appState.agencyName = tr.substring(7).trim(); }
                     if (tr.startsWith('Title:')) { document.getElementById('examTitle').value = tr.substring(6).trim(); appState.examTitle = tr.substring(6).trim(); }
                     if (tr.startsWith('Subtitle:')) { document.getElementById('examSubtitle').value = tr.substring(9).trim(); appState.examSubtitle = tr.substring(9).trim(); }
@@ -1258,60 +1192,51 @@
                     if (tr.startsWith('AudioSubmit:')) { appState.audio.submit = tr.substring(12).trim(); document.getElementById('audioSubmit').value = appState.audio.submit; }
                 }
                 else if (mode === 'constants') {
-                    lastField = null;
                     const idx = tr.indexOf(':'); if(idx > 0) { appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
                 }
                 else if (mode === 'questions' && curSec) {
-                    const matchQType = tr.match(/^QType\s*:\s*(.*)/i);
-                    const matchQ = tr.match(/^Q\s*:\s*(.*)/i);
-                    const matchO = tr.match(/^O\s*:\s*(.*)/i);
-                    const matchA = tr.match(/^A\s*:\s*(.*)/i);
-                    const matchT = tr.match(/^T\s*:\s*(.*)/i);
-                    const matchI = tr.match(/^I\s*:\s*(.*)/i);
-
-                    if (matchQType) {
-                        lastField = null;
-                        curQ = { type: matchQType[1].trim() || 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                    if (/^QType\s*:/i.test(tr)) {
+                        curQ = { type: tr.replace(/^QType\s*:/i, '').trim().toUpperCase(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                        appState.questionsBySection[curSec].push(curQ);
+                        lastField = 'type';
                     }
-                    else if (matchQ) { 
-                        lastField = 'Q';
+                    else if (/^Q\s*:/i.test(tr)) { 
                         if (!curQ || curQ.text !== '') {
                             curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                            appState.questionsBySection[curSec].push(curQ);
                         }
-                        let cleanedText = matchQ[1].trim().replace(/\\n/g, '\n').replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
+                        let cleanedText = tr.replace(/^Q\s*:/i, '').trim().replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
                         curQ.text = cleanedText;
-                        appState.questionsBySection[curSec].push(curQ); 
+                        lastField = 'Q';
                     }
-                    else if (matchO && curQ && curQ.type !== 'NAT') {
-                        lastField = 'O';
-                        let cleanedOpt = matchO[1].trim().replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
+                    else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
+                        let cleanedOpt = tr.replace(/^O\s*:/i, '').trim().replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
                         curQ.options.push(cleanedOpt);
+                        lastField = 'O';
                     }
-                    else if (matchA && curQ) {
-                        lastField = 'A';
+                    else if (/^A\s*:/i.test(tr) && curQ) {
                         if (curQ.type === 'NAT') {
-                            curQ.correctNat = matchA[1].trim();
+                            curQ.correctNat = tr.replace(/^A\s*:/i, '').trim();
                         } else {
-                            let letter = matchA[1].trim().replace(/[^a-zA-Z]/g, '').charAt(0);
+                            let letter = tr.replace(/^A\s*:/i, '').trim().replace(/[^a-zA-Z]/g, '').charAt(0);
                             if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
                         }
+                        lastField = 'A';
                     }
-                    else if (matchT && curQ) {
+                    else if (/^T\s*:/i.test(tr) && curQ) { 
+                        curQ.table = tr.replace(/^T\s*:/i, '').trim(); 
                         lastField = 'T';
-                        curQ.table = matchT[1].trim();
                     }
-                    else if (matchI && curQ) { 
+                    else if (/^I\s*:/i.test(tr) && curQ) { 
+                        curQ.image = tr.replace(/^I\s*:/i, '').trim(); 
                         lastField = 'I';
-                        curQ.image = matchI[1].trim(); 
                     }
-                    else if (lastField && curQ) {
-                        // Append multiline data! Handling AI formatting failures
-                        if (lastField === 'Q') {
-                            curQ.text += '\n' + tr.replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
-                        } else if (lastField === 'O') {
-                            curQ.options[curQ.options.length - 1] += ' ' + tr.replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, '');
-                        } else if (lastField === 'T') {
-                            curQ.table = (curQ.table || '') + ' ' + tr;
+                    else {
+                        // MULTI-LINE SUPPORT: If AI broke output across multiple lines, intelligently append to last known field
+                        if (curQ && tr) {
+                            if (lastField === 'Q') curQ.text += '\n' + tr;
+                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
+                            else if (lastField === 'T') curQ.table += ' ' + tr;
                         }
                     }
                 }
@@ -1324,7 +1249,7 @@
             }
 
             renderConstantsTable(); 
-            renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); showToast('Imported Successfully');
+            renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal'); alert('Imported Successfully');
         }
 
         async function generateCBTHTML() {
@@ -1388,15 +1313,11 @@
                         // 1. Strict HTML Escape
                         let processedText = escapeHTML(q.text);
                         let processedOptions = q.options.map(o => escapeHTML(o));
-                        let processedTable = q.table || '';
                         
                         // 2. Unescape & Parse Math blocks explicitly
                         if (appState.mathMode === 'LATEX') {
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
-                            if (processedTable) {
-                                processedTable = processMath(processedTable, appState.renderEngine);
-                            }
                         }
 
                         // 3. Apply Markdown bold parsing & newline parsing
@@ -1408,7 +1329,7 @@
                             type: q.type || 'MCQ', 
                             text: finalFormattedText, 
                             img: q.image || '', 
-                            table: processedTable,
+                            table: q.table || '',
                             options: q.type !== 'NAT' ? finalFormattedOptions : [], 
                             correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
                             marksCorrect: sec.marks, 
@@ -1426,7 +1347,7 @@
                 document.getElementById('compileBtn').innerHTML = '✅ Compiled Successfully! (Click to re-compile)';
                 
             } catch (e) {
-                sysAlert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
+                alert('🚨 Error: ' + e.message + '\n\nIMPORTANT: For GitHub/Server hosting, you must upload the template file named "Last.html" in the exact same folder as this index.html file.');
             }
         }
 
@@ -1455,7 +1376,7 @@
             let modeSpecificRules = '';
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
-CRITICAL MATH RULES (CORRECTION 1G - POINT 8):
+CRITICAL MATH RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
 - FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা")
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$, $\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$)
@@ -1484,8 +1405,7 @@ CRITICAL EXTRACTION RULES:
 5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
    Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
 6. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-7. TABLES: If the question contains a table, you MUST output it as a minified HTML <table> string ON A COMPLETELY NEW LINE starting EXACTLY with 'T: '. 
-   DO NOT output 'T: <table>' on the same line as the question text. Use a newline. Do not use Markdown blocks (\`\`\`html).
+7. TABLES ON NEW LINE: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
@@ -1494,8 +1414,8 @@ Agency: ${appState.agencyName}
 Title: ${appState.examTitle}
 
 ${sectionStr}QType: MCQ
-Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
-T: <table><tr><td>Cell 1</td></tr></table>
+Q: Match the following columns:
+T: <table><tr><th>Column I</th><th>Column II</th></tr><tr><td>A</td><td>B</td></tr></table>
 O: Option A text
 O: Option B text
 O: Option C text
@@ -1522,7 +1442,7 @@ Now, parse the attached document and output ONLY the raw .CBT code.`;
                 cropperInstance = null;
             }
         }
-        function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); showToast('Prompt Copied!'); }
+        function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); alert('Copied!'); }
 
         document.addEventListener('change', function(e) {
             if (e.target.name && e.target.name.startsWith('correct-')) {
