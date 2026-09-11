@@ -161,7 +161,7 @@
         .preview-question:last-child { border-bottom: none; }
         .preview-qtext { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
         
-        /* Table rendering styles for preview to ensure tables look good even if AI drops classes */
+        /* Table rendering styles for preview */
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
         .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 8px 12px !important; text-align: left !important; }
         .preview-question th { background: var(--bg-input) !important; font-weight: 700 !important; color: var(--text-main) !important; }
@@ -681,13 +681,11 @@
             return str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
         }
 
-        // CRITICAL: Escapes HTML to fix A < B < C bug. 
         function escapeHTML(str) {
             if(!str) return '';
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
         
-        // CRITICAL: Processes LaTeX conditionally. Unescapes < and > ONLY inside math blocks so KaTeX can read them
         function processMath(text, engine) {
             if (!text) return '';
             
@@ -695,19 +693,11 @@
                 let math = displayMath || inlineMath;
                 let isDisplay = !!displayMath;
                 
-                // Unescape < and > ONLY within the LaTeX boundaries to allow KaTeX to parse it
                 let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') {
-                        // Prevent infinite loop if library fails to load completely
-                        if(!window.mathRetryCount) window.mathRetryCount = 0;
-                        if(window.mathRetryCount < 3) {
-                            window.mathRetryCount++;
-                            setTimeout(renderPreviewContent, 1000);
-                            return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
-                        }
-                        return `<span style="color:red; font-weight:bold;">[Math Error: Library not found]</span>`;
+                        return `<span style="color:#f39c12; font-weight:bold;">[Math Engine Offline: ${match}]</span>`;
                     }
                     try {
                         return katex.renderToString(unescapedMath, { 
@@ -721,14 +711,12 @@
                 } else if (engine === 'HTML_FALLBACK') {
                     let str = unescapedMath;
                     
-                    // Comprehensive Greek Map
                     const greek = {
                         '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', 
                         '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ'
                     };
                     for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
                     
-                    // Physics & Math Operators
                     str = str.replace(/\\times/g, '×')
                              .replace(/\\cdot/g, '·')
                              .replace(/\\approx/g, '≈')
@@ -742,29 +730,24 @@
                              .replace(/\\langle/g, '⟨')
                              .replace(/\\rangle/g, '⟩');
                     
-                    // Vectors & Hats & Text
                     str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;');
                     str = str.replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;');
                     str = str.replace(/\\text\{([^}]+)\}/g, '$1');
                     
-                    // Standard functions
                     str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan')
                              .replace(/\\ln/g, 'ln').replace(/\\log/g, 'log').replace(/\\exp/g, 'exp');
                     
-                    // Subscripts & Superscripts
                     str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
                     str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
                     
-                    // Fractions
                     str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
                     
-                    // Strip remaining unparsed backslashes (but keep safe HTML entities intact)
                     str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
                     
                     return `<span style="font-family: serif;"><i>${str}</i></span>`;
                 } else if (engine === 'KATEX_ONLINE') {
-                    // Return properly delimited LaTeX for CDN KaTeX to process
-                    return (isDisplay ? '$$' : '$') + unescapedMath + (isDisplay ? '$$' : '$');
+                    // For KATEX_ONLINE, keep the delimiters so the auto-renderer can catch them.
+                    return match;
                 }
                 return match;
             });
@@ -1058,7 +1041,6 @@
         }
 
         function editOrReplaceTable(sec, idx) {
-            // Directly opens the table editor without confirmation to ensure easy editability
             openTableModal(sec, idx, true);
         }
 
@@ -1107,23 +1089,18 @@
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
             
             qs.forEach((q, idx) => {
-                
-                // 1. Escape HTML entirely
                 let processedText = escapeHTML(q.text);
-                
-                // 2. Conditionally pass Math - Use the ACTUAL selected rendering engine so preview matches output
                 let previewEngine = appState.renderEngine; 
+                
                 if(appState.mathMode === 'LATEX') {
                     processedText = processMath(processedText, previewEngine);
                 }
                 
-                // 3. Bold Text Formatting and Paragraph creation
                 processedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                 
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
                 
-                // Print injected table for preview
                 if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
                 
                 if (q.type === 'NAT') {
@@ -1145,7 +1122,7 @@
             
             area.innerHTML = html;
 
-            // Trigger auto-render for KaTeX Online mode in the preview pane
+            // Render math for KATEX_ONLINE engine dynamically in the preview panel safely
             if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
                 if (typeof renderMathInElement !== 'undefined') {
                     renderMathInElement(area, {
@@ -1155,13 +1132,11 @@
                         ],
                         throwOnError: false
                     });
-                } else {
-                    console.warn("Auto-render extension is not loaded yet.");
                 }
             }
         }
 
-        function exportCBT() {
+        async function exportCBT() {
             let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\nFont: ${appState.fontName}\nMathMode: ${appState.mathMode}\n`;
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
             if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
@@ -1208,9 +1183,7 @@
             if(!txt.trim()) { alert('Paste content or load file first'); return; }
 
             // PRE-PROCESSING: Fix AI formatting issues globally before parsing
-            // 1. Replace literal "\n" strings with actual newlines
             txt = txt.replace(/\\n/g, '\n');
-            // 2. Regex to strictly push tags onto new lines regardless of preceding whitespace
             txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2');
             txt = txt.replace(/(.)(O\s*:\s*)/gi, '$1\n$2');
             txt = txt.replace(/(.)(A\s*:\s*)/gi, '$1\n$2');
@@ -1218,7 +1191,7 @@
 
             const lines = txt.split('\n'); 
             let mode = null, curSec = null, curQ = null;
-            let lastField = null; // Important state tracker to capture multi-line AI hallucinations
+            let lastField = null; 
             
             appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
             appState.audio = { bg: '', start: '', submit: '' };
@@ -1294,7 +1267,7 @@
                         lastField = 'I';
                     }
                     else {
-                        // MULTI-LINE SUPPORT: If AI broke output across multiple lines, intelligently append to last known field
+                        // MULTI-LINE SUPPORT
                         if (curQ && tr) {
                             if (lastField === 'Q') curQ.text += '\n' + tr;
                             else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
@@ -1316,19 +1289,19 @@
 
         async function generateCBTHTML() {
             try {
-                // Ensure Last.html is in the exact same directory.
                 const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
                 let txt = await resp.text();
 
-                // Parameter 1 & 2: Titles
+                // Parameters 1, 2, 3, 4, 7, 10
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName}</h2>`);
                 txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle}</h1>`);
-                
-                // Parameter 3 & 4: Subtitles & Headers
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle}</span>`);
+                txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
+                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
+                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
                 
                 // Audio Configurations
                 txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
@@ -1340,16 +1313,11 @@
 
                 // Parameter 5: Constants
                 let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
-                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
+                txt = txt.replace(/<!--\s*PARAMETER 5 \(Global\): List of Constants\.[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
 
                 // Parameter 6: Reports Header
                 txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle} : ${appState.examSubtitle}</div>`);
-                txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle} - ${appState.examSubtitle}$2`);
-                
-                // Parameter 7 & 10: Timer & Font Config
-                txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
-                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration};`);
-                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
+                txt = txt.replace(/(<div class="print-secondary-header">\s*<!--\s*PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\.[\s\S]*?<div>).*?(<\/div>)/, `$1${appState.examTitle} - ${appState.examSubtitle}$2`);
                 
                 // Parameter 8: Instructional Text
                 const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
@@ -1357,35 +1325,28 @@
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
-                // Process Online KaTeX Dependency if Selected
+                // KaTeX Online Script Injection
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    // Critical Fix: Output HTML must use ABSOLUTE CDN URLs, not local paths
                     katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
-                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"><\/script>\n`;
+                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="triggerMathRender()"><\/script>\n`;
                 }
-                
-                // Critical Fix: Match entire comment using wildcard regardless of trailing words
-                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, katexCSS);
-                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, katexJS);
+                txt = txt.replace(/<!--\s*PARAMETER 11[\s\S]*?-->/gi, katexCSS);
+                txt = txt.replace(/<!--\s*PARAMETER 12[\s\S]*?-->/gi, katexJS);
 
-                // Parameter 9: Core Question Bank (Executing Strict Formatting & Math Parsing)
+                // Parameter 9: Question Bank Processing
                 const qb = [];
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
-                        
-                        // 1. Strict HTML Escape
                         let processedText = escapeHTML(q.text);
                         let processedOptions = q.options.map(o => escapeHTML(o));
                         
-                        // 2. Unescape & Parse Math blocks explicitly
                         if (appState.mathMode === 'LATEX') {
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
                         }
 
-                        // 3. Apply Markdown bold parsing & newline parsing
                         let finalFormattedText = parseBold(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
                         let finalFormattedOptions = processedOptions.map(o => parseBold(o));
 
@@ -1444,10 +1405,9 @@
 CRITICAL MATH RULES:
 - ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
-- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
+- FORBIDDEN: NEVER write scientific units or constants in Bengali.
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$).
-- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
-- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
+- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.`;
             } else {
                 modeSpecificRules = `
 CRITICAL HTML RULES:
