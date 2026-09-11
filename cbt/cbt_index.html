@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
-    <!-- KaTeX for Live Authoring Preview (Loads CSS from CDN for fonts, JS locally) -->
-    <link rel="stylesheet" href="../libs/katex.min.css">
-    <!-- Local JS fallback to CDN to prevent silent failures -->
+    <!-- KaTeX Core & Fonts (Prioritize Local, Fallback to CDN) -->
+    <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
+    
+    <!-- Auto-Render Extension (Prioritize Local, Fallback to CDN) -->
+    <script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -697,6 +699,9 @@
                 let unescapedMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
+                    if (typeof katex === 'undefined') {
+                        return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                    }
                     try {
                         return katex.renderToString(unescapedMath, { 
                             displayMode: isDisplay, 
@@ -704,16 +709,51 @@
                             throwOnError: false 
                         });
                     } catch(e) {
-                        return `<span style="color:red">[Math Error]</span>`;
+                        return `<span style="color:red; font-weight:bold;">[Math Error]</span>`;
                     }
                 } else if (engine === 'HTML_FALLBACK') {
                     let str = unescapedMath;
-                    str = str.replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←');
-                    str = str.replace(/\\pi/g, 'π').replace(/\\sigma/g, 'σ').replace(/\\alpha/g, 'α').replace(/\\beta/g, 'β');
-                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^(.)/g, '<sup>$1</sup>');
-                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_(.)/g, '<sub>$1</sub>');
+                    
+                    // Comprehensive Greek Map
+                    const greek = {
+                        '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', 
+                        '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ'
+                    };
+                    for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+                    
+                    // Physics & Math Operators
+                    str = str.replace(/\\times/g, '×')
+                             .replace(/\\cdot/g, '·')
+                             .replace(/\\approx/g, '≈')
+                             .replace(/\\pm/g, '±')
+                             .replace(/\\partial/g, '∂')
+                             .replace(/\\infty/g, '∞')
+                             .replace(/\\ddagger/g, '‡')
+                             .replace(/\\circ/g, '°')
+                             .replace(/\\rightarrow/g, '→')
+                             .replace(/\\leftarrow/g, '←')
+                             .replace(/\\langle/g, '⟨')
+                             .replace(/\\rangle/g, '⟩');
+                    
+                    // Vectors & Hats & Text
+                    str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;');
+                    str = str.replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;');
+                    str = str.replace(/\\text\{([^}]+)\}/g, '$1');
+                    
+                    // Standard functions
+                    str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan')
+                             .replace(/\\ln/g, 'ln').replace(/\\log/g, 'log').replace(/\\exp/g, 'exp');
+                    
+                    // Subscripts & Superscripts
+                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
+                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
+                    
+                    // Fractions
                     str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
-                    str = str.replace(/\\/g, ''); // strip remaining backslashes
+                    
+                    // Strip remaining unparsed backslashes (but keep safe HTML entities intact)
+                    str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
+                    
                     return `<span style="font-family: serif;"><i>${str}</i></span>`;
                 } else if (engine === 'KATEX_ONLINE') {
                     // Return properly delimited LaTeX for CDN KaTeX to process
@@ -865,7 +905,6 @@
             `;
 
             const imgPreview = q.image ? `<div class="q-img-preview-container"><img src="${q.image}" class="q-img-thumb"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceImage('${sec}', ${idx})">Edit Image</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeImage('${sec}', ${idx})">✕</button></div>` : '';
-            // Added class 'editor-table' in the preview visual to match editor styling if absent
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit Table</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
             div.innerHTML = `
@@ -1058,6 +1097,15 @@
                 return;
             }
 
+            // Await KaTeX load asynchronously to prevent ReferenceError ([Math Error])
+            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW')) {
+                if (typeof katex === 'undefined') {
+                    area.innerHTML = `<div style="text-align: center; color: #f39c12; margin-top: 3rem; font-weight: 600;">Loading Math Engine...</div>`;
+                    setTimeout(renderPreviewContent, 500);
+                    return;
+                }
+            }
+
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
             
             qs.forEach((q, idx) => {
@@ -1096,7 +1144,23 @@
                 }
                 html += `</div>`;
             });
+            
             area.innerHTML = html;
+
+            // Trigger auto-render for KaTeX Online mode in the preview pane
+            if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
+                if (typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(area, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } else {
+                    setTimeout(renderPreviewContent, 500); // Retry if auto-render.min.js is still downloading
+                }
+            }
         }
 
         function exportCBT() {
@@ -1299,8 +1363,8 @@
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">';
-                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
+                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
+                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
                 }
                 txt = txt.replace(/<!-- PARAMETER 11 \(KaTeX CSS\) -->/i, katexCSS);
                 txt = txt.replace(/<!-- PARAMETER 12 \(KaTeX JS\) -->/i, katexJS);
@@ -1378,6 +1442,7 @@
                 modeSpecificRules = `
 CRITICAL MATH RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
+- FATAL ERROR PREVENTION: NEVER leave inline variables naked in the options. E.g., 'O: \\omega' is STRICTLY FORBIDDEN. It MUST be 'O: $\\omega$'.
 - FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা")
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$, $\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$)
 - Examples of CORRECT format:
