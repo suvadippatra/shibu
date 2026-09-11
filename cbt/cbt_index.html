@@ -1106,11 +1106,14 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
 
-            // 0. BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] tags completely, regardless of surrounding text
+            // 0. BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] tags completely
             txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
 
             txt = txt.replace(/\\n/g, '\n');
-            txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2').replace(/(.)(O\s*:\s*)/gi, '$1\n$2').replace(/(.)(A\s*:\s*)/gi, '$1\n$2').replace(/(.)(I\s*:\s*)/gi, '$1\n$2');
+            txt = txt.replace(/(.)(T\s*:\s*<table)/gi, '$1\n$2')
+               .replace(/(.)(O\s*:\s*)/gi, '$1\n$2')
+               .replace(/(.)(A\s*:\s*)/gi, '$1\n$2')
+               .replace(/(.)(I\s*:\s*)/gi, '$1\n$2');
 
             const lines = txt.split('\n'); 
             let mode = null, curSec = null, curQ = null, lastField = null; 
@@ -1159,9 +1162,8 @@
                     }
                     else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
                         let cleanedOpt = tr.replace(/^O\s*:/i, '').trim();
-                        // CRITICAL FIX: If the option is entirely empty or tagged as [IMAGE_PLACEHOLDER], DO NOT skip it.
-                        // Reserve the seat so Option B doesn't shift up to become Option A!
-                        if (cleanedOpt === '' || cleanedOpt === '[IMAGE_PLACEHOLDER]') {
+                        // CRITICAL FIX: Ensure empty options or image placeholders reserve their seat.
+                        if (cleanedOpt === '' || cleanedOpt === '[IMAGE_PLACEHOLDER]' || cleanedOpt === '[IMAGE]') {
                             curQ.options.push('[Attach Image Here]');
                         } else {
                             curQ.options.push(cleanedOpt);
@@ -1169,13 +1171,20 @@
                         lastField = 'O';
                     }
                     else if (/^A\s*:/i.test(tr) && curQ) {
-                        if (curQ.type === 'NAT') {
-                            curQ.correctNat = tr.replace(/^A\s*:/i, '').trim();
+                        let val = tr.replace(/^A\s*:/i, '').trim();
+                        // FALSE POSITIVE PROTECTION: If this is an MCQ and the 'answer' string is longer than 3 chars (e.g. "A: Assertion is true..."), it's not the Answer Tag!
+                        if (curQ.type === 'MCQ' && val.length > 3) {
+                            if (lastField === 'Q') curQ.text += '\n' + tr;
+                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
                         } else {
-                            let letter = tr.replace(/^A\s*:/i, '').trim().replace(/[^a-zA-Z]/g, '').charAt(0);
-                            if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
+                            if (curQ.type === 'NAT') {
+                                curQ.correctNat = val;
+                            } else {
+                                let letter = val.replace(/[^a-zA-Z]/g, '').charAt(0);
+                                if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
+                            }
+                            lastField = 'A';
                         }
-                        lastField = 'A';
                     }
                     else if (/^T\s*:/i.test(tr) && curQ) { 
                         curQ.table = tr.replace(/^T\s*:/i, '').trim(); 
@@ -1183,9 +1192,15 @@
                     }
                     else if (/^I\s*:/i.test(tr) && curQ) { 
                         let imgUrl = tr.replace(/^I\s*:/i, '').trim(); 
-                        // SAFEGUARD: Ignore AI hallucinations like I: [Image of statements]
-                        if (imgUrl && imgUrl.length > 5 && !imgUrl.includes('[')) { curQ.image = imgUrl; }
-                        lastField = 'I';
+                        // FALSE POSITIVE PROTECTION: Only accept if it actually looks like an image link. 
+                        // Otherwise it's just "I: " (Roman Numeral) hallucinated as a tag!
+                        if (imgUrl.startsWith('http') || imgUrl.startsWith('data:') || imgUrl.startsWith('./')) { 
+                            curQ.image = imgUrl; 
+                            lastField = 'I';
+                        } else {
+                            if (lastField === 'Q') curQ.text += '\n' + tr;
+                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
+                        }
                     }
                     else {
                         if (curQ && tr) {
@@ -1318,19 +1333,11 @@ CRITICAL HTML RULES:
 
 CRITICAL EXTRACTION RULES:
 1. TWO-COLUMN LAYOUT (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
-2. VERBATIM TRANSCRIPTION (ANTI-TRUNCATION): You MUST extract EVERY SINGLE WORD of the question. If a question contains "Statement I" and "Statement II", you must transcribe the FULL text of both statements verbatim. NEVER summarize. NEVER skip sentences.
-3. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
-4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE_PLACEHOLDER]' to reserve its seat. Do NOT skip the option line.
-5. MULTI-STATEMENT / ASSERTION FORMATTING:
-   - Format with bold tags and explicit line breaks exactly like this:
-     **Assertion (A):** [Full text of assertion...]
-     **Reason (R):** [Full text of reason...]
-   - Or for Roman numeral statements:
-     **Statement I:** [Full text of statement...]
-     **Statement II:** [Full text of statement...]
-6. GRID OPTIONS: If options are displayed side-by-side (e.g. (A) Wheat (B) Mango), extract them individually onto their own dedicated 'O:' line. Do not merge them.
-7. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
-8. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
+2. COLUMN SPANNING (ANTI-TRUNCATION): If a question starts at the bottom of the Left Column, its continuation (like Statement I, Reason, or Options) will be at the top of the Right Column. YOU MUST STITCH THEM TOGETHER. DO NOT split them into two questions! DO NOT stop extracting prematurely!
+3. VERBATIM TRANSCRIPTION: You MUST extract EVERY SINGLE WORD of the question. If a question contains "Statement I" and "Statement II", you must transcribe the FULL text of both statements verbatim. NEVER summarize.
+4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE]' to reserve its seat. Do NOT skip the option line.
+5. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
+6. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
