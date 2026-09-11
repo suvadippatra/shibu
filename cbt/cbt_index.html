@@ -1098,7 +1098,7 @@
             }
 
             // Await KaTeX load asynchronously to prevent ReferenceError ([Math Error])
-            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW')) {
+            if (appState.mathMode === 'LATEX' && (appState.renderEngine === 'MATHML' || appState.renderEngine === 'PREVIEW' || appState.renderEngine === 'KATEX_ONLINE')) {
                 if (typeof katex === 'undefined') {
                     area.innerHTML = `<div style="text-align: center; color: #f39c12; margin-top: 3rem; font-weight: 600;">Loading Math Engine...</div>`;
                     setTimeout(renderPreviewContent, 500);
@@ -1363,11 +1363,12 @@
                 let katexCSS = '';
                 let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE') {
-                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
-                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
+                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">';
+                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"><\/script>\n`;
                 }
-                txt = txt.replace(/<!-- PARAMETER 11 \(KaTeX CSS\) -->/i, katexCSS);
-                txt = txt.replace(/<!-- PARAMETER 12 \(KaTeX JS\) -->/i, katexJS);
+                // Apply injection using wildcard regex to bypass variations like "- Injected by compiler"
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/gi, katexCSS);
+                txt = txt.replace(/<!--\s*PARAMETER 12.*?-->/gi, katexJS);
 
                 // Parameter 9: Core Question Bank (Executing Strict Formatting & Math Parsing)
                 const qb = [];
@@ -1441,36 +1442,35 @@
             if (appState.mathMode === 'LATEX') {
                 modeSpecificRules = `
 CRITICAL MATH RULES:
+- ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
-- FATAL ERROR PREVENTION: NEVER leave inline variables naked in the options. E.g., 'O: \\omega' is STRICTLY FORBIDDEN. It MUST be 'O: $\\omega$'.
-- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা")
-- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$, $\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$)
-- Examples of CORRECT format:
-  * Gravitational acceleration: $g = 9.8 \\text{ m/s}^2$
-  * Charge: $q = 1.6 \\times 10^{-19} \\text{ C}$
-  * Wavelength: $\\lambda = 650 \\text{ nm}$
-  * Greek symbols: $\\alpha = 30°$, $\\beta_{xyz}$, $\\Delta E$
+- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
+- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$).
 - DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
-- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT (see "Manual Correction Guide" below)`;
+- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
             } else {
                 modeSpecificRules = `
-CRITICAL MATH RULES:
-- ABSOLUTELY NO LATEX. Do not use $ or \\frac.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
-- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.`;
+CRITICAL HTML RULES:
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
+- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.`;
             }
 
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
-2. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text.
+1. QUESTION TYPES: Classify each question as either 'MCQ' or 'NAT'.
+2. NEVER SKIP A QUESTION: Extract every single question. If entirely an image, use a single dot '.' for text.
 3. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
-4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
-5. TEXT EMPHASIS & LINE BREAKS: If text is bolded or represents a new statement paragraph (e.g. Assertion/Reasoning questions), you MUST wrap the bolded part in double asterisks and precede it with a line break (\\n).
-   Example: \\n**Statement I:** The ethical argument...\\n**Statement II:** Philosophically...
-6. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-7. TABLES ON NEW LINE: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line.
+4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range.
+5. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts.
+6. TABLES ON NEW LINE: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line.
+7. TABLE HEADERS: If extracting matching lists (e.g., List I and List II) or column data, you MUST place 'List I' and 'List II' inside <th> tags (e.g., <tr><th>List I</th><th>List II</th></tr>), never as normal text or <td>.
+8. MULTI-STATEMENT QUESTIONS: For "Statement I / II" or "Assertion / Reason", use a strict 3-tier format with forced newlines (\\n) and bold prefixes:
+   [Intro sentence]
+   \\n**Statement I:** [Text]
+   \\n**Statement II:** [Text]
+   \\n[Question prompt]
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
