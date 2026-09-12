@@ -188,7 +188,7 @@
         .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
 
         .crop-workspace { display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem; flex: 1; min-height: 0; }
-        .crop-main { background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); height: 100%; overflow: hidden; }
+        .crop-main { background: var(--bg-main); border: 1px solid var(--border); border-radius: var(--radius-md); height: 100%; min-height: 350px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .crop-sidebar { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; padding-right: 0.5rem; }
         .live-crop-output { width: 100%; height: 220px; object-fit: contain; background: #fff; border: 1px dashed var(--border); border-radius: var(--radius-sm); margin-top: 0.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
@@ -429,6 +429,15 @@
             <div class="crop-workspace">
                 <div class="crop-main"><img id="cropImage" src="" style="max-width: 100%; display: block;" alt="Image to crop"></div>
                 <div class="crop-sidebar">
+                    <div class="form-group">
+                        <label>Aspect Ratio</label>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-sm btn-primary ratio-btn" id="ratioFree" onclick="setCropRatio(NaN, this)">Freeform</button>
+                            <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(1, this)">1:1</button>
+                            <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(4/3, this)">4:3</button>
+                            <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(16/9, this)">16:9</button>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>Compression / Quality (<span id="compLabel">80</span>%)</label>
                         <input type="range" id="compSlider" min="10" max="100" value="80" class="form-control" oninput="updateCropPreview()">
@@ -1026,8 +1035,31 @@
         function openCropModalWithData(imgSrc) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
             document.getElementById('compSlider').value = 80; document.getElementById('compLabel').innerText = 80; document.getElementById('filterSelect').value = 'none';
+            
+            document.querySelectorAll('.ratio-btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
+            document.getElementById('ratioFree').classList.add('btn-primary');
+            document.getElementById('ratioFree').classList.remove('btn-secondary');
+
             if (cropperInstance) cropperInstance.destroy();
-            cropperInstance = new Cropper(document.getElementById('cropImage'), { viewMode: 1, autoCropArea: 0.9, ready: triggerCropPreview, crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 50); } });
+            cropperInstance = new Cropper(document.getElementById('cropImage'), { 
+                viewMode: 1, 
+                aspectRatio: NaN, /* Explicitly forces freeform cropping by default */
+                autoCropArea: 0.9, 
+                ready: triggerCropPreview, 
+                crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 50); } 
+            });
+        }
+
+        function setCropRatio(ratio, btn) {
+            if(cropperInstance) {
+                cropperInstance.setAspectRatio(ratio);
+                document.querySelectorAll('.ratio-btn').forEach(b => { 
+                    b.classList.remove('btn-primary'); 
+                    b.classList.add('btn-secondary'); 
+                });
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+            }
         }
 
         function triggerCropPreview() {
