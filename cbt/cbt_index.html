@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Question Paper Setter v4.6 (Math Engine)</title>
+    <title>CBT Setter</title>
     
-    <!-- Cropper.js (Local Copy based on your repo tree) -->
+    <!-- Cropper.js -->
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
-    <!-- KaTeX Core & Fonts (Prioritize Local, Fallback to CDN) -->
+    <!-- KaTeX Core & Fonts -->
     <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
-    
-    <!-- Auto-Render Extension (Prioritize Local, Fallback to CDN) -->
     <script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';"></script>
 
     <style>
@@ -48,37 +46,39 @@
         .navbar { background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 1rem; }
         .navbar-brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
         .navbar-icon { width: 34px; height: 34px; background: var(--primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .navbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .navbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
         .btn-icon { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
         .btn-icon:hover { background: rgba(255, 255, 255, 0.25); border-color: white; transform: translateY(-1px); }
+
+        /* Dropdown Menu Styles */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 200px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
+        .dropdown-content.show { display: block; animation: fadeDown 0.2s ease-out; }
+        .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
+        .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
+        .dropdown-item:last-child { border-bottom: none; }
 
         .main { display: flex; height: calc(100vh - 60px); overflow: hidden; }
         .panel { padding: 1rem; background: var(--bg-panel); transition: all 0.3s ease; }
         
         .left-panel { flex: 1; border-right: 1px solid var(--border); max-width: 60%; display: flex; flex-direction: column; overflow: hidden; }
         .left-panel.expanded { max-width: 100%; border-right: none; }
+        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; }
         
-        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; }
+        /* MEMORY OPTIMIZATION: contain: content isolates DOM rendering to prevent freezing */
+        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; contain: content; }
+        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
         
-        /* BULLETPROOF 2-COLUMN MASONRY SYSTEM */
         @media (min-width: 1025px) {
-            .left-panel.expanded #questionsListAll details[open] .card-inner {
-                column-count: 2;
-                column-gap: 1.5rem;
-                display: block;
-            }
-            .question-block {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                margin-bottom: 1rem;
-            }
+            .left-panel.expanded #questionsListAll details[open] .card-inner { column-count: 2; column-gap: 1.5rem; display: block; }
+            .question-block { break-inside: avoid; page-break-inside: avoid; margin-bottom: 1rem; }
             .left-panel.expanded .bottom-action-bar { border-top: 2px solid var(--primary); }
         }
 
         .right-panel { flex: 0 0 40%; background: var(--bg-main); display: flex; flex-direction: column; border-left: 1px solid var(--border); transition: all 0.3s ease; }
         .right-panel.hidden-panel { flex: 0; min-width: 0; width: 0; overflow: hidden; opacity: 0; border: none; padding: 0; margin: 0; }
         
-        details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; }
+        details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; }
         details.card[open] { padding-bottom: 1rem; }
         details.card > summary { background: var(--bg-input); padding: 1rem; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; transition: background 0.2s; user-select: none; }
         details.card > summary:hover { background: var(--bg-hover); }
@@ -114,7 +114,6 @@
         .search-bar::-webkit-scrollbar { display: none; }
         .sec-stats { font-size: 0.8rem; color: var(--primary); background: rgba(61, 178, 212, 0.15); padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600; margin-left: 0.5rem; }
 
-        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; }
         .question-block.active { border-left-color: var(--primary); background: var(--bg-hover); box-shadow: 0 0 0 1px rgba(61, 178, 212, 0.2); }
         @keyframes flashHighlight { 0% { box-shadow: 0 0 0 4px var(--primary); transform: scale(1.01); } 100% { box-shadow: none; transform: scale(1); } }
         .highlight-flash { animation: flashHighlight 1.5s ease-out; z-index: 5; position: relative; }
@@ -123,8 +122,9 @@
         .qnum { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; margin-top: 0.2rem; box-shadow: 0 2px 5px rgba(61, 178, 212, 0.4); }
         .qblock-textarea { flex: 1; min-height: 50px; font-size: 0.95rem; }
         
-        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.6rem; margin-bottom: 0.75rem; }
-        .qblock-option-item { display: flex; align-items: center; gap: 0.4rem; }
+        /* FIX: Greatly increased minimum width to give option text fields massive space */
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.6rem; margin-bottom: 0.75rem; }
+        .qblock-option-item { display: flex; align-items: center; gap: 0.4rem; width: 100%; }
         .option-radio { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; flex-shrink:0; }
         .option-label { font-weight: 700; font-size: 0.85rem; color: var(--text-muted); width: 20px; flex-shrink:0; text-align: center; }
         .option-input-wrap { flex:1; display:flex; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
@@ -133,7 +133,6 @@
         .option-input-wrap input:focus { outline:none; }
         .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
-        
         .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; font-size:1rem; color:var(--danger); transition: all 0.2s; }
         .opt-del-btn:hover { background:var(--danger); color:white; }
 
@@ -146,8 +145,6 @@
 
         .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; }
         
-        .engine-config { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--primary); margin-bottom: 0.5rem; }
-        .engine-title { font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         .engine-options { display: flex; flex-direction: column; gap: 0.4rem; }
         .engine-label { font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-main); }
         
@@ -160,34 +157,20 @@
         .ptab:hover { color: var(--text-main); }
         .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-hover); }
 
-        .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); }
-        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); }
+        .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; }
         .preview-question:last-child { border-bottom: none; }
         
-        /* Normal weight font to prevent everything looking artificially bold */
-        .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
+        .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
         
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
         .preview-question th, .preview-question td { border: 1px solid var(--border) !important; padding: 8px 12px !important; text-align: left !important; }
         .preview-question th { background: var(--bg-input) !important; font-weight: 700 !important; color: var(--text-main) !important; }
 
         .preview-mcq-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-        .preview-option { 
-            flex: 1 1 calc(50% - 0.4rem); 
-            min-width: 200px; 
-            padding: 0.5rem 0.75rem; 
-            border-left: 4px solid var(--border); 
-            color: var(--text-muted); 
-            font-size: 0.9rem; 
-            background: var(--bg-main); 
-            border-radius: 0 4px 4px 0; 
-            white-space: pre-wrap;
-            margin: 0;
-        }
+        .preview-option { flex: 1 1 calc(50% - 0.4rem); min-width: 200px; padding: 0.5rem 0.75rem; border-left: 4px solid var(--border); color: var(--text-muted); font-size: 0.9rem; background: var(--bg-main); border-radius: 0 4px 4px 0; margin: 0; }
         .preview-option[data-length="long"] { flex: 1 1 100%; min-width: auto; }
         .preview-option[data-length="medium"] { flex: 1 1 calc(50% - 0.4rem); }
         .preview-option[data-length="short"] { flex: 1 1 calc(33% - 0.5rem); }
-        
         .preview-option.correct { background: rgba(40, 167, 69, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(61, 178, 212, 0.1); border-left: 4px solid var(--primary); padding: 0.5rem 0.75rem; color: var(--primary-dark); font-weight: 600; font-size: 0.9rem; border-radius: 0 4px 4px 0; }
         
@@ -218,7 +201,6 @@
         .tab-btn { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--text-muted); background: transparent; border: none; font-size: 0.95rem; transition: 0.2s; }
         .tab-btn.active { color: var(--primary); background: rgba(61, 178, 212, 0.1); border-radius: 6px 6px 0 0; }
 
-        /* Custom Toast System */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 20px; border-radius: 8px; color: white; box-shadow: var(--shadow-lg); font-weight: 600; animation: fadeDown 0.3s ease-out; font-size: 0.9rem; }
         
@@ -234,23 +216,32 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter v4.6 (Math Engine)</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter</span></div>
         <div class="navbar-actions">
-            <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview Layout" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
-            <button class="btn-icon" id="themeToggle" title="Toggle Dark/White Mode" onclick="toggleTheme()">🌙 Mode</button>
+            <!-- Theme Toggle: Simplified -->
+            <button class="btn-icon" id="themeToggle" title="Toggle Mode" onclick="toggleTheme()">🌙</button>
             <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖 AI Prompt</button>
-            <button class="btn-icon" onclick="openModal('correctionsModal')" title="LaTeX & Scientific Notation Guide">✏️ Corrections</button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌 Import / Export</button>
-            <button class="btn-icon" onclick="openModal('helpModal')" title="Help">❓ Help</button>
+            
+            <!-- Triple Dot Menu for auxiliary functions -->
+            <div class="dropdown">
+                <button class="btn-icon" onclick="toggleDropdown(event)" title="Menu">⋮</button>
+                <div class="dropdown-content" id="mainMenu">
+                    <button class="dropdown-item" id="previewToggleBtn" onclick="togglePreviewLayout()">👁️ Hide Preview</button>
+                    <button class="dropdown-item" onclick="toggleFullScreen()">⛶ Full Screen</button>
+                    <button class="dropdown-item" onclick="openModal('engineModal')">⚙️ Math Engine</button>
+                    <button class="dropdown-item" onclick="openModal('helpModal')">❓ Help</button>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <!-- Toast Container -->
     <div id="toast-container"></div>
 
     <div class="main">
         <div class="left-panel panel">
             <div class="left-content-scroll">
+                
                 <details class="card" open>
                     <summary>📋 Exam Details & Typography</summary>
                     <div class="card-inner">
@@ -269,7 +260,6 @@
                             </div>
                             <div class="form-group">
                                 <label>Global Font Family</label>
-                                <!-- Multi-OS System Font Stacks -->
                                 <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value); debouncedRenderPreview();">
                                     <option value="system-ui, -apple-system, Roboto, Arial, sans-serif">Modern Clean (Sans-serif)</option>
                                     <option value="'Noto Serif', 'Times New Roman', Georgia, serif">Academic Editorial (Serif)</option>
@@ -297,10 +287,8 @@
                     <div class="card-inner">
                         <div class="table-responsive" style="margin-bottom: 0;">
                             <table class="table">
-                                <thead><tr><th style="width: 40%;">Section Name</th><th style="width: 15%; text-align:center;">Qstns</th><th style="width: 15%;" title="Marks per correct answer">Mark (+)</th><th style="width: 15%;" title="Negative marks per wrong answer">Neg (-)</th><th style="width: 15%;" title="Max questions student can answer. 0 = unlimited.">Max Att</th></tr></thead>
-                                <tbody id="marksTable">
-                                    <!-- Populated dynamically via JS -->
-                                </tbody>
+                                <thead><tr><th style="width: 40%;">Section Name</th><th style="width: 15%; text-align:center;">Qstns</th><th style="width: 15%;">Mark (+)</th><th style="width: 15%;">Neg (-)</th><th style="width: 15%;">Max Att</th></tr></thead>
+                                <tbody id="marksTable"></tbody>
                             </table>
                         </div>
                         <p style="font-size: 0.8rem; color: var(--danger); margin-top: 0.5rem; font-weight: 600;">* Note: NAT questions automatically override Negative marks to 0 during compilation.</p>
@@ -313,7 +301,6 @@
                     <span id="searchHint" style="font-size: 0.75rem; font-weight: 600; color: var(--info); min-width: 40px; text-align: center; white-space: nowrap;"></span>
                     <input type="number" id="searchQNum" class="form-control" style="width: 60px; padding: 0.4rem; font-size: 0.85rem;" placeholder="No." min="1">
                     <button class="btn btn-primary btn-sm" style="padding: 0.4rem 0.75rem;" onclick="jumpToQuestion()">Go</button>
-                    
                     <div style="flex-grow: 1; min-width: 5px;"></div>
                     <button class="btn btn-success btn-sm" style="padding: 0.4rem 0.75rem; white-space: nowrap;" onclick="addNewSection()">➕ Add Section</button>
                 </div>
@@ -324,15 +311,6 @@
             </div>
 
             <div class="bottom-action-bar">
-                <div class="engine-config" id="compileConfigBox">
-                    <div class="engine-title">⚙️ Mathematics Compilation Engine</div>
-                    <div class="engine-options">
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
-                        <label class="engine-label"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
-                    </div>
-                </div>
-
                 <button id="compileBtn" class="btn btn-success btn-block" style="padding: 1rem; font-weight: 800; font-size: 1.1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile & Generate Final HTML</button>
                 
                 <div id="downloadAreaHTML" class="download-box hidden">
@@ -347,9 +325,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border);">
                 <span style="font-weight: 700; color: var(--text-main);">👁️ Live Section Preview</span>
             </div>
-            <div class="preview-tabs" id="previewTabs">
-                <!-- Tabs rendered via JS -->
-            </div>
+            <div class="preview-tabs" id="previewTabs"></div>
             <div class="preview-area" id="previewArea">
                 <div style="text-align: center; color: var(--text-muted); margin-top: 3rem; font-weight: 600;">
                     <div style="font-size: 2rem; margin-bottom: 1rem;">👆</div>
@@ -373,7 +349,22 @@
         </div>
     </div>
 
-    <!-- Rules & Audio Modal -->
+    <!-- Math Engine Modal -->
+    <div class="modal" id="engineModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>⚙️ Compilation Engine</h2>
+                <button class="modal-close" onclick="closeModal('engineModal')">✕</button>
+            </div>
+            <div class="engine-options">
+                <label class="engine-label"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderPreview();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
+        </div>
+    </div>
+
     <div class="modal" id="rulesModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -386,23 +377,13 @@
             </div>
             <p style="font-size: 0.85rem; font-weight: 600; color: var(--primary); margin: 1.25rem 0 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">🎧 Audio Attachments (Data URI Base64 format)</p>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">If background audio is left empty, the Headphone 🎧 button will be hidden in the exam.</p>
-            <div class="form-group">
-                <label>Background Audio (Looping)</label>
-                <input type="text" id="audioBg" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()">
-            </div>
-            <div class="form-group">
-                <label>Start Exam Audio (Plays once)</label>
-                <input type="text" id="audioStart" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()">
-            </div>
-            <div class="form-group">
-                <label>Submit Exam Audio (Plays once)</label>
-                <input type="text" id="audioSubmit" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()">
-            </div>
+            <div class="form-group"><label>Background Audio (Looping)</label><input type="text" id="audioBg" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
+            <div class="form-group"><label>Start Exam Audio (Plays once)</label><input type="text" id="audioStart" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
+            <div class="form-group"><label>Submit Exam Audio (Plays once)</label><input type="text" id="audioSubmit" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('rulesModal')">✓ Save Settings</button>
         </div>
     </div>
 
-    <!-- Constants Modal -->
     <div class="modal" id="constantsModal">
         <div class="modal-content" style="max-width: 650px;">
             <div class="modal-header">
@@ -420,7 +401,6 @@
         </div>
     </div>
 
-    <!-- Crop & Compress Modal -->
     <div class="modal" id="cropModal">
         <div class="modal-content" style="max-width: 95%; height: 95vh; display: flex; flex-direction: column;">
             <div class="modal-header">
@@ -460,7 +440,6 @@
         </div>
     </div>
 
-    <!-- Table Editor Modal -->
     <div class="modal" id="tableModal">
         <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
@@ -481,7 +460,6 @@
         </div>
     </div>
 
-    <!-- Import / Export Modal -->
     <div class="modal" id="pasteModal">
         <div class="modal-content" style="max-width: 750px;">
             <div class="modal-header">
@@ -497,8 +475,12 @@
             </div>
             <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 1.5rem; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px;">
-                    <!-- Auto-Sync export directly downloads latest data without needing intermediate steps -->
-                    <button class="btn btn-primary btn-block" style="padding: 0.8rem;" onclick="exportAndDownloadCBT()">⬇️ Export & Download Latest .CBT</button>
+                    <!-- SYNC CBT BACKUP BUTTON -->
+                    <button class="btn btn-primary btn-block" style="padding: 0.8rem;" onclick="syncCBT()">🔄 Sync CBT Code</button>
+                    <div id="downloadAreaCBT" class="download-box hidden" style="margin-top: 0.75rem; padding: 0.75rem;">
+                        <p style="font-size: 0.8rem; text-align: center; margin-bottom: 0.5rem; font-weight: 600; color: var(--success);">Workspace successfully synced to code!</p>
+                        <a id="downloadLinkCBT" class="btn btn-success btn-block" style="text-decoration: none; text-align: center;" href="#" download="">⬇️ Download .CBT</a>
+                    </div>
                 </div>
                 <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
                     <button class="btn btn-secondary" style="padding: 0.8rem 1.5rem;" onclick="closeModal('pasteModal')">Cancel</button>
@@ -508,7 +490,6 @@
         </div>
     </div>
 
-    <!-- AI Prompt Modal -->
     <div class="modal" id="promptModal">
         <div class="modal-content" style="max-width: 750px;">
             <div class="modal-header">
@@ -520,75 +501,45 @@
                 <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (Basic)</button>
             </div>
             <p id="prompt-desc" style="font-size: 0.9rem; color: var(--danger); font-weight: 600; margin-bottom: 1rem; line-height: 1.5;">
-                CRITICAL: The AI *must* wrap all math in $ signs or the compiler will ignore it. Copy this strict prompt to ensure perfect extraction.
+                CRITICAL: The AI *must* follow the exact patterns below to capture statements, margins, and math perfectly.
             </p>
             <textarea id="aiPrompt" class="form-control" readonly style="min-height: 350px; font-family: monospace; font-size: 0.85rem; background: var(--bg-main); border: 2px solid var(--primary);"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
     </div>
 
-    <!-- Manual Correction Guide Modal -->
-    <div class="modal" id="correctionsModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2>✏️ Manual Correction Guide for LaTeX & Scientific Notation</h2>
-                <button class="modal-close" onclick="closeModal('correctionsModal')">✕</button>
-            </div>
-            <div style="max-height: 500px; overflow-y: auto; font-size: 0.9rem; color: var(--text-main); line-height: 1.7; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">🚫 Common Bengali Scientific Notation Issues:</h3>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <thead>
-                        <tr style="background: var(--bg-hover);">
-                            <th style="border: 1px solid var(--border); padding: 0.5rem; text-align: left;">❌ WRONG (Bengali)</th>
-                            <th style="border: 1px solid var(--border); padding: 0.5rem; text-align: left;">✅ CORRECT (LaTeX)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;">জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড</td>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$g = 9.8 \text{ m/s}^2$</code></td>
-                        </tr>
-                        <tr>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;">আলফা বিটা গামা</td>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$\alpha \beta \gamma$</code></td>
-                        </tr>
-                        <tr>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;">চার্জ = 1.6 গুণ 10 এর মাইনাস 19 পাওয়ার কুলম্ব</td>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$q = 1.6 \times 10^{-19} \text{ C}$</code></td>
-                        </tr>
-                        <tr>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;">ডেলটা E এর সমান</td>
-                            <td style="border: 1px solid var(--border); padding: 0.5rem;"><code>$\Delta E =$</code></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">🔧 How to Fix in CBT Maker:</h3>
-                <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                    <li><strong>Identify Bengali notation:</strong> Look for questions with Bengali units (সেকেন্ড, মিটার, কুলম্ব, etc.)</li>
-                    <li><strong>Click on the question:</strong> Open the question editor in the left panel</li>
-                    <li><strong>Replace manually:</strong> Use the LaTeX format from the table above</li>
-                    <li><strong>Verify in preview:</strong> Check that the preview renders correctly before compiling</li>
-                    <li><strong>Update AI Prompt:</strong> Copy the enhanced prompt (click "AI Prompt" button) to prevent this in future extractions</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-
-    <!-- Help Modal -->
     <div class="modal" id="helpModal">
         <div class="modal-content" style="max-width: 650px;">
             <div class="modal-header">
-                <h2>❓ CBT Setter Guide</h2>
+                <h2>❓ CBT Setter Guide / নির্দেশিকা</h2>
                 <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
             </div>
             <div style="max-height: 450px; overflow-y: auto; font-size: 0.95rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Welcome to the Question Paper Setter!</h3>
-                <p style="margin-bottom: 1rem;">This tool allows you to visually construct professional computer-based tests and export them as standalone, offline-capable exam files.</p>
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">1. The Missing Math Bug (`$`)</h4>
-                <p style="margin-bottom: 0.5rem;">If an equation looks like raw code (e.g. <code>\frac{1}{2}</code>) in the preview, it means the AI forgot to wrap it in dollar signs. To fix it, manually add the <code>$</code> signs like this: <code>$\frac{1}{2}$</code>.</p>
-                <h4 style="color: var(--primary-dark); margin-top: 1rem;">2. Performance Tip (Live Preview)</h4>
-                <p style="margin-bottom: 0.5rem;">The preview panel automatically updates 300ms after you finish typing to ensure smooth scrolling and save memory on large exams.</p>
+                
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">How to Use (English)</h3>
+                <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li>Click <strong>🤖 AI Prompt</strong> and copy the text for your subject type.</li>
+                    <li>Paste the prompt along with your Exam PDF into an AI (like Gemini 1.5 Pro).</li>
+                    <li>Copy the resulting `.CBT` text code generated by the AI.</li>
+                    <li>Click <strong>📌 Import / Export</strong> in this app, paste the code, and click <strong>Import Data</strong>.</li>
+                    <li>If any images/diagrams are missing or show `[Attach Image Here]`, click <strong>🖼️ Add Main Image</strong> on the specific question to upload them.</li>
+                    <li>Use <code>**bold text**</code>, <code>*italic text*</code>, and <code>__underline text__</code> directly in the question boxes to format your typography.</li>
+                    <li>Before closing, click <strong>📌 Import / Export -> 🔄 Sync CBT Code</strong> to save a backup of your work!</li>
+                    <li>Click <strong>🚀 Compile & Generate Final HTML</strong> to download your standalone, offline exam file.</li>
+                </ol>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">কীভাবে ব্যবহার করবেন (বাংলা)</h3>
+                <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li><strong>🤖 AI Prompt</strong> বাটনে ক্লিক করুন এবং আপনার বিষয়ের জন্য লেখাটি কপি করুন।</li>
+                    <li>কপি করা লেখাটি এবং আপনার পরীক্ষার PDF ফাইলটি একটি AI (যেমন Gemini 1.5 Pro) এ পেস্ট করুন।</li>
+                    <li>AI যে `.CBT` টেক্সট কোডটি তৈরি করবে, সেটি সম্পূর্ণ কপি করুন।</li>
+                    <li>এই অ্যাপের <strong>📌 Import / Export</strong> বাটনে ক্লিক করে কোডটি পেস্ট করুন এবং <strong>Import Data</strong> চাপুন।</li>
+                    <li>কোনো ছবি বা ডায়াগ্রাম বাদ পড়ে থাকলে বা `[Attach Image Here]` দেখালে, নির্দিষ্ট প্রশ্নের বা অপশনের নিচে <strong>🖼️ Add Main Image</strong> এ ক্লিক করে ছবিটি আপলোড করে দিন।</li>
+                    <li>লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code> বা <code>*italic*</code> ব্যবহার করুন।</li>
+                    <li>কাজ শেষে <strong>📌 Import / Export -> 🔄 Sync CBT Code</strong> এ ক্লিক করে আপনার কাজের একটি ব্যাকআপ (CBT ফাইল) সেভ করে রাখুন!</li>
+                    <li>সবশেষে নিচে <strong>🚀 Compile & Generate Final HTML</strong> বাটনে ক্লিক করে আপনার অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করে নিন।</li>
+                </ol>
+                
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('helpModal')">Got it!</button>
         </div>
@@ -609,8 +560,7 @@
             { name: "Elementary charge (e)", value: "1.602 × 10⁻¹⁹ C" },
             { name: "Boltzmann constant (kB)", value: "1.38 × 10⁻²³ J/K" },
             { name: "Avogadro's number (NA)", value: "6.022 × 10²³ mol⁻¹" },
-            { name: "Permittivity of free space (ε₀)", value: "8.854 × 10⁻¹² F/m" },
-            { name: "Permeability of free space (μ₀)", value: "4π × 10⁻⁷ T·m/A" }
+            { name: "Permittivity of free space (ε₀)", value: "8.854 × 10⁻¹² F/m" }
         ];
 
         const appState = {
@@ -625,9 +575,8 @@
         };
 
         let activePreviewSection = 'Section A';
-        let previewTimeout = null; // Debounce Timer
+        let previewTimeout = null; 
 
-        // Custom UI Systems
         function showToast(msg, type='info') {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -652,16 +601,20 @@
             closeModal('confirmModal');
         });
 
-        // Event Listeners for cleanups
-        document.addEventListener('input', hideSuccessMessages);
-        document.addEventListener('change', hideSuccessMessages);
-
-        function hideSuccessMessages() {
-            const dHtml = document.getElementById('downloadAreaHTML');
-            if (dHtml && !dHtml.classList.contains('hidden')) {
-                dHtml.classList.add('hidden');
-                const compileBtn = document.getElementById('compileBtn');
-                if (compileBtn) compileBtn.innerHTML = '🚀 Compile & Generate Final HTML';
+        // Dropdown Menu Logic
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            document.getElementById("mainMenu").classList.toggle("show");
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-icon') && !event.target.matches('.dropdown-item')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
             }
         }
 
@@ -676,8 +629,13 @@
 
         function toggleTheme() {
             const html = document.documentElement; const btn = document.getElementById('themeToggle');
-            if (html.getAttribute('data-theme') === 'dark') { html.removeAttribute('data-theme'); btn.innerText = '🌙 Mode'; } 
-            else { html.setAttribute('data-theme', 'dark'); btn.innerText = '☀️ Mode'; }
+            if (html.getAttribute('data-theme') === 'dark') { html.removeAttribute('data-theme'); btn.innerText = '🌙'; } 
+            else { html.setAttribute('data-theme', 'dark'); btn.innerText = '☀️'; }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => showToast(`Error attempting to enable fullscreen: ${err.message}`, 'error')); }
+            else { if (document.exitFullscreen) { document.exitFullscreen(); } }
         }
 
         let previewIsVisible = true;
@@ -690,7 +648,6 @@
 
         function parseFormatting(str) {
             if(!str) return '';
-            // Process Bold, Italic, and Underline
             return str
                 .replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
@@ -711,9 +668,8 @@
 
                 if (engine === 'MATHML' || engine === 'PREVIEW') {
                     if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
-                    try {
-                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', throwOnError: false });
-                    } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
+                    try { return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: engine === 'MATHML' ? 'mathml' : 'htmlAndMathml', throwOnError: false }); } 
+                    catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
                 } else if (engine === 'HTML_FALLBACK') {
                     let str = unescapedMath;
                     const greek = { '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ' };
@@ -733,10 +689,10 @@
             });
         }
 
-        // 300ms Debounce to protect memory on tablets
+        // MEMORY OPTIMIZATION: Heavy Debounce (600ms) to protect mobile scroll threads
         function debouncedRenderPreview() {
             clearTimeout(previewTimeout);
-            previewTimeout = setTimeout(() => { renderPreviewContent(); }, 300);
+            previewTimeout = setTimeout(() => { renderPreviewContent(); }, 600);
         }
 
         function updateRulesData() {
@@ -808,7 +764,11 @@
         }
 
         function renderAllQuestions() {
-            hideSuccessMessages(); const cont = document.getElementById('questionsListAll'); cont.innerHTML = '';
+            document.getElementById('downloadAreaHTML').classList.add('hidden');
+            const compileBtn = document.getElementById('compileBtn');
+            if (compileBtn) compileBtn.innerHTML = '🚀 Compile & Generate Final HTML';
+            
+            const cont = document.getElementById('questionsListAll'); cont.innerHTML = '';
             appState.sections.forEach(secObj => {
                 const sec = secObj.name; const qs = appState.questionsBySection[sec] || [];
                 const details = document.createElement('details'); details.className = 'card'; details.id = `details-${sec}`; details.open = true; 
@@ -895,10 +855,18 @@
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'option') q.options[optIdx] = value; 
-            else if (field === 'correct') q.correct = parseInt(value); 
-            else if (field === 'type') { q.type = value; renderAllQuestions(); }
-            else q[field] = value;
+            // Memory Optimization: Do NOT call renderAllQuestions on regular text typing to avoid input lag.
+            if (field === 'option') { 
+                q.options[optIdx] = value; 
+            } else if (field === 'correct') { 
+                q.correct = parseInt(value); 
+            } else if (field === 'type') { 
+                q.type = value; 
+                renderAllQuestions(); // Only re-render when structural type changes
+            } else {
+                q[field] = value;
+            }
+            
             if (activePreviewSection === sec) debouncedRenderPreview();
         }
 
@@ -920,8 +888,13 @@
         function handleNewImageUpload(evt, sec, idx, isOption, optIdx) {
             const file = evt.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => { currentImageData = { sec, idx, isOption, optIdx }; openCropModalWithData(e.target.result); };
-            reader.readAsDataURL(file); evt.target.value = '';
+            reader.onload = (e) => { 
+                currentImageData = { sec, idx, isOption, optIdx }; 
+                openCropModalWithData(e.target.result); 
+                evt.target.value = ''; // Memory Cleanup
+                reader.onload = null;
+            };
+            reader.readAsDataURL(file); 
         }
 
         function editOrReplaceImage(sec, idx) {
@@ -965,6 +938,8 @@
                 const ex = appState.questionsBySection[sec][idx].options[optIdx];
                 updateQuestion(sec, idx, 'option', optIdx, ex + `<br><img src="${currentCropBase64}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`);
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
+            
+            currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
             renderAllQuestions(); closeModal('cropModal');
         }
 
@@ -1030,7 +1005,8 @@
                 let previewEngine = appState.renderEngine; 
                 if(appState.mathMode === 'LATEX') processedText = processMath(processedText, previewEngine);
                 
-                processedText = parseFormatting(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
+                // CRITICAL FIX: Convert AI's standard \n into HTML <br> cleanly to respect Statement blocks.
+                processedText = parseFormatting(processedText).replace(/\n/g, '<br>');
                 
                 html += `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
                 if (q.image) html += `<img src="${q.image}" style="max-width: 100%; margin: 0.75rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid var(--border);">`;
@@ -1043,7 +1019,10 @@
                     (q.options || []).forEach((opt, oi) => { 
                         let safeOpt = escapeHTML(opt);
                         if(appState.mathMode === 'LATEX') safeOpt = processMath(safeOpt, previewEngine);
-                        safeOpt = parseFormatting(safeOpt);
+                        
+                        // Handle multiline options cleanly
+                        safeOpt = parseFormatting(safeOpt).replace(/\n/g, '<br>');
+                        
                         let optLength = safeOpt.length > 100 ? 'long' : (safeOpt.length > 50 ? 'medium' : 'short');
                         html += `<div class="preview-option ${oi === q.correct ? 'correct' : ''}" data-length="${optLength}"><strong>${String.fromCharCode(65+oi)}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}</div>`; 
                     });
@@ -1058,7 +1037,7 @@
             }
         }
 
-        function exportAndDownloadCBT() {
+        function generateCBTString() {
             let out = `[EXAM_INFO]\nAgency: ${appState.agencyName}\nTitle: ${appState.examTitle}\nSubtitle: ${appState.examSubtitle}\nDuration: ${appState.duration}\nTimer: ${appState.timerMode}\nFont: ${appState.fontName}\nMathMode: ${appState.mathMode}\n`;
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
             if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
@@ -1083,16 +1062,21 @@
                     if (q.image) out += `I: ${q.image}\n`;
                 });
             });
+            return out;
+        }
+
+        function syncCBT() {
+            const out = generateCBTString();
+            document.getElementById('cbtInput').value = out;
+            
             const blob = new Blob([out], { type: 'text/plain; charset=utf-8' });
             const url = URL.createObjectURL(blob);
             
-            // Auto Trigger Download
-            const link = document.createElement('a');
+            const link = document.getElementById('downloadLinkCBT');
             link.href = url; link.download = `${appState.examTitle.replace(/\s+/g, '_')}.cbt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('CBT Exported Successfully!', 'success');
+            document.getElementById('downloadAreaCBT').classList.remove('hidden');
+            
+            showToast('CBT Synced and ready for backup!', 'success');
         }
 
         function handleCBTFileUpload(evt) {
@@ -1106,7 +1090,7 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
 
-            // 0. BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] tags completely
+            // BRUTAL ARTIFACT DESTRUCTION: Wipe ALL [span_...] tags completely
             txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
 
             txt = txt.replace(/\\n/g, '\n');
@@ -1162,7 +1146,7 @@
                     }
                     else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
                         let cleanedOpt = tr.replace(/^O\s*:/i, '').trim();
-                        // CRITICAL FIX: Ensure empty options or image placeholders reserve their seat.
+                        // Empty option / Image reserved seats are loaded as-is to preserve length.
                         if (cleanedOpt === '' || cleanedOpt === '[IMAGE_PLACEHOLDER]' || cleanedOpt === '[IMAGE]') {
                             curQ.options.push('[Attach Image Here]');
                         } else {
@@ -1172,7 +1156,7 @@
                     }
                     else if (/^A\s*:/i.test(tr) && curQ) {
                         let val = tr.replace(/^A\s*:/i, '').trim();
-                        // FALSE POSITIVE PROTECTION: If this is an MCQ and the 'answer' string is longer than 3 chars (e.g. "A: Assertion is true..."), it's not the Answer Tag!
+                        // FALSE POSITIVE PROTECTION: Stop 'A:' parsing mid-statement if longer than 3 chars (for MCQs)
                         if (curQ.type === 'MCQ' && val.length > 3) {
                             if (lastField === 'Q') curQ.text += '\n' + tr;
                             else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
@@ -1192,9 +1176,11 @@
                     }
                     else if (/^I\s*:/i.test(tr) && curQ) { 
                         let imgUrl = tr.replace(/^I\s*:/i, '').trim(); 
-                        // FALSE POSITIVE PROTECTION: Only accept if it actually looks like an image link. 
-                        // Otherwise it's just "I: " (Roman Numeral) hallucinated as a tag!
-                        if (imgUrl.startsWith('http') || imgUrl.startsWith('data:') || imgUrl.startsWith('./')) { 
+                        if (imgUrl === '[IMAGE]' || imgUrl === '[IMAGE_PLACEHOLDER]') {
+                            // Ignored handled gracefully
+                        }
+                        // FALSE POSITIVE PROTECTION: Ensure only valid links are accepted as images
+                        else if (imgUrl.startsWith('http') || imgUrl.startsWith('data:') || imgUrl.startsWith('./')) { 
                             curQ.image = imgUrl; 
                             lastField = 'I';
                         } else {
@@ -1255,7 +1241,6 @@
                     katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
                     katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
-                
                 txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
 
                 const qb = [];
@@ -1267,8 +1252,9 @@
                             processedText = processMath(processedText, appState.renderEngine);
                             processedOptions = processedOptions.map(o => processMath(o, appState.renderEngine));
                         }
-                        let finalFormattedText = parseFormatting(processedText).replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1');
-                        let finalFormattedOptions = processedOptions.map(o => parseFormatting(o));
+                        // CRITICAL: Strictly translate pure \n to <br> for final HTML compilation.
+                        let finalFormattedText = parseFormatting(processedText).replace(/\n/g, '<br>');
+                        let finalFormattedOptions = processedOptions.map(o => parseFormatting(o).replace(/\n/g, '<br>'));
 
                         return {
                             id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, img: q.image || '', table: q.table || '',
@@ -1279,6 +1265,20 @@
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
+
+                // VIRTUAL KEYBOARD & MOBILE SCALING PATCH (Injects securely into compiled Last.html)
+                const vkPatch = `
+                <style>
+                @media (max-width: 768px) {
+                    #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
+                }
+                </style>
+                <script>
+                // Self-healing injection script to fix the 'undefined' issue generated by old virtual keyboard logic.
+                document.addEventListener('input', e => { if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) e.target.value = e.target.value.replace('undefined', ''); });
+                setInterval(() => { document.querySelectorAll('input').forEach(inp => { if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); }); }, 300);
+                <\/script>`;
+                txt = txt.replace('</head>', vkPatch + '</head>');
 
                 const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
                 const url = URL.createObjectURL(blob);
@@ -1297,12 +1297,10 @@
             
             if (mode === 'LATEX') {
                 document.getElementById('tab-btn-latex').classList.add('active');
-                document.getElementById('prompt-desc').innerText = "CRITICAL: The AI *must* wrap all math in $ signs or the compiler will ignore it. Copy this strict prompt to ensure perfect extraction without hallucinated span tags.";
-                document.getElementById('compileConfigBox').style.display = 'block';
+                document.getElementById('prompt-desc').innerText = "CRITICAL: The AI *must* wrap all math in $ signs or the compiler will ignore it. Copy this strict prompt to ensure perfect extraction.";
             } else {
                 document.getElementById('tab-btn-html').classList.add('active');
                 document.getElementById('prompt-desc').innerText = "This basic prompt forbids LaTeX and forces the AI to use raw Unicode and basic HTML <sup> and <sub> tags.";
-                document.getElementById('compileConfigBox').style.display = 'none';
             }
             generateAIPrompt(); renderPreviewTabs(); 
         }
@@ -1316,34 +1314,29 @@
                 modeSpecificRules = `
 CRITICAL MATH RULES:
 - ATOMIC DELIMITER RULE: You MUST wrap ALL isolated variables, numbers, and expressions in $ signs. E.g., 'O: \\omega' or 'Q: mass m' is FATALLY WRONG. It MUST be 'O: $\\omega$' and 'Q: mass $m$'.
-- DISPLAY MODE: All large, standalone equations (like fractions or integrals) MUST be wrapped in double dollar signs ($$ ... $$) so they are not crushed on a single line.
-- SUBSCRIPTS: You MUST preserve all mathematical underscores (_). For example, write \\tilde{\\nu}_{\\text{C-H}}, absolutely never \\tilde{\\nu}{\\text{C-H}}.
-- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড").
+- DISPLAY MODE: All large equations MUST be wrapped in double dollar signs ($$ ... $$).
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$, $J$).
-- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
+- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.`;
             } else {
                 modeSpecificRules = `
 CRITICAL HTML RULES:
 - ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ⇌, Δ, °).
-- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>SO<sub>4</sub>). Always format chemical formulas this way.`;
+- Use raw HTML <sup>2</sup> for exponents (e.g., x<sup>2</sup>) and <sub>2</sub> for subscripts.`;
             }
 
-            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
+            document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Extract EVERY SINGLE question from the provided document into the strict plain-text .CBT format below.
 
 CRITICAL EXTRACTION RULES:
-1. TWO-COLUMN LAYOUT (CRITICAL): Modern exam booklets use a two-column layout. You MUST read Column 1 completely top-to-bottom, THEN read Column 2. NEVER read horizontally across the center gutter. Ignore all page numbers, watermarks, headers, and footers.
-2. COLUMN SPANNING (ANTI-TRUNCATION): If a question starts at the bottom of the Left Column, its continuation (like Statement I, Reason, or Options) will be at the top of the Right Column. YOU MUST STITCH THEM TOGETHER. DO NOT split them into two questions! DO NOT stop extracting prematurely!
-3. VERBATIM TRANSCRIPTION: You MUST extract EVERY SINGLE WORD of the question. If a question contains "Statement I" and "Statement II", you must transcribe the FULL text of both statements verbatim. NEVER summarize.
-4. MISSING/IMAGE OPTIONS: If an option is entirely an image, diagram, or structure that you cannot convert to text, output exactly 'O: [IMAGE]' to reserve its seat. Do NOT skip the option line.
-5. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Do not output empty 'I:' tags.
-6. TABLES: Convert tables into a minified HTML <table> string starting EXACTLY with 'T: ' on a strictly NEW line. Use <th> for headers.
-${modeSpecificRules}
+1. TWO-COLUMN LAYOUT (CRITICAL): Read Column 1 completely top-to-bottom, THEN read Column 2. NEVER cut sentences in half across the center gutter! If a question spans across a page bottom, stitch it together.
+2. MISSING/IMAGE OPTIONS: If an option is purely a diagram/image, output exactly 'O: [IMAGE]'. Do not skip it.
+3. TYPOGRAPHY: Capture ALL original formatting. Use **bold** and *italic* tags if present in the source document.
+4. MULTI-STATEMENT FORMATTING: Do NOT merge Statement I and Statement II into one line. ALWAYS use raw newlines (\\n) and **bold** labels exactly like the blueprint.
+5. NO HALLUCINATIONS: Do NOT output "[span_...]" or bounding box tags. Extract the Header/Title into [EXAM_INFO].
 
-FORMAT BLUEPRINT TO FOLLOW:
+FORMAT BLUEPRINT TO FOLLOW (Note how newlines separate statements!):
 [EXAM_INFO]
-Agency: ${appState.agencyName}
-Title: ${appState.examTitle}
+Agency: AAPNA AGENCY
+Title: NEET MOCK
 
 ${sectionStr}QType: MCQ
 Q: Given below are two statements:
@@ -1356,25 +1349,14 @@ O: Both Statement I and Statement II are correct.
 O: Both Statement I and Statement II are incorrect.
 A: B
 
-QType: NAT
-Q: The value of the charge is ____________ C.
-A: 2.5-2.6
-
-Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text code block.`;
+Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text block.`;
         }
 
-        function openPromptModal() {
-            openModal('promptModal');
-        }
+        function openPromptModal() { openModal('promptModal'); }
         function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            if (id === 'cropModal' && cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
-        }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); if (id === 'cropModal' && cropperInstance) { cropperInstance.destroy(); cropperInstance = null; } }
         function copyToClipboard(id) { document.getElementById(id).select(); document.execCommand('copy'); showToast('Copied to clipboard!', 'success'); }
 
-        document.addEventListener('change', function(e) { if (e.target.name && e.target.name.startsWith('correct-')) debouncedRenderPreview(); });
-        document.addEventListener('input', function(e) { if (e.target.classList && e.target.classList.contains('nat-answer-input')) debouncedRenderPreview(); });
     </script>
 </body>
 </html>
