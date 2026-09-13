@@ -39,6 +39,7 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* Prominent Linux-style Scrollbars */
         ::-webkit-scrollbar { width: 14px; height: 14px; }
         ::-webkit-scrollbar-track { background: var(--bg-hover); border-left: 1px solid var(--border); }
         ::-webkit-scrollbar-thumb { background-color: var(--text-muted); border-radius: 8px; border: 3px solid var(--bg-hover); }
@@ -46,10 +47,10 @@
         ::-webkit-scrollbar-corner { background: var(--bg-hover); }
 
         html, body { overscroll-behavior: none; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        .navbar { background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 1rem; }
+        .navbar { flex: 0 0 auto; background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); z-index: 1000; flex-wrap: wrap; gap: 1rem; }
         .navbar-brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
         .navbar-icon { width: 34px; height: 34px; background: var(--primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
         .navbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
@@ -63,14 +64,17 @@
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
         .dropdown-item:last-child { border-bottom: none; }
 
-        .main { display: flex; height: calc(100vh - 60px); overflow: hidden; }
+        /* Main Container */
+        .main { flex: 1 1 0; min-height: 0; display: flex; overflow: hidden; position: relative; }
         .panel { padding: 1rem; background: var(--bg-panel); transition: all 0.3s ease; }
         
         .left-panel { flex: 1; border-right: 1px solid var(--border); max-width: 60%; display: flex; flex-direction: column; overflow: hidden; }
         .left-panel.expanded { max-width: 100%; border-right: none; }
         
-        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; }
+        /* Advanced Scroll Isolation */
+        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; }
         
+        /* CSS Containment for extreme performance during scrolling */
         .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; contain: content; }
         .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
         
@@ -80,7 +84,7 @@
             .left-panel.expanded .bottom-action-bar { border-top: 2px solid var(--primary); }
         }
 
-        .right-panel { flex: 0 0 40%; background: var(--bg-main); display: flex; flex-direction: column; border-left: 1px solid var(--border); transition: all 0.3s ease; }
+        .right-panel { flex: 0 0 40%; background: var(--bg-main); display: flex; flex-direction: column; border-left: 1px solid var(--border); transition: transform 0.3s ease; }
         .right-panel.hidden-panel { flex: 0; min-width: 0; width: 0; overflow: hidden; opacity: 0; border: none; padding: 0; margin: 0; }
         
         details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; }
@@ -93,6 +97,7 @@
         details.card[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
         .card-inner { padding: 0 1rem; }
 
+        /* Form Components */
         .form-group { margin-bottom: 0.75rem; }
         .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; color: var(--text-muted); }
         .form-control { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; background: var(--bg-input); color: var(--text-main); transition: all 0.2s; }
@@ -129,17 +134,17 @@
         
         .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; }
-        .option-main-row { display: flex; align-items: center; gap: 0.4rem; width: 100%; }
-        .option-radio { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; flex-shrink:0; }
-        .option-label { font-weight: 700; font-size: 0.85rem; color: var(--text-muted); width: 20px; flex-shrink:0; text-align: center; }
-        .option-input-wrap { flex:1; display:flex; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
+        .option-main-row { display: flex; align-items: flex-start; gap: 0.4rem; width: 100%; }
+        .option-radio { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; flex-shrink:0; margin-top: 0.6rem; }
+        .option-label { font-weight: 700; font-size: 0.85rem; color: var(--text-muted); width: 20px; flex-shrink:0; text-align: center; margin-top: 0.6rem; }
+        .option-input-wrap { flex:1; display:flex; align-items: flex-start; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
         .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(61, 178, 212, 0.15); }
-        .option-input-wrap input { border:none; padding:0.5rem 0.6rem; flex:1; font-size:0.9rem; background:transparent; color:var(--text-main); min-width: 0; }
-        .option-input-wrap input:focus { outline:none; }
+        .option-input-wrap textarea { border:none; padding:0.5rem 0.6rem; flex:1; font-size:0.9rem; background:transparent; color:var(--text-main); min-width: 0; resize: vertical; min-height: 38px; font-family: inherit; line-height: 1.4; }
+        .option-input-wrap textarea:focus { outline:none; }
         
-        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; }
+        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; height: 100%; min-height: 38px; display: flex; align-items: center; justify-content: center; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
-        .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; font-size:1rem; color:var(--danger); transition: all 0.2s; }
+        .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; font-size:1rem; color:var(--danger); transition: all 0.2s; height: 100%; min-height: 38px; display: flex; align-items: center; justify-content: center; }
         .opt-del-btn:hover { background:var(--danger); color:white; }
 
         .qblock-actions-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); align-items: center; }
@@ -164,7 +169,7 @@
         .ptab:hover { color: var(--text-main); }
         .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-hover); }
 
-        .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; }
+        .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; -webkit-overflow-scrolling: touch; }
         .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
         
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
@@ -184,7 +189,7 @@
             .preview-option[data-length="short"] { flex: 1 1 100%; }
         }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(3px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 4000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(3px); }
         .modal.active { display: flex; }
         .modal-content { background: var(--bg-panel); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 600px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border); animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes modalPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
@@ -198,6 +203,13 @@
         .crop-sidebar { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; padding-right: 0.5rem; }
         .live-crop-output { width: 100%; height: 220px; object-fit: contain; background: #fff; border: 1px dashed var(--border); border-radius: var(--radius-sm); margin-top: 0.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
+        /* Cropper Overrides for bold corners */
+        .cropper-view-box, .cropper-face { border-radius: 0; }
+        .cropper-point.point-ne, .cropper-point.point-nw, .cropper-point.point-sw, .cropper-point.point-se {
+            width: 24px !important; height: 24px !important; background-color: var(--primary) !important; border-radius: 50%; opacity: 0.9 !important;
+        }
+        .cropper-line { background-color: var(--primary) !important; }
+
         .editor-table { width: 100% !important; border-collapse: collapse !important; background: var(--bg-input) !important; }
         .editor-table th, .editor-table td { border: 1px solid var(--border) !important; padding: 0.5rem !important; text-align: left !important; min-width: 60px !important; font-size: 0.9rem !important; }
         .editor-table th { background: var(--bg-card) !important; font-weight: 700 !important; color: var(--primary) !important; }
@@ -209,17 +221,33 @@
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 20px; border-radius: 8px; color: white; box-shadow: var(--shadow-lg); font-weight: 600; animation: fadeDown 0.3s ease-out; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
         
+        .mobile-only-btn { display: none; }
+        
         @media (max-width: 1024px) {
-            .main { flex-direction: column; height: auto; overflow: visible; }
+            .mobile-only-btn { display: block; }
             .left-panel { max-width: 100%; border-right: none; padding-bottom: 1rem; overflow: visible; }
-            .left-content-scroll { overflow-y: visible; padding-bottom: 0; }
-            .right-panel { border-left: none; min-height: 500px; border-top: 2px solid var(--primary); }
+            .right-panel {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                z-index: 3000;
+                display: flex;
+                border-left: none;
+                border-top: none;
+                transform: translateX(0);
+            }
+            .right-panel.hidden-panel { display: none !important; }
+            
             .crop-workspace { grid-template-columns: 1fr; overflow-y: auto; } .crop-main { height: 45vh; min-height: 300px; }
             .bottom-action-bar { position: relative; }
         }
     </style>
 </head>
 <body>
+    <div id="missingImageBar" style="display: none; background: var(--danger); color: white; padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.9rem; justify-content: space-between; align-items: center; z-index: 1500; box-shadow: var(--shadow);">
+        <span id="missingImageText" style="display: flex; align-items: center; gap: 0.5rem;"></span>
+        <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white;" onclick="this.parentElement.style.display='none'">Dismiss</button>
+    </div>
+
     <nav class="navbar">
         <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter</span></div>
         <div class="navbar-actions">
@@ -230,10 +258,11 @@
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)" title="Menu">⋮</button>
                 <div class="dropdown-content" id="mainMenu">
-                    <button class="dropdown-item" id="previewToggleBtn" onclick="togglePreviewLayout(); closeDropdown();">👁️ Hide Preview</button>
+                    <button class="dropdown-item" id="previewToggleBtn" onclick="togglePreviewLayout(); closeDropdown();">👁️ Show Preview</button>
                     <button class="dropdown-item" onclick="toggleFullScreen(); closeDropdown();">⛶ Full Screen</button>
                     <button class="dropdown-item" onclick="openModal('engineModal'); closeDropdown();">⚙️ Math Engine</button>
                     <button class="dropdown-item" onclick="revealAllImages(); closeDropdown();">👁️ Show All Previews (20s)</button>
+                    <button class="dropdown-item" onclick="generateCBTHTML(); closeDropdown();" style="color: var(--success);">🚀 Compile Final HTML</button>
                     <button class="dropdown-item" onclick="openModal('helpModal'); closeDropdown();">❓ Help</button>
                     
                     <div class="dropdown-item" style="cursor:default; border-bottom: none; flex-direction: column; align-items: flex-start; gap: 6px; background: var(--bg-hover); margin-top: 5px; border-top: 1px solid var(--border);">
@@ -345,9 +374,10 @@
             </div>
         </div>
 
-        <div class="right-panel" id="rightPanel">
+        <div class="right-panel hidden-panel" id="rightPanel">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border);">
-                <span style="font-weight: 700; color: var(--text-main);">👁️ Live Section Preview</span>
+                <span style="font-weight: 700; color: var(--text-main);">👁️ Live Preview</span>
+                <button class="btn btn-sm btn-danger mobile-only-btn" onclick="togglePreviewLayout()">✕ Close</button>
             </div>
             <div class="preview-tabs" id="previewTabs"></div>
             <div class="preview-area" id="previewArea">
@@ -359,7 +389,7 @@
         </div>
     </div>
 
-    <div class="modal" id="confirmModal" style="z-index: 2500;">
+    <div class="modal" id="confirmModal" style="z-index: 4500;">
         <div class="modal-content" style="max-width: 400px; text-align: center; border-top: 4px solid var(--danger);">
             <div class="modal-header" style="border: none; margin-bottom: 0;">
                 <h2 style="margin: 0 auto; color: var(--danger);">⚠️ Confirm Action</h2>
@@ -436,13 +466,14 @@
                 <div class="crop-main"><img id="cropImage" src="" style="max-width: 100%; display: block;" alt="Image to crop"></div>
                 <div class="crop-sidebar">
                     <div class="form-group">
-                        <label>Aspect Ratio</label>
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="btn btn-sm btn-primary ratio-btn" id="ratioFree" onclick="setCropRatio(NaN, this)">Freeform</button>
+                        <label>Aspect Ratio & Tools</label>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                            <button class="btn btn-sm btn-primary ratio-btn" id="ratioFree" onclick="setCropRatio(NaN, this)">Free</button>
                             <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(1, this)">1:1</button>
                             <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(4/3, this)">4:3</button>
                             <button class="btn btn-sm btn-secondary ratio-btn" onclick="setCropRatio(16/9, this)">16:9</button>
                         </div>
+                        <button class="btn btn-sm btn-secondary btn-block" style="margin-bottom: 1rem;" onclick="if(cropperInstance) cropperInstance.rotate(90)">↻ Rotate 90°</button>
                     </div>
                     <div class="form-group">
                         <label>Compression / Quality (<span id="compLabel">80</span>%)</label>
@@ -550,7 +581,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 0.5rem;">How to Use (English)</h3>
                 <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
                     <li>Click <strong>🤖 AI Prompt</strong> and copy the strict text format for your subject type.</li>
-                    <li>Paste the prompt along with your Exam PDF into an AI (like Gemini 1.5 Pro or Flash).</li>
+                    <li>Paste the prompt along with your Exam PDF into an AI (like Gemini 1.5 Pro).</li>
                     <li>Copy the resulting `.CBT` text code generated by the AI.</li>
                     <li>Click <strong>📌 Import / Export</strong> in this app, paste the code, and click <strong>Import Data</strong>.</li>
                     <li>If the AI encounters an un-extractable image, it will automatically create a 🚨 <strong>UPLOAD MISSING IMAGE</strong> button for you to quickly attach it.</li>
@@ -595,7 +626,6 @@
             { name: "Permittivity of free space (ε₀)", value: "8.854 × 10⁻¹² F/m" }
         ];
 
-        // Ensure state is completely empty by default. Extracted from CBT text if present.
         const appState = {
             agencyName: '', examTitle: '', examSubtitle: '',
             duration: '', timerMode: 'STOPWATCH', fontName: 'system-ui, -apple-system, Roboto, Arial, sans-serif',
@@ -609,12 +639,11 @@
 
         let activePreviewSection = '';
         
-        // Memory Protection Globals
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
 
-        // Safe DOM Memory Tracker
+        // Memory Tracker
         setInterval(() => {
             const nodeCount = document.querySelectorAll('*').length;
             const bar = document.getElementById('memStatusBar');
@@ -625,20 +654,20 @@
             
             if(bar && text && badge) {
                 bar.style.width = `${percentage}%`;
-                text.innerText = `🧠 Memory Load: ${Math.round(percentage)}%`;
+                text.innerText = `${Math.round(percentage)}%`;
                 
                 if (percentage < 50) {
                     bar.style.background = 'var(--success)';
                     text.style.color = 'var(--success)';
-                    badge.innerText = '🟢 Stable (Debounced)';
+                    badge.innerText = 'Stable (Debounced)';
                 } else if (percentage < 85) {
                     bar.style.background = 'var(--warning)';
                     text.style.color = 'var(--warning)';
-                    badge.innerText = '🟡 Moderate Load';
+                    badge.innerText = 'Moderate Load';
                 } else {
                     bar.style.background = 'var(--danger)';
                     text.style.color = 'var(--danger)';
-                    badge.innerText = '🔴 High Memory Usage';
+                    badge.innerText = 'High Memory Usage';
                 }
             }
         }, 3000);
@@ -713,14 +742,21 @@
             }
         }
 
-        let previewIsVisible = true;
+        let previewIsVisible = false;
         function togglePreviewLayout() {
             previewIsVisible = !previewIsVisible;
             const right = document.getElementById('rightPanel'); 
             const left = document.querySelector('.left-panel'); 
             const btn = document.getElementById('previewToggleBtn');
-            if(previewIsVisible) { right.classList.remove('hidden-panel'); left.classList.remove('expanded'); btn.innerText = '👁️ Hide Preview'; } 
-            else { right.classList.add('hidden-panel'); left.classList.add('expanded'); btn.innerText = '👁️ Show Preview'; }
+            if(previewIsVisible) { 
+                right.classList.remove('hidden-panel'); 
+                left.classList.remove('expanded'); 
+                btn.innerText = '👁️ Hide Preview'; 
+            } else { 
+                right.classList.add('hidden-panel'); 
+                left.classList.add('expanded'); 
+                btn.innerText = '👁️ Show Preview'; 
+            }
         }
 
         function revealImg(id, src) {
@@ -734,7 +770,7 @@
             imageTimers[id] = setTimeout(() => {
                 const checkEl = document.getElementById(id);
                 if(checkEl) {
-                    checkEl.innerHTML = '🖼️ View Attached Image';
+                    checkEl.innerHTML = '🖼️ View Image';
                     checkEl.classList.add('img-lazy-btn');
                     checkEl.onclick = () => revealImg(id, src); 
                 }
@@ -742,7 +778,7 @@
         }
 
         function revealAllImages() {
-            showToast("👁️ Revealing all images for 20 seconds to save memory.", "success");
+            showToast("👁️ Revealing all images for 20 seconds...", "success");
             document.querySelectorAll('.img-lazy-wrapper').forEach(wrapper => {
                 const src = wrapper.getAttribute('data-src');
                 const id = wrapper.id;
@@ -771,9 +807,9 @@
                 .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
         }
 
-        // Updated escapeHTML allowing <sub> and <sup> to pass securely
         function escapeHTML(str) {
             if(!str) return '';
+            // Safe escape that preserves sub/sup explicitly required for HTML mode
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
                       .replace(/&lt;sup&gt;/gi, '<sup>').replace(/&lt;\/sup&gt;/gi, '</sup>')
                       .replace(/&lt;sub&gt;/gi, '<sub>').replace(/&lt;\/sub&gt;/gi, '</sub>');
@@ -877,6 +913,29 @@
             });
         }
 
+        function updateMissingImageAlert() {
+            let missingImagesCount = 0;
+            let missingLocs = [];
+            appState.sections.forEach(sec => {
+                (appState.questionsBySection[sec.name] || []).forEach((q, i) => {
+                    let hasMissing = false;
+                    if (q.image === 'PLACEHOLDER') hasMissing = true;
+                    q.options.forEach(o => { if(o.includes('||IMG:PLACEHOLDER||')) hasMissing = true; });
+                    if(hasMissing) {
+                        missingImagesCount++;
+                        missingLocs.push(`Q${i+1} (${sec.name})`);
+                    }
+                });
+            });
+            const missingBar = document.getElementById('missingImageBar');
+            if (missingImagesCount > 0) {
+                missingBar.style.display = 'flex';
+                document.getElementById('missingImageText').innerText = `🚨 ${missingImagesCount} Image(s) missing in: ${missingLocs.slice(0,3).join(', ')}${missingLocs.length>3?'...':''}. Please upload them.`;
+            } else {
+                missingBar.style.display = 'none';
+            }
+        }
+
         function renderAllQuestions() {
             document.getElementById('downloadAreaHTML').classList.add('hidden');
             const compileBtn = document.getElementById('compileBtn'); if (compileBtn) compileBtn.innerHTML = '🚀 Compile & Generate Final HTML';
@@ -897,6 +956,7 @@
                 body.appendChild(addBtn);
             });
             renderMarksTable(); 
+            updateMissingImageAlert();
         }
 
         function createQuestionBlock(sec, idx, q) {
@@ -911,24 +971,29 @@
                 let rawOpt = opt || '';
                 let optText = rawOpt;
                 let optImg = '';
-                const imgMatch = rawOpt.match(/\|\|IMG:(data:image\/[^|]+)\|\|/);
+                const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
                 if (imgMatch) { optImg = imgMatch[1]; optText = rawOpt.replace(imgMatch[0], ''); }
                 
                 const oldImgMatch = rawOpt.match(/<img src="(data:image\/[^"]+)"[^>]*>/);
                 if (oldImgMatch) { optImg = oldImgMatch[1]; optText = rawOpt.replace(/<br><img[^>]+>/g, '').replace(/<img[^>]+>/g, ''); q.options[oi] = optText + `||IMG:${optImg}||`; }
 
-                let optImgPreview = optImg ? `<div style="margin-top: 0.4rem; padding-left: 28px; width: 100%; display: flex; align-items: center; gap: 0.5rem;"><div id="edit-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImg}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="padding:0.2rem 0.5rem; font-size:0.75rem; flex: 1;">🖼️ View Option Image</div><button class="btn btn-sm btn-danger" style="padding:0.2rem 0.5rem;" onclick="event.stopPropagation(); removeOptionImage('${sec}', ${idx}, ${oi})">✕</button></div>` : '';
+                let optImgPreview = '';
+                if (optImg === 'PLACEHOLDER') {
+                    optImgPreview = `<div style="margin-top: 0.4rem; padding-left: 28px; width: 100%; display: flex; align-items: center; gap: 0.5rem;"><button class="btn btn-danger btn-sm highlight-flash" style="flex:1;" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()">🚨 MISSING IMAGE</button></div>`;
+                    placeholderText = "🚨 Image Required...";
+                } else if (optImg) {
+                    optImgPreview = `<div style="margin-top: 0.4rem; padding-left: 28px; width: 100%; display: flex; align-items: center; gap: 0.5rem;"><div id="edit-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImg}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="padding:0.2rem 0.5rem; font-size:0.75rem; flex: 1;">🖼️ View Option Image</div><button class="btn btn-sm btn-danger" style="padding:0.2rem 0.5rem;" onclick="event.stopPropagation(); removeOptionImage('${sec}', ${idx}, ${oi})">✕</button></div>`;
+                }
 
-                if (optText === '[Attach Image Here]') optText = '';
-
+                let safeVal = optText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
                         <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <input type="text" value='${optText.replace(/'/g, "&#39;")}' placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateOptionText('${sec}', ${idx}, ${oi}, this.value)">
-                            <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image to Option">🖼️</button>
+                            <textarea rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'; updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                             ${removeBtn}
                         </div>
@@ -958,7 +1023,7 @@
             div.innerHTML = `
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
-                    <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
+                    <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'; updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
                     <select class="form-control" style="width: auto; margin-left: 0.5rem; font-weight: 600;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                         <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                     </select>
@@ -969,6 +1034,11 @@
                 ${actionRow}
                 <div class="qblock-media">${imgPreview} ${tablePreview}</div>
             `;
+            // Trigger initial resize
+            setTimeout(() => {
+                const tas = div.querySelectorAll('textarea');
+                tas.forEach(ta => { ta.style.height = ''; ta.style.height = ta.scrollHeight + 'px'; });
+            }, 0);
             return div;
         }
 
@@ -983,7 +1053,7 @@
             let q = appState.questionsBySection[sec][idx];
             let rawOpt = q.options[oi] || '';
             let optImg = '';
-            const imgMatch = rawOpt.match(/\|\|IMG:(data:image\/[^|]+)\|\|/);
+            const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
             if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
             q.options[oi] = value + optImg;
             debouncedUpdateSinglePreview(sec, idx);
@@ -992,7 +1062,7 @@
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx];
             let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(data:image\/[^|]+)\|\|/g, '');
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, '');
             renderAllQuestions();
             debouncedUpdateSinglePreview(sec, idx);
         }
@@ -1044,7 +1114,7 @@
                 if(q && q.image && q.image !== 'PLACEHOLDER') { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
             });
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); updateMissingImageAlert(); }
 
         function openCropModalWithData(imgSrc) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -1099,12 +1169,12 @@
             if (isOption) {
                 let q = appState.questionsBySection[sec][idx];
                 let rawOpt = q.options[optIdx] || '';
-                let optText = rawOpt.replace(/\|\|IMG:(data:image\/[^|]+)\|\|/g, '');
-                if (optText === '[Attach Image Here]') optText = '';
+                let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, '');
                 q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
             renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); closeModal('cropModal');
+            updateMissingImageAlert();
         }
 
         let currentTableData = null;
@@ -1176,19 +1246,12 @@
                 (q.options || []).forEach((opt, oi) => { 
                     let rawOpt = opt || '';
                     let optImgSrc = '';
-                    const imgMatch = rawOpt.match(/\|\|IMG:(data:image\/[^|]+)\|\|/);
+                    const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
-                    
-                    const oldImgMatch = rawOpt.match(/<img src="(data:image\/[^"]+)"[^>]*>/);
-                    if (oldImgMatch) { optImgSrc = oldImgMatch[1]; rawOpt = rawOpt.replace(/<br><img[^>]+>/g, '').replace(/<img[^>]+>/g, ''); }
 
                     let safeOpt = escapeHTML(rawOpt);
                     if(appState.mathMode === 'LATEX') safeOpt = processMath(safeOpt, previewEngine);
                     safeOpt = parseFormatting(safeOpt).replace(/\n/g, '<br>');
-
-                    if (safeOpt === '[Attach Image Here]') {
-                        safeOpt = `<span style="color:var(--danger); font-weight:bold;">🚨 Missing Option Image</span>`;
-                    }
 
                     let optLength = safeOpt.length > 100 ? 'long' : (safeOpt.length > 50 ? 'medium' : 'short');
                     
@@ -1196,7 +1259,11 @@
                     html += `<strong>${String.fromCharCode(65+oi)}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}`;
                     
                     if (optImgSrc) {
-                        html += `<div id="prev-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImgSrc}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin-top: 0.5rem; display: inline-flex; width: 100%;">🖼️ View Option Image</div>`;
+                        if (optImgSrc === 'PLACEHOLDER') {
+                            html += `<div style="margin-top: 0.5rem; display: inline-flex; width: 100%; color:var(--danger); font-weight:bold;">🚨 Missing Option Image</div>`;
+                        } else {
+                            html += `<div id="prev-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImgSrc}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin-top: 0.5rem; display: inline-flex; width: 100%;">🖼️ View Option Image</div>`;
+                        }
                     }
                     html += `</div>`; 
                 });
@@ -1264,15 +1331,17 @@
                 (appState.questionsBySection[s.name] || []).forEach(q => {
                     out += `QType: ${q.type || 'MCQ'}\n`;
                     let cleanQText = q.text.replace(/\n/g, '\\n');
-                    if (q.image === 'PLACEHOLDER') cleanQText += ` [IMAGE]`; // Convert back to placeholder for export
+                    if (q.image === 'PLACEHOLDER') cleanQText += ` [IMAGE]`; 
                     out += `Q: ${cleanQText}\n`;
                     
                     if (q.type === 'NAT') { out += `A: ${q.correctNat || ''}\n`; } 
                     else {
                         q.options.forEach(o => {
                             let cleanOpt = o.replace(/\n/g, '\\n');
-                            if (cleanOpt === '[Attach Image Here]') cleanOpt = '[IMAGE]';
-                            out += `O: ${cleanOpt}\n`;
+                            if (cleanOpt.includes('||IMG:PLACEHOLDER||')) {
+                                cleanOpt = cleanOpt.replace('||IMG:PLACEHOLDER||', '') + ' [IMAGE]';
+                            }
+                            out += `O: ${cleanOpt.trim()}\n`;
                         });
                         out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
                     }
@@ -1308,11 +1377,7 @@
             // PRE-PARSER HEALING SYSTEM:
             txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
             txt = txt.replace(/\\n/g, '\n');
-            
-            // Reconnect statements that got hallucinated onto new lines
             txt = txt.replace(/(Statement|Assertion|List|Reason)[\s\n]+(I{1,3}|A|B|R)[\s\n]*:/gi, '$1 $2:');
-            
-            // Ensure core prefixes are strictly aligned to start of lines to avoid false splitting
             txt = txt.replace(/\n(T\s*:\s*<table)/gi, '\n$1');
 
             const lines = txt.split('\n'); 
@@ -1342,8 +1407,8 @@
                     if (tr.startsWith('Agency:')) { appState.agencyName = tr.substring(7).trim(); document.getElementById('agencyName').value = appState.agencyName; }
                     if (tr.startsWith('Title:')) { appState.examTitle = tr.substring(6).trim(); document.getElementById('examTitle').value = appState.examTitle; }
                     if (tr.startsWith('Subtitle:')) { appState.examSubtitle = tr.substring(9).trim(); document.getElementById('examSubtitle').value = appState.examSubtitle; }
-                    if (tr.startsWith('Duration:')) { appState.duration = parseInt(tr.substring(9)) || ''; document.getElementById('duration').value = appState.duration; }
-                    if (tr.startsWith('Timer:')) { appState.timerMode = tr.substring(6).trim(); document.getElementById('timerMode').value = appState.timerMode; }
+                    if (tr.toLowerCase().startsWith('duration:')) { appState.duration = parseInt(tr.substring(9)) || ''; document.getElementById('duration').value = appState.duration; }
+                    if (tr.toLowerCase().startsWith('timer:')) { appState.timerMode = tr.substring(6).trim().toUpperCase(); document.getElementById('timerMode').value = appState.timerMode; }
                     if (tr.startsWith('Font:')) { appState.fontName = tr.substring(5).trim(); document.getElementById('fontSelect').value = appState.fontName; document.documentElement.style.setProperty('--preview-font', appState.fontName); }
                     if (tr.startsWith('MathMode:')) { appState.mathMode = tr.substring(9).trim(); switchPrompt(appState.mathMode); }
                     if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
@@ -1368,8 +1433,14 @@
                     }
                     else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
                         let cleanedOpt = tr.replace(/^O\s*:/i, '').trim();
-                        if (cleanedOpt === '' || cleanedOpt === '[IMAGE_PLACEHOLDER]' || cleanedOpt === '[IMAGE]') curQ.options.push('[Attach Image Here]');
-                        else curQ.options.push(cleanedOpt);
+                        if (cleanedOpt.includes('[IMAGE]') || cleanedOpt.includes('[IMAGE_PLACEHOLDER]')) {
+                            cleanedOpt = cleanedOpt.replace(/\[IMAGE\]/gi, '').replace(/\[IMAGE_PLACEHOLDER\]/gi, '').trim();
+                            curQ.options.push(cleanedOpt + '||IMG:PLACEHOLDER||');
+                        } else if (cleanedOpt === '[Attach Image Here]') {
+                            curQ.options.push('||IMG:PLACEHOLDER||');
+                        } else {
+                            curQ.options.push(cleanedOpt);
+                        }
                         lastField = 'O';
                     }
                     else if (/^A\s*:/i.test(tr) && curQ) {
@@ -1465,19 +1536,17 @@
                         q.options.forEach(o => {
                             let optText = o || '';
                             let optImg = '';
-                            const imgMatch = optText.match(/\|\|IMG:(data:image\/[^|]+)\|\|/);
+                            const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
                             if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
                             
                             const oldImgMatch = optText.match(/<img src="(data:image\/[^"]+)"[^>]*>/);
                             if (oldImgMatch) { optImg = oldImgMatch[1]; optText = optText.replace(/<br><img[^>]+>/g, '').replace(/<img[^>]+>/g, ''); }
 
-                            if (optText === '[Attach Image Here]') optText = '';
-
                             let processedOpt = escapeHTML(optText);
                             if (appState.mathMode === 'LATEX') processedOpt = processMath(processedOpt, appState.renderEngine);
                             processedOpt = parseFormatting(processedOpt).replace(/\n/g, '<br>');
 
-                            if (optImg) {
+                            if (optImg && optImg !== 'PLACEHOLDER') {
                                 processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
                             }
                             finalOptionsHtmlReady.push(processedOpt);
@@ -1521,7 +1590,6 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.getElementById('downloadLinkHTML'); link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
                 document.getElementById('downloadAreaHTML').classList.remove('hidden');
-                document.getElementById('compileBtn').innerHTML = '✅ Compiled Successfully! (Click to re-compile)';
                 showToast('Output Generated Successfully!', 'success');
                 
             } catch (e) { showToast('Error: ' + e.message + ' (Ensure Last.html is present)', 'error'); }
@@ -1555,13 +1623,8 @@
                 modeSpecificRules = `
 CRITICAL MATH RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
-- FORBIDDEN: NEVER write scientific units or constants in Bengali (e.g., "জি সমান 9.8 মিটার প্রতি বর্গ সেকেন্ড", "আলফা", "বিটা", "গামা").
-- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$, $\\gamma$) and SI units ($m/s^2$, $m$, $C$, $J$, $N$).
-- Examples of CORRECT format:
-  * Gravitational acceleration: $g = 9.8 \\text{ m/s}^2$
-  * Charge: $q = 1.6 \\times 10^{-19} \\text{ C}$
-  * Wavelength: $\\lambda = 650 \\text{ nm}$
-  * Greek symbols: $\\alpha = 30°$, $\\beta_{xyz}$, $\\Delta E$
+- FORBIDDEN: NEVER write scientific units or constants in Bengali.
+- REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$).
 - DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
 - IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
             } else {
@@ -1576,15 +1639,16 @@ CRITICAL HTML/SYMBOL RULES:
             document.getElementById('aiPrompt').value = `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Your ONLY job is to extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
 
 CRITICAL EXTRACTION RULES:
-1. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
-2. NEVER SKIP A QUESTION: Please extract and understand the text in the uploaded pdf because everything is searchable. You MUST extract every single question. If you see a diagram/image, output EXACTLY \`[IMAGE]\` and skip describing it.
-3. FORMATTING MCQ: Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D). Recheck before attaching 5 options in a mcq, here only 4 are present.
-4. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range (e.g. A: 2.5-3.5).
-5. TEXT EMPHASIS: You MUST preserve all italics from the original document using *italic* (CRITICAL for scientific names). Preserve bold text using **bold**.
-6. INTERNAL LISTS & LINE BREAKS: If a question contains an internal list of items (e.g., A., B., C., D.), you MUST insert a literal \\n before each item so they stack vertically.
-   CRITICAL: DO NOT break "Statement I:" , "List-I" "List-II" "Assertion A:" "Assertion B:" into multiple lines. Keep the label and its text on the SAME line.
-7. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-8. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
+1. Please extract and understand the text in the uploaded pdf because everything is searchable.
+2. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry).
+3. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text. If there is a diagram, output EXACTLY \`[IMAGE]\` in place of the diagram.
+4. FORMATTING MCQ: Recheck before attaching 5 options in a mcq, here only 4 are present. Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
+5. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range.
+6. TEXT EMPHASIS: You MUST preserve all italics from the original document using *italic* (CRITICAL for biological names). Preserve bold text using **bold**.
+7. INTERNAL LISTS & LINE BREAKS: If a question contains an internal list of items (e.g., A., B., C., D.), you MUST insert a literal \\n before each item so they stack vertically.
+   CRITICAL: Don't break "Statement I:" , "List-I" "List-II" "Assertion A:" "Assertion B:". Keep the label and its text on the SAME line.
+8. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
+9. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
