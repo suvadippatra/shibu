@@ -2,14 +2,14 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Setter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBT</title>
     
-    <!-- Cropper.js (Local Copy based on your repo tree) -->
+    <!-- Cropper.js -->
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css">
     <script src="vendor/cropper/cropper.min.js"></script>
 
-    <!-- KaTeX Core & Fonts (Prioritize Local, Fallback to CDN) -->
+    <!-- KaTeX Core & Fonts -->
     <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
     <script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';"></script>
@@ -39,7 +39,6 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Prominent Linux-style Scrollbars */
         ::-webkit-scrollbar { width: 14px; height: 14px; }
         ::-webkit-scrollbar-track { background: var(--bg-hover); border-left: 1px solid var(--border); }
         ::-webkit-scrollbar-thumb { background-color: var(--text-muted); border-radius: 8px; border: 3px solid var(--bg-hover); }
@@ -50,10 +49,11 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
 
-        .navbar { flex: 0 0 auto; background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); z-index: 1000; flex-wrap: wrap; gap: 1rem; }
+        .navbar { flex: 0 0 auto; background: linear-gradient(135deg, #1e272e 0%, #0f3460 100%); color: white; padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); z-index: 1000; flex-wrap: wrap; gap: 0.5rem; }
         .navbar-brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
         .navbar-icon { width: 34px; height: 34px; background: var(--primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
         .navbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        
         .btn-icon { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
         .btn-icon:hover { background: rgba(255, 255, 255, 0.25); border-color: white; transform: translateY(-1px); }
 
@@ -62,20 +62,23 @@
         .dropdown-content.show { display: block; animation: fadeDown 0.2s ease-out; }
         .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
-        .dropdown-item:last-child { border-bottom: none; }
 
-        /* Main Container */
-        .main { flex: 1 1 0; min-height: 0; display: flex; overflow: hidden; position: relative; }
-        .panel { padding: 1rem; background: var(--bg-panel); transition: all 0.3s ease; }
+        .main { flex: 1 1 0; min-height: 0; display: flex; overflow: hidden; position: relative; width: 100%; }
+        .panel { padding: 1rem; background: var(--bg-panel); }
         
-        .left-panel { flex: 1; border-right: 1px solid var(--border); max-width: 60%; display: flex; flex-direction: column; overflow: hidden; }
-        .left-panel.expanded { max-width: 100%; border-right: none; }
+        .left-panel { flex: 0 0 60%; max-width: 60%; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-width: 20%; }
+        .left-panel.no-transition { transition: none !important; }
+        .left-panel.expanded { max-width: 100% !important; flex: 1 1 100% !important; border-right: none; }
+        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; }
         
-        /* Advanced Scroll Isolation */
-        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; }
+        .resizer { width: 6px; cursor: col-resize; background: var(--border); flex-shrink: 0; z-index: 10; position: relative; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .resizer:hover, .resizer.resizing { background: var(--primary); }
+        .resizer::after { content: '⋮'; color: var(--text-muted); font-size: 16px; pointer-events: none; }
         
-        /* CSS Containment for extreme performance during scrolling */
-        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: all 0.2s; contain: content; }
+        .right-panel { flex: 1; background: var(--bg-main); display: flex; flex-direction: column; transition: flex 0.3s; min-height: 0; min-width: 0; overflow: hidden; }
+        .right-panel.hidden-panel { display: none !important; }
+        
+        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; transition: border 0.2s, box-shadow 0.2s; contain: content; }
         .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
         
         @media (min-width: 1025px) {
@@ -84,9 +87,6 @@
             .left-panel.expanded .bottom-action-bar { border-top: 2px solid var(--primary); }
         }
 
-        .right-panel { flex: 0 0 40%; background: var(--bg-main); display: flex; flex-direction: column; border-left: 1px solid var(--border); transition: transform 0.3s ease; }
-        .right-panel.hidden-panel { flex: 0; min-width: 0; width: 0; overflow: hidden; opacity: 0; border: none; padding: 0; margin: 0; }
-        
         details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; }
         details.card[open] { padding-bottom: 1rem; }
         details.card > summary { background: var(--bg-input); padding: 1rem; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; transition: background 0.2s; user-select: none; }
@@ -97,12 +97,10 @@
         details.card[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
         .card-inner { padding: 0 1rem; }
 
-        /* Form Components */
         .form-group { margin-bottom: 0.75rem; }
         .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; color: var(--text-muted); }
         .form-control { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; background: var(--bg-input); color: var(--text-main); transition: all 0.2s; }
         .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(61, 178, 212, 0.15); }
-        textarea.form-control { resize: vertical; min-height: 40px; }
         .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; }
 
         .btn { padding: 0.6rem 1rem; border: none; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
@@ -128,24 +126,26 @@
         @keyframes flashHighlight { 0% { box-shadow: 0 0 0 4px var(--primary); transform: scale(1.01); } 100% { box-shadow: none; transform: scale(1); } }
         .highlight-flash { animation: flashHighlight 1.5s ease-out; z-index: 5; position: relative; }
 
-        .qblock-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .qblock-header { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
         .qnum { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; margin-top: 0.2rem; box-shadow: 0 2px 5px rgba(61, 178, 212, 0.4); }
-        .qblock-textarea { flex: 1; min-height: 50px; font-size: 0.95rem; }
+        .qblock-textarea-wrap { flex: 1 1 220px; min-width: 0; }
+        .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.95rem; resize: vertical; overflow-y: hidden; }
+        .qblock-controls { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; margin-left: auto; }
         
         .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; }
         .option-main-row { display: flex; align-items: flex-start; gap: 0.4rem; width: 100%; }
         .option-radio { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; flex-shrink:0; margin-top: 0.6rem; }
         .option-label { font-weight: 700; font-size: 0.85rem; color: var(--text-muted); width: 20px; flex-shrink:0; text-align: center; margin-top: 0.6rem; }
-        .option-input-wrap { flex:1; display:flex; align-items: flex-start; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
-        .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(61, 178, 212, 0.15); }
-        .option-input-wrap textarea { border:none; padding:0.5rem 0.6rem; flex:1; font-size:0.9rem; background:transparent; color:var(--text-main); min-width: 0; resize: vertical; min-height: 38px; font-family: inherit; line-height: 1.4; }
-        .option-input-wrap textarea:focus { outline:none; }
         
-        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; font-size:0.9rem; color:var(--text-muted); transition: all 0.2s; height: 100%; min-height: 38px; display: flex; align-items: center; justify-content: center; }
-        .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
-        .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; font-size:1rem; color:var(--danger); transition: all 0.2s; height: 100%; min-height: 38px; display: flex; align-items: center; justify-content: center; }
-        .opt-del-btn:hover { background:var(--danger); color:white; }
+        .option-input-wrap { flex:1; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
+        .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(61, 178, 212, 0.15); }
+        .auto-expand { border: none; padding: 0.5rem 0.6rem; flex: 1; font-size: 0.9rem; background: transparent; color: var(--text-main); min-width: 0; resize: vertical; min-height: 40px; font-family: inherit; line-height: 1.4; overflow-y: hidden; box-sizing: border-box; }
+        .auto-expand:focus { outline:none; }
+        
+        .opt-img-btn, .opt-del-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.6rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .opt-img-btn { font-size:0.9rem; color:var(--text-muted); } .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
+        .opt-del-btn { font-size:1rem; color:var(--danger); } .opt-del-btn:hover { background:var(--danger); color:white; }
 
         .qblock-actions-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); align-items: center; }
         .nat-config-block { background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--primary); margin-bottom: 0.75rem; }
@@ -161,15 +161,14 @@
         .bottom-action-bar { position: sticky; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--border); padding: 1rem; margin-top: auto; z-index: 100; display: flex; flex-direction: column; gap: 0.75rem; }
         .engine-options { display: flex; flex-direction: column; gap: 0.5rem; }
         .engine-label { font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-main); }
-        .download-box { background: var(--bg-hover); border: 2px dashed var(--success); padding: 1rem; border-radius: var(--radius-md); text-align: center; animation: fadeDown 0.4s ease-out; }
-
-        .preview-tabs { display: flex; overflow-x: auto; background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 0 1rem; scrollbar-width: none; }
+        
+        .preview-tabs { display: flex; overflow-x: auto; background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 0 1rem; scrollbar-width: none; flex-shrink: 0; }
         .preview-tabs::-webkit-scrollbar { display: none; }
         .ptab { padding: 0.8rem 1rem; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
         .ptab:hover { color: var(--text-main); }
         .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-hover); }
 
-        .preview-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; -webkit-overflow-scrolling: touch; }
+        .preview-area { flex: 1 1 auto; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; }
         .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
         
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
@@ -184,11 +183,6 @@
         .preview-option.correct { background: rgba(40, 167, 69, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(61, 178, 212, 0.1); border-left: 4px solid var(--primary); padding: 0.5rem 0.75rem; color: var(--primary-dark); font-weight: 600; font-size: 0.9rem; border-radius: 0 4px 4px 0; }
         
-        @media (max-width: 768px) {
-            .preview-option { flex: 1 1 100%; min-width: auto; }
-            .preview-option[data-length="short"] { flex: 1 1 100%; }
-        }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 4000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(3px); }
         .modal.active { display: flex; }
         .modal-content { background: var(--bg-panel); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 600px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border); animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -203,7 +197,6 @@
         .crop-sidebar { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; padding-right: 0.5rem; }
         .live-crop-output { width: 100%; height: 220px; object-fit: contain; background: #fff; border: 1px dashed var(--border); border-radius: var(--radius-sm); margin-top: 0.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* Cropper Overrides for bold corners */
         .cropper-view-box, .cropper-face { border-radius: 0; }
         .cropper-point.point-ne, .cropper-point.point-nw, .cropper-point.point-sw, .cropper-point.point-se {
             width: 24px !important; height: 24px !important; background-color: var(--primary) !important; border-radius: 50%; opacity: 0.9 !important;
@@ -221,49 +214,49 @@
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 20px; border-radius: 8px; color: white; box-shadow: var(--shadow-lg); font-weight: 600; animation: fadeDown 0.3s ease-out; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
         
-        .mobile-only-btn { display: none; }
-        
         @media (max-width: 1024px) {
-            .mobile-only-btn { display: block; }
-            .left-panel { max-width: 100%; border-right: none; padding-bottom: 1rem; overflow: visible; }
-            .right-panel {
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 3000;
-                display: flex;
-                border-left: none;
-                border-top: none;
-                transform: translateX(0);
-            }
-            .right-panel.hidden-panel { display: none !important; }
+            .nav-text-mobile-hide { display: none; }
+            .navbar { padding: 0.6rem 1rem; gap: 0.4rem; }
+            .btn-icon { padding: 0.4rem; font-size: 1.1rem; }
             
+            .main { flex-direction: column; }
+            .left-panel { max-width: 100%; border-right: none; flex: 0 0 55%; min-height: 20vh; }
+            .right-panel { flex: 1 1 auto; max-width: 100%; border-left: none; border-top: none; }
+            
+            .resizer { width: 100%; height: 12px; cursor: row-resize; flex-direction: row; }
+            .resizer::after { content: '⋯'; line-height: 12px; font-size: 18px; }
+
             .crop-workspace { grid-template-columns: 1fr; overflow-y: auto; } .crop-main { height: 45vh; min-height: 300px; }
-            .bottom-action-bar { position: relative; }
+            .bottom-action-bar { padding: 0.5rem; }
+            #compileBtn { display: none !important; }
+        }
+        
+        @media (max-width: 768px) {
+            .preview-option { flex: 1 1 100%; min-width: auto; }
+            .preview-option[data-length="short"] { flex: 1 1 100%; }
+            .options-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div id="missingImageBar" style="display: none; background: var(--danger); color: white; padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.9rem; justify-content: space-between; align-items: center; z-index: 1500; box-shadow: var(--shadow);">
-        <span id="missingImageText" style="display: flex; align-items: center; gap: 0.5rem;"></span>
-        <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white;" onclick="this.parentElement.style.display='none'">Dismiss</button>
-    </div>
-
     <nav class="navbar">
-        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT Setter</span></div>
+        <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT</span></div>
         <div class="navbar-actions">
-            <button class="btn-icon" id="themeToggle" title="Toggle Mode" onclick="toggleTheme()">🌙</button>
-            <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖 AI Prompt</button>
-            <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌 Import / Export</button>
+            <button class="btn-icon hidden" id="missingImgIcon" onclick="openModal('missingImageModal')" style="color: #ffcccc; background: var(--danger); border-color: var(--danger);" title="Missing Images">🚨 <span class="nav-text-mobile-hide" id="missingImgCount">0</span></button>
+            <button class="btn-icon" id="previewToggleBtn" title="Toggle Preview" onclick="togglePreviewLayout()">👁️<span class="nav-text-mobile-hide"> Preview</span></button>
+            <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖<span class="nav-text-mobile-hide"> AI Prompt</span></button>
+            <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌<span class="nav-text-mobile-hide"> Import</span></button>
             
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)" title="Menu">⋮</button>
                 <div class="dropdown-content" id="mainMenu">
-                    <button class="dropdown-item" id="previewToggleBtn" onclick="togglePreviewLayout(); closeDropdown();">👁️ Show Preview</button>
+                    <button class="dropdown-item" onclick="toggleTheme(); closeDropdown();">🌙 Toggle Mode</button>
                     <button class="dropdown-item" onclick="toggleFullScreen(); closeDropdown();">⛶ Full Screen</button>
-                    <button class="dropdown-item" onclick="openModal('engineModal'); closeDropdown();">⚙️ Math Engine</button>
-                    <button class="dropdown-item" onclick="revealAllImages(); closeDropdown();">👁️ Show All Previews (20s)</button>
-                    <button class="dropdown-item" onclick="generateCBTHTML(); closeDropdown();" style="color: var(--success);">🚀 Compile Final HTML</button>
-                    <button class="dropdown-item" onclick="openModal('helpModal'); closeDropdown();">❓ Help</button>
+                    <button class="dropdown-item" onclick="openModal('engineModal'); closeDropdown();">⚙️ Math Engine Options</button>
+                    <button class="dropdown-item" onclick="revealAllImages(); closeDropdown();">🖼️ Show All Previews (20s)</button>
+                    <button class="dropdown-item" onclick="generateCBTHTML(); closeDropdown();" style="color: var(--success); font-weight: bold;">🚀 Compile Final HTML</button>
+                    <button class="dropdown-item" onclick="openModal('helpModal'); closeDropdown();">❓ Help & Guides</button>
+                    <button class="dropdown-item" onclick="clearWorkspace(); closeDropdown();" style="color: var(--danger);">🧹 Clear Workspace (Free RAM)</button>
                     
                     <div class="dropdown-item" style="cursor:default; border-bottom: none; flex-direction: column; align-items: flex-start; gap: 6px; background: var(--bg-hover); margin-top: 5px; border-top: 1px solid var(--border);">
                         <div style="display:flex; justify-content:space-between; width:100%; font-size:0.8rem; font-weight:700;">
@@ -273,7 +266,7 @@
                         <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
                             <div id="memStatusBar" style="width: 0%; height: 100%; background: var(--success); transition: width 0.3s, background 0.3s;"></div>
                         </div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">Status: <span id="memStatusBadge">Stable (Debounced)</span></div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Status: <span id="memStatusBadge">Stable</span></div>
                     </div>
                 </div>
             </div>
@@ -283,7 +276,7 @@
     <div id="toast-container"></div>
 
     <div class="main">
-        <div class="left-panel panel">
+        <div class="left-panel panel" id="leftPanel">
             <div class="left-content-scroll">
                 
                 <details class="card" open>
@@ -321,7 +314,7 @@
                 <details class="card">
                     <summary>⚙️ Advanced Settings</summary>
                     <div class="card-inner">
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">Configure exam rules, scientific constants, and attach background audio. Defaults are pre-loaded to match CBT standards.</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">Configure exam rules, scientific constants, and attach background audio.</p>
                         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                             <button class="btn btn-secondary" style="flex: 1; padding: 0.75rem;" onclick="openModal('rulesModal')">📝 Rules & Audio Base64</button>
                             <button class="btn btn-secondary" style="flex: 1; padding: 0.75rem;" onclick="openModal('constantsModal')">⚛️ Scientific Constants</button>
@@ -365,19 +358,14 @@
 
             <div class="bottom-action-bar">
                 <button id="compileBtn" class="btn btn-success btn-block" style="padding: 1rem; font-weight: 800; font-size: 1.1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile & Generate Final HTML</button>
-                
-                <div id="downloadAreaHTML" class="download-box hidden">
-                    <h3 style="color: var(--success); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">✅ Output Generated Successfully!</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Tap or <strong>long-press</strong> the button below to save the compiled file.</p>
-                    <a id="downloadLinkHTML" class="btn btn-primary btn-block" style="text-decoration: none; padding: 1rem; font-size: 1.05rem; border-radius: var(--radius-sm);" href="#" download="">⬇️ Download Final HTML Exam</a>
-                </div>
             </div>
         </div>
 
+        <div class="resizer" id="dragMe"></div>
+
         <div class="right-panel hidden-panel" id="rightPanel">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border);">
-                <span style="font-weight: 700; color: var(--text-main);">👁️ Live Preview</span>
-                <button class="btn btn-sm btn-danger mobile-only-btn" onclick="togglePreviewLayout()">✕ Close</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0;">
+                <span style="font-weight: 700; color: var(--text-main);">👁️ Live Section Preview</span>
             </div>
             <div class="preview-tabs" id="previewTabs"></div>
             <div class="preview-area" id="previewArea">
@@ -386,6 +374,17 @@
                     Add questions to a section to view them here.
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal" id="compileModal">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <div class="modal-header" style="border:none; justify-content:center; position: relative;">
+                <h2 style="color: var(--success); font-size: 1.5rem;">✅ Compilation Success!</h2>
+                <button class="modal-close" style="position: absolute; right: 0; top: 0;" onclick="closeModal('compileModal')">✕</button>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Your standalone offline exam file has been generated successfully. Tap or long-press the button below to save it.</p>
+            <a id="downloadLinkHTML" class="btn btn-primary btn-block" style="padding: 1rem; font-size: 1.1rem; text-decoration: none; border-radius: var(--radius-sm);" href="#" download="">⬇️ Download Final HTML Exam</a>
         </div>
     </div>
 
@@ -401,6 +400,19 @@
             </div>
         </div>
     </div>
+    
+    <div class="modal" id="missingImageModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>🚨 Missing Images</h2>
+                <button class="modal-close" onclick="closeModal('missingImageModal')">✕</button>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">The following locations have missing images. Please upload them using the red buttons in the editor.</p>
+            <ul id="missingImageList" style="padding-left: 1.5rem; font-weight: 600; color: var(--danger); font-size: 0.95rem; line-height: 1.6; max-height: 300px; overflow-y: auto;">
+            </ul>
+            <button class="btn btn-primary btn-block" style="margin-top: 1.5rem;" onclick="closeModal('missingImageModal')">Got it</button>
+        </div>
+    </div>
 
     <div class="modal" id="engineModal">
         <div class="modal-content" style="max-width: 500px;">
@@ -410,11 +422,11 @@
             </div>
             <div class="engine-options">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(61,178,212,0.1); border-left:4px solid var(--primary); padding:0.75rem; margin-bottom:1rem; font-size:0.9rem; color:var(--text-main); border-radius:0 4px 4px 0;">
-                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility as requested in your AI Prompt.
+                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX prompt mode if you need math rendering.
                 </div>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
-                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
@@ -528,7 +540,7 @@
     <div class="modal" id="pasteModal">
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <h2>📌 Import / Export .CBT Data</h2>
+                <h2>📌 Import / Sync .CBT Data</h2>
                 <button class="modal-close" onclick="closeModal('pasteModal')">✕</button>
             </div>
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
@@ -536,7 +548,7 @@
                 <input type="file" id="cbtFileUpload" accept=".cbt,.txt" style="display: none;" onchange="handleCBTFileUpload(event)">
             </div>
             <div class="form-group">
-                <textarea id="cbtInput" class="form-control" placeholder="Or paste CBT code here to import..." style="min-height: 200px; font-family: monospace; font-size: 0.85rem; line-height: 1.4; white-space: pre;"></textarea>
+                <textarea id="cbtInput" class="form-control auto-expand" placeholder="Or paste CBT code here to import..." style="min-height: 200px; font-family: monospace; font-size: 0.85rem; line-height: 1.4; white-space: pre;"></textarea>
             </div>
             <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 1.5rem; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 300px;">
@@ -562,10 +574,10 @@
                 <button class="modal-close" onclick="closeModal('promptModal')">✕</button>
             </div>
             <div class="tab-nav">
-                <button class="tab-btn active" id="tab-btn-latex" onclick="switchPrompt('LATEX')">Physics / Math (LaTeX Mode)</button>
+                <button class="tab-btn active" id="tab-btn-latex" onclick="switchPrompt('LATEX')">Physics / Math (LaTeX)</button>
                 <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (HTML Mode)</button>
             </div>
-            <textarea id="aiPrompt" class="form-control" readonly style="min-height: 420px; font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre;"></textarea>
+            <textarea id="aiPrompt" class="form-control" readonly style="min-height: 420px; font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre; resize: vertical;"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem; font-size: 1.05rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
     </div>
@@ -573,35 +585,34 @@
     <div class="modal" id="helpModal">
         <div class="modal-content" style="max-width: 650px;">
             <div class="modal-header">
-                <h2>❓ CBT Setter Guide / নির্দেশিকা</h2>
+                <h2>❓ CBT Setter Guide</h2>
+                <button class="btn btn-sm btn-secondary" onclick="toggleHelpLang()">বাং / Eng</button>
                 <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
             </div>
-            <div style="max-height: 450px; overflow-y: auto; font-size: 0.95rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                
-                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">How to Use (English)</h3>
+            <div id="help-eng" style="max-height: 450px; overflow-y: auto; font-size: 0.95rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">How to Use</h3>
                 <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
                     <li>Click <strong>🤖 AI Prompt</strong> and copy the strict text format for your subject type.</li>
                     <li>Paste the prompt along with your Exam PDF into an AI (like Gemini 1.5 Pro).</li>
                     <li>Copy the resulting `.CBT` text code generated by the AI.</li>
-                    <li>Click <strong>📌 Import / Export</strong> in this app, paste the code, and click <strong>Import Data</strong>.</li>
-                    <li>If the AI encounters an un-extractable image, it will automatically create a 🚨 <strong>UPLOAD MISSING IMAGE</strong> button for you to quickly attach it.</li>
-                    <li>Images automatically lazy-load to save memory. Click <strong>🖼️ View Attached Image</strong> to reveal them for 20 seconds.</li>
-                    <li>Use <code>**bold text**</code>, <code>*italic text*</code>, and <code>__underline text__</code> directly in the question boxes to format your typography.</li>
-                    <li>Click <strong>📌 Import / Export -> 🔄 Sync CBT Code</strong> to save a backup of your work!</li>
-                    <li>Click <strong>🚀 Compile & Generate Final HTML</strong> to download your standalone, offline exam file.</li>
+                    <li>Click <strong>📌 Import</strong>, paste the code, and click <strong>Import Data</strong>.</li>
+                    <li>If the AI encounters an un-extractable image, it will auto-create a 🚨 <strong>UPLOAD MISSING IMAGE</strong> button for you!</li>
+                    <li>Use <code>**bold text**</code>, <code>*italic text*</code>, and <code>__underline text__</code> directly in the boxes.</li>
+                    <li>Click <strong>📌 Import -> 🔄 Sync CBT Code</strong> to save a backup of your work.</li>
+                    <li>Click <strong>🚀 Compile Final HTML</strong> (or use the ⋮ menu) to download your offline exam file.</li>
                 </ol>
-
-                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">কীভাবে ব্যবহার করবেন (বাংলা)</h3>
+            </div>
+            <div id="help-ben" class="hidden" style="max-height: 450px; overflow-y: auto; font-size: 0.95rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">কীভাবে ব্যবহার করবেন</h3>
                 <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
                     <li><strong>🤖 AI Prompt</strong> বাটনে ক্লিক করুন এবং আপনার বিষয়ের জন্য লেখাটি কপি করুন।</li>
                     <li>কপি করা লেখাটি এবং আপনার পরীক্ষার PDF ফাইলটি একটি AI (যেমন Gemini 1.5 Pro) এ পেস্ট করুন।</li>
                     <li>AI যে `.CBT` টেক্সট কোডটি তৈরি করবে, সেটি সম্পূর্ণ কপি করুন।</li>
-                    <li>এই অ্যাপের <strong>📌 Import / Export</strong> বাটনে ক্লিক করে কোডটি পেস্ট করুন এবং <strong>Import Data</strong> চাপুন।</li>
-                    <li>AI যদি কোনো ছবি বা ডায়াগ্রাম পড়তে না পারে, তবে সেটি স্বয়ংক্রিয়ভাবে 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন তৈরি করবে যাতে আপনি সহজে ছবি আপলোড করতে পারেন।</li>
-                    <li>মেমরি বাঁচাতে ছবিগুলো লুকানো থাকে। <strong>🖼️ View Attached Image</strong> এ ক্লিক করলে তা ২০ সেকেন্ডের জন্য দেখা যাবে।</li>
+                    <li>এই অ্যাপের <strong>📌 Import</strong> বাটনে ক্লিক করে কোডটি পেস্ট করুন এবং <strong>Import Data</strong> চাপুন।</li>
+                    <li>AI যদি কোনো ছবি বা ডায়াগ্রাম পড়তে না পারে, তবে সিস্টেম স্বয়ংক্রিয়ভাবে একটি 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন তৈরি করবে।</li>
                     <li>লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code> বা <code>*italic*</code> বা <code>__underline__</code> ব্যবহার করুন।</li>
-                    <li>কাজ শেষে <strong>📌 Import / Export -> 🔄 Sync CBT Code</strong> এ ক্লিক করে আপনার কাজের একটি ব্যাকআপ (CBT ফাইল) সেভ করে রাখুন!</li>
-                    <li>সবশেষে নিচে <strong>🚀 Compile & Generate Final HTML</strong> বাটনে ক্লিক করে আপনার অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করে নিন।</li>
+                    <li>কাজ শেষে <strong>📌 Import -> 🔄 Sync CBT Code</strong> এ ক্লিক করে আপনার কাজের একটি ব্যাকআপ (CBT ফাইল) সেভ করে রাখুন!</li>
+                    <li>সবশেষে <strong>🚀 Compile Final HTML</strong> বাটনে ক্লিক করে আপনার অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করে নিন।</li>
                 </ol>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="closeModal('helpModal')">Got it!</button>
@@ -620,10 +631,7 @@
             { name: "The speed of light in vacuum (c)", value: "3 × 10⁸ m/s" },
             { name: "Planck's constant (h)", value: "6.626 × 10⁻³⁴ J·s" },
             { name: "Universal gravitational constant (G)", value: "6.67 × 10⁻¹¹ N·m²/kg²" },
-            { name: "Elementary charge (e)", value: "1.602 × 10⁻¹⁹ C" },
-            { name: "Boltzmann constant (kB)", value: "1.38 × 10⁻²³ J/K" },
-            { name: "Avogadro's number (NA)", value: "6.022 × 10²³ mol⁻¹" },
-            { name: "Permittivity of free space (ε₀)", value: "8.854 × 10⁻¹² F/m" }
+            { name: "Elementary charge (e)", value: "1.602 × 10⁻¹⁹ C" }
         ];
 
         const appState = {
@@ -638,7 +646,6 @@
         };
 
         let activePreviewSection = '';
-        
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
@@ -659,7 +666,7 @@
                 if (percentage < 50) {
                     bar.style.background = 'var(--success)';
                     text.style.color = 'var(--success)';
-                    badge.innerText = 'Stable (Debounced)';
+                    badge.innerText = 'Stable';
                 } else if (percentage < 85) {
                     bar.style.background = 'var(--warning)';
                     text.style.color = 'var(--warning)';
@@ -697,6 +704,16 @@
             closeModal('confirmModal');
         });
 
+        function clearWorkspace() {
+            showConfirm('🚨 Are you sure you want to delete ALL sections and questions? This will free up RAM but erase your current work.', () => {
+                appState.sections = [];
+                appState.questionsBySection = {};
+                renderAllQuestions();
+                renderPreviewTabs();
+                showToast('Workspace Cleared. Memory Freed.', 'success');
+            });
+        }
+
         function toggleDropdown(event) {
             event.stopPropagation();
             document.getElementById("mainMenu").classList.toggle("show");
@@ -713,6 +730,82 @@
             }
         }
 
+        function toggleHelpLang() {
+            document.getElementById('help-eng').classList.toggle('hidden');
+            document.getElementById('help-ben').classList.toggle('hidden');
+        }
+
+        const resizer = document.getElementById('dragMe');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            leftPanel.classList.add('no-transition');
+            resizer.classList.add('resizing');
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                leftPanel.classList.remove('no-transition');
+                resizer.classList.remove('resizing');
+                document.removeEventListener('mousemove', handleMouseMove);
+            }, { once: true });
+        });
+
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            if (window.innerWidth > 1024) {
+                const newWidth = (e.clientX / document.body.clientWidth) * 100;
+                if (newWidth > 20 && newWidth < 80) {
+                    leftPanel.style.flex = `0 0 ${newWidth}%`;
+                    leftPanel.style.maxWidth = `${newWidth}%`;
+                }
+            } else {
+                const newHeight = (e.clientY / document.body.clientHeight) * 100;
+                if (newHeight > 20 && newHeight < 80) {
+                    leftPanel.style.flex = `0 0 ${newHeight}%`;
+                    leftPanel.style.maxHeight = `${newHeight}%`;
+                }
+            }
+        }
+
+        resizer.addEventListener('touchstart', function(e) {
+            isResizing = true;
+            leftPanel.classList.add('no-transition');
+            resizer.classList.add('resizing');
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', () => {
+                isResizing = false;
+                leftPanel.classList.remove('no-transition');
+                resizer.classList.remove('resizing');
+                document.removeEventListener('touchmove', handleTouchMove);
+            }, { once: true });
+        });
+
+        function handleTouchMove(e) {
+            if (!isResizing) return;
+            if(e.cancelable) e.preventDefault(); 
+            if (window.innerWidth > 1024) {
+                const newWidth = (e.touches[0].clientX / window.innerWidth) * 100;
+                if (newWidth > 20 && newWidth < 80) {
+                    leftPanel.style.flex = `0 0 ${newWidth}%`;
+                    leftPanel.style.maxWidth = `${newWidth}%`;
+                }
+            } else {
+                const newHeight = (e.touches[0].clientY / window.innerHeight) * 100;
+                if (newHeight > 20 && newHeight < 80) {
+                    leftPanel.style.flex = `0 0 ${newHeight}%`;
+                    leftPanel.style.maxHeight = `${newHeight}%`;
+                }
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            leftPanel.style.flex = '';
+            leftPanel.style.maxWidth = '';
+            leftPanel.style.maxHeight = '';
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             renderConstantsTable();
             document.getElementById('rules').value = appState.rules.join('\n');
@@ -720,14 +813,24 @@
             renderMarksTable();
             renderAllQuestions();
             generateAIPrompt();
+            
+            if (appState.sections.length > 0 && !activePreviewSection) {
+                activePreviewSection = appState.sections[0].name;
+            }
             renderPreviewTabs();
+            setTimeout(() => { document.querySelectorAll('.auto-expand').forEach(autoResize); }, 100);
         });
+
+        function autoResize(el) {
+            if(!el) return;
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
+        }
 
         function toggleTheme() {
             const html = document.documentElement; 
-            const btn = document.getElementById('themeToggle');
-            if (html.getAttribute('data-theme') === 'dark') { html.removeAttribute('data-theme'); btn.innerText = '🌙'; } 
-            else { html.setAttribute('data-theme', 'dark'); btn.innerText = '☀️'; }
+            if (html.getAttribute('data-theme') === 'dark') { html.removeAttribute('data-theme'); } 
+            else { html.setAttribute('data-theme', 'dark'); }
         }
 
         function toggleFullScreen() {
@@ -742,20 +845,21 @@
             }
         }
 
-        let previewIsVisible = false;
+        let previewIsVisible = true;
         function togglePreviewLayout() {
             previewIsVisible = !previewIsVisible;
             const right = document.getElementById('rightPanel'); 
             const left = document.querySelector('.left-panel'); 
+            const res = document.getElementById('dragMe');
             const btn = document.getElementById('previewToggleBtn');
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
                 left.classList.remove('expanded'); 
-                btn.innerText = '👁️ Hide Preview'; 
+                res.style.display = 'flex';
             } else { 
                 right.classList.add('hidden-panel'); 
                 left.classList.add('expanded'); 
-                btn.innerText = '👁️ Show Preview'; 
+                res.style.display = 'none';
             }
         }
 
@@ -809,7 +913,6 @@
 
         function escapeHTML(str) {
             if(!str) return '';
-            // Safe escape that preserves sub/sup explicitly required for HTML mode
             return str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
                       .replace(/&lt;sup&gt;/gi, '<sup>').replace(/&lt;\/sup&gt;/gi, '</sup>')
                       .replace(/&lt;sub&gt;/gi, '<sub>').replace(/&lt;\/sub&gt;/gi, '</sub>');
@@ -901,6 +1004,7 @@
             if (appState.questionsBySection[newName]) return;
             appState.sections.push({ name: newName, marks: 4, negative: 1, maxAttempts: 0 });
             appState.questionsBySection[newName] = [];
+            if(!activePreviewSection) activePreviewSection = newName;
             renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
         }
 
@@ -914,32 +1018,29 @@
         }
 
         function updateMissingImageAlert() {
-            let missingImagesCount = 0;
-            let missingLocs = [];
+            let missingImagesCount = 0; let missingLocs = [];
             appState.sections.forEach(sec => {
                 (appState.questionsBySection[sec.name] || []).forEach((q, i) => {
                     let hasMissing = false;
                     if (q.image === 'PLACEHOLDER') hasMissing = true;
                     q.options.forEach(o => { if(o.includes('||IMG:PLACEHOLDER||')) hasMissing = true; });
-                    if(hasMissing) {
-                        missingImagesCount++;
-                        missingLocs.push(`Q${i+1} (${sec.name})`);
-                    }
+                    if(hasMissing) { missingImagesCount++; missingLocs.push(`Q${i+1} (${sec.name})`); }
                 });
             });
-            const missingBar = document.getElementById('missingImageBar');
+            const navIcon = document.getElementById('missingImgIcon');
+            const countText = document.getElementById('missingImgCount');
+            const modalList = document.getElementById('missingImageList');
+            
             if (missingImagesCount > 0) {
-                missingBar.style.display = 'flex';
-                document.getElementById('missingImageText').innerText = `🚨 ${missingImagesCount} Image(s) missing in: ${missingLocs.slice(0,3).join(', ')}${missingLocs.length>3?'...':''}. Please upload them.`;
-            } else {
-                missingBar.style.display = 'none';
+                navIcon.classList.remove('hidden');
+                countText.innerText = missingImagesCount;
+                modalList.innerHTML = missingLocs.map(loc => `<li>${loc}</li>`).join('');
+            } else { 
+                navIcon.classList.add('hidden'); 
             }
         }
 
         function renderAllQuestions() {
-            document.getElementById('downloadAreaHTML').classList.add('hidden');
-            const compileBtn = document.getElementById('compileBtn'); if (compileBtn) compileBtn.innerHTML = '🚀 Compile & Generate Final HTML';
-            
             const cont = document.getElementById('questionsListAll'); cont.innerHTML = '';
             appState.sections.forEach(secObj => {
                 const sec = secObj.name; const qs = appState.questionsBySection[sec] || [];
@@ -955,8 +1056,8 @@
                 addBtn.innerText = `➕ Add Question to ${sec}`; addBtn.onclick = (e) => { e.preventDefault(); addQuestion(sec); };
                 body.appendChild(addBtn);
             });
-            renderMarksTable(); 
-            updateMissingImageAlert();
+            renderMarksTable(); updateMissingImageAlert();
+            setTimeout(() => { document.querySelectorAll('.auto-expand').forEach(autoResize); }, 50);
         }
 
         function createQuestionBlock(sec, idx, q) {
@@ -967,15 +1068,10 @@
             (q.options || []).forEach((opt, oi) => {
                 const removeBtn = q.options.length > 2 ? `<button class="opt-del-btn" onclick="event.stopPropagation(); removeOption('${sec}', ${idx}, ${oi})" title="Remove Option">✕</button>` : '';
                 let placeholderText = `Option ${String.fromCharCode(65 + oi)}`;
+                let rawOpt = opt || ''; let optText = rawOpt; let optImg = '';
                 
-                let rawOpt = opt || '';
-                let optText = rawOpt;
-                let optImg = '';
                 const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
                 if (imgMatch) { optImg = imgMatch[1]; optText = rawOpt.replace(imgMatch[0], ''); }
-                
-                const oldImgMatch = rawOpt.match(/<img src="(data:image\/[^"]+)"[^>]*>/);
-                if (oldImgMatch) { optImg = oldImgMatch[1]; optText = rawOpt.replace(/<br><img[^>]+>/g, '').replace(/<img[^>]+>/g, ''); q.options[oi] = optText + `||IMG:${optImg}||`; }
 
                 let optImgPreview = '';
                 if (optImg === 'PLACEHOLDER') {
@@ -986,13 +1082,14 @@
                 }
 
                 let safeVal = optText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
-                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi})">
+                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', 0, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'; updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                             ${removeBtn}
@@ -1011,34 +1108,31 @@
             
             const tablePreview = q.table ? `<div class="q-table-preview-container"><span class="table-overlay">📊 Table Inserted</span><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editOrReplaceTable('${sec}', ${idx})">Edit</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeTable('${sec}', ${idx})">✕</button></div>` : '';
 
-            const actionRow = `
+            let safeQText = (q.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            div.innerHTML = `
+                <div class="qblock-header">
+                    <div class="qnum">${idx + 1}</div>
+                    <div class="qblock-textarea-wrap">
+                        <textarea class="qblock-textarea form-control auto-expand" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
+                    </div>
+                    <div class="qblock-controls">
+                        <select class="form-control" style="width: auto; font-weight: 600; padding: 0.4rem 0.5rem;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
+                            <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
+                        </select>
+                        <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕</button>
+                    </div>
+                </div>
+                ${optsHtml}
+                ${natHtml}
                 <div class="qblock-actions-row">
                     <button class="btn btn-secondary btn-sm" style="display: ${optsDisplay};" onclick="event.stopPropagation(); addOption('${sec}', ${idx})">➕ Add Option</button>
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🖼️ Add Main Image</button>
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 Add Table</button>
                 </div>
-            `;
-
-            div.innerHTML = `
-                <div class="qblock-header">
-                    <div class="qnum">${idx + 1}</div>
-                    <textarea class="qblock-textarea form-control" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'; updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${q.text || ''}</textarea>
-                    <select class="form-control" style="width: auto; margin-left: 0.5rem; font-weight: 600;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
-                        <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
-                    </select>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 6px; padding: 0.4rem 0.6rem; margin-left: 0.5rem;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕</button>
-                </div>
-                ${optsHtml}
-                ${natHtml}
-                ${actionRow}
                 <div class="qblock-media">${imgPreview} ${tablePreview}</div>
             `;
-            // Trigger initial resize
-            setTimeout(() => {
-                const tas = div.querySelectorAll('textarea');
-                tas.forEach(ta => { ta.style.height = ''; ta.style.height = ta.scrollHeight + 'px'; });
-            }, 0);
             return div;
         }
 
@@ -1050,21 +1144,14 @@
         }
 
         function updateOptionText(sec, idx, oi, value) {
-            let q = appState.questionsBySection[sec][idx];
-            let rawOpt = q.options[oi] || '';
-            let optImg = '';
-            const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
-            if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg;
-            debouncedUpdateSinglePreview(sec, idx);
+            let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
+            const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
+            q.options[oi] = value + optImg; debouncedUpdateSinglePreview(sec, idx);
         }
 
         function removeOptionImage(sec, idx, oi) {
-            let q = appState.questionsBySection[sec][idx];
-            let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, '');
-            renderAllQuestions();
-            debouncedUpdateSinglePreview(sec, idx);
+            let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx);
         }
 
         function addQuestion(sec) {
@@ -1076,10 +1163,16 @@
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { q.correct = parseInt(value); } 
-            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
-            else { q[field] = value; }
-            
+            if (field === 'correct') { 
+                q.correct = parseInt(value); 
+            } 
+            else if (field === 'type') { 
+                q.type = value; 
+                renderAllQuestions(); 
+            } 
+            else { 
+                q[field] = value; 
+            }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
@@ -1119,30 +1212,21 @@
         function openCropModalWithData(imgSrc) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
             document.getElementById('compSlider').value = 80; document.getElementById('compLabel').innerText = 80; document.getElementById('filterSelect').value = 'none';
-            
             document.querySelectorAll('.ratio-btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
-            document.getElementById('ratioFree').classList.add('btn-primary');
-            document.getElementById('ratioFree').classList.remove('btn-secondary');
+            document.getElementById('ratioFree').classList.add('btn-primary'); document.getElementById('ratioFree').classList.remove('btn-secondary');
 
             if (cropperInstance) cropperInstance.destroy();
             cropperInstance = new Cropper(document.getElementById('cropImage'), { 
-                viewMode: 1, 
-                aspectRatio: NaN, 
-                autoCropArea: 0.9, 
-                ready: triggerCropPreview, 
-                crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 50); } 
+                viewMode: 1, aspectRatio: NaN, autoCropArea: 0.9, 
+                ready: triggerCropPreview, crop: () => { clearTimeout(cropTimeout); cropTimeout = setTimeout(triggerCropPreview, 50); } 
             });
         }
 
         function setCropRatio(ratio, btn) {
             if(cropperInstance) {
                 cropperInstance.setAspectRatio(ratio);
-                document.querySelectorAll('.ratio-btn').forEach(b => { 
-                    b.classList.remove('btn-primary'); 
-                    b.classList.add('btn-secondary'); 
-                });
-                btn.classList.remove('btn-secondary');
-                btn.classList.add('btn-primary');
+                document.querySelectorAll('.ratio-btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
+                btn.classList.remove('btn-secondary'); btn.classList.add('btn-primary');
             }
         }
 
@@ -1167,14 +1251,11 @@
         function saveCroppedImage() {
             if (!currentCropBase64) return; const { sec, idx, isOption, optIdx } = currentImageData;
             if (isOption) {
-                let q = appState.questionsBySection[sec][idx];
-                let rawOpt = q.options[optIdx] || '';
-                let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, '');
-                q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
+                let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[optIdx] || '';
+                let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); closeModal('cropModal');
-            updateMissingImageAlert();
+            renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); closeModal('cropModal'); updateMissingImageAlert();
         }
 
         let currentTableData = null;
@@ -1231,21 +1312,16 @@
             let html = `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
             
             if (q.image) {
-                if (q.image === 'PLACEHOLDER') {
-                    html += `<div style="margin: 0.75rem 0; color: var(--danger); font-weight: bold; border: 1px dashed var(--danger); padding: 10px; border-radius: 4px; text-align: center;">🚨 Missing Image [Upload via Left Panel]</div>`;
-                } else {
-                    html += `<div id="prev-img-${sec}-${idx}" class="img-lazy-wrapper img-lazy-btn" data-src="${q.image}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin: 0.75rem 0;">🖼️ View Attached Image</div>`;
-                }
+                if (q.image === 'PLACEHOLDER') { html += `<div style="margin: 0.75rem 0; color: var(--danger); font-weight: bold; border: 1px dashed var(--danger); padding: 10px; border-radius: 4px; text-align: center;">🚨 Missing Image [Upload via Left Panel]</div>`; } 
+                else { html += `<div id="prev-img-${sec}-${idx}" class="img-lazy-wrapper img-lazy-btn" data-src="${q.image}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin: 0.75rem 0;">🖼️ View Attached Image</div>`; }
             }
             if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${q.table}</div>`;
             
-            if (q.type === 'NAT') {
-                html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`;
-            } else {
+            if (q.type === 'NAT') { html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`; } 
+            else {
                 html += `<div class="preview-mcq-container">`;
                 (q.options || []).forEach((opt, oi) => { 
-                    let rawOpt = opt || '';
-                    let optImgSrc = '';
+                    let rawOpt = opt || ''; let optImgSrc = '';
                     const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
 
@@ -1259,11 +1335,8 @@
                     html += `<strong>${String.fromCharCode(65+oi)}.</strong> ${safeOpt || '<span style="color:#aaa;">...</span>'}`;
                     
                     if (optImgSrc) {
-                        if (optImgSrc === 'PLACEHOLDER') {
-                            html += `<div style="margin-top: 0.5rem; display: inline-flex; width: 100%; color:var(--danger); font-weight:bold;">🚨 Missing Option Image</div>`;
-                        } else {
-                            html += `<div id="prev-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImgSrc}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin-top: 0.5rem; display: inline-flex; width: 100%;">🖼️ View Option Image</div>`;
-                        }
+                        if (optImgSrc === 'PLACEHOLDER') { html += `<div style="margin-top: 0.5rem; display: inline-flex; width: 100%; color:var(--danger); font-weight:bold;">🚨 Missing Option Image</div>`; } 
+                        else { html += `<div id="prev-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImgSrc}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin-top: 0.5rem; display: inline-flex; width: 100%;">🖼️ View Option Image</div>`; }
                     }
                     html += `</div>`; 
                 });
@@ -1279,7 +1352,6 @@
             if (qs.length === 0) { area.innerHTML = `<div style="text-align: center; color: var(--text-muted); margin-top: 3rem; font-weight: 600;"><div style="font-size: 2rem; margin-bottom: 1rem;">👆</div>No questions in ${activePreviewSection} yet.</div>`; return; }
 
             let html = `<div style="background: var(--primary); color: white; padding: 1rem; margin: -1.5rem -1.5rem 1.5rem -1.5rem; border-radius: var(--radius-md); font-weight: 700; font-size: 1.1rem;">${activePreviewSection}</div>`;
-            
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
@@ -1338,9 +1410,7 @@
                     else {
                         q.options.forEach(o => {
                             let cleanOpt = o.replace(/\n/g, '\\n');
-                            if (cleanOpt.includes('||IMG:PLACEHOLDER||')) {
-                                cleanOpt = cleanOpt.replace('||IMG:PLACEHOLDER||', '') + ' [IMAGE]';
-                            }
+                            if (cleanOpt.includes('||IMG:PLACEHOLDER||')) { cleanOpt = cleanOpt.replace('||IMG:PLACEHOLDER||', '') + ' [IMAGE]'; }
                             out += `O: ${cleanOpt.trim()}\n`;
                         });
                         out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
@@ -1355,6 +1425,7 @@
         function syncCBT() {
             const out = generateCBTString();
             document.getElementById('cbtInput').value = out;
+            autoResize(document.getElementById('cbtInput'));
             const blob = new Blob([out], { type: 'text/plain; charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const link = document.getElementById('downloadLinkCBT');
@@ -1366,7 +1437,10 @@
         function handleCBTFileUpload(evt) {
             const file = evt.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => { document.getElementById('cbtInput').value = e.target.result; };
+            reader.onload = (e) => { 
+                document.getElementById('cbtInput').value = e.target.result; 
+                autoResize(document.getElementById('cbtInput'));
+            };
             reader.readAsText(file); evt.target.value = ''; 
         }
 
@@ -1374,11 +1448,11 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
 
-            // PRE-PARSER HEALING SYSTEM:
+            // System-Level Pre-Parser Healing
             txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
             txt = txt.replace(/\\n/g, '\n');
             txt = txt.replace(/(Statement|Assertion|List|Reason)[\s\n]+(I{1,3}|A|B|R)[\s\n]*:/gi, '$1 $2:');
-            txt = txt.replace(/\n(T\s*:\s*<table)/gi, '\n$1');
+            txt = txt.replace(/\n([TOAI]\s*:)/gi, '\n$1');
 
             const lines = txt.split('\n'); 
             let mode = null, curSec = null, curQ = null, lastField = null; 
@@ -1481,7 +1555,9 @@
             
             if (appState.rules.length === 0) { appState.rules = [...defaultRules]; document.getElementById('rules').value = appState.rules.join('\n'); }
 
-            renderConstantsTable(); renderMarksTable(); renderAllQuestions(); renderPreviewTabs(); closeModal('pasteModal');
+            renderConstantsTable(); renderMarksTable(); renderAllQuestions(); 
+            if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
+            renderPreviewTabs(); closeModal('pasteModal');
             showToast('Imported Successfully', 'success');
         }
 
@@ -1539,9 +1615,6 @@
                             const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
                             if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
                             
-                            const oldImgMatch = optText.match(/<img src="(data:image\/[^"]+)"[^>]*>/);
-                            if (oldImgMatch) { optImg = oldImgMatch[1]; optText = optText.replace(/<br><img[^>]+>/g, '').replace(/<img[^>]+>/g, ''); }
-
                             let processedOpt = escapeHTML(optText);
                             if (appState.mathMode === 'LATEX') processedOpt = processMath(processedOpt, appState.renderEngine);
                             processedOpt = parseFormatting(processedOpt).replace(/\n/g, '<br>');
@@ -1588,9 +1661,10 @@
 
                 const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
                 const url = URL.createObjectURL(blob);
-                const link = document.getElementById('downloadLinkHTML'); link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
-                document.getElementById('downloadAreaHTML').classList.remove('hidden');
-                showToast('Output Generated Successfully!', 'success');
+                const link = document.getElementById('downloadLinkHTML'); 
+                link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
+                
+                openModal('compileModal');
                 
             } catch (e) { showToast('Error: ' + e.message + ' (Ensure Last.html is present)', 'error'); }
         }
@@ -1625,8 +1699,7 @@ CRITICAL MATH RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block). 
 - FORBIDDEN: NEVER write scientific units or constants in Bengali.
 - REQUIRED: Always use LaTeX for Greek letters ($\\alpha$, $\\beta$) and SI units ($m/s^2$, $m$, $C$).
-- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.
-- IF AI OUTPUT CONTAINS BENGALI SCIENTIFIC TEXT, AUTHOR MUST MANUALLY CORRECT IT.`;
+- DO NOT use LaTeX arrays or matrices. If complex, write a single dot '.' so author uploads image.`;
             } else {
                 modeSpecificRules = `
 CRITICAL HTML/SYMBOL RULES:
@@ -1640,15 +1713,15 @@ CRITICAL HTML/SYMBOL RULES:
 
 CRITICAL EXTRACTION RULES:
 1. Please extract and understand the text in the uploaded pdf because everything is searchable.
-2. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry).
+2. QUESTION TYPES: Classify each question as either 'MCQ' (if it has multiple choice options) or 'NAT' (if it is a fill-in-the-blank or numerical entry with no options).
 3. NEVER SKIP A QUESTION: You MUST extract every single question. If a question is entirely an image, use a single dot '.' in place of text. If there is a diagram, output EXACTLY \`[IMAGE]\` in place of the diagram.
-4. FORMATTING MCQ: Recheck before attaching 5 options in a mcq, here only 4 are present. Use exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
+4. FORMATTING MCQ: Use exactly 4 'O:' lines. Recheck before attaching 5 options in a mcq, here only 4 are present. The 'A:' line must be a single letter (A, B, C, or D). If an option is a diagram, output EXACTLY 'O: [IMAGE]'.
 5. FORMATTING NAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range.
 6. TEXT EMPHASIS: You MUST preserve all italics from the original document using *italic* (CRITICAL for biological names). Preserve bold text using **bold**.
-7. INTERNAL LISTS & LINE BREAKS: If a question contains an internal list of items (e.g., A., B., C., D.), you MUST insert a literal \\n before each item so they stack vertically.
-   CRITICAL: Don't break "Statement I:" , "List-I" "List-II" "Assertion A:" "Assertion B:". Keep the label and its text on the SAME line.
-8. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
-9. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
+7. INTERNAL LISTS: If a question contains an internal list of items (e.g., A., B., C., D.), you MUST insert a literal \\n before each item so they stack vertically.
+8. CRITICAL: Don't break "Statement I:" , "List-I" "List-II" "Assertion A:" "Assertion B:". Keep the label and its text on the SAME line.
+9. NO HALLUCINATIONS: Do NOT output "[span_0]" or bounding box artifacts. Output only plain text.
+10. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: '.
 ${modeSpecificRules}
 
 FORMAT BLUEPRINT TO FOLLOW:
