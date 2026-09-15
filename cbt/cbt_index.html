@@ -51,12 +51,8 @@
         .hidden { display: none !important; }
 
         /* Smooth Dragging Override */
-        body.is-resizing, body.is-resizing * {
-            user-select: none !important;
-        }
-        body.is-resizing .left-panel, body.is-resizing .right-panel {
-            transition: none !important;
-        }
+        body.is-resizing, body.is-resizing * { user-select: none !important; }
+        body.is-resizing .left-panel, body.is-resizing .right-panel { transition: none !important; }
 
         .navbar { flex: 0 0 auto; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 0.8rem 1.2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg); z-index: 1000; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .navbar-brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
@@ -75,25 +71,22 @@
         .main { flex: 1 1 0; min-height: 0; display: flex; overflow: hidden; position: relative; width: 100%; }
         .panel { padding: 1rem; background: var(--bg-panel); }
         
-        .left-panel { flex: 0 0 60%; max-width: 60%; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-width: 20%; transition: flex 0.2s, max-width 0.2s; }
-        .left-panel.expanded { max-width: 100% !important; flex: 1 1 100% !important; border-right: none; }
+        .left-panel { flex: 1 1 100%; max-width: 100%; border-right: none; display: flex; flex-direction: column; overflow: hidden; min-width: 20%; transition: flex 0.2s, max-width 0.2s; }
+        .left-panel.split-view { flex: 0 0 60%; max-width: 60%; border-right: 1px solid var(--border); }
         .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; }
         
-        .resizer { width: 8px; cursor: col-resize; background: var(--border); flex-shrink: 0; z-index: 10; position: relative; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .resizer { width: 8px; cursor: col-resize; background: var(--border); flex-shrink: 0; z-index: 10; position: relative; display: none; align-items: center; justify-content: center; transition: background 0.2s; }
         .resizer:hover, .resizer.resizing { background: var(--primary); }
         .resizer::after { content: '⋮'; color: var(--text-muted); font-size: 14px; pointer-events: none; }
         
         .right-panel { flex: 1; background: var(--bg-main); display: flex; flex-direction: column; transition: flex 0.2s; min-height: 0; min-width: 0; overflow: hidden; }
         .right-panel.hidden-panel { display: none !important; }
         
-        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem; margin-bottom: 0.75rem; transition: border 0.2s, box-shadow 0.2s; contain: content; }
-        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
+        /* Auto-fit multi column layout for questions if panel is wide */
+        .questions-container { display: flex; flex-direction: column; gap: 0.75rem; }
         
-        @media (min-width: 1025px) {
-            .left-panel.expanded #questionsListAll details[open] .card-inner { column-count: 2; column-gap: 1.5rem; display: block; }
-            .question-block { break-inside: avoid; page-break-inside: avoid; margin-bottom: 1rem; }
-            .left-panel.expanded .bottom-action-bar { border-top: 2px solid var(--primary); }
-        }
+        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem; transition: border 0.2s, box-shadow 0.2s; contain: content; }
+        .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
 
         details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; }
         details.card[open] { padding-bottom: 1rem; }
@@ -137,9 +130,9 @@
         .qblock-header { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; }
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem;}
-        .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.9rem; resize: vertical; box-sizing: border-box; font-family: inherit; overflow-y: auto; }
+        .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.9rem; resize: vertical; overflow-y: hidden; box-sizing: border-box; }
         
-        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem; }
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem; }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; }
         .option-main-row { display: flex; align-items: flex-start; gap: 0.3rem; width: 100%; }
         .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink:0; margin-top: 0.5rem; }
@@ -147,12 +140,10 @@
         
         .option-input-wrap { flex:1; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); transition: border-color 0.2s; min-width: 0; }
         .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15); }
+        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: hidden; box-sizing: border-box; }
+        .auto-expand:focus { outline:none; }
         
-        .opt-textarea { border: none; padding: 0.4rem 0.5rem; flex: 1; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: auto; box-sizing: border-box; }
-        .opt-textarea:focus { outline:none; }
-        .auto-expand { overflow-y: auto !important; }
-        
-        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color:var(--text-muted); }
+        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color:var(--text-muted); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
 
         .compact-actions-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; background: var(--bg-hover); padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-top: 0.5rem; }
@@ -191,13 +182,79 @@
         .preview-option.correct { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--primary); padding: 0.5rem; color: var(--primary-dark); font-weight: 600; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 4000; justify-content: center; align-items: center; padding: 1rem; overflow-y: auto; backdrop-filter: blur(4px); }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            z-index: 4000;
+            justify-content: center;
+            align-items: flex-start; /* CRITICAL: prevents top-clipping of modal headers on short viewports */
+            padding: 1rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            backdrop-filter: blur(4px);
+            box-sizing: border-box;
+        }
         .modal.active { display: flex; }
-        .modal-content { background: var(--bg-panel); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 600px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid var(--border); animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: calc(100vh - 2rem);
+            max-height: calc(100dvh - 2rem);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: auto 0; /* Auto margin centers vertically when space permits, allows natural scrolling when tall */
+            position: relative;
+        }
         @keyframes modalPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--primary); }
-        .modal-header h2 { margin: 0; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
-        .modal-close { background: var(--bg-main); border: 1px solid var(--border); width: 28px; height: 28px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--primary);
+            position: sticky;
+            top: 0;
+            background: var(--bg-panel);
+            z-index: 20;
+            flex-shrink: 0;
+            gap: 0.5rem;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-width: 0;
+            word-break: break-word;
+        }
+        .modal-close {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            width: 32px; height: 32px;
+            min-width: 32px; min-height: 32px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
         .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); transform: rotate(90deg); }
 
         .crop-workspace { display: grid; grid-template-columns: 1fr 280px; gap: 1rem; flex: 1; min-height: 0; }
@@ -230,7 +287,7 @@
             .btn-icon { padding: 0.4rem; font-size: 1rem; }
             
             .main { flex-direction: column; }
-            .left-panel { max-width: 100%; border-right: none; flex: 0 0 55%; min-height: 20vh; }
+            .left-panel { max-width: 100%; border-right: none; flex: 1 1 100%; min-height: 20vh; }
             .right-panel { flex: 1 1 auto; max-width: 100%; border-left: none; border-top: none; }
             
             .resizer { width: 100%; height: 12px; cursor: row-resize; flex-direction: row; }
@@ -252,6 +309,31 @@
             .qblock-textarea-wrap { flex-direction: column; align-items: stretch; }
             .qblock-textarea-wrap select { align-self: flex-start; margin-top: 0.3rem; }
         }
+
+        @media (max-width: 640px), (max-height: 680px) {
+            .modal {
+                padding: 0.4rem;
+            }
+            .modal-content {
+                padding: 0.85rem;
+                max-height: calc(100vh - 0.8rem);
+                max-height: calc(100dvh - 0.8rem);
+                border-radius: var(--radius-md);
+            }
+            .modal-header {
+                margin-bottom: 0.6rem;
+                padding-bottom: 0.4rem;
+            }
+            .modal-close {
+                width: 28px; height: 28px;
+                min-width: 28px; min-height: 28px;
+                font-size: 0.9rem;
+            }
+            .tab-btn {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -262,8 +344,8 @@
             <button class="btn-icon hidden" id="missingImgIcon" onclick="openModal('missingImageModal')" style="color: #fca5a5; background: rgba(239, 68, 68, 0.2); border-color: var(--danger);" title="Missing Images">🚨 <span class="nav-text-mobile-hide" id="missingImgCount">0</span></button>
             
             <!-- Core Tools -->
-            <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙<span class="nav-text-mobile-hide"> Mode</span></button>
-            <button class="btn-icon" id="previewToggleBtn" title="Toggle Live Preview" onclick="togglePreviewLayout()">👁️<span class="nav-text-mobile-hide"> Preview</span></button>
+            <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+            <button class="btn-icon" id="previewToggleBtn" title="Toggle Live Preview" onclick="togglePreviewLayout()">👁️</button>
             <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖<span class="nav-text-mobile-hide"> Prompt</span></button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌<span class="nav-text-mobile-hide"> Import</span></button>
             
@@ -296,7 +378,7 @@
     <div id="toast-container"></div>
 
     <div class="main">
-        <div class="left-panel panel" id="leftPanel">
+        <div class="left-panel expanded" id="leftPanel">
             <div class="left-content-scroll">
                 
                 <details class="card" open>
@@ -373,7 +455,7 @@
                     <button class="btn btn-success btn-sm" onclick="addNewSection()">➕ <span class="hide-mobile">Section</span></button>
                 </div>
 
-                <div id="questionsListAll"></div>
+                <div id="questionsListAll" class="questions-container"></div>
             </div>
 
             <div class="bottom-action-bar" id="compileBtnMobileHide">
@@ -420,25 +502,25 @@
     </div>
     
     <div class="modal" id="missingImageModal">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 420px;">
             <div class="modal-header">
                 <h2>🚨 Missing Images Tracker</h2>
                 <button class="modal-close" onclick="closeModal('missingImageModal')">✕</button>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">The following locations have missing images. Please click the red buttons in the editor to upload them.</p>
-            <ul id="missingImageList" style="padding-left: 1.5rem; font-weight: 600; color: var(--danger); font-size: 0.9rem; line-height: 1.6; max-height: 250px; overflow-y: auto;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">The following locations have missing images. Please click the red buttons in the editor to upload them.</p>
+            <ul id="missingImageList" style="padding-left: 1.5rem; font-weight: 600; color: var(--danger); font-size: 0.9rem; line-height: 1.6; max-height: min(240px, 40vh); overflow-y: auto;">
             </ul>
-            <button class="btn btn-primary btn-block" style="margin-top: 1.2rem;" onclick="closeModal('missingImageModal')">Got it</button>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="closeModal('missingImageModal')">Got it</button>
         </div>
     </div>
 
     <div class="modal" id="engineModal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content" style="max-width: 460px;">
             <div class="modal-header">
                 <h2>⚙️ Compilation Engine</h2>
                 <button class="modal-close" onclick="closeModal('engineModal')">✕</button>
             </div>
-            <div class="engine-options">
+            <div class="engine-options" style="overflow-y: auto; max-height: 55vh; padding-right: 0.2rem;">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.6rem; margin-bottom:0.75rem; font-size:0.85rem; color:var(--text-main);">
                     <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX mode if you need math rendering.
                 </div>
@@ -446,26 +528,28 @@
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
                 <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
             </div>
-            <button class="btn btn-primary btn-block" style="margin-top: 1.2rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
     </div>
 
     <div class="modal" id="rulesModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
                 <h2>📝 Rules & Audio Base64</h2>
                 <button class="modal-close" onclick="closeModal('rulesModal')">✕</button>
             </div>
-            <div class="form-group">
-                <label>Rules (One per line)</label>
-                <textarea id="rules" class="form-control auto-expand" style="min-height: 100px;" oninput="autoResize(this); updateRulesData()"></textarea>
+            <div style="overflow-y: auto; max-height: 65vh; padding-right: 0.3rem;">
+                <div class="form-group">
+                    <label>Rules (One per line)</label>
+                    <textarea id="rules" class="form-control" style="min-height: 80px; max-height: 180px;" oninput="updateRulesData()"></textarea>
+                </div>
+                <p style="font-size: 0.8rem; font-weight: 600; color: var(--primary); margin: 0.8rem 0 0.4rem; border-top: 1px solid var(--border); padding-top: 0.6rem;">🎧 Audio Attachments (Data URI Base64 format)</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">If empty, the Headphone button will be hidden.</p>
+                <div class="form-group"><label>Background Audio (Looping)</label><input type="text" id="audioBg" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
+                <div class="form-group"><label>Start Exam Audio (Plays once)</label><input type="text" id="audioStart" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
+                <div class="form-group"><label>Submit Exam Audio (Plays once)</label><input type="text" id="audioSubmit" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
             </div>
-            <p style="font-size: 0.8rem; font-weight: 600; color: var(--primary); margin: 1rem 0 0.4rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">🎧 Audio Attachments (Data URI Base64 format)</p>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">If empty, the Headphone button will be hidden.</p>
-            <div class="form-group"><label>Background Audio (Looping)</label><input type="text" id="audioBg" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
-            <div class="form-group"><label>Start Exam Audio (Plays once)</label><input type="text" id="audioStart" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
-            <div class="form-group"><label>Submit Exam Audio (Plays once)</label><input type="text" id="audioSubmit" class="form-control" placeholder="data:audio/mp3;base64,..." oninput="updateRulesData()"></div>
-            <button class="btn btn-primary btn-block" style="margin-top: 1.2rem;" onclick="closeModal('rulesModal')">✓ Save</button>
+            <button class="btn btn-primary btn-block" style="margin-top: 0.75rem;" onclick="closeModal('rulesModal')">✓ Save</button>
         </div>
     </div>
 
@@ -475,20 +559,20 @@
                 <h2>⚛️ Reference Constants</h2>
                 <button class="modal-close" onclick="closeModal('constantsModal')">✕</button>
             </div>
-            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: min(300px, 45vh); overflow-y: auto;">
                 <table class="table">
                     <thead><tr><th>Symbol/Name</th><th>Value</th><th style="width: 40px;"></th></tr></thead>
                     <tbody id="constantsTable"></tbody>
                 </table>
             </div>
             <button class="btn btn-secondary btn-block" style="margin-top: 0.5rem;" onclick="addConstantRow()">➕ Add Constant</button>
-            <button class="btn btn-secondary btn-sm btn-block" style="margin-top: 0.75rem; background: var(--bg-hover); color: var(--primary-dark);" onclick="loadDefaultConstants()">🔄 Load Default Scientific Constants</button>
-            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="closeModal('constantsModal')">✓ Save Constants</button>
+            <button class="btn btn-secondary btn-sm btn-block" style="margin-top: 0.5rem; background: var(--bg-hover); color: var(--primary-dark);" onclick="loadDefaultConstants()">🔄 Load Default Scientific Constants</button>
+            <button class="btn btn-primary btn-block" style="margin-top: 0.75rem;" onclick="closeModal('constantsModal')">✓ Save Constants</button>
         </div>
     </div>
 
     <div class="modal" id="cropModal">
-        <div class="modal-content" style="max-width: 95%; height: 95vh; display: flex; flex-direction: column;">
+        <div class="modal-content" style="max-width: 95%; max-height: 94vh; max-height: 94dvh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <h2>🖼️ Crop & Filter</h2>
                 <button class="modal-close" onclick="closeModal('cropModal')">✕</button>
@@ -562,25 +646,25 @@
                 <h2>📌 Import / Sync .CBT Data</h2>
                 <button class="modal-close" onclick="closeModal('pasteModal')">✕</button>
             </div>
-            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem; flex-shrink: 0;">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('cbtFileUpload').click()">📂 Browse .CBT File</button>
                 <input type="file" id="cbtFileUpload" accept=".cbt,.txt" style="display: none;" onchange="handleCBTFileUpload(event)">
             </div>
-            <div class="form-group">
-                <textarea id="cbtInput" class="form-control auto-expand" placeholder="Or paste CBT code here to import..." style="min-height: 150px; font-family: monospace; font-size: 0.8rem; line-height: 1.4; white-space: pre;"></textarea>
+            <div class="form-group" style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; margin-bottom: 0.5rem;">
+                <textarea id="cbtInput" class="form-control" placeholder="Or paste CBT code here to import..." style="flex: 1 1 auto; min-height: 120px; max-height: min(320px, 40vh); height: 28vh; font-family: monospace; font-size: 0.8rem; line-height: 1.4; white-space: pre; resize: vertical;"></textarea>
             </div>
-            <div style="display: flex; gap: 0.75rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 250px;">
-                    <button class="btn btn-primary btn-block" onclick="syncCBT()">🔄 Sync CBT Code (Workspace Backup)</button>
-                    <div id="downloadAreaCBT" class="hidden" style="margin-top: 0.5rem; background: var(--bg-hover); padding: 0.5rem; border-radius: var(--radius-sm); border: 1px dashed var(--success);">
-                        <p style="font-size: 0.75rem; text-align: center; margin-bottom: 0.3rem; font-weight: 600; color: var(--success);">Workspace synced to text box above!</p>
+            <div style="display: flex; gap: 0.5rem; justify-content: space-between; margin-top: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
+                <div style="flex: 1 1 200px; min-width: 180px;">
+                    <button class="btn btn-primary btn-block btn-sm" style="padding: 0.5rem;" onclick="syncCBT()">🔄 Sync CBT Code (Backup)</button>
+                    <div id="downloadAreaCBT" class="hidden" style="margin-top: 0.4rem; background: var(--bg-hover); padding: 0.4rem; border-radius: var(--radius-sm); border: 1px dashed var(--success);">
+                        <p style="font-size: 0.75rem; text-align: center; margin-bottom: 0.2rem; font-weight: 600; color: var(--success);">Workspace synced to text box above!</p>
                         <a id="downloadLinkCBT" class="btn btn-success btn-block btn-sm" style="text-decoration: none; text-align: center;" href="#" download="">⬇️ Download .CBT File</a>
                     </div>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: flex-start; flex-wrap: wrap;">
-                    <button class="btn btn-danger" onclick="document.getElementById('cbtInput').value=''; autoResize(document.getElementById('cbtInput'));">🗑️ Clear</button>
-                    <button class="btn btn-secondary" onclick="closeModal('pasteModal')">Cancel</button>
-                    <button class="btn btn-success" onclick="parseCBTFormat()">✓ Import Data</button>
+                <div style="display: flex; gap: 0.4rem; align-items: flex-start; flex-wrap: wrap;">
+                    <button class="btn btn-danger btn-sm" onclick="document.getElementById('cbtInput').value=''; autoResize(document.getElementById('cbtInput'));">🗑️ Clear</button>
+                    <button class="btn btn-secondary btn-sm" onclick="closeModal('pasteModal')">Cancel</button>
+                    <button class="btn btn-success btn-sm" onclick="parseCBTFormat()">✓ Import Data</button>
                 </div>
             </div>
         </div>
@@ -589,48 +673,85 @@
     <div class="modal" id="promptModal">
         <div class="modal-content" style="max-width: 750px;">
             <div class="modal-header">
-                <h2>🤖 AI Document Extraction Prompt</h2>
+                <h2>🤖 AI Extraction Prompt</h2>
                 <button class="modal-close" onclick="closeModal('promptModal')">✕</button>
             </div>
-            <div class="tab-nav">
+            <div class="tab-nav" style="margin-bottom: 0.6rem; flex-shrink: 0;">
                 <button class="tab-btn active" id="tab-btn-latex" onclick="switchPrompt('LATEX')">Physics / Math (LaTeX)</button>
                 <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (HTML Mode)</button>
             </div>
-            <textarea id="aiPrompt" class="form-control auto-expand" readonly style="min-height: 380px; font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre; resize: vertical;"></textarea>
-            <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem; font-size: 1rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
+            <textarea id="aiPrompt" class="form-control" readonly style="flex: 1 1 auto; min-height: 150px; height: 38vh; max-height: min(380px, 45vh); font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre; resize: vertical;"></textarea>
+            <button class="btn btn-primary btn-block" style="margin-top: 0.75rem; padding: 0.6rem; font-size: 0.95rem; flex-shrink: 0;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
     </div>
 
     <div class="modal" id="helpModal">
-        <div class="modal-content" style="max-width: 650px;">
+        <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
                 <h2>❓ CBT Setter Guide</h2>
-                <button class="btn btn-sm btn-secondary" onclick="toggleHelpLang()">বাং / Eng</button>
-                <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
+                <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
+                    <button class="btn btn-sm btn-secondary" onclick="toggleHelpLang()" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;">বাং / Eng</button>
+                    <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
+                </div>
             </div>
-            <div id="help-eng" style="max-height: 400px; overflow-y: auto; font-size: 0.9rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Advanced Features & Best Practices</h3>
-                <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
-                    <li><strong>AI Prompt Injection:</strong> Click 🤖 <strong>Prompt</strong>, copy the text, and paste it into Gemini/GPT alongside your Exam PDF. Copy the resulting `.cbt` code and paste it into 📌 <strong>Import</strong>.</li>
-                    <li><strong>Memory Protection (20s VRAM Flush):</strong> To prevent mobile browsers from crashing, images load as a `🖼️ View Image` button. When clicked, the image renders for 20 seconds before silently deleting itself from the GPU memory. You can reveal all images at once from the ⋮ menu.</li>
-                    <li><strong>Typography:</strong> Use `**bold**`, `*italic*`, and `__underline__` directly in the text boxes. Scientific names (e.g. *Mangifera indica*) must be italicized using asterisks.</li>
-                    <li><strong>Image Auto-Detection:</strong> If the AI cannot read a diagram, it will output `[IMAGE]`. Our system automatically detects this, deletes the text, and spawns a glowing red 🚨 <strong>UPLOAD MISSING IMAGE</strong> button for you.</li>
-                    <li><strong>Mobile Resizer:</strong> On a tablet or phone, drag the thin `⋮` bar up and down to adjust the split-screen between the Editor and the Live Preview.</li>
-                    <li><strong>Syncing & Compiling:</strong> Always click 📌 <strong>Import -> 🔄 Sync CBT Code</strong> to create a manual backup. When finished, click <strong>🚀 Compile Final HTML</strong> to generate your fully standalone, offline exam file.</li>
-                </ol>
+            <div id="help-eng" style="max-height: min(420px, 55vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">1. Writing Math & Formatting (LaTeX, KaTeX, MathML, HTML)</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>LaTeX Math:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
+                    <li><strong>Multiplication Warning:</strong> NEVER use the asterisk `*` for multiplication inside math blocks (e.g. $2 * 3$ will break italics). Always use `\times` ($2 \times 3$) or `\cdot` ($2 \cdot 3$).</li>
+                    <li><strong>HTML / Math Symbols:</strong> In HTML mode, use standard Unicode ($\pi, \alpha, \beta, \theta, \pm, \sqrt{}$) and raw tags like `<sup>2</sup>` for superscripts and `<sub>2</sub>` for subscripts.</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">2. Sections, Marking, and Max Attempts</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>Section Names:</strong> Click into the Section Name table row to rename it. <em>Tip: Use `onblur` or press Enter to save cleanly without UI freezes.</em></li>
+                    <li><strong>Mark (+) & Neg (-):</strong> Set correct answer marks and penalty per wrong answer. NAT questions automatically set negative marks to 0.</li>
+                    <li><strong>Max Att (Max Attempts):</strong> Limits how many questions a candidate can evaluate in that section (0 means unlimited).</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">3. Audio, Rules, and Constants</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>Rules:</strong> Automatically adapts to your Duration and Timer Mode (Countdown vs Stopwatch). You can edit custom rules line by line under Advanced Settings.</li>
+                    <li><strong>Audio Base64:</strong> Attach looping background audio, start audio, or submit audio using valid Data URIs (`data:audio/mp3;base64,...`).</li>
+                    <li><strong>Scientific Constants:</strong> Use the "Load Default Scientific Constants" button to instantly import reference values (c, h, G, e).</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">4. Memory Exhaustion & VRAM Protection</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 0.5rem;">
+                    <li><strong>Memory Monitor:</strong> Check the <strong>Memory Load</strong> bar in the `⋮` menu. If it turns yellow or red, your browser DOM has high node counts.</li>
+                    <li><strong>Image Lazy-Loading:</strong> Images load as a lightweight `🖼️ View Image` button and auto-flush from GPU memory after 20 seconds of inactivity.</li>
+                </ul>
             </div>
-            <div id="help-ben" class="hidden" style="max-height: 400px; overflow-y: auto; font-size: 0.9rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">অ্যাডভান্সড ফিচার ও ব্যবহার নির্দেশিকা</h3>
-                <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
-                    <li><strong>AI Prompt ব্যবহার:</strong> 🤖 <strong>Prompt</strong> বাটনে ক্লিক করে লেখাটি কপি করুন এবং Gemini/GPT-তে আপনার PDF ফাইলের সাথে পেস্ট করুন। AI যে `.cbt` কোডটি দেবে, তা 📌 <strong>Import</strong> এ পেস্ট করুন।</li>
-                    <li><strong>মেমরি প্রোটেকশন (20s VRAM Flush):</strong> মোবাইল ব্রাউজার ক্র্যাশ এড়াতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবিটি দেখা যাবে এবং তারপর মেমরি বাঁচাতে নিজে থেকেই বন্ধ হয়ে যাবে।</li>
-                    <li><strong>টাইপোগ্রাফি (Typography):</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করতে হবে।</li>
-                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে, তবে সে `[IMAGE]` লেখে। আমাদের সিস্টেম তা ধরে ফেলে এবং স্বয়ংক্রিয়ভাবে একটি লাল 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন তৈরি করে দেয়।</li>
-                    <li><strong>মোবাইল রিসাইজার (Mobile Resizer):</strong> মোবাইল বা ট্যাবলেটে `⋮` বারটি উপর-নিচ টেনে এডিটর এবং লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন।</li>
-                    <li><strong>সেভ এবং কম্পাইল (Sync & Compile):</strong> কাজ শেষে 📌 <strong>Import -> 🔄 Sync CBT Code</strong> এ ক্লিক করে ব্যাকআপ রাখুন। সবশেষে <strong>🚀 Compile Final HTML</strong> এ ক্লিক করে আপনার অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করুন।</li>
-                </ol>
+            
+            <div id="help-ben" class="hidden" style="max-height: min(420px, 55vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">১. গণিত ও ফরম্যাটিং (LaTeX, KaTeX, MathML, HTML)</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>LaTeX গণিত:</strong> সাধারণ সমীকরণের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং বড় সমীকরণের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
+                    <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার `*` ব্যবহার করবেন না (যেমন $2 * 3$ দিলে ইটালিক হয়ে যাবে)। সবসময় `\times` ($2 \times 3$) অথবা `\cdot` ব্যবহার করুন।</li>
+                    <li><strong>HTML / প্রতীক:</strong> HTML মোডে সাধারণ ইউনিকোড ($\pi, \alpha, \beta, \theta, \pm, \sqrt{}$) এবং সুপস্ক্রিপ্ট/সাবস্ক্রিপ্টের জন্য `<sup>2</sup>` ও `<sub>2</sub>` ট্যাগ ব্যবহার করুন।</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">২. সেকশন, মার্কিং এবং সর্বোচ্চ প্রচেষ্টা (Max Att)</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>সেকশন নাম:</strong> ছকে ক্লিক করে সেকশনের নাম পরিবর্তন করুন। <em>পরামর্শ: নাম লিখে বাইরে ক্লিক করুন বা Enter চাপুন যাতে ফ্রিস না হয়।</em></li>
+                    <li><strong>মার্ক (+ ও -):</strong> সঠিক উত্তরের জন্য প্রাপ্ত নম্বর এবং ভুল উত্তরের জন্য নেগেটিভ মার্ক সেট করুন। NAT প্রশ্নে নেগেটিভ মার্ক স্বয়ংক্রিয়ভাবে ০ হয়ে যায়।</li>
+                    <li><strong>Max Att:</strong> পরীক্ষার্থী নির্দিষ্ট সেকশন থেকে সর্বোচ্চ কয়টি প্রশ্নের উত্তর দিতে পারবেন তা নির্ধারণ করে (০ মানে সীমাহীন)।</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">৩. অডিও, রুলস এবং কনস্ট্যান্টস</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
+                    <li><strong>রুলস:</strong> পরীক্ষার সময়কাল (Duration) ও টাইমার মোডের (Countdown/Stopwatch) উপর ভিত্তি করে রুলস স্বয়ংক্রিয়ভাবে আপডেট হয়।</li>
+                    <li><strong>অডিও Base64:</strong> ব্যাকগ্রাউন্ড মিউজিক বা অ্যালার্ট সাউন্ডের জন্য সঠিক Base64 কোড দিন।</li>
+                    <li><strong>কনস্ট্যান্টস:</strong> এক ক্লিকেই ডিফল্ট বৈজ্ঞানিক ধ্রুবকগুলো লোড করতে পারেন।</li>
+                </ul>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">৪. মেমরি সুরক্ষা (Memory Exhaustion)</h3>
+                <ul style="margin-left: 1.2rem; margin-bottom: 0.5rem;">
+                    <li><strong>মেমরি মনিটর:</strong> ত্রি-বিন্দু (⋮) মেনুতে মেমরি লোড চেক করুন।</li>
+                    <li><strong>ইমেজ লেজি-লোডিং:</strong> ছবিগুলো ২০ সেকেন্ড পর পর নিজে থেকেই মেমরি থেকে মুছে যায় যাতে ব্রাউজার ক্র্যাশ না করে।</li>
+                </ul>
             </div>
-            <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.6rem;" onclick="closeModal('helpModal')">Got it!</button>
+            <button class="btn btn-primary btn-block" style="margin-top: 0.75rem; padding: 0.6rem; flex-shrink: 0;" onclick="closeModal('helpModal')">Got it!</button>
         </div>
     </div>
 
@@ -753,6 +874,7 @@
         const resizer = document.getElementById('dragMe');
         const leftPanel = document.getElementById('leftPanel');
         let isResizing = false;
+        let animationFrameId = null;
 
         resizer.addEventListener('mousedown', function(e) {
             isResizing = true;
@@ -764,24 +886,28 @@
                 document.body.classList.remove('is-resizing');
                 resizer.classList.remove('resizing');
                 document.removeEventListener('mousemove', handleMouseMove);
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
             }, { once: true });
         });
 
         function handleMouseMove(e) {
             if (!isResizing) return;
-            if (window.innerWidth > 1024) {
-                const newWidth = (e.clientX / document.body.clientWidth) * 100;
-                if (newWidth > 20 && newWidth < 80) {
-                    leftPanel.style.flex = `0 0 ${newWidth}%`;
-                    leftPanel.style.maxWidth = `${newWidth}%`;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(() => {
+                if (window.innerWidth > 1024) {
+                    const newWidth = (e.clientX / document.body.clientWidth) * 100;
+                    if (newWidth > 20 && newWidth < 80) {
+                        leftPanel.style.flex = `0 0 ${newWidth}%`;
+                        leftPanel.style.maxWidth = `${newWidth}%`;
+                    }
+                } else {
+                    const newHeight = (e.clientY / document.body.clientHeight) * 100;
+                    if (newHeight > 20 && newHeight < 80) {
+                        leftPanel.style.flex = `0 0 ${newHeight}%`;
+                        leftPanel.style.maxHeight = `${newHeight}%`;
+                    }
                 }
-            } else {
-                const newHeight = (e.clientY / document.body.clientHeight) * 100;
-                if (newHeight > 20 && newHeight < 80) {
-                    leftPanel.style.flex = `0 0 ${newHeight}%`;
-                    leftPanel.style.maxHeight = `${newHeight}%`;
-                }
-            }
+            });
         }
 
         resizer.addEventListener('touchstart', function(e) {
@@ -794,31 +920,37 @@
                 document.body.classList.remove('is-resizing');
                 resizer.classList.remove('resizing');
                 document.removeEventListener('touchmove', handleTouchMove);
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
             }, { once: true });
         });
 
         function handleTouchMove(e) {
             if (!isResizing) return;
             if(e.cancelable) e.preventDefault(); 
-            if (window.innerWidth > 1024) {
-                const newWidth = (e.touches[0].clientX / window.innerWidth) * 100;
-                if (newWidth > 20 && newWidth < 80) {
-                    leftPanel.style.flex = `0 0 ${newWidth}%`;
-                    leftPanel.style.maxWidth = `${newWidth}%`;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(() => {
+                if (window.innerWidth > 1024) {
+                    const newWidth = (e.touches[0].clientX / window.innerWidth) * 100;
+                    if (newWidth > 20 && newWidth < 80) {
+                        leftPanel.style.flex = `0 0 ${newWidth}%`;
+                        leftPanel.style.maxWidth = `${newWidth}%`;
+                    }
+                } else {
+                    const newHeight = (e.touches[0].clientY / window.innerHeight) * 100;
+                    if (newHeight > 20 && newHeight < 80) {
+                        leftPanel.style.flex = `0 0 ${newHeight}%`;
+                        leftPanel.style.maxHeight = `${newHeight}%`;
+                    }
                 }
-            } else {
-                const newHeight = (e.touches[0].clientY / window.innerHeight) * 100;
-                if (newHeight > 20 && newHeight < 80) {
-                    leftPanel.style.flex = `0 0 ${newHeight}%`;
-                    leftPanel.style.maxHeight = `${newHeight}%`;
-                }
-            }
+            });
         }
 
         window.addEventListener('resize', () => {
-            leftPanel.style.flex = '';
-            leftPanel.style.maxWidth = '';
-            leftPanel.style.maxHeight = '';
+            if(previewIsVisible) {
+                leftPanel.style.flex = '';
+                leftPanel.style.maxWidth = '';
+                leftPanel.style.maxHeight = '';
+            }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -829,23 +961,27 @@
             renderAllQuestions();
             generateAIPrompt();
             
-            // Force Preview Render on Load
+            // Start with Preview HIDDEN by default as requested
+            previewIsVisible = false;
+            const right = document.getElementById('rightPanel'); 
+            const left = document.getElementById('leftPanel'); 
+            const res = document.getElementById('dragMe');
+            right.classList.add('hidden-panel');
+            left.classList.add('expanded');
+            left.classList.remove('split-view');
+            res.style.display = 'none';
+
             if (appState.sections.length > 0 && !activePreviewSection) {
                 activePreviewSection = appState.sections[0].name;
             }
             renderPreviewTabs();
-            // Guarantee Math & Paint renders sequentially
-            setTimeout(() => { 
-                document.querySelectorAll('.auto-expand').forEach(autoResize); 
-                renderAllPreviews();
-            }, 150);
+            setTimeout(() => { document.querySelectorAll('.auto-expand').forEach(autoResize); }, 150);
         });
 
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            // +2 protects the bounds of box-sizing: border-box from creating jittery scrollbars
-            el.style.height = (el.scrollHeight + 2) + 'px';
+            el.style.height = (el.scrollHeight) + 'px';
         }
 
         function toggleTheme() {
@@ -866,19 +1002,22 @@
             }
         }
 
-        let previewIsVisible = true;
+        let previewIsVisible = false;
         function togglePreviewLayout() {
             previewIsVisible = !previewIsVisible;
             const right = document.getElementById('rightPanel'); 
-            const left = document.querySelector('.left-panel'); 
+            const left = document.getElementById('leftPanel'); 
             const res = document.getElementById('dragMe');
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
                 left.classList.remove('expanded'); 
+                left.classList.add('split-view');
                 res.style.display = 'flex';
+                renderAllPreviews();
             } else { 
                 right.classList.add('hidden-panel'); 
                 left.classList.add('expanded'); 
+                left.classList.remove('split-view');
                 res.style.display = 'none';
             }
         }
@@ -913,12 +1052,11 @@
         }
 
         function syncPreviewScroll(sec, idx) {
+            if(!previewIsVisible) return;
             if(activePreviewSection !== sec) {
                 activePreviewSection = sec;
-                renderPreviewTabs(); // This forces a full DOM re-render of the right panel
+                renderPreviewTabs();
             }
-            
-            // Allow DOM to paint before scrolling
             setTimeout(() => {
                 const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
                 if(prevEl) {
@@ -929,20 +1067,26 @@
             }, 50);
         }
 
+        // Safe Parsing Protocol to prevent Markdown vs LaTeX asterisk collision
         function parseFormatting(str) {
             if(!str) return '';
-            return str
-                .replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
-                .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
+            let mathBlocks = [];
+            str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
+                mathBlocks.push(match);
+                return `__MATH_${mathBlocks.length - 1}__`;
+            });
+            
+            str = str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
+                     .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
+                     .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
+                     
+            str = str.replace(/__MATH_(\d+)__/g, (match, i) => mathBlocks[i]);
+            return str;
         }
 
         function safeHTML(str) {
             if(!str) return '';
-            // Only escape < and > if they look like dangerous unclosed tags or math logic.
-            // Let legitimate html like <sup>, <sub> pass through natively.
-            str = str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
-            return str;
+            return str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
         }
         
         function processMath(text, engine) {
@@ -1009,8 +1153,9 @@
             appState.sections.forEach((sec, i) => {
                 const qsCount = (appState.questionsBySection[sec.name] || []).length;
                 const row = document.createElement('tr');
+                // FIXED: Use onblur and Enter keydown instead of oninput/onchange to prevent UI focus re-render freeze loops!
                 row.innerHTML = `
-                    <td><input type="text" style="font-weight: 600;" value="${sec.name}" onchange="handleSectionRename(${i}, this.value)"></td>
+                    <td><input type="text" style="font-weight: 600;" value="${sec.name}" onblur="handleSectionRename(${i}, this.value, this)" onkeydown="if(event.key==='Enter') this.blur();"></td>
                     <td style="text-align:center; font-weight:800; font-size: 1.1rem; color:var(--primary); background: rgba(59, 130, 246, 0.05);">${qsCount}</td>
                     <td><input type="number" value="${sec.marks}" step="0.5" oninput="appState.sections[${i}].marks = parseFloat(this.value)||0;"></td>
                     <td><input type="number" value="${sec.negative}" step="0.5" oninput="appState.sections[${i}].negative = parseFloat(this.value)||0;"></td>
@@ -1021,13 +1166,26 @@
             populateSearchDropdown();
         }
 
-        function handleSectionRename(idx, newName) {
+        function handleSectionRename(idx, newName, inputEl) {
             newName = newName.trim();
-            if(!newName || appState.questionsBySection[newName]) { showToast("Invalid or duplicate section name.", "error"); renderMarksTable(); return; }
-            const oldName = appState.sections[idx].name; appState.sections[idx].name = newName;
-            appState.questionsBySection[newName] = appState.questionsBySection[oldName]; delete appState.questionsBySection[oldName];
+            if(!newName) { inputEl.value = appState.sections[idx].name; return; }
+            if(appState.questionsBySection[newName] && newName !== appState.sections[idx].name) { 
+                showToast("Duplicate section name.", "error"); 
+                inputEl.value = appState.sections[idx].name; 
+                return; 
+            }
+            const oldName = appState.sections[idx].name; 
+            if (oldName === newName) return;
+            
+            appState.sections[idx].name = newName;
+            appState.questionsBySection[newName] = appState.questionsBySection[oldName] || []; 
+            delete appState.questionsBySection[oldName];
             if (activePreviewSection === oldName) activePreviewSection = newName;
-            renderMarksTable(); renderAllQuestions(); renderPreviewTabs();
+            
+            populateSearchDropdown(); 
+            renderPreviewTabs(); 
+            if(previewIsVisible) renderAllPreviews();
+            showToast(`Section renamed to "${newName}"`, 'success');
         }
 
         function addNewSection() {
@@ -1111,7 +1269,6 @@
                     optImgPreview = `<div style="margin-top: 0.3rem; padding-left: 24px; width: 100%; display: flex; align-items: center; gap: 0.4rem;"><div id="edit-opt-img-${sec}-${idx}-${oi}" class="img-lazy-wrapper img-lazy-btn" data-src="${optImg}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="padding:0.2rem 0.5rem; font-size:0.75rem; flex: 1;">🖼️ View Option Image</div><button class="btn btn-sm btn-danger" style="padding:0.2rem 0.4rem;" onclick="event.stopPropagation(); removeOptionImage('${sec}', ${idx}, ${oi})">✕</button></div>`;
                 }
 
-                // Protect raw formatting during editing
                 let safeVal = optText;
                 
                 optsHtml += `
@@ -1120,7 +1277,7 @@
                         <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="opt-textarea auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -1164,11 +1321,10 @@
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕ <span class="hide-mobile">Remove</span></button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
                 </div>
             `;
             
-            // Adjust logic for small screens dynamically
             if(window.innerWidth <= 768) {
                 div.querySelector('.hide-desktop-only').style.display = 'block';
             }
@@ -1176,25 +1332,25 @@
             return div;
         }
 
-        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); }
+        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); 
+                renderAllQuestions(); debouncedUpdateSinglePreview(); 
             } 
         }
 
         function updateOptionText(sec, idx, oi, value) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
             const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg; debouncedUpdateSinglePreview(sec, idx);
+            q.options[oi] = value + optImg; debouncedUpdateSinglePreview();
         }
 
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx);
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview();
         }
 
         function addQuestion(sec) {
@@ -1206,21 +1362,14 @@
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { 
-                q.correct = parseInt(value); 
-            } 
-            else if (field === 'type') { 
-                q.type = value; 
-                renderAllQuestions(); 
-            } 
-            else { 
-                q[field] = value; 
-            }
+            if (field === 'correct') { q.correct = parseInt(value); } 
+            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
+            else { q[field] = value; }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
             }
-            debouncedUpdateSinglePreview(sec, idx);
+            debouncedUpdateSinglePreview();
         }
 
         function populateSearchDropdown() { document.getElementById('searchSec').innerHTML = appState.sections.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); updateSearchHint(); }
@@ -1250,7 +1399,7 @@
                 if(q && q.image && q.image !== 'PLACEHOLDER') { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
             });
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); updateMissingImageAlert(); }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
 
         function openCropModalWithData(imgSrc) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -1298,7 +1447,7 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); closeModal('cropModal'); updateMissingImageAlert();
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
         }
 
         let currentTableData = null;
@@ -1328,9 +1477,9 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            renderAllQuestions(); debouncedUpdateSinglePreview(currentTableData.sec, currentTableData.idx); closeModal('tableModal');
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('tableModal');
         }
-        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(sec, idx); }
+        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -1349,8 +1498,6 @@
             let processedText = safeHTML(q.text);
             let previewEngine = appState.renderEngine; 
             
-            // If LATEX mode is on but HTML fallback is selected, do the regex manual replace.
-            // OTHERWISE, leave the $ and $$ natively in the HTML, and let renderMathInElement parse it!
             if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
                 processedText = processMath(processedText, previewEngine);
             }
@@ -1396,6 +1543,7 @@
         }
 
         function renderAllPreviews() {
+            if(!previewIsVisible) return;
             const area = document.getElementById('previewArea');
             const qs = appState.questionsBySection[activePreviewSection] || [];
             if (qs.length === 0) { area.innerHTML = `<div style="text-align: center; color: var(--text-muted); margin-top: 3rem; font-weight: 600;"><div style="font-size: 2rem; margin-bottom: 1rem;">👆</div>No questions in ${activePreviewSection} yet.</div>`; return; }
@@ -1404,36 +1552,26 @@
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
-            // Only run renderMathInElement if we are strictly in LATEX mode AND not falling back.
             if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
             }
         }
 
-        function updateSinglePreview(sec, idx) {
-            if(activePreviewSection !== sec) return;
-            const box = document.getElementById(`preview-qbox-${sec}-${idx}`);
-            if(box) {
-                const q = appState.questionsBySection[sec][idx];
-                box.innerHTML = generateSinglePreviewHTML(sec, idx, q);
-                
-                if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
-                    renderMathInElement(box, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
-                }
-                
-                if(q.image && q.image !== 'PLACEHOLDER') revealImg(`prev-img-${sec}-${idx}`, q.image);
-            }
+        function updateSinglePreview() {
+            if(!previewIsVisible) return;
+            renderAllPreviews();
         }
 
         function debouncedRenderAllPreviews() {
+            if(!previewIsVisible) return;
             clearTimeout(globalPreviewTimeout);
-            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 600);
+            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
         }
 
-        function debouncedUpdateSinglePreview(sec, idx) {
-            const key = `${sec}-${idx}`;
-            if(granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
-            granularTimeouts[key] = setTimeout(() => { updateSinglePreview(sec, idx); }, 600);
+        function debouncedUpdateSinglePreview() {
+            if(!previewIsVisible) return;
+            clearTimeout(globalPreviewTimeout);
+            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
         }
 
         function generateCBTString() {
@@ -1500,14 +1638,9 @@
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
 
-            // System-Level Pre-Parser Healing
             txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
             txt = txt.replace(/\\n/g, '\n');
-            
-            // Safely reconnect broken statements (Statement I:, Assertion A:) that the AI hallucinated onto new lines.
             txt = txt.replace(/(Statement|Assertion|List|Reason)[\s\n]+(I{1,3}|A|B|R)[\s\n]*:/gi, '$1 $2:');
-            
-            // Enforce strictly new lines for core parser keys to prevent false splits
             txt = txt.replace(/\n([QOAI]\s*:)/gi, '\n$1');
 
             const lines = txt.split('\n'); 
@@ -1538,7 +1671,11 @@
                     if (tr.startsWith('Title:')) { appState.examTitle = tr.substring(6).trim(); document.getElementById('examTitle').value = appState.examTitle; }
                     if (tr.startsWith('Subtitle:')) { appState.examSubtitle = tr.substring(9).trim(); document.getElementById('examSubtitle').value = appState.examSubtitle; }
                     if (tr.toLowerCase().startsWith('duration:')) { appState.duration = parseInt(tr.substring(9)) || ''; document.getElementById('duration').value = appState.duration; }
-                    if (tr.toLowerCase().startsWith('timer:')) { appState.timerMode = tr.substring(6).trim().toUpperCase(); document.getElementById('timerMode').value = appState.timerMode; }
+                    if (tr.toLowerCase().startsWith('timer:')) { 
+                        appState.timerMode = tr.substring(6).trim().toUpperCase(); 
+                        const tSelect = document.getElementById('timerMode');
+                        if(tSelect) tSelect.value = appState.timerMode;
+                    }
                     if (tr.startsWith('Font:')) { appState.fontName = tr.substring(5).trim(); document.getElementById('fontSelect').value = appState.fontName; document.documentElement.style.setProperty('--preview-font', appState.fontName); }
                     if (tr.startsWith('MathMode:')) { appState.mathMode = tr.substring(9).trim(); switchPrompt(appState.mathMode); }
                     if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
@@ -1562,7 +1699,6 @@
                     }
                     else if (/^A\s*:/i.test(tr) && curQ) {
                         let val = tr.replace(/^A\s*:/i, '').trim();
-                        // Protect against false-positive answers like "A: Both A and R are true" (Hallucination protection)
                         if (curQ.type === 'MCQ' && val.length > 3) {
                             if (lastField === 'Q') curQ.text += '\n' + tr;
                             else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
@@ -1597,7 +1733,6 @@
                 }
             });
             
-            // Post-Processing Loop to strip [IMAGE] silently and convert them to pure PLACEHOLDERS
             appState.sections.forEach(sec => {
                 (appState.questionsBySection[sec.name] || []).forEach(q => {
                     if (q.text.includes('[IMAGE]') || q.text.includes('[IMAGE_PLACEHOLDER]')) {
@@ -1617,13 +1752,13 @@
 
             renderConstantsTable(); renderMarksTable(); renderAllQuestions(); 
             if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
-            renderPreviewTabs(); renderAllPreviews(); closeModal('pasteModal');
+            renderPreviewTabs(); 
+            closeModal('pasteModal');
             showToast('Imported Successfully', 'success');
             
-            // Critical: Force secondary robust paint to prevent blank previews after large pastes
-            setTimeout(() => {
-                document.querySelectorAll('.auto-expand').forEach(autoResize);
-                renderAllPreviews();
+            setTimeout(() => { 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                if(previewIsVisible) renderAllPreviews();
             }, 150);
         }
 
@@ -1654,8 +1789,20 @@
                 txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration || 90};`);
                 txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
                 
-                const activeRules = appState.rules.length > 0 ? appState.rules : defaultRules;
-                const rulesStr = activeRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
+                // Dynamic Rules based on duration and timer mode
+                let finalRules = [...appState.rules];
+                const durText = appState.duration ? `Total Duration: ${appState.duration} Minutes.` : `Total Duration: 180 Minutes.`;
+                const timerText = appState.timerMode === 'COUNTDOWN' ? "Timer is in Countdown mode (time counts down to zero)." : "Timer is in Stopwatch mode (counts up from zero).";
+                
+                finalRules = finalRules.map(r => {
+                    if (r.toLowerCase().includes('duration')) return durText;
+                    return r;
+                });
+                if (!finalRules.some(r => r.toLowerCase().includes('timer') || r.toLowerCase().includes('mode'))) {
+                    finalRules.push(timerText);
+                }
+
+                const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
@@ -1670,18 +1817,13 @@
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
                         let processedText = safeHTML(q.text);
-                        let finalOptionsHtmlReady = [];
-
                         if (appState.mathMode === 'LATEX') {
-                            if (appState.renderEngine === 'MATHML') {
-                                processedText = processMath(processedText, 'MATHML');
-                            } else if (appState.renderEngine === 'HTML_FALLBACK') {
-                                processedText = processMath(processedText, 'HTML_FALLBACK');
-                            }
-                            // If KATEX_ONLINE, leave raw $...$ for injection script.
+                            if (appState.renderEngine === 'MATHML') { processedText = processMath(processedText, 'MATHML'); }
+                            else if (appState.renderEngine === 'HTML_FALLBACK') { processedText = processMath(processedText, 'HTML_FALLBACK'); }
                         }
                         let finalFormattedText = parseFormatting(processedText);
 
+                        let finalOptionsHtmlReady = [];
                         q.options.forEach(o => {
                             let optText = o || '';
                             let optImg = '';
@@ -1690,11 +1832,8 @@
                             
                             let processedOpt = safeHTML(optText);
                             if (appState.mathMode === 'LATEX') {
-                                if (appState.renderEngine === 'MATHML') {
-                                    processedOpt = processMath(processedOpt, 'MATHML');
-                                } else if (appState.renderEngine === 'HTML_FALLBACK') {
-                                    processedOpt = processMath(processedOpt, 'HTML_FALLBACK');
-                                }
+                                if (appState.renderEngine === 'MATHML') { processedOpt = processMath(processedOpt, 'MATHML'); }
+                                else if (appState.renderEngine === 'HTML_FALLBACK') { processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); }
                             }
                             processedOpt = parseFormatting(processedOpt);
 
@@ -1716,7 +1855,6 @@
                 }
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
 
-                // Virtual Keyboard & Line-Break Injection Patch
                 const vkPatch = `
                 <style>
                 .q-text, .opt-text { white-space: pre-wrap !important; }
@@ -1764,7 +1902,7 @@
                 document.getElementById('tab-btn-html').classList.add('active');
                 engineNotice.style.display = 'block'; latexOptions.forEach(opt => opt.style.display = 'none');
                 document.getElementById('engineHtmlRadio').checked = true; appState.renderEngine = 'HTML_FALLBACK';
-                debouncedRenderAllPreviews();
+                if(previewIsVisible) debouncedRenderAllPreviews();
             }
             generateAIPrompt(); renderPreviewTabs(); 
         }
@@ -1778,12 +1916,14 @@
                 modeSpecificRules = `CRITICAL MATH & IMAGE RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block).
 - DO NOT use \\( ... \\) or \\[ ... \\]. Use ONLY $ and $$.
+- MULTIPLICATION RULE: NEVER use the asterisk '*' for multiplication in math (e.g. $2 * 3$ breaks formatting). Always use \\times ($2 \\times 3$) or \\cdot ($2 \\cdot 3$).
 - FORBIDDEN: NEVER write scientific units or constants in Bengali. Use standard LaTeX (e.g., $m/s^2$, $C$).
 - REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma).
 - COMPLEX MATRICES: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             } else {
                 modeSpecificRules = `CRITICAL HTML & IMAGE RULES:
 - ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- MULTIPLICATION RULE: Use standard multiplication sign '×' or '·'.
 - Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
 - Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
