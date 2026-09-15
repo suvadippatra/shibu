@@ -137,7 +137,7 @@
         .qblock-header { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; }
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem;}
-        .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.9rem; resize: vertical; overflow-y: hidden; box-sizing: border-box; }
+        .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.9rem; resize: vertical; box-sizing: border-box; font-family: inherit; overflow-y: auto; }
         
         .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem; }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; }
@@ -145,10 +145,12 @@
         .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink:0; margin-top: 0.5rem; }
         .option-label { font-weight: 700; font-size: 0.8rem; color: var(--text-muted); width: 18px; flex-shrink:0; text-align: center; margin-top: 0.5rem; }
         
-        .option-input-wrap { flex:1; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); overflow:hidden; transition: border-color 0.2s; min-width: 0; }
+        .option-input-wrap { flex:1; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); transition: border-color 0.2s; min-width: 0; }
         .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15); }
-        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: hidden; box-sizing: border-box; }
-        .auto-expand:focus { outline:none; }
+        
+        .opt-textarea { border: none; padding: 0.4rem 0.5rem; flex: 1; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: auto; box-sizing: border-box; }
+        .opt-textarea:focus { outline:none; }
+        .auto-expand { overflow-y: auto !important; }
         
         .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color:var(--text-muted); }
         .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
@@ -175,7 +177,6 @@
         .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-hover); }
 
         .preview-area { flex: 1 1 auto; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; }
-        /* CRITICAL: Pre-wrap forces \n line breaks natively so we don't inject <br> and destroy KaTeX blocks */
         .preview-qtext { margin-bottom: 0.75rem; color: var(--text-main); font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
         
         .preview-question table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; border: 1px solid var(--border) !important; background: var(--bg-panel) !important; }
@@ -457,7 +458,7 @@
             </div>
             <div class="form-group">
                 <label>Rules (One per line)</label>
-                <textarea id="rules" class="form-control" style="min-height: 100px;" oninput="updateRulesData()"></textarea>
+                <textarea id="rules" class="form-control auto-expand" style="min-height: 100px;" oninput="autoResize(this); updateRulesData()"></textarea>
             </div>
             <p style="font-size: 0.8rem; font-weight: 600; color: var(--primary); margin: 1rem 0 0.4rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">🎧 Audio Attachments (Data URI Base64 format)</p>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">If empty, the Headphone button will be hidden.</p>
@@ -595,7 +596,7 @@
                 <button class="tab-btn active" id="tab-btn-latex" onclick="switchPrompt('LATEX')">Physics / Math (LaTeX)</button>
                 <button class="tab-btn" id="tab-btn-html" onclick="switchPrompt('HTML')">Biology / GK (HTML Mode)</button>
             </div>
-            <textarea id="aiPrompt" class="form-control" readonly style="min-height: 380px; font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre; resize: vertical;"></textarea>
+            <textarea id="aiPrompt" class="form-control auto-expand" readonly style="min-height: 380px; font-family: monospace; font-size: 0.8rem; background: var(--bg-main); border: 2px solid var(--primary); white-space: pre; resize: vertical;"></textarea>
             <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem; font-size: 1rem;" onclick="copyToClipboard('aiPrompt')">📋 Copy Prompt to Clipboard</button>
         </div>
     </div>
@@ -622,10 +623,10 @@
                 <h3 style="color: var(--primary); margin-bottom: 0.5rem;">অ্যাডভান্সড ফিচার ও ব্যবহার নির্দেশিকা</h3>
                 <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
                     <li><strong>AI Prompt ব্যবহার:</strong> 🤖 <strong>Prompt</strong> বাটনে ক্লিক করে লেখাটি কপি করুন এবং Gemini/GPT-তে আপনার PDF ফাইলের সাথে পেস্ট করুন। AI যে `.cbt` কোডটি দেবে, তা 📌 <strong>Import</strong> এ পেস্ট করুন।</li>
-                    <li><strong>মেমরি প্রোটেকশন (20s VRAM Flush):</strong> মোবাইল ব্রাউজার ক্র্যাশ এড়াতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবিটি দেখা যাবে এবং তারপর মেমরি বাঁচাতে নিজে থেকেই বন্ধ হয়ে যাবে।</li>
-                    <li><strong>টাইপোগ্রাফি (Typography):</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করতে হবে।</li>
-                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে, তবে সে `[IMAGE]` লেখে। আমাদের সিস্টেম তা ধরে ফেলে এবং স্বয়ংক্রিয়ভাবে একটি লাল 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন তৈরি করে দেয়।</li>
-                    <li><strong>মোবাইল রিসাইজার (Mobile Resizer):</strong> মোবাইল বা ট্যাবলেটে `⋮` বারটি উপর-নিচ টেনে এডিটর এবং লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন।</li>
+                    <li><strong>মেমরি প্রোটেকশন (20s VRAM Flush):</strong> মোবাইল ব্রাউজার ক্র্যাশ এড়াতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবিটি দেখা যাবে এবং তারপর মেমরি বাঁচাতে নিজে থেকেই বন্ধ হয়ে যাবে।</li>
+                    <li><strong>টাইপোগ্রাফি (Typography):</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করতে হবে।</li>
+                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে, তবে সে `[IMAGE]` লেখে। আমাদের সিস্টেম তা ধরে ফেলে এবং স্বয়ংক্রিয়ভাবে একটি লাল 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন তৈরি করে দেয়।</li>
+                    <li><strong>মোবাইল রিসাইজার (Mobile Resizer):</strong> মোবাইল বা ট্যাবলেটে `⋮` বারটি উপর-নিচ টেনে এডিটর এবং লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন।</li>
                     <li><strong>সেভ এবং কম্পাইল (Sync & Compile):</strong> কাজ শেষে 📌 <strong>Import -> 🔄 Sync CBT Code</strong> এ ক্লিক করে ব্যাকআপ রাখুন। সবশেষে <strong>🚀 Compile Final HTML</strong> এ ক্লিক করে আপনার অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করুন।</li>
                 </ol>
             </div>
@@ -833,13 +834,18 @@
                 activePreviewSection = appState.sections[0].name;
             }
             renderPreviewTabs();
-            setTimeout(() => { document.querySelectorAll('.auto-expand').forEach(autoResize); }, 100);
+            // Guarantee Math & Paint renders sequentially
+            setTimeout(() => { 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                renderAllPreviews();
+            }, 150);
         });
 
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            el.style.height = (el.scrollHeight) + 'px';
+            // +2 protects the bounds of box-sizing: border-box from creating jittery scrollbars
+            el.style.height = (el.scrollHeight + 2) + 'px';
         }
 
         function toggleTheme() {
@@ -1114,7 +1120,7 @@
                         <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="opt-textarea auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -1613,6 +1619,12 @@
             if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
             renderPreviewTabs(); renderAllPreviews(); closeModal('pasteModal');
             showToast('Imported Successfully', 'success');
+            
+            // Critical: Force secondary robust paint to prevent blank previews after large pastes
+            setTimeout(() => {
+                document.querySelectorAll('.auto-expand').forEach(autoResize);
+                renderAllPreviews();
+            }, 150);
         }
 
         async function generateCBTHTML() {
