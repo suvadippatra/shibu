@@ -40,9 +40,9 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.4); --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
         }
 
-        ::-webkit-scrollbar { width: 14px; height: 14px; }
-        ::-webkit-scrollbar-track { background: var(--bg-hover); border-left: 1px solid var(--border); }
-        ::-webkit-scrollbar-thumb { background-color: var(--text-muted); border-radius: 8px; border: 3px solid var(--bg-hover); }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-hover); }
+        ::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 6px; }
         ::-webkit-scrollbar-thumb:hover { background-color: var(--primary-dark); }
         ::-webkit-scrollbar-corner { background: var(--bg-hover); }
 
@@ -69,12 +69,14 @@
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
 
         .main { flex: 1 1 0; min-height: 0; display: flex; overflow: hidden; position: relative; width: 100%; }
-        .panel { padding: 1rem; background: var(--bg-panel); }
         
-        .left-panel { flex: 1 1 100%; max-width: 100%; border-right: none; display: flex; flex-direction: column; overflow: hidden; min-width: 20%; transition: flex 0.2s, max-width 0.2s; }
+        .left-panel { flex: 1 1 100%; max-width: 100%; border-right: none; display: flex; flex-direction: column; overflow: hidden; min-width: 20%; transition: flex 0.2s, max-width 0.2s; background: var(--bg-main); }
         .left-panel.split-view { flex: 0 0 60%; max-width: 60%; border-right: 1px solid var(--border); }
-        .left-content-scroll { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; }
         
+        /* Balanced symmetric scrolling layout with equal left and right padding */
+        .left-content-scroll { flex: 1; overflow-y: auto; padding: 1rem 1.25rem 2.5rem 1.25rem; will-change: scroll-position; -webkit-overflow-scrolling: touch; min-height: 0; box-sizing: border-box; }
+        .editor-inner-container { width: 100%; max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.25rem; }
+
         .resizer { width: 8px; cursor: col-resize; background: var(--border); flex-shrink: 0; z-index: 10; position: relative; display: none; align-items: center; justify-content: center; transition: background 0.2s; }
         .resizer:hover, .resizer.resizing { background: var(--primary); }
         .resizer::after { content: '⋮'; color: var(--text-muted); font-size: 14px; pointer-events: none; }
@@ -82,13 +84,12 @@
         .right-panel { flex: 1; background: var(--bg-main); display: flex; flex-direction: column; transition: flex 0.2s; min-height: 0; min-width: 0; overflow: hidden; }
         .right-panel.hidden-panel { display: none !important; }
         
-        /* Auto-fit multi column layout for questions if panel is wide */
-        .questions-container { display: flex; flex-direction: column; gap: 0.75rem; }
+        .questions-container { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; }
         
-        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem; transition: border 0.2s, box-shadow 0.2s; contain: content; }
+        .question-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem; transition: border 0.2s, box-shadow 0.2s; contain: content; width: 100%; }
         .preview-question { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); font-family: var(--preview-font, inherit); contain: content; }
 
-        details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; }
+        details.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; box-shadow: var(--shadow); transition: all 0.3s; overflow: hidden; contain: content; width: 100%; }
         details.card[open] { padding-bottom: 1rem; }
         details.card > summary { background: var(--bg-input); padding: 0.75rem 1rem; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; transition: background 0.2s; user-select: none; border-bottom: 1px solid transparent; }
         details.card > summary:hover { background: var(--bg-hover); }
@@ -112,14 +113,14 @@
         .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
         .btn-block { width: 100%; }
 
-        .table-responsive { overflow-x: auto; margin-bottom: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .table-responsive { overflow-x: auto; margin-bottom: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); width: 100%; }
         .table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: var(--bg-card); }
         .table th { background: var(--bg-input); border-bottom: 1px solid var(--border); padding: 0.5rem; text-align: left; font-weight: 700; color: var(--text-main); white-space: nowrap; }
         .table td { border-bottom: 1px solid var(--border); padding: 0.4rem 0.5rem; }
         .table input { width: 100%; padding: 0.3rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; background: var(--bg-input); color: var(--text-main); }
         .table input:focus { border-color: var(--primary); outline: none; }
 
-        .search-bar { display: flex; align-items: center; gap: 0.4rem; background: var(--bg-card); padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; margin-bottom: 1rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+        .search-bar { display: flex; align-items: center; gap: 0.4rem; background: var(--bg-card); padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; margin-bottom: 1rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; white-space: nowrap; width: 100%; }
         .search-bar::-webkit-scrollbar { display: none; }
         .sec-stats { font-size: 0.75rem; color: var(--primary-dark); background: rgba(59, 130, 246, 0.1); padding: 0.2rem 0.5rem; border-radius: 12px; font-weight: 600; margin-left: 0.5rem; }
 
@@ -132,7 +133,7 @@
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem;}
         .qblock-textarea { width: 100%; min-height: 40px; font-size: 0.9rem; resize: vertical; overflow-y: hidden; box-sizing: border-box; }
         
-        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem; }
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem; }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; }
         .option-main-row { display: flex; align-items: flex-start; gap: 0.3rem; width: 100%; }
         .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink:0; margin-top: 0.5rem; }
@@ -190,7 +191,7 @@
             background: rgba(15, 23, 42, 0.75);
             z-index: 4000;
             justify-content: center;
-            align-items: flex-start; /* CRITICAL: prevents top-clipping of modal headers on short viewports */
+            align-items: flex-start;
             padding: 1rem;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -212,7 +213,7 @@
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             border: 1px solid var(--border);
             animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin: auto 0; /* Auto margin centers vertically when space permits, allows natural scrolling when tall */
+            margin: auto 0;
             position: relative;
         }
         @keyframes modalPop { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
@@ -300,6 +301,7 @@
         }
         
         @media (max-width: 768px) {
+            .left-content-scroll { padding: 0.6rem 0.6rem 2rem 0.6rem; }
             .preview-option { flex: 1 1 100%; min-width: auto; }
             .preview-option[data-length="short"] { flex: 1 1 100%; }
             .options-grid { grid-template-columns: 1fr; }
@@ -311,28 +313,16 @@
         }
 
         @media (max-width: 640px), (max-height: 680px) {
-            .modal {
-                padding: 0.4rem;
-            }
+            .modal { padding: 0.4rem; }
             .modal-content {
                 padding: 0.85rem;
                 max-height: calc(100vh - 0.8rem);
                 max-height: calc(100dvh - 0.8rem);
                 border-radius: var(--radius-md);
             }
-            .modal-header {
-                margin-bottom: 0.6rem;
-                padding-bottom: 0.4rem;
-            }
-            .modal-close {
-                width: 28px; height: 28px;
-                min-width: 28px; min-height: 28px;
-                font-size: 0.9rem;
-            }
-            .tab-btn {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.8rem;
-            }
+            .modal-header { margin-bottom: 0.6rem; padding-bottom: 0.4rem; }
+            .modal-close { width: 28px; height: 28px; min-width: 28px; min-height: 28px; font-size: 0.9rem; }
+            .tab-btn { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -380,86 +370,90 @@
     <div class="main">
         <div class="left-panel expanded" id="leftPanel">
             <div class="left-content-scroll">
+                <div class="editor-inner-container">
                 
-                <details class="card" open>
-                    <summary>📋 Exam Details & Typography</summary>
-                    <div class="card-inner">
-                        <div class="input-row">
-                            <div class="form-group"><label>Agency Name (Top Header)</label><input type="text" id="agencyName" class="form-control" placeholder="Extracted or leave blank" oninput="appState.agencyName = this.value; debouncedRenderAllPreviews();"></div>
-                            <div class="form-group"><label>Exam Title (Tab & Headers)</label><input type="text" id="examTitle" class="form-control" placeholder="Extracted or leave blank" oninput="appState.examTitle = this.value; generateAIPrompt(); debouncedRenderAllPreviews();"></div>
-                        </div>
-                        <div class="input-row">
-                            <div class="form-group"><label>Subtitle (Date / Info)</label><input type="text" id="examSubtitle" class="form-control" placeholder="Extracted or leave blank" oninput="appState.examSubtitle = this.value; debouncedRenderAllPreviews();"></div>
-                            <div class="form-group"><label>Duration (Mins)</label><input type="number" id="duration" class="form-control" placeholder="Extracted or leave blank" min="1" oninput="appState.duration = parseInt(this.value) || '';"></div>
-                        </div>
-                        <div class="input-row" style="margin-bottom: 0;">
-                            <div class="form-group">
-                                <label>Timer Mode</label>
-                                <select id="timerMode" class="form-control" onchange="appState.timerMode = this.value;">
-                                    <option value="STOPWATCH">Stopwatch (Counts Up)</option>
-                                    <option value="COUNTDOWN">Countdown (Counts Down)</option>
-                                </select>
+                    <details class="card" open>
+                        <summary>📋 Exam Details & Typography</summary>
+                        <div class="card-inner">
+                            <div class="input-row">
+                                <div class="form-group"><label>Agency Name (Top Header)</label><input type="text" id="agencyName" class="form-control" placeholder="Extracted or leave blank" oninput="appState.agencyName = this.value; debouncedRenderAllPreviews();"></div>
+                                <div class="form-group"><label>Exam Title (Tab & Headers)</label><input type="text" id="examTitle" class="form-control" placeholder="Extracted or leave blank" oninput="appState.examTitle = this.value; generateAIPrompt(); debouncedRenderAllPreviews();"></div>
                             </div>
-                            <div class="form-group">
-                                <label>Global Font Family</label>
-                                <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value); debouncedRenderAllPreviews();">
-                                    <option value="system-ui, -apple-system, Roboto, Arial, sans-serif">Modern Clean (Sans-serif)</option>
-                                    <option value="'Noto Serif', 'Times New Roman', Georgia, serif">Academic Editorial (Serif)</option>
-                                    <option value="'Trebuchet MS', 'Segoe UI', sans-serif">Technical / Rounded</option>
-                                    <option value="'SF Mono', Consolas, 'Courier New', monospace">Typewriter (Monospace)</option>
-                                </select>
+                            <div class="input-row">
+                                <div class="form-group"><label>Subtitle (Date / Info)</label><input type="text" id="examSubtitle" class="form-control" placeholder="Extracted or leave blank" oninput="appState.examSubtitle = this.value; debouncedRenderAllPreviews();"></div>
+                                <div class="form-group"><label>Duration (Mins)</label><input type="number" id="duration" class="form-control" placeholder="Extracted or leave blank" min="1" oninput="appState.duration = parseInt(this.value) || '';"></div>
+                            </div>
+                            <div class="input-row" style="margin-bottom: 0;">
+                                <div class="form-group">
+                                    <label>Timer Mode</label>
+                                    <select id="timerMode" class="form-control" onchange="appState.timerMode = this.value;">
+                                        <option value="STOPWATCH">Stopwatch (Counts Up)</option>
+                                        <option value="COUNTDOWN">Countdown (Counts Down)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Global Font Family</label>
+                                    <select id="fontSelect" class="form-control" onchange="appState.fontName = this.value; document.documentElement.style.setProperty('--preview-font', this.value); debouncedRenderAllPreviews();">
+                                        <option value="system-ui, -apple-system, Roboto, Arial, sans-serif">Modern Clean (Sans-serif)</option>
+                                        <option value="'Noto Serif', 'Times New Roman', Georgia, serif">Academic Editorial (Serif)</option>
+                                        <option value="'Trebuchet MS', 'Segoe UI', sans-serif">Technical / Rounded</option>
+                                        <option value="'SF Mono', Consolas, 'Courier New', monospace">Typewriter (Monospace)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </details>
+                    </details>
 
-                <details class="card">
-                    <summary>⚙️ Advanced Settings</summary>
-                    <div class="card-inner">
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Configure exam rules, scientific constants, and attach background audio.</p>
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="btn btn-secondary" style="flex: 1;" onclick="openModal('rulesModal')">📝 Rules & Audio Base64</button>
-                            <button class="btn btn-secondary" style="flex: 1;" onclick="openModal('constantsModal')">⚛️ Scientific Constants</button>
+                    <details class="card">
+                        <summary>⚙️ Advanced Settings</summary>
+                        <div class="card-inner">
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Configure exam rules, scientific constants, and attach background audio.</p>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="btn btn-secondary" style="flex: 1;" onclick="openModal('rulesModal')">📝 Rules & Audio Base64</button>
+                                <button class="btn btn-secondary" style="flex: 1;" onclick="openModal('constantsModal')">⚛️ Scientific Constants</button>
+                            </div>
                         </div>
-                    </div>
-                </details>
+                    </details>
 
-                <details class="card" open>
-                    <summary>📊 Sections & Marking</summary>
-                    <div class="card-inner">
-                        <div class="table-responsive" style="margin-bottom: 0;">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40%;">Section Name</th>
-                                        <th style="width: 15%; text-align:center;">Qstns</th>
-                                        <th style="width: 15%;" title="Marks awarded per correct answer">Mark (+)</th>
-                                        <th style="width: 15%;" title="Marks deducted per wrong answer">Neg (-)</th>
-                                        <th style="width: 15%;" title="Limit max attempts for this section. Set 0 for unlimited.">Max Att</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="marksTable"></tbody>
-                            </table>
+                    <details class="card" open>
+                        <summary>📊 Sections & Marking</summary>
+                        <div class="card-inner">
+                            <div class="table-responsive" style="margin-bottom: 0;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40%;">Section Name</th>
+                                            <th style="width: 15%; text-align:center;">Qstns</th>
+                                            <th style="width: 15%;" title="Marks awarded per correct answer">Mark (+)</th>
+                                            <th style="width: 15%;" title="Marks deducted per wrong answer">Neg (-)</th>
+                                            <th style="width: 15%;" title="Limit max attempts for this section. Set 0 for unlimited.">Max Att</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="marksTable"></tbody>
+                                </table>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--danger); margin-top: 0.5rem; font-weight: 600;">* NAT questions automatically override Negative marks to 0.</p>
                         </div>
-                        <p style="font-size: 0.75rem; color: var(--danger); margin-top: 0.5rem; font-weight: 600;">* NAT questions automatically override Negative marks to 0.</p>
-                    </div>
-                </details>
+                    </details>
 
-                <div class="search-bar">
-                    <span style="font-weight: 700; font-size: 0.85rem; color:var(--text-main);"><span class="hide-mobile">🔍 Find:</span></span>
-                    <select id="searchSec" class="form-control" style="width: auto; min-width: 80px; padding: 0.3rem;" onchange="updateSearchHint()"></select>
-                    <span id="searchHint" style="font-size: 0.75rem; font-weight: 600; color: var(--info); min-width: 35px; text-align: center;"></span>
-                    <input type="number" id="searchQNum" class="form-control" style="width: 50px; padding: 0.3rem;" placeholder="No." min="1">
-                    <button class="btn btn-primary btn-sm" onclick="jumpToQuestion()">Go</button>
-                    <div style="flex-grow: 1; min-width: 2px;"></div>
-                    <button class="btn btn-success btn-sm" onclick="addNewSection()">➕ <span class="hide-mobile">Section</span></button>
+                    <div class="search-bar">
+                        <span style="font-weight: 700; font-size: 0.85rem; color:var(--text-main);"><span class="hide-mobile">🔍 Find:</span></span>
+                        <select id="searchSec" class="form-control" style="width: auto; min-width: 80px; padding: 0.3rem;" onchange="updateSearchHint()"></select>
+                        <span id="searchHint" style="font-size: 0.75rem; font-weight: 600; color: var(--info); min-width: 35px; text-align: center;"></span>
+                        <input type="number" id="searchQNum" class="form-control" style="width: 50px; padding: 0.3rem;" placeholder="No." min="1">
+                        <button class="btn btn-primary btn-sm" onclick="jumpToQuestion()">Go</button>
+                        <div style="flex-grow: 1; min-width: 2px;"></div>
+                        <button class="btn btn-success btn-sm" onclick="addNewSection()">➕ <span class="hide-mobile">Section</span></button>
+                    </div>
+
+                    <div id="questionsListAll" class="questions-container"></div>
                 </div>
-
-                <div id="questionsListAll" class="questions-container"></div>
             </div>
 
             <div class="bottom-action-bar" id="compileBtnMobileHide">
-                <button id="compileBtn" class="btn btn-success btn-block" style="padding: 0.8rem; font-weight: 800; font-size: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile Final HTML</button>
+                <div style="max-width: 920px; width: 100%; margin: 0 auto;">
+                    <button id="compileBtn" class="btn btn-success btn-block" style="padding: 0.8rem; font-weight: 800; font-size: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);" onclick="generateCBTHTML()">🚀 Compile Final HTML</button>
+                </div>
             </div>
         </div>
 
@@ -475,7 +469,6 @@
             </div>
         </div>
     </div>
-
 
     <div class="modal" id="compileModal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
@@ -603,6 +596,10 @@
                             <option value="color-scan">Color Scan (Clear Bg)</option>
                         </select>
                     </div>
+
+                    <div id="vectorNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.45rem 0.6rem; border-radius: 4px; font-size:0.75rem; color:var(--text-main); margin-bottom:0.5rem;">
+                        💡 <b>Vector / Animated Image:</b> Click <b>⚡ Use Original</b> to preserve SVG vector clarity or GIF animation without rasterizing.
+                    </div>
                     
                     <div style="font-weight: 600; font-size: 0.8rem; color: var(--text-main); margin-top: 0.4rem;">Live Preview:</div>
                     <img id="liveCropPreviewImg" class="live-crop-output" src="">
@@ -611,9 +608,10 @@
                         <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Est. Final Size</div>
                         <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary);" id="estSize">0 KB</div>
                     </div>
-                    <div style="display:flex; gap:0.5rem; margin-top: 0.5rem;">
-                        <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('cropModal')">Cancel</button>
-                        <button class="btn btn-success" style="flex:1;" onclick="saveCroppedImage()">✓ Use Image</button>
+                    <div style="display:flex; gap:0.4rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" style="flex:1; min-width: 70px;" onclick="closeModal('cropModal')">Cancel</button>
+                        <button class="btn btn-primary" style="flex:1.2; min-width: 110px;" onclick="saveOriginalImage()" title="Insert directly without cropping, preserving SVG vector clarity or GIF animation">⚡ Use Original</button>
+                        <button class="btn btn-success" style="flex:1.2; min-width: 100px;" onclick="saveCroppedImage()">✓ Crop & Use</button>
                     </div>
                 </div>
             </div>
@@ -686,69 +684,99 @@
     </div>
 
     <div class="modal" id="helpModal">
-        <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-content" style="max-width: 720px;">
             <div class="modal-header">
                 <h2>❓ CBT Setter Guide</h2>
                 <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
-                    <button class="btn btn-sm btn-secondary" onclick="toggleHelpLang()" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;">বাং / Eng</button>
+                    <button class="btn btn-sm btn-secondary" onclick="toggleHelpLang()" style="padding: 0.25rem 0.6rem; font-size: 0.8rem; font-weight: 700;">বাং / Eng</button>
                     <button class="modal-close" onclick="closeModal('helpModal')">✕</button>
                 </div>
             </div>
-            <div id="help-eng" style="max-height: min(420px, 55vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">1. Writing Math & Formatting (LaTeX, KaTeX, MathML, HTML)</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>LaTeX Math:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
-                    <li><strong>Multiplication Warning:</strong> NEVER use the asterisk `*` for multiplication inside math blocks (e.g. $2 * 3$ will break italics). Always use `\times` ($2 \times 3$) or `\cdot` ($2 \cdot 3$).</li>
-                    <li><strong>HTML / Math Symbols:</strong> In HTML mode, use standard Unicode ($\pi, \alpha, \beta, \theta, \pm, \sqrt{}$) and raw tags like `<sup>2</sup>` for superscripts and `<sub>2</sub>` for subscripts.</li>
+            
+            <!-- ENGLISH COMPREHENSIVE GUIDE -->
+            <div id="help-eng" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Advanced Features & Best Practices</h3>
+                <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>AI Prompt Injection:</strong> Click 🤖 <strong>Prompt</strong>, copy the prompt text, and paste it into Gemini/ChatGPT alongside your question PDF. Then copy the generated `.cbt` code and paste it into 📌 <strong>Import</strong>.</li>
+                    <li><strong>Image, GIF & SVG Support:</strong> Upload standard images (JPG, PNG, WEBP) as well as animated GIFs and vector SVGs directly from the same upload button. When uploading SVG or GIF, choose <strong>⚡ Use Original</strong> in the dialog to preserve vector scalability and animations without lossy recompression.</li>
+                    <li><strong>Memory Protection (20s VRAM Flush):</strong> To prevent mobile browsers from freezing, images load behind a `🖼️ View Image` button. When clicked, the image renders for 20 seconds before auto-flushing from GPU memory. You can reveal all images at once from the ⋮ menu.</li>
+                    <li><strong>Typography:</strong> Use <code>**bold**</code>, <code>*italic*</code>, and <code>__underline__</code> directly in text boxes. Scientific names (e.g. *Mangifera indica*) must be italicized using single asterisks.</li>
+                    <li><strong>Image Auto-Detection:</strong> If the AI cannot read a diagram, it will output `[IMAGE]`. The system automatically catches this, clears the text, and spawns a glowing red 🚨 <strong>UPLOAD MISSING IMAGE</strong> button.</li>
+                    <li><strong>Mobile Resizer:</strong> On tablets or phones, drag the thin `⋮` handle up and down to adjust the split-screen split between the Editor and the Live Preview.</li>
+                    <li><strong>Syncing & Compiling:</strong> Always click 📌 <strong>Import -> 🔄 Sync CBT Code</strong> to generate a local backup. When complete, click 🚀 <strong>Compile Final HTML</strong> to generate your fully standalone, offline exam file.</li>
+                </ol>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Writing Mathematics & Formatting (LaTeX, KaTeX, MathML, HTML)</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>LaTeX Formulas:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
+                    <li><strong>Multiplication Symbol Rule:</strong> NEVER use the asterisk <code>*</code> for multiplication in math (e.g., <code>$2 * 3$</code> collides with Markdown italics). Always write <code>\times</code> (for $\times$) or <code>\cdot</code> (for $\cdot$).</li>
+                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, do not use LaTeX backslashes. Use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts.</li>
+                    <li><strong>Compilation Engine Options:</strong> 
+                        <br>• <strong>Native MathML:</strong> Lightweight offline math rendered directly by the browser engine.
+                        <br>• <strong>KaTeX (Online):</strong> Publication-grade typography requiring an internet connection.
+                        <br>• <strong>Pure HTML Fallback:</strong> Converts math to lightweight italicized HTML with sub/sup scripts for maximum offline compatibility.</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">2. Sections, Marking, and Max Attempts</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>Section Names:</strong> Click into the Section Name table row to rename it. <em>Tip: Use `onblur` or press Enter to save cleanly without UI freezes.</em></li>
-                    <li><strong>Mark (+) & Neg (-):</strong> Set correct answer marks and penalty per wrong answer. NAT questions automatically set negative marks to 0.</li>
-                    <li><strong>Max Att (Max Attempts):</strong> Limits how many questions a candidate can evaluate in that section (0 means unlimited).</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Sections, Marking, and Max Attempts</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>Renaming Sections:</strong> Click inside the Section Name cell in the table to rename it. Press Enter or click outside (blur) to save without freezing the interface.</li>
+                    <li><strong>Mark (+) & Neg (-):</strong> Set correct answer score and penalty. NAT questions automatically override Negative penalty to 0.</li>
+                    <li><strong>Max Attempts (Max Att):</strong> Enforces NTA/GATE style limits. If a candidate attempts 12 questions in a section with a Max Att of 10, only their first 10 attempts in numerical order will be evaluated. Set to 0 for unlimited attempts.</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">3. Audio, Rules, and Constants</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>Rules:</strong> Automatically adapts to your Duration and Timer Mode (Countdown vs Stopwatch). You can edit custom rules line by line under Advanced Settings.</li>
-                    <li><strong>Audio Base64:</strong> Attach looping background audio, start audio, or submit audio using valid Data URIs (`data:audio/mp3;base64,...`).</li>
-                    <li><strong>Scientific Constants:</strong> Use the "Load Default Scientific Constants" button to instantly import reference values (c, h, G, e).</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Audio, Custom Rules, and Scientific Constants</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>Dynamic Rules:</strong> Rules automatically adapt to your chosen Duration and Timer Mode (Stopwatch vs Countdown). Custom rules can be added line-by-line under Advanced Settings.</li>
+                    <li><strong>Audio Base64:</strong> Attach background ambient audio, exam start bells, or submit audio using valid Data URIs (<code>data:audio/mp3;base64,...</code>).</li>
+                    <li><strong>Reference Constants:</strong> Click "Load Default Scientific Constants" in the modal to instantly import universal physical constants ($c, h, G, e$).</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">4. Memory Exhaustion & VRAM Protection</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 0.5rem;">
-                    <li><strong>Memory Monitor:</strong> Check the <strong>Memory Load</strong> bar in the `⋮` menu. If it turns yellow or red, your browser DOM has high node counts.</li>
-                    <li><strong>Image Lazy-Loading:</strong> Images load as a lightweight `🖼️ View Image` button and auto-flush from GPU memory after 20 seconds of inactivity.</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Memory Management & Preventing Crashes</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 0.5rem;">
+                    <li><strong>Memory Tracker:</strong> Check the live <strong>Memory Load</strong> bar inside the `⋮` menu. If the bar reaches orange or red, your browser tab has accumulated heavy DOM nodes.</li>
+                    <li><strong>Clearing Memory:</strong> Always click 🔄 <strong>Sync CBT Code</strong> first to download or copy your backup, then click 🧹 <strong>Clear Workspace</strong> to instantly release browser RAM.</li>
                 </ul>
             </div>
             
-            <div id="help-ben" class="hidden" style="max-height: min(420px, 55vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">১. গণিত ও ফরম্যাটিং (LaTeX, KaTeX, MathML, HTML)</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>LaTeX গণিত:</strong> সাধারণ সমীকরণের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং বড় সমীকরণের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
-                    <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার `*` ব্যবহার করবেন না (যেমন $2 * 3$ দিলে ইটালিক হয়ে যাবে)। সবসময় `\times` ($2 \times 3$) অথবা `\cdot` ব্যবহার করুন।</li>
-                    <li><strong>HTML / প্রতীক:</strong> HTML মোডে সাধারণ ইউনিকোড ($\pi, \alpha, \beta, \theta, \pm, \sqrt{}$) এবং সুপস্ক্রিপ্ট/সাবস্ক্রিপ্টের জন্য `<sup>2</sup>` ও `<sub>2</sub>` ট্যাগ ব্যবহার করুন।</li>
+            <!-- BENGALI COMPREHENSIVE GUIDE -->
+            <div id="help-ben" class="hidden" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অ্যাডভান্সড ফিচার ও সেরা কার্যপ্রণালী</h3>
+                <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>AI Prompt ব্যবহার:</strong> 🤖 <strong>Prompt</strong> বাটনে ক্লিক করে প্রম্পট কপি করুন এবং Gemini/ChatGPT-তে প্রশ্নপত্রের PDF-এর সাথে দিন। AI যে `.cbt` কোড দেবে, তা 📌 <strong>Import</strong>-এ পেস্ট করে ইনপুট নিন।</li>
+                    <li><strong>ছবি, GIF ও SVG সাপোর্ট:</strong> সাধারণ ছবি (JPG, PNG) ছাড়াও একই বাটন দিয়ে অ্যানিমেটেড GIF এবং ভেক্টর SVG সরাসরি আপলোড করা যাবে। ডায়ালগে <strong>⚡ Use Original</strong> ক্লিক করলে কোয়ালিটি ও অ্যানিমেশন অক্ষুণ্ণ থাকবে।</li>
+                    <li><strong>মেমরি সুরক্ষা (20s VRAM Flush):</strong> মোবাইল ব্রাউজারের ক্র্যাশ রুখতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবি দেখা যাবে, এরপর নিজে থেকেই মেমরি থেকে মুছে যাবে। ⋮ মেনু থেকে সব ছবি একসাথে দেখা যায়।</li>
+                    <li><strong>টাইপোগ্রাফি:</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করবেন।</li>
+                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে তবে `[IMAGE]` লেখে। আমাদের সিস্টেম তা নিজে থেকেই ধরে ফেলে এবং লাল রঙের 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন বানিয়ে দেয়।</li>
+                    <li><strong>মোবাইল রিসাইজার:</strong> ফোন বা ট্যাবলেটে `⋮` হ্যান্ডেলটি উপর-নিচ টেনে এডিটর ও লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন।</li>
+                    <li><strong>সিঙ্ক ও কম্পাইল:</strong> কাজ চলাকালীন 📌 <strong>Import -> 🔄 Sync CBT Code</strong> ক্লিক করে ব্যাকআপ রাখুন। সবশেষে 🚀 <strong>Compile Final HTML</strong>-এ ক্লিক করে আপনার সম্পূর্ণ অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করুন।</li>
+                </ol>
+
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">গণিত ও ফরম্যাটিং (LaTeX, KaTeX, MathML, HTML)</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>LaTeX সমীকরণ:</strong> সাধারণ সূত্রের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং ডিসপ্লে ব্লকের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
+                    <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার <code>*</code> ব্যবহার করবেন না (যেমন <code>$2 * 3$</code> দিলে ইটালিক কোডের সাথে সংঘর্ষ হবে)। সবসময় <code>\times</code> ($2 \times 3$) অথবা <code>\cdot</code> ব্যবহার করুন।</li>
+                    <li><strong>HTML মোড প্রতীক:</strong> HTML মোডে সরাসরি লেখার সময় ব্যাকস্ল্যাশ ছাড়া ইউনিকোড প্রতীক (π, α, β, θ, ±, √, ×, ÷, →) এবং পাওয়ার/সাবস্ক্রিপ্টের জন্য <code>&lt;sup&gt;2&lt;/sup&gt;</code> ও <code>&lt;sub&gt;2&lt;/sub&gt;</code> ট্যাগ দিন।</li>
+                    <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">২. সেকশন, মার্কিং এবং সর্বোচ্চ প্রচেষ্টা (Max Att)</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>সেকশন নাম:</strong> ছকে ক্লিক করে সেকশনের নাম পরিবর্তন করুন। <em>পরামর্শ: নাম লিখে বাইরে ক্লিক করুন বা Enter চাপুন যাতে ফ্রিস না হয়।</em></li>
-                    <li><strong>মার্ক (+ ও -):</strong> সঠিক উত্তরের জন্য প্রাপ্ত নম্বর এবং ভুল উত্তরের জন্য নেগেটিভ মার্ক সেট করুন। NAT প্রশ্নে নেগেটিভ মার্ক স্বয়ংক্রিয়ভাবে ০ হয়ে যায়।</li>
-                    <li><strong>Max Att:</strong> পরীক্ষার্থী নির্দিষ্ট সেকশন থেকে সর্বোচ্চ কয়টি প্রশ্নের উত্তর দিতে পারবেন তা নির্ধারণ করে (০ মানে সীমাহীন)।</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">সেকশন, মার্কিং এবং সর্বোচ্চ প্রচেষ্টা (Max Att)</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>সেকশনের নাম পরিবর্তন:</strong> ছকে সেকশনের নামের উপর ক্লিক করে নাম লিখুন এবং বাইরে ক্লিক করুন বা Enter চাপুন।</li>
+                    <li><strong>মার্ক (+ ও -):</strong> সঠিক উত্তরের জন্য প্রাপ্ত নম্বর এবং ভুল উত্তরের জন্য নেগেটিভ মার্ক দিন। NAT প্রশ্নে নেগেটিভ মার্ক সবসময় ০ থাকবে।</li>
+                    <li><strong>Max Attempts (সর্বোচ্চ প্রচেষ্টা):</strong> পরীক্ষার্থী একটি সেকশন থেকে সর্বোচ্চ কয়টি প্রশ্নের মূল্যায়ন করাতে পারবেন তা নির্ধারণ করে (যেমন ১৫টির মধ্যে ১০টি)। ০ দিলে সীমাহীন।</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">৩. অডিও, রুলস এবং কনস্ট্যান্টস</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 1rem;">
-                    <li><strong>রুলস:</strong> পরীক্ষার সময়কাল (Duration) ও টাইমার মোডের (Countdown/Stopwatch) উপর ভিত্তি করে রুলস স্বয়ংক্রিয়ভাবে আপডেট হয়।</li>
-                    <li><strong>অডিও Base64:</strong> ব্যাকগ্রাউন্ড মিউজিক বা অ্যালার্ট সাউন্ডের জন্য সঠিক Base64 কোড দিন।</li>
-                    <li><strong>কনস্ট্যান্টস:</strong> এক ক্লিকেই ডিফল্ট বৈজ্ঞানিক ধ্রুবকগুলো লোড করতে পারেন।</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অডিও, রুলস এবং বৈজ্ঞানিক ধ্রুবক (Constants)</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
+                    <li><strong>রুলস:</strong> পরীক্ষার সময়কাল এবং টাইমার মোড (Stopwatch/Countdown)-এর ওপর ভিত্তি করে রুলস নিজে থেকেই আপডেট হয়।</li>
+                    <li><strong>অডিও Base64:</strong> ব্যাকগ্রাউন্ড মিউজিক বা স্টার্ট/সাবমিট সাউন্ডের জন্য Data URI Base64 কোড দিন।</li>
+                    <li><strong>কনস্ট্যান্টস:</strong> "Load Default Scientific Constants" বাটনে এক ক্লিকেই পদার্থবিজ্ঞানের ধ্রুবকগুলো লোড করুন।</li>
                 </ul>
 
-                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">৪. মেমরি সুরক্ষা (Memory Exhaustion)</h3>
-                <ul style="margin-left: 1.2rem; margin-bottom: 0.5rem;">
-                    <li><strong>মেমরি মনিটর:</strong> ত্রি-বিন্দু (⋮) মেনুতে মেমরি লোড চেক করুন।</li>
-                    <li><strong>ইমেজ লেজি-লোডিং:</strong> ছবিগুলো ২০ সেকেন্ড পর পর নিজে থেকেই মেমরি থেকে মুছে যায় যাতে ব্রাউজার ক্র্যাশ না করে।</li>
+                <h3 style="color: var(--primary); margin-bottom: 0.4rem;">মেমরি সুরক্ষা ও ব্রাউজার পারফরম্যান্স</h3>
+                <ul style="margin-left: 1.3rem; margin-bottom: 0.5rem;">
+                    <li><strong>মেমরি মনিটর:</strong> ত্রি-বিন্দু (⋮) মেনুতে রিয়েল-টাইম মেমরি লোড খেয়াল রাখুন।</li>
+                    <li><strong>মেমরি খালি করা:</strong> প্রথমে 🔄 <strong>Sync CBT Code</strong> ক্লিক করে ব্যাকআপ ডাউনলোড করুন, তারপর 🧹 <strong>Clear Workspace</strong> দিয়ে ব্রাউজারের RAM খালি করে নিন।</li>
                 </ul>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 0.75rem; padding: 0.6rem; flex-shrink: 0;" onclick="closeModal('helpModal')">Got it!</button>
@@ -786,7 +814,6 @@
         let globalPreviewTimeout = null;
         const imageTimers = {};
 
-        // Memory Tracker
         setInterval(() => {
             const nodeCount = document.querySelectorAll('*').length;
             const bar = document.getElementById('memStatusBar');
@@ -1067,7 +1094,6 @@
             }, 50);
         }
 
-        // Safe Parsing Protocol to prevent Markdown vs LaTeX asterisk collision
         function parseFormatting(str) {
             if(!str) return '';
             let mathBlocks = [];
@@ -1153,7 +1179,6 @@
             appState.sections.forEach((sec, i) => {
                 const qsCount = (appState.questionsBySection[sec.name] || []).length;
                 const row = document.createElement('tr');
-                // FIXED: Use onblur and Enter keydown instead of oninput/onchange to prevent UI focus re-render freeze loops!
                 row.innerHTML = `
                     <td><input type="text" style="font-weight: 600;" value="${sec.name}" onblur="handleSectionRename(${i}, this.value, this)" onkeydown="if(event.key==='Enter') this.blur();"></td>
                     <td style="text-align:center; font-weight:800; font-size: 1.1rem; color:var(--primary); background: rgba(59, 130, 246, 0.05);">${qsCount}</td>
@@ -1278,8 +1303,8 @@
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
                             <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
-                            <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image">🖼️</button>
-                            <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
+                            <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image (JPG, PNG, GIF, SVG)">🖼️</button>
+                            <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
                     </div>
                     ${optImgPreview}
@@ -1318,7 +1343,7 @@
                     <button class="btn btn-secondary btn-sm" style="display: ${optsDisplay};" onclick="event.stopPropagation(); addOption('${sec}', ${idx})">➕ <span class="hide-mobile">Option</span></button>
                     <button class="btn btn-secondary btn-sm" style="display: ${optsDisplay};" onclick="event.stopPropagation(); removeLastOption('${sec}', ${idx})">➖ <span class="hide-mobile">Option</span></button>
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🖼️ <span class="hide-mobile">Image</span></button>
-                    <input type="file" id="imgInput-${sec}-${idx}" accept="image/*" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
+                    <input type="file" id="imgInput-${sec}-${idx}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
                     <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
@@ -1389,23 +1414,37 @@
         function handleNewImageUpload(evt, sec, idx, isOption, optIdx) {
             const file = evt.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => { currentImageData = { sec, idx, isOption, optIdx }; openCropModalWithData(e.target.result); evt.target.value = ''; reader.onload = null; };
+            reader.onload = (e) => { 
+                currentImageData = { sec, idx, isOption, optIdx, rawData: e.target.result, fileType: file.type, fileName: file.name }; 
+                openCropModalWithData(e.target.result, file); 
+                evt.target.value = ''; 
+                reader.onload = null; 
+            };
             reader.readAsDataURL(file); 
         }
 
         function editOrReplaceImage(sec, idx) {
             const q = appState.questionsBySection[sec][idx];
             showConfirm("Edit existing image? (Cancel to upload new)", () => {
-                if(q && q.image && q.image !== 'PLACEHOLDER') { currentImageData = { sec, idx, isOption:false, optIdx:0 }; openCropModalWithData(q.image); }
+                if(q && q.image && q.image !== 'PLACEHOLDER') { 
+                    currentImageData = { sec, idx, isOption:false, optIdx:0, rawData: q.image }; 
+                    const isSvg = q.image.startsWith('data:image/svg+xml');
+                    const isGif = q.image.startsWith('data:image/gif');
+                    openCropModalWithData(q.image, { type: isSvg ? 'image/svg+xml' : (isGif ? 'image/gif' : '') }); 
+                }
             });
         }
         function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
 
-        function openCropModalWithData(imgSrc) {
+        function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
             document.getElementById('compSlider').value = 80; document.getElementById('compLabel').innerText = 80; document.getElementById('filterSelect').value = 'none';
             document.querySelectorAll('.ratio-btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
             document.getElementById('ratioFree').classList.add('btn-primary'); document.getElementById('ratioFree').classList.remove('btn-secondary');
+
+            const isVectorOrAnim = file && (file.type === 'image/svg+xml' || file.type === 'image/gif' || (file.name && (file.name.toLowerCase().endsWith('.svg') || file.name.toLowerCase().endsWith('.gif'))));
+            const vNotice = document.getElementById('vectorNotice');
+            if (vNotice) vNotice.style.display = isVectorOrAnim ? 'block' : 'none';
 
             if (cropperInstance) cropperInstance.destroy();
             cropperInstance = new Cropper(document.getElementById('cropImage'), { 
@@ -1448,6 +1487,27 @@
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
             renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
+        }
+
+        function saveOriginalImage() {
+            if (!currentImageData || !currentImageData.rawData) return;
+            const { sec, idx, isOption, optIdx, rawData } = currentImageData;
+            if (isOption) {
+                let q = appState.questionsBySection[sec][idx];
+                let rawOpt = q.options[optIdx] || '';
+                let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, '');
+                q.options[optIdx] = optText + `||IMG:${rawData}||`;
+            } else {
+                updateQuestion(sec, idx, 'image', 0, rawData);
+            }
+            currentCropBase64 = null;
+            document.getElementById('liveCropPreviewImg').src = '';
+            document.getElementById('cropImage').src = '';
+            renderAllQuestions();
+            debouncedUpdateSinglePreview();
+            closeModal('cropModal');
+            updateMissingImageAlert();
+            showToast('Original image applied (preserved vector/GIF quality)', 'success');
         }
 
         let currentTableData = null;
@@ -1809,7 +1869,7 @@
                 let katexCSS = ''; let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK') {
                     katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">';
-                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
+                    katexJS = `\n<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"><\/script>\n<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
                 txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
 
