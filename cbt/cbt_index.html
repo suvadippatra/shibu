@@ -588,14 +588,22 @@
         
         .hide-mobile { display: inline; }
 
+        /* General mobile & compact toolbar adaptations */
         @media (max-width: 1024px) {
             .nav-text-mobile-hide { display: none; }
             .navbar { padding: 0.6rem 1rem; gap: 0.4rem; }
             .btn-icon { padding: 0.4rem; font-size: 1rem; }
-            
+            .crop-workspace { grid-template-columns: 1fr; overflow-y: auto; } 
+            .crop-main { height: 40vh; min-height: 250px; }
+            .bottom-action-bar { padding: 0.5rem; }
+            #compileBtnMobileHide { display: none !important; }
+            .hide-mobile { display: none !important; }
+        }
+
+        /* Top-Bottom split ONLY in narrow Portrait orientation */
+        @media (max-width: 1024px) and (orientation: portrait) {
             .main { flex-direction: column !important; }
             
-            /* No !important on flex/height so JavaScript dragging can smoothly set heights */
             .left-panel, 
             .left-panel.expanded { 
                 width: 100%; 
@@ -633,21 +641,45 @@
                 line-height: 16px; 
                 font-size: 20px; 
             }
-
-            .crop-workspace { grid-template-columns: 1fr; overflow-y: auto; } 
-            .crop-main { height: 40vh; min-height: 250px; }
-            .bottom-action-bar { padding: 0.5rem; }
-            #compileBtnMobileHide { display: none !important; }
-            .hide-mobile { display: none !important; }
         }
 
-        @media (min-width: 1025px) {
+        /* Side-by-side layout with VERTICAL divider in Landscape mode or on Desktops */
+        @media (min-width: 1025px), (orientation: landscape) {
             .main { flex-direction: row !important; }
-            .left-panel.expanded { flex: 1 1 100%; max-width: 100%; border-right: none; }
-            .left-panel.split-view { flex: 0 0 55%; max-width: 55%; border-right: 1px solid var(--border); }
-            .right-panel { flex: 1 1 45%; max-width: 45%; }
-            .resizer { width: 14px; height: 100%; cursor: col-resize; }
-            .resizer::after { content: '⋮'; }
+            .left-panel,
+            .left-panel.expanded { 
+                flex: 1 1 100%; 
+                max-width: 100%; 
+                border-right: none; 
+                height: 100%; 
+            }
+            .left-panel.split-view { 
+                flex: 0 0 55%; 
+                max-width: 55%; 
+                width: 55%;
+                height: 100%; 
+                border-right: 1px solid var(--border); 
+                border-bottom: none; 
+            }
+            .right-panel { 
+                flex: 1 1 45%; 
+                max-width: 45%; 
+                width: 45%;
+                height: 100%; 
+                border-left: none; 
+                border-top: none; 
+            }
+            .resizer { 
+                width: 14px; 
+                height: 100%; 
+                cursor: col-resize; 
+                flex-direction: column; 
+            }
+            .resizer::after { 
+                content: '⋮'; 
+                line-height: normal; 
+                font-size: 16px; 
+            }
         }
         
         @media (max-width: 768px) {
@@ -1352,6 +1384,24 @@
                 rightPanel.style.height = '';
             }
             updateFastScrollElevator();
+        });
+
+        window.addEventListener('orientationchange', () => {
+            if (leftPanel) {
+                leftPanel.style.flex = '';
+                leftPanel.style.maxWidth = '';
+                leftPanel.style.maxHeight = '';
+                leftPanel.style.width = '';
+                leftPanel.style.height = '';
+            }
+            if (rightPanel) {
+                rightPanel.style.flex = '';
+                rightPanel.style.maxWidth = '';
+                rightPanel.style.maxHeight = '';
+                rightPanel.style.width = '';
+                rightPanel.style.height = '';
+            }
+            setTimeout(updateFastScrollElevator, 150);
         });
 
         const leftContentScroll = document.getElementById('leftContentScroll');
