@@ -63,7 +63,7 @@
             background-color: var(--primary);
         }
 
-        /* CRITICAL VIEWPORT LOCK: Prevents mobile browsers from scrolling document window */
+        /* Fixed viewport lock preventing browser auto-scroll outside application */
         html {
             height: 100%;
             height: 100dvh;
@@ -98,6 +98,7 @@
             -webkit-user-select: none !important;
         }
 
+        /* Top Navigation */
         .navbar {
             flex: 0 0 auto;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -125,6 +126,7 @@
         .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
 
+        /* Main Workspace */
         .main {
             flex: 1 1 0;
             min-height: 0;
@@ -146,9 +148,9 @@
             overflow: hidden;
             min-height: 0;
             min-width: 0;
-            transition: flex 0.2s, max-width 0.2s;
             background: var(--bg-main);
             position: relative;
+            transition: flex 0.2s, max-width 0.2s;
         }
         .left-panel.split-view {
             flex: 0 0 55%;
@@ -190,6 +192,7 @@
             min-width: 0;
         }
 
+        /* Linux-Style Fast Scroll Rail */
         .fast-scroll-rail {
             position: absolute;
             top: 0;
@@ -227,8 +230,9 @@
             cursor: grabbing;
         }
 
+        /* Split-Screen Resizer (Touch & Pointer friendly) */
         .resizer {
-            width: 12px;
+            width: 14px;
             cursor: col-resize;
             background: var(--border);
             flex-shrink: 0;
@@ -245,7 +249,7 @@
         .resizer::before {
             content: '';
             position: absolute;
-            top: -15px; bottom: -15px; left: -16px; right: -16px;
+            top: -18px; bottom: -18px; left: -18px; right: -18px;
             z-index: 70;
             touch-action: none !important;
         }
@@ -309,7 +313,6 @@
             min-width: 0;
         }
 
-        /* 2 Columns only when editor container has at least 880px breathing room */
         @container editorContainer (min-width: 880px) {
             .section-questions-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -323,7 +326,7 @@
             }
         }
 
-        /* STRICT SPLIT-VIEW OVERRIDE: Keep 1 spacious column when preview is open */
+        /* Strict Split-View Override: 1 spacious column when preview is open */
         .left-panel.split-view .section-questions-grid {
             grid-template-columns: 1fr !important;
         }
@@ -356,7 +359,20 @@
 
         .form-group { margin-bottom: 0.75rem; min-width: 0; }
         .form-group label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.3rem; color: var(--text-muted); }
-        .form-control { width: 100%; padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; background: var(--bg-input); color: var(--text-main); transition: all 0.2s; box-sizing: border-box; }
+        
+        /* Form Control without transition on height to enable instant auto-expansion */
+        .form-control {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+            box-sizing: border-box;
+        }
         .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; min-width: 0; }
 
@@ -386,9 +402,27 @@
         .qblock-header { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; width: 100%; min-width: 0; }
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 0.3rem;}
-        .qblock-textarea { width: 100%; min-height: 44px; font-size: 0.9rem; resize: vertical; box-sizing: border-box; }
         
-        /* STRICT 1-COLUMN FOR OPTIONS TO PREVENT HORIZONTAL BLOWOUTS */
+        /* Dedicated Question Textarea with fluid vertical expansion */
+        .qblock-textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-main);
+            box-sizing: border-box;
+            line-height: 1.5;
+            overflow-y: hidden;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .qblock-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        
+        /* 1-Column Options Grid */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -399,16 +433,16 @@
         }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; min-width: 0; }
         .option-main-row { display: flex; align-items: flex-start; gap: 0.35rem; width: 100%; min-width: 0; }
-        .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink:0; margin-top: 0.5rem; }
-        .option-label { font-weight: 700; font-size: 0.8rem; color: var(--text-muted); width: 18px; flex-shrink:0; text-align: center; margin-top: 0.5rem; }
+        .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; margin-top: 0.5rem; }
+        .option-label { font-weight: 700; font-size: 0.8rem; color: var(--text-muted); width: 18px; flex-shrink: 0; text-align: center; margin-top: 0.5rem; }
         
-        .option-input-wrap { flex: 1 1 0; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); transition: border-color 0.2s; min-width: 0; width: 100%; }
+        .option-input-wrap { flex: 1 1 0; display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input); transition: border-color 0.2s; min-width: 0; width: 100%; }
         .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15); }
-        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1 1 0; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; width: 100%; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; box-sizing: border-box; }
-        .auto-expand:focus { outline:none; }
+        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1 1 0; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; width: 100%; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: hidden; box-sizing: border-box; }
+        .auto-expand:focus { outline: none; }
         
-        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color:var(--text-muted); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; flex-shrink: 0; }
-        .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
+        .opt-img-btn { background: var(--bg-card); border: none; border-left: 1px solid var(--border); padding: 0 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--text-muted); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; flex-shrink: 0; }
+        .opt-img-btn:hover { background: var(--bg-hover); color: var(--primary); }
 
         .compact-actions-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; background: var(--bg-hover); padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-top: auto; width: 100%; min-width: 0; }
         .nat-config-block { background: var(--bg-hover); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px dashed var(--primary); margin-bottom: 0.5rem; width: 100%; min-width: 0; }
@@ -454,6 +488,7 @@
         .preview-option.correct { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--primary); padding: 0.5rem; color: var(--primary-dark); font-weight: 600; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
         
+        /* Responsive Modals */
         .modal {
             display: none;
             position: fixed;
@@ -560,38 +595,41 @@
             
             .main { flex-direction: column !important; }
             
+            /* No !important on flex/height so JavaScript dragging can smoothly set heights */
             .left-panel, 
-            .left-panel.split-view, 
             .left-panel.expanded { 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                min-width: 100% !important; 
-                border-right: none !important; 
+                width: 100%; 
+                max-width: 100%; 
+                min-width: 100%; 
+                border-right: none; 
             }
             .left-panel.split-view {
-                flex: 0 0 50% !important;
-                height: 50% !important;
-                max-height: 75% !important;
-                min-height: 25% !important;
-                border-bottom: 1px solid var(--border) !important;
+                width: 100%;
+                max-width: 100%;
+                flex: 0 0 50%;
+                height: 50%;
+                min-height: 20%;
+                max-height: 80%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
             }
             .right-panel { 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                flex: 1 1 50% !important; 
-                height: 50% !important;
-                border-left: none !important; 
-                border-top: none !important; 
+                width: 100%; 
+                max-width: 100%; 
+                flex: 1 1 50%; 
+                height: 50%;
+                border-left: none; 
+                border-top: none; 
             }
             
             .resizer { 
-                width: 100% !important; 
-                height: 16px !important; 
-                cursor: row-resize !important; 
-                flex-direction: row !important; 
+                width: 100%; 
+                height: 16px; 
+                cursor: row-resize; 
+                flex-direction: row; 
             }
             .resizer::after { 
-                content: '⋯' !important; 
+                content: '⋯'; 
                 line-height: 16px; 
                 font-size: 20px; 
             }
@@ -605,11 +643,11 @@
 
         @media (min-width: 1025px) {
             .main { flex-direction: row !important; }
-            .left-panel.expanded { flex: 1 1 100% !important; max-width: 100% !important; border-right: none !important; }
-            .left-panel.split-view { flex: 0 0 55% !important; max-width: 55% !important; border-right: 1px solid var(--border) !important; }
-            .right-panel { flex: 1 1 45% !important; max-width: 45% !important; }
-            .resizer { width: 12px !important; height: 100% !important; cursor: col-resize !important; }
-            .resizer::after { content: '⋮' !important; }
+            .left-panel.expanded { flex: 1 1 100%; max-width: 100%; border-right: none; }
+            .left-panel.split-view { flex: 0 0 55%; max-width: 55%; border-right: 1px solid var(--border); }
+            .right-panel { flex: 1 1 45%; max-width: 45%; }
+            .resizer { width: 14px; height: 100%; cursor: col-resize; }
+            .resizer::after { content: '⋮'; }
         }
         
         @media (max-width: 768px) {
@@ -762,7 +800,7 @@
                     </div>
                 </div>
 
-                <!-- Linux-style fast scroll elevator rail (Touch & Mouse Draggable) -->
+                <!-- Linux-style fast scroll elevator rail -->
                 <div class="fast-scroll-rail" id="leftScrollRail" title="Drag or click to scroll page">
                     <div class="fast-scroll-thumb" id="leftScrollThumb"></div>
                 </div>
@@ -775,7 +813,7 @@
             </div>
         </div>
 
-        <!-- Draggable Resizer with unified PointerEvents -->
+        <!-- Draggable Resizer with unified Touch & Pointer events -->
         <div class="resizer" id="dragMe" title="Drag to adjust split view"></div>
 
         <div class="right-panel hidden-panel" id="rightPanel">
@@ -1233,40 +1271,30 @@
                 const isColumn = window.getComputedStyle(mainContainer).flexDirection === 'column';
 
                 if (!isColumn) {
-                    const newWidth = ((clientX - mainRect.left) / mainRect.width) * 100;
-                    if (newWidth >= 18 && newWidth <= 82) {
-                        leftPanel.style.flex = `0 0 ${newWidth}%`;
-                        leftPanel.style.maxWidth = `${newWidth}%`;
-                        leftPanel.style.width = `${newWidth}%`;
-                        rightPanel.style.flex = `1 1 ${100 - newWidth}%`;
-                        rightPanel.style.maxWidth = `${100 - newWidth}%`;
-                    }
+                    const newWidth = Math.max(18, Math.min(82, ((clientX - mainRect.left) / mainRect.width) * 100));
+                    leftPanel.style.setProperty('flex', `0 0 ${newWidth}%`, 'important');
+                    leftPanel.style.setProperty('max-width', `${newWidth}%`, 'important');
+                    leftPanel.style.setProperty('width', `${newWidth}%`, 'important');
+                    rightPanel.style.setProperty('flex', `1 1 ${100 - newWidth}%`, 'important');
+                    rightPanel.style.setProperty('max-width', `${100 - newWidth}%`, 'important');
+                    rightPanel.style.setProperty('width', `${100 - newWidth}%`, 'important');
                 } else {
-                    const newHeight = ((clientY - mainRect.top) / mainRect.height) * 100;
-                    if (newHeight >= 15 && newHeight <= 85) {
-                        leftPanel.style.flex = `0 0 ${newHeight}%`;
-                        leftPanel.style.maxHeight = `${newHeight}%`;
-                        leftPanel.style.height = `${newHeight}%`;
-                        rightPanel.style.flex = `1 1 ${100 - newHeight}%`;
-                        rightPanel.style.maxHeight = `${100 - newHeight}%`;
-                    }
+                    const newHeight = Math.max(15, Math.min(85, ((clientY - mainRect.top) / mainRect.height) * 100));
+                    leftPanel.style.setProperty('flex', `0 0 ${newHeight}%`, 'important');
+                    leftPanel.style.setProperty('height', `${newHeight}%`, 'important');
+                    leftPanel.style.setProperty('max-height', `none`, 'important');
+                    rightPanel.style.setProperty('flex', `1 1 ${100 - newHeight}%`, 'important');
+                    rightPanel.style.setProperty('height', `${100 - newHeight}%`, 'important');
+                    rightPanel.style.setProperty('max-height', `none`, 'important');
                 }
             });
         }
 
-        resizer.addEventListener('pointerdown', function(e) {
-            e.preventDefault();
-            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
+        function startResizing(e) {
             isResizing = true;
             document.body.classList.add('is-resizing');
             resizer.classList.add('resizing');
-        });
-
-        resizer.addEventListener('pointermove', function(e) {
-            if (!isResizing) return;
-            e.preventDefault();
-            handleResizeMove(e.clientX, e.clientY);
-        });
+        }
 
         function stopResizing(e) {
             if (!isResizing) return;
@@ -1277,8 +1305,36 @@
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         }
 
+        // Pointer Events support
+        resizer.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
+            startResizing(e);
+        });
+        resizer.addEventListener('pointermove', function(e) {
+            if (!isResizing) return;
+            e.preventDefault();
+            handleResizeMove(e.clientX, e.clientY);
+        });
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
+
+        // Dedicated Touch Events with passive: false for reliable finger dragging on mobile
+        resizer.addEventListener('touchstart', function(e) {
+            if (e.touches && e.touches.length === 1) {
+                e.preventDefault();
+                startResizing(e);
+            }
+        }, { passive: false });
+        window.addEventListener('touchmove', function(e) {
+            if (!isResizing) return;
+            if (e.touches && e.touches.length === 1) {
+                e.preventDefault();
+                handleResizeMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', stopResizing);
+        window.addEventListener('touchcancel', stopResizing);
 
         window.addEventListener('resize', () => {
             if (leftPanel) {
@@ -1292,6 +1348,8 @@
                 rightPanel.style.flex = '';
                 rightPanel.style.maxWidth = '';
                 rightPanel.style.maxHeight = '';
+                rightPanel.style.width = '';
+                rightPanel.style.height = '';
             }
             updateFastScrollElevator();
         });
@@ -1299,7 +1357,6 @@
         const leftContentScroll = document.getElementById('leftContentScroll');
         const leftScrollRail = document.getElementById('leftScrollRail');
         const leftScrollThumb = document.getElementById('leftScrollThumb');
-        let isScrubbing = false;
 
         function updateFastScrollElevator() {
             if (!leftContentScroll || !leftScrollThumb || !leftScrollRail) return;
@@ -1337,31 +1394,28 @@
             updateFastScrollElevator();
         }
 
+        let isScrubbing = false;
         leftScrollRail.addEventListener('pointerdown', function(e) {
             e.preventDefault();
             try { leftScrollRail.setPointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = true;
             handleScrub(e.clientY);
         });
-
         leftScrollRail.addEventListener('pointermove', function(e) {
             if (!isScrubbing) return;
             e.preventDefault();
             handleScrub(e.clientY);
         });
-
         function stopScrubbing(e) {
             if (!isScrubbing) return;
             try { if (e && e.pointerId) leftScrollRail.releasePointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = false;
         }
-
         leftScrollRail.addEventListener('pointerup', stopScrubbing);
         leftScrollRail.addEventListener('pointercancel', stopScrubbing);
-
         leftContentScroll.addEventListener('scroll', updateFastScrollElevator, { passive: true });
 
-        // Safe scrolling within the left panel without scrolling the document window
+        // Container-scoped smooth scrolling
         function scrollToElementInLeftPanel(targetEl) {
             if (!targetEl || !leftContentScroll) return;
             const containerRect = leftContentScroll.getBoundingClientRect();
@@ -1374,6 +1428,39 @@
                     behavior: 'smooth'
                 });
             }
+        }
+
+        function scrollPreviewToQuestion(sec, idx) {
+            const prevArea = document.getElementById('previewArea');
+            const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
+            if (!prevArea || !prevEl) return;
+            
+            const containerRect = prevArea.getBoundingClientRect();
+            const elRect = prevEl.getBoundingClientRect();
+            const relativeOffset = elRect.top - containerRect.top;
+            
+            prevArea.scrollTo({
+                top: prevArea.scrollTop + relativeOffset - 24,
+                behavior: 'smooth'
+            });
+
+            prevEl.classList.remove('highlight-flash');
+            void prevEl.offsetWidth; // Trigger DOM reflow to restart animation
+            prevEl.classList.add('highlight-flash');
+            setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
+        }
+
+        function syncPreviewScroll(sec, idx) {
+            if(!previewIsVisible) return;
+            const secChanged = (activePreviewSection !== sec);
+            activePreviewSection = sec;
+            if (secChanged) {
+                renderPreviewTabs();
+                renderAllPreviews(); // Immediately render target section
+            }
+            setTimeout(() => {
+                scrollPreviewToQuestion(sec, idx);
+            }, secChanged ? 80 : 20);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1399,15 +1486,16 @@
             }
             renderPreviewTabs();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 150);
         });
 
+        // Instant auto-resizing text box logic without height transition lag
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            el.style.height = (el.scrollHeight) + 'px';
+            el.style.height = Math.max(el.scrollHeight, 44) + 'px';
             updateFastScrollElevator();
         }
 
@@ -1444,6 +1532,8 @@
             right.style.flex = '';
             right.style.maxWidth = '';
             right.style.maxHeight = '';
+            right.style.width = '';
+            right.style.height = '';
 
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
@@ -1487,22 +1577,6 @@
                     revealImg(id, src);
                 }
             });
-        }
-
-        function syncPreviewScroll(sec, idx) {
-            if(!previewIsVisible) return;
-            if(activePreviewSection !== sec) {
-                activePreviewSection = sec;
-                renderPreviewTabs();
-            }
-            setTimeout(() => {
-                const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
-                if(prevEl) {
-                    prevEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    prevEl.classList.add('highlight-flash');
-                    setTimeout(() => prevEl.classList.remove('highlight-flash'), 1500);
-                }
-            }, 50);
         }
 
         function parseFormatting(str) {
@@ -1647,6 +1721,7 @@
                     const firstTextarea = secCard.querySelector('.qblock-textarea');
                     if (firstTextarea) {
                         try { firstTextarea.focus({ preventScroll: true }); } catch(err) { firstTextarea.focus(); }
+                        autoResize(firstTextarea);
                     }
                 }
                 updateFastScrollElevator();
@@ -1715,7 +1790,7 @@
             });
             renderMarksTable(); updateMissingImageAlert();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 50);
         }
@@ -1738,7 +1813,9 @@
                 if (badge) badge.innerText = `${appState.questionsBySection[sec].length} Qs`;
 
                 renderMarksTable();
-                debouncedRenderAllPreviews();
+                if (activePreviewSection === sec) {
+                    debouncedRenderAllPreviews();
+                }
 
                 scrollToElementInLeftPanel(newBlock);
                 newBlock.classList.add('highlight-flash');
@@ -1758,6 +1835,11 @@
         function createQuestionBlock(sec, idx, q) {
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
+
+            // Sync preview on block click
+            div.onclick = (e) => {
+                if (!e.target.closest('button, input, select')) syncPreviewScroll(sec, idx);
+            };
 
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
             (q.options || []).forEach((opt, oi) => {
@@ -1783,7 +1865,7 @@
                         <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image (JPG, PNG, GIF, SVG)">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -1807,7 +1889,7 @@
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <div class="qblock-textarea-wrap">
-                        <textarea class="qblock-textarea form-control auto-expand" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
+                        <textarea class="qblock-textarea auto-expand" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
                         <select class="form-control hide-desktop-only" style="width: auto; font-weight: 600; padding: 0.3rem 0.5rem; display: none;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                             <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                         </select>
@@ -1827,48 +1909,61 @@
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕ <span class="hide-mobile">Remove</span></button>
                 </div>
             `;
             
             if(window.innerWidth <= 768) {
-                div.querySelector('.hide-desktop-only').style.display = 'block';
+                const sel = div.querySelector('.hide-desktop-only');
+                if (sel) sel.style.display = 'block';
             }
 
             return div;
         }
 
-        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
+        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                renderAllQuestions(); debouncedUpdateSinglePreview(); 
+                renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); 
             } 
         }
 
         function updateOptionText(sec, idx, oi, value) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
             const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg; debouncedUpdateSinglePreview();
+            q.options[oi] = value + optImg; 
+            debouncedUpdateSingleQuestionPreview(sec, idx);
         }
 
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview();
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); 
+            renderAllQuestions(); 
+            debouncedUpdateSingleQuestionPreview(sec, idx);
         }
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { q.correct = parseInt(value); } 
-            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
-            else { q[field] = value; }
+            if (field === 'correct') { 
+                q.correct = parseInt(value); 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            } 
+            else if (field === 'type') { 
+                q.type = value; 
+                renderAllQuestions(); 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            } 
+            else { 
+                q[field] = value; 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
             }
-            debouncedUpdateSinglePreview();
         }
 
         function populateSearchDropdown() { document.getElementById('searchSec').innerHTML = appState.sections.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); updateSearchHint(); }
@@ -1885,6 +1980,7 @@
                 scrollToElementInLeftPanel(block);
                 block.classList.add('highlight-flash'); 
                 setTimeout(()=>block.classList.remove('highlight-flash'), 1500); 
+                syncPreviewScroll(sec, idx);
             } else { 
                 showToast(`Q${qNum} not found in ${sec}.`, 'error'); 
             }
@@ -1914,7 +2010,7 @@
                 }
             });
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); updateMissingImageAlert(); }
 
         function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -1970,7 +2066,7 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
+            renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); closeModal('cropModal'); updateMissingImageAlert();
         }
 
         function saveOriginalImage() {
@@ -1988,7 +2084,7 @@
             document.getElementById('liveCropPreviewImg').src = '';
             document.getElementById('cropImage').src = '';
             renderAllQuestions();
-            debouncedUpdateSinglePreview();
+            debouncedUpdateSingleQuestionPreview(sec, idx);
             closeModal('cropModal');
             updateMissingImageAlert();
             showToast('Original image applied (preserved vector/GIF quality)', 'success');
@@ -2021,9 +2117,9 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('tableModal');
+            renderAllQuestions(); debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); closeModal('tableModal');
         }
-        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
+        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -2033,7 +2129,12 @@
             appState.sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `ptab ${sec.name === activePreviewSection ? 'active' : ''}`;
-                tab.innerText = sec.name; tab.onclick = () => { activePreviewSection = sec.name; renderPreviewTabs(); renderAllPreviews(); };
+                tab.innerText = sec.name; 
+                tab.onclick = () => { 
+                    activePreviewSection = sec.name; 
+                    renderPreviewTabs(); 
+                    renderAllPreviews(); 
+                };
                 tabsContainer.appendChild(tab);
             });
         }
@@ -2086,6 +2187,36 @@
             return html;
         }
 
+        // Granular O(1) Preview Updater: updates ONLY the question being edited
+        function updateSingleQuestionPreview(sec, idx) {
+            if (!previewIsVisible) return;
+            if (activePreviewSection !== sec) {
+                syncPreviewScroll(sec, idx);
+                return;
+            }
+            const qBox = document.getElementById(`preview-qbox-${sec}-${idx}`);
+            const q = appState.questionsBySection[sec]?.[idx];
+            if (!qBox || !q) return;
+
+            qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
+
+            if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(qBox, { 
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
+                    throwOnError: false 
+                });
+            }
+        }
+
+        function debouncedUpdateSingleQuestionPreview(sec, idx) {
+            if (!previewIsVisible) return;
+            const key = `${sec}-${idx}`;
+            if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
+            granularTimeouts[key] = setTimeout(() => {
+                updateSingleQuestionPreview(sec, idx);
+            }, 60); // Fast 60ms real-time responsiveness
+        }
+
         function renderAllPreviews() {
             if(!previewIsVisible) return;
             const area = document.getElementById('previewArea');
@@ -2102,12 +2233,6 @@
         }
 
         function debouncedRenderAllPreviews() {
-            if(!previewIsVisible) return;
-            clearTimeout(globalPreviewTimeout);
-            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
-        }
-
-        function debouncedUpdateSinglePreview() {
             if(!previewIsVisible) return;
             clearTimeout(globalPreviewTimeout);
             globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
@@ -2296,7 +2421,7 @@
             showToast('Imported Successfully', 'success');
             
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
                 if(previewIsVisible) renderAllPreviews();
                 updateFastScrollElevator();
             }, 150);
