@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CBT</title>
     
-    <!-- Cropper.js (Local prioritized with CDN fallback) -->
+    <!-- Cropper.js (Local repository prioritized with CDN fallback) -->
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css';">
     <script src="vendor/cropper/cropper.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js';"></script>
 
-    <!-- KaTeX Core & Fonts (Local prioritized with CDN fallback) -->
+    <!-- KaTeX Core & Fonts (Local repository prioritized with CDN fallback) -->
     <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
     <script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';"></script>
@@ -63,6 +63,7 @@
             background-color: var(--primary);
         }
 
+        /* CRITICAL VIEWPORT LOCK: Prevents mobile browsers from scrolling document window */
         html {
             height: 100%;
             height: 100dvh;
@@ -119,7 +120,7 @@
         .btn-icon:hover { background: rgba(255, 255, 255, 0.2); border-color: white; transform: translateY(-1px); }
 
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 270px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 260px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s ease-out; }
         .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
@@ -145,9 +146,9 @@
             overflow: hidden;
             min-height: 0;
             min-width: 0;
+            transition: flex 0.2s, max-width 0.2s;
             background: var(--bg-main);
             position: relative;
-            transition: flex 0.2s, max-width 0.2s;
         }
         .left-panel.split-view {
             flex: 0 0 55%;
@@ -227,7 +228,7 @@
         }
 
         .resizer {
-            width: 14px;
+            width: 12px;
             cursor: col-resize;
             background: var(--border);
             flex-shrink: 0;
@@ -244,7 +245,7 @@
         .resizer::before {
             content: '';
             position: absolute;
-            top: -18px; bottom: -18px; left: -18px; right: -18px;
+            top: -15px; bottom: -15px; left: -16px; right: -16px;
             z-index: 70;
             touch-action: none !important;
         }
@@ -297,6 +298,7 @@
         details.card[open] > summary { border-bottom-color: var(--border); margin-bottom: 0.85rem; }
         .card-inner { padding: 0 1rem; width: 100%; min-width: 0; }
 
+        /* Responsive Question Grid */
         .section-questions-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -307,6 +309,7 @@
             min-width: 0;
         }
 
+        /* 2 Columns only when editor container has at least 880px breathing room */
         @container editorContainer (min-width: 880px) {
             .section-questions-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -320,6 +323,7 @@
             }
         }
 
+        /* STRICT SPLIT-VIEW OVERRIDE: Keep 1 spacious column when preview is open */
         .left-panel.split-view .section-questions-grid {
             grid-template-columns: 1fr !important;
         }
@@ -352,19 +356,7 @@
 
         .form-group { margin-bottom: 0.75rem; min-width: 0; }
         .form-group label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.3rem; color: var(--text-muted); }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.4rem 0.6rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-family: inherit;
-            background: var(--bg-input);
-            color: var(--text-main);
-            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
-            box-sizing: border-box;
-        }
+        .form-control { width: 100%; padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; background: var(--bg-input); color: var(--text-main); transition: all 0.2s; box-sizing: border-box; }
         .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; min-width: 0; }
 
@@ -394,27 +386,9 @@
         .qblock-header { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; width: 100%; min-width: 0; }
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 0.3rem;}
+        .qblock-textarea { width: 100%; min-height: 44px; font-size: 0.9rem; resize: vertical; box-sizing: border-box; }
         
-        .qblock-textarea {
-            width: 100% !important;
-            min-height: 48px;
-            padding: 0.45rem 0.6rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-family: inherit;
-            background: var(--bg-input);
-            color: var(--text-main);
-            box-sizing: border-box !important;
-            line-height: 1.5;
-            overflow-y: hidden;
-            resize: vertical;
-            display: block !important;
-            flex: none !important;
-            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
-        }
-        .qblock-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-        
+        /* STRICT 1-COLUMN FOR OPTIONS TO PREVENT HORIZONTAL BLOWOUTS */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -425,16 +399,16 @@
         }
         .qblock-option-item { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; min-width: 0; }
         .option-main-row { display: flex; align-items: flex-start; gap: 0.35rem; width: 100%; min-width: 0; }
-        .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; margin-top: 0.5rem; }
-        .option-label { font-weight: 700; font-size: 0.8rem; color: var(--text-muted); width: 18px; flex-shrink: 0; text-align: center; margin-top: 0.5rem; }
+        .option-radio { accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; flex-shrink:0; margin-top: 0.5rem; }
+        .option-label { font-weight: 700; font-size: 0.8rem; color: var(--text-muted); width: 18px; flex-shrink:0; text-align: center; margin-top: 0.5rem; }
         
-        .option-input-wrap { flex: 1 1 0; display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input); transition: border-color 0.2s; min-width: 0; width: 100%; }
+        .option-input-wrap { flex: 1 1 0; display:flex; align-items: stretch; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-input); transition: border-color 0.2s; min-width: 0; width: 100%; }
         .option-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15); }
-        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1 1 0; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; width: 100%; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; overflow-y: hidden; box-sizing: border-box; }
-        .auto-expand:focus { outline: none; }
+        .auto-expand { border: none; padding: 0.4rem 0.5rem; flex: 1 1 0; font-size: 0.85rem; background: transparent; color: var(--text-main); min-width: 0; width: 100%; resize: vertical; min-height: 36px; font-family: inherit; line-height: 1.4; box-sizing: border-box; }
+        .auto-expand:focus { outline:none; }
         
-        .opt-img-btn { background: var(--bg-card); border: none; border-left: 1px solid var(--border); padding: 0 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--text-muted); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; flex-shrink: 0; }
-        .opt-img-btn:hover { background: var(--bg-hover); color: var(--primary); }
+        .opt-img-btn { background:var(--bg-card); border:none; border-left:1px solid var(--border); padding:0 0.5rem; cursor:pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color:var(--text-muted); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; flex-shrink: 0; }
+        .opt-img-btn:hover { background:var(--bg-hover); color:var(--primary); }
 
         .compact-actions-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; background: var(--bg-hover); padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-top: auto; width: 100%; min-width: 0; }
         .nat-config-block { background: var(--bg-hover); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px dashed var(--primary); margin-bottom: 0.5rem; width: 100%; min-width: 0; }
@@ -583,6 +557,45 @@
             .nav-text-mobile-hide { display: none; }
             .navbar { padding: 0.6rem 1rem; gap: 0.4rem; }
             .btn-icon { padding: 0.4rem; font-size: 1rem; }
+            
+            .main { flex-direction: column !important; }
+            
+            .left-panel, 
+            .left-panel.split-view, 
+            .left-panel.expanded { 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                min-width: 100% !important; 
+                border-right: none !important; 
+            }
+            .left-panel.split-view {
+                flex: 0 0 50% !important;
+                height: 50% !important;
+                max-height: 75% !important;
+                min-height: 25% !important;
+                border-bottom: 1px solid var(--border) !important;
+            }
+            .right-panel { 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                flex: 1 1 50% !important; 
+                height: 50% !important;
+                border-left: none !important; 
+                border-top: none !important; 
+            }
+            
+            .resizer { 
+                width: 100% !important; 
+                height: 16px !important; 
+                cursor: row-resize !important; 
+                flex-direction: row !important; 
+            }
+            .resizer::after { 
+                content: '⋯' !important; 
+                line-height: 16px; 
+                font-size: 20px; 
+            }
+
             .crop-workspace { grid-template-columns: 1fr; overflow-y: auto; } 
             .crop-main { height: 40vh; min-height: 250px; }
             .bottom-action-bar { padding: 0.5rem; }
@@ -590,84 +603,13 @@
             .hide-mobile { display: none !important; }
         }
 
-        @media (max-width: 1024px) and (orientation: portrait) {
-            .main { flex-direction: column !important; }
-            
-            .left-panel, 
-            .left-panel.expanded { 
-                width: 100%; 
-                max-width: 100%; 
-                min-width: 100%; 
-                border-right: none; 
-            }
-            .left-panel.split-view {
-                width: 100%;
-                max-width: 100%;
-                flex: 0 0 50%;
-                height: 50%;
-                min-height: 20%;
-                max-height: 80%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            .right-panel { 
-                width: 100%; 
-                max-width: 100%; 
-                flex: 1 1 50%; 
-                height: 50%;
-                border-left: none; 
-                border-top: none; 
-            }
-            
-            .resizer { 
-                width: 100%; 
-                height: 16px; 
-                cursor: row-resize; 
-                flex-direction: row; 
-            }
-            .resizer::after { 
-                content: '⋯'; 
-                line-height: 16px; 
-                font-size: 20px; 
-            }
-        }
-
-        @media (min-width: 1025px), (orientation: landscape) {
+        @media (min-width: 1025px) {
             .main { flex-direction: row !important; }
-            .left-panel,
-            .left-panel.expanded { 
-                flex: 1 1 100%; 
-                max-width: 100%; 
-                border-right: none; 
-                height: 100%; 
-            }
-            .left-panel.split-view { 
-                flex: 0 0 55%; 
-                max-width: 55%; 
-                width: 55%;
-                height: 100%; 
-                border-right: 1px solid var(--border); 
-                border-bottom: none; 
-            }
-            .right-panel { 
-                flex: 1 1 45%; 
-                max-width: 45%; 
-                width: 45%;
-                height: 100%; 
-                border-left: none; 
-                border-top: none; 
-            }
-            .resizer { 
-                width: 14px; 
-                height: 100%; 
-                cursor: col-resize; 
-                flex-direction: column; 
-            }
-            .resizer::after { 
-                content: '⋮'; 
-                line-height: normal; 
-                font-size: 16px; 
-            }
+            .left-panel.expanded { flex: 1 1 100% !important; max-width: 100% !important; border-right: none !important; }
+            .left-panel.split-view { flex: 0 0 55% !important; max-width: 55% !important; border-right: 1px solid var(--border) !important; }
+            .right-panel { flex: 1 1 45% !important; max-width: 45% !important; }
+            .resizer { width: 12px !important; height: 100% !important; cursor: col-resize !important; }
+            .resizer::after { content: '⋮' !important; }
         }
         
         @media (max-width: 768px) {
@@ -699,12 +641,16 @@
     <nav class="navbar">
         <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT</span></div>
         <div class="navbar-actions">
+            <!-- Global Image Missing Notification -->
             <button class="btn-icon hidden" id="missingImgIcon" onclick="openModal('missingImageModal')" style="color: #fca5a5; background: rgba(239, 68, 68, 0.2); border-color: var(--danger);" title="Missing Images">🚨 <span class="nav-text-mobile-hide" id="missingImgCount">0</span></button>
+            
+            <!-- Core Tools -->
             <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Live Preview" onclick="togglePreviewLayout()">👁️</button>
             <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖<span class="nav-text-mobile-hide"> Prompt</span></button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌<span class="nav-text-mobile-hide"> Import</span></button>
             
+            <!-- Triple Dot Menu -->
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)" title="Menu">⋮</button>
                 <div class="dropdown-content" id="mainMenu">
@@ -816,6 +762,7 @@
                     </div>
                 </div>
 
+                <!-- Linux-style fast scroll elevator rail (Touch & Mouse Draggable) -->
                 <div class="fast-scroll-rail" id="leftScrollRail" title="Drag or click to scroll page">
                     <div class="fast-scroll-thumb" id="leftScrollThumb"></div>
                 </div>
@@ -828,6 +775,7 @@
             </div>
         </div>
 
+        <!-- Draggable Resizer with unified PointerEvents -->
         <div class="resizer" id="dragMe" title="Drag to adjust split view"></div>
 
         <div class="right-panel hidden-panel" id="rightPanel">
@@ -886,11 +834,11 @@
             </div>
             <div class="engine-options" style="overflow-y: auto; max-height: 55vh; padding-right: 0.2rem;">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.6rem; margin-bottom:0.75rem; font-size:0.85rem; color:var(--text-main);">
-                    <strong>HTML Mode Active:</strong> Pure HTML Fallback automatically transforms math and arrow symbols into universal HTML entities. You can switch to Native MathML or KaTeX if you need publication-grade rendering.
+                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX mode if you need math rendering.
                 </div>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
-                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses Unicode symbols and sub/sup scripts.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
@@ -1064,6 +1012,7 @@
                 </div>
             </div>
             
+            <!-- ENGLISH COMPREHENSIVE GUIDE -->
             <div id="help-eng" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Advanced Features & Best Practices</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1080,12 +1029,11 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX Formulas:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
                     <li><strong>Multiplication Symbol Rule:</strong> NEVER use the asterisk <code>*</code> for multiplication in math (e.g., <code>$2 * 3$</code> collides with Markdown italics). Always write <code>\times</code> (for $\times$) or <code>\cdot</code> (for $\cdot$).</li>
-                    <li><strong>Arrows & Chemical Pathways:</strong> Use <code>\rightarrow</code> ($ \rightarrow $) or <code>\rightleftharpoons</code> ($ \rightleftharpoons $) in LaTeX mode. In HTML mode, use standard Unicode arrows like → or ⇌. The engine automatically translates them even if enclosed in dollar signs.</li>
-                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →, ⇌) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts (e.g., H<sub>2</sub>O).</li>
+                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, do not use LaTeX backslashes. Use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts.</li>
                     <li><strong>Compilation Engine Options:</strong> 
                         <br>• <strong>Native MathML:</strong> Lightweight offline math rendered directly by the browser engine.
                         <br>• <strong>KaTeX (Online):</strong> Publication-grade typography requiring an internet connection.
-                        <br>• <strong>Pure HTML Fallback:</strong> Converts math and arrows to lightweight HTML with sub/sup scripts and Unicode for universal offline compatibility.</li>
+                        <br>• <strong>Pure HTML Fallback:</strong> Converts math to lightweight italicized HTML with sub/sup scripts for maximum offline compatibility.</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Sections, Marking, and Max Attempts</h3>
@@ -1109,45 +1057,45 @@
                 </ul>
             </div>
             
+            <!-- BENGALI COMPREHENSIVE GUIDE -->
             <div id="help-ben" class="hidden" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অ্যাডভান্সড ফিচার ও সেরা কার্যপ্রণালী</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>AI Prompt ব্যবহার:</strong> 🤖 <strong>Prompt</strong> বাটনে ক্লিক করে প্রম্পট কপি করুন এবং Gemini/ChatGPT-তে প্রশ্নপত্রের PDF-এর সাথে দিন। AI যে `.cbt` কোড দেবে, তা 📌 <strong>Import</strong>-এ পেস্ট করে ইনপুট নিন।</li>
-                    <li><strong>ছবি, GIF ও SVG সাপোর্ট:</strong> সাধারণ ছবি (JPG, PNG) ছাড়াও একই বাটন দিয়ে অ্যানিমেটেড GIF এবং ভেক্টর SVG সরাসরি আপলোড করা যাবে। ডায়ালগে <strong>⚡ Use Original</strong> ক্লিক করলে কোয়ালিটি ও অ্যানিমেশন অক্ষুণ্ণ থাকবে।</li>
-                    <li><strong>মেমরি সুরক্ষা (20s VRAM Flush):</strong> মোবাইল ব্রাউজারের ক্র্যাশ রুখতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবি দেখা যাবে, এরপর নিজে থেকেই মেমরি থেকে মুছে যাবে। ⋮ মেনু থেকে সব ছবি একসাথে দেখা যায়।</li>
-                    <li><strong>টাইপোগ্রাফি:</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করবেন।</li>
-                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে তবে `[IMAGE]` লেখে। আমাদের সিস্টেম তা নিজে থেকেই ধরে ফেলে এবং লাল রঙের 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন বানিয়ে দেয়।</li>
-                    <li><strong>মোবাইল ও ট্যাবলেট রিসাইজার:</strong> ফোন বা ট্যাবলেটে `⋮` হ্যান্ডেলটি আঙুল বা মাউস দিয়ে টেনে এডিটর ও লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন। সাইড স্ক্রাবার দিয়ে পেজ দ্রুত স্ক্রোল করুন।</li>
+                    <li><strong>ছবি, GIF ও SVG সাপোর্ট:</strong> সাধারণ ছবি (JPG, PNG) ছাড়াও একই বাটন দিয়ে অ্যানিমেটেড GIF এবং ভেক্টর SVG সরাসরি আপলোড করা যাবে। ডায়ালগে <strong>⚡ Use Original</strong> ক্লিক করলে কোয়ালিটি ও অ্যানিমেশন অক্ষুণ্ণ থাকবে।</li>
+                    <li><strong>মেমরি সুরক্ষা (20s VRAM Flush):</strong> মোবাইল ব্রাউজারের ক্র্যাশ রুখতে ছবিগুলো সরাসরি লোড না হয়ে `🖼️ View Image` বাটন হিসেবে থাকে। ক্লিক করলে ২০ সেকেন্ডের জন্য ছবি দেখা যাবে, এরপর নিজে থেকেই মেমরি থেকে মুছে যাবে। ⋮ মেনু থেকে সব ছবি একসাথে দেখা যায়।</li>
+                    <li><strong>টাইপোগ্রাফি:</strong> লেখা বোল্ড বা ইটালিক করতে <code>**bold**</code>, <code>*italic*</code>, এবং <code>__underline__</code> ব্যবহার করুন। বৈজ্ঞানিক নাম (যেমন *Mangifera indica*) অবশ্যই অ্যাস্টেরিস্ক দিয়ে ইটালিক করবেন।</li>
+                    <li><strong>অটো-ইমেজ ডিটেকশন:</strong> AI যদি কোনো ডায়াগ্রাম পড়তে না পারে তবে `[IMAGE]` লেখে। আমাদের সিস্টেম তা নিজে থেকেই ধরে ফেলে এবং লাল রঙের 🚨 <strong>UPLOAD MISSING IMAGE</strong> বাটন বানিয়ে দেয়।</li>
+                    <li><strong>মোবাইল ও ট্যাবলেট রিসাইজার:</strong> ফোন বা ট্যাবলেটে `⋮` হ্যান্ডেলটি আঙুল বা মাউস দিয়ে টেনে এডিটর ও লাইভ প্রিভিউয়ের সাইজ নিজের মতো ঠিক করে নিন। সাইড স্ক্রাবার দিয়ে পেজ দ্রুত স্ক্রোল করুন।</li>
                     <li><strong>সিঙ্ক ও কম্পাইল:</strong> কাজ চলাকালীন 📌 <strong>Import -> 🔄 Sync CBT Code</strong> ক্লিক করে ব্যাকআপ রাখুন। সবশেষে 🚀 <strong>Compile Final HTML</strong>-এ ক্লিক করে আপনার সম্পূর্ণ অফলাইন পরীক্ষার ফাইলটি ডাউনলোড করুন।</li>
                 </ol>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">গণিত ও ফরম্যাটিং (LaTeX, KaTeX, MathML, HTML)</h3>
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX সমীকরণ:</strong> সাধারণ সূত্রের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং ডিসপ্লে ব্লকের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
-                    <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার <code>*</code> ব্যবহার করবেন না (যেমন <code>$2 * 3$</code> দিলে ইটালিক কোডের সাথে সংঘর্ষ হবে)। সবসময় <code>\times</code> ($2 \times 3$) অথবা <code>\cdot</code> ব্যবহার করুন।</li>
-                    <li><strong>তীরচিহ্ন ও জৈব রাসায়নিক ধাপ:</strong> LaTeX মোডে <code>\rightarrow</code> বা <code>\rightleftharpoons</code> ব্যবহার করুন। HTML মোডে সরাসরি ইউনিকোড তীরচিহ্ন (→ বা ⇌) ব্যবহার করবেন।</li>
-                    <li><strong>HTML মোড প্রতীক:</strong> HTML মোডে সরাসরি লেখার সময় ব্যাকস্ল্যাশ ছাড়া ইউনিকোড প্রতীক (π, α, β, θ, ±, √, ×, ÷, →) এবং পাওয়ার/সাবস্ক্রিপ্টের জন্য <code>&lt;sup&gt;2&lt;/sup&gt;</code> ও <code>&lt;sub&gt;2&lt;/sub&gt;</code> ট্যাগ দিন।</li>
-                    <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
+                    <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার <code>*</code> ব্যবহার করবেন না (যেমন <code>$2 * 3$</code> দিলে ইটালিক কোডের সাথে সংঘর্ষ হবে)। সবসময় <code>\times</code> ($2 \times 3$) অথবা <code>\cdot</code> ব্যবহার করুন।</li>
+                    <li><strong>HTML মোড প্রতীক:</strong> HTML মোডে সরাসরি লেখার সময় ব্যাকস্ল্যাশ ছাড়া ইউনিকোড প্রতীক (π, α, β, θ, ±, √, ×, ÷, →) এবং পাওয়ার/সাবস্ক্রিপ্টের জন্য <code>&lt;sup&gt;2&lt;/sup&gt;</code> ও <code>&lt;sub&gt;2&lt;/sub&gt;</code> ট্যাগ দিন।</li>
+                    <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">সেকশন, মার্কিং এবং সর্বোচ্চ প্রচেষ্টা (Max Att)</h3>
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>সেকশনের নাম পরিবর্তন:</strong> ছকে সেকশনের নামের উপর ক্লিক করে নাম লিখুন এবং বাইরে ক্লিক করুন বা Enter চাপুন।</li>
-                    <li><strong>মার্ক (+ ও -):</strong> সঠিক উত্তরের জন্য প্রাপ্ত নম্বর এবং ভুল উত্তরের জন্য নেগেটিভ মার্ক দিন। NAT প্রশ্নে নেগেটিভ মার্ক সবসময় ০ থাকবে।</li>
-                    <li><strong>Max Attempts (সর্বোচ্চ প্রচেষ্টা):</strong> পরীক্ষার্থী একটি সেকশন থেকে সর্বোচ্চ কয়টি প্রশ্নের মূল্যায়ন করাতে পারবেন তা নির্ধারণ করে (যেমন ১৫টির মধ্যে ১০টি)। ০ দিলে সীমাহীন।</li>
+                    <li><strong>মার্ক (+ ও -):</strong> সঠিক উত্তরের জন্য প্রাপ্ত নম্বর এবং ভুল উত্তরের জন্য নেগেটিভ মার্ক দিন। NAT প্রশ্নে নেগেটিভ মার্ক সবসময় ০ থাকবে।</li>
+                    <li><strong>Max Attempts (সর্বোচ্চ প্রচেষ্টা):</strong> পরীক্ষার্থী একটি সেকশন থেকে সর্বোচ্চ কয়টি প্রশ্নের মূল্যায়ন করাতে পারবেন তা নির্ধারণ করে (যেমন ১৫টির মধ্যে ১০টি)। ০ দিলে সীমাহীন।</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অডিও, রুলস এবং বৈজ্ঞানিক ধ্রুবক (Constants)</h3>
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
-                    <li><strong>রুলস:</strong> পরীক্ষার সময়কাল এবং টাইমার মোড (Stopwatch/Countdown)-এর ওপর ভিত্তি করে রুলস নিজে থেকেই আপডেট হয়।</li>
+                    <li><strong>রুলস:</strong> পরীক্ষার সময়কাল এবং টাইমার মোড (Stopwatch/Countdown)-এর ওপর ভিত্তি করে রুলস নিজে থেকেই আপডেট হয়।</li>
                     <li><strong>অডিও Base64:</strong> ব্যাকগ্রাউন্ড মিউজিক বা স্টার্ট/সাবমিট সাউন্ডের জন্য Data URI Base64 কোড দিন।</li>
                     <li><strong>কনস্ট্যান্টস:</strong> "Load Default Scientific Constants" বাটনে এক ক্লিকেই পদার্থবিজ্ঞানের ধ্রুবকগুলো লোড করুন।</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">মেমরি সুরক্ষা ও ব্রাউজার পারফরম্যান্স</h3>
                 <ul style="margin-left: 1.3rem; margin-bottom: 0.5rem;">
-                    <li><strong>মেমরি মনিটর:</strong> ত্রি-বিন্দু (⋮) মেনুতে রিয়েল-টাইম মেমরি লোড খেয়াল রাখুন।</li>
-                    <li><strong>মেমরি খালি করা:</strong> প্রথমে 🔄 <strong>Sync CBT Code</strong> ক্লিক করে ব্যাকআপ ডাউনলোড করুন, তারপর 🧹 <strong>Clear Workspace</strong> দিয়ে ব্রাউজারের RAM খালি করে নিন।</li>
+                    <li><strong>মেমরি মনিটর:</strong> ত্রি-বিন্দু (⋮) মেনুতে রিয়েল-টাইম মেমরি লোড খেয়াল রাখুন।</li>
+                    <li><strong>মেমরি খালি করা:</strong> প্রথমে 🔄 <strong>Sync CBT Code</strong> ক্লিক করে ব্যাকআপ ডাউনলোড করুন, তারপর 🧹 <strong>Clear Workspace</strong> দিয়ে ব্রাউজারের RAM খালি করে নিন।</li>
                 </ul>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 0.75rem; padding: 0.6rem; flex-shrink: 0;" onclick="closeModal('helpModal')">Got it!</button>
@@ -1181,11 +1129,11 @@
         };
 
         let activePreviewSection = '';
-        let activeQuestionIndex = 0;
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
 
+        // Memory load tracker
         setInterval(() => {
             const nodeCount = document.querySelectorAll('*').length;
             const bar = document.getElementById('memStatusBar');
@@ -1285,30 +1233,40 @@
                 const isColumn = window.getComputedStyle(mainContainer).flexDirection === 'column';
 
                 if (!isColumn) {
-                    const newWidth = Math.max(18, Math.min(82, ((clientX - mainRect.left) / mainRect.width) * 100));
-                    leftPanel.style.setProperty('flex', `0 0 ${newWidth}%`, 'important');
-                    leftPanel.style.setProperty('max-width', `${newWidth}%`, 'important');
-                    leftPanel.style.setProperty('width', `${newWidth}%`, 'important');
-                    rightPanel.style.setProperty('flex', `1 1 ${100 - newWidth}%`, 'important');
-                    rightPanel.style.setProperty('max-width', `${100 - newWidth}%`, 'important');
-                    rightPanel.style.setProperty('width', `${100 - newWidth}%`, 'important');
+                    const newWidth = ((clientX - mainRect.left) / mainRect.width) * 100;
+                    if (newWidth >= 18 && newWidth <= 82) {
+                        leftPanel.style.flex = `0 0 ${newWidth}%`;
+                        leftPanel.style.maxWidth = `${newWidth}%`;
+                        leftPanel.style.width = `${newWidth}%`;
+                        rightPanel.style.flex = `1 1 ${100 - newWidth}%`;
+                        rightPanel.style.maxWidth = `${100 - newWidth}%`;
+                    }
                 } else {
-                    const newHeight = Math.max(15, Math.min(85, ((clientY - mainRect.top) / mainRect.height) * 100));
-                    leftPanel.style.setProperty('flex', `0 0 ${newHeight}%`, 'important');
-                    leftPanel.style.setProperty('height', `${newHeight}%`, 'important');
-                    leftPanel.style.setProperty('max-height', `none`, 'important');
-                    rightPanel.style.setProperty('flex', `1 1 ${100 - newHeight}%`, 'important');
-                    rightPanel.style.setProperty('height', `${100 - newHeight}%`, 'important');
-                    rightPanel.style.setProperty('max-height', `none`, 'important');
+                    const newHeight = ((clientY - mainRect.top) / mainRect.height) * 100;
+                    if (newHeight >= 15 && newHeight <= 85) {
+                        leftPanel.style.flex = `0 0 ${newHeight}%`;
+                        leftPanel.style.maxHeight = `${newHeight}%`;
+                        leftPanel.style.height = `${newHeight}%`;
+                        rightPanel.style.flex = `1 1 ${100 - newHeight}%`;
+                        rightPanel.style.maxHeight = `${100 - newHeight}%`;
+                    }
                 }
             });
         }
 
-        function startResizing(e) {
+        resizer.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
             isResizing = true;
             document.body.classList.add('is-resizing');
             resizer.classList.add('resizing');
-        }
+        });
+
+        resizer.addEventListener('pointermove', function(e) {
+            if (!isResizing) return;
+            e.preventDefault();
+            handleResizeMove(e.clientX, e.clientY);
+        });
 
         function stopResizing(e) {
             if (!isResizing) return;
@@ -1319,34 +1277,8 @@
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         }
 
-        resizer.addEventListener('pointerdown', function(e) {
-            e.preventDefault();
-            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
-            startResizing(e);
-        });
-        resizer.addEventListener('pointermove', function(e) {
-            if (!isResizing) return;
-            e.preventDefault();
-            handleResizeMove(e.clientX, e.clientY);
-        });
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
-
-        resizer.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches.length === 1) {
-                e.preventDefault();
-                startResizing(e);
-            }
-        }, { passive: false });
-        window.addEventListener('touchmove', function(e) {
-            if (!isResizing) return;
-            if (e.touches && e.touches.length === 1) {
-                e.preventDefault();
-                handleResizeMove(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: false });
-        window.addEventListener('touchend', stopResizing);
-        window.addEventListener('touchcancel', stopResizing);
 
         window.addEventListener('resize', () => {
             if (leftPanel) {
@@ -1360,33 +1292,14 @@
                 rightPanel.style.flex = '';
                 rightPanel.style.maxWidth = '';
                 rightPanel.style.maxHeight = '';
-                rightPanel.style.width = '';
-                rightPanel.style.height = '';
             }
             updateFastScrollElevator();
-        });
-
-        window.addEventListener('orientationchange', () => {
-            if (leftPanel) {
-                leftPanel.style.flex = '';
-                leftPanel.style.maxWidth = '';
-                leftPanel.style.maxHeight = '';
-                leftPanel.style.width = '';
-                leftPanel.style.height = '';
-            }
-            if (rightPanel) {
-                rightPanel.style.flex = '';
-                rightPanel.style.maxWidth = '';
-                rightPanel.style.maxHeight = '';
-                rightPanel.style.width = '';
-                rightPanel.style.height = '';
-            }
-            setTimeout(updateFastScrollElevator, 150);
         });
 
         const leftContentScroll = document.getElementById('leftContentScroll');
         const leftScrollRail = document.getElementById('leftScrollRail');
         const leftScrollThumb = document.getElementById('leftScrollThumb');
+        let isScrubbing = false;
 
         function updateFastScrollElevator() {
             if (!leftContentScroll || !leftScrollThumb || !leftScrollRail) return;
@@ -1424,27 +1337,31 @@
             updateFastScrollElevator();
         }
 
-        let isScrubbing = false;
         leftScrollRail.addEventListener('pointerdown', function(e) {
             e.preventDefault();
             try { leftScrollRail.setPointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = true;
             handleScrub(e.clientY);
         });
+
         leftScrollRail.addEventListener('pointermove', function(e) {
             if (!isScrubbing) return;
             e.preventDefault();
             handleScrub(e.clientY);
         });
+
         function stopScrubbing(e) {
             if (!isScrubbing) return;
             try { if (e && e.pointerId) leftScrollRail.releasePointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = false;
         }
+
         leftScrollRail.addEventListener('pointerup', stopScrubbing);
         leftScrollRail.addEventListener('pointercancel', stopScrubbing);
+
         leftContentScroll.addEventListener('scroll', updateFastScrollElevator, { passive: true });
 
+        // Safe scrolling within the left panel without scrolling the document window
         function scrollToElementInLeftPanel(targetEl) {
             if (!targetEl || !leftContentScroll) return;
             const containerRect = leftContentScroll.getBoundingClientRect();
@@ -1459,40 +1376,6 @@
             }
         }
 
-        function scrollPreviewToQuestion(sec, idx) {
-            const prevArea = document.getElementById('previewArea');
-            const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
-            if (!prevArea || !prevEl) return;
-            
-            const containerRect = prevArea.getBoundingClientRect();
-            const elRect = prevEl.getBoundingClientRect();
-            const relativeOffset = elRect.top - containerRect.top;
-            
-            prevArea.scrollTo({
-                top: prevArea.scrollTop + relativeOffset - 24,
-                behavior: 'smooth'
-            });
-
-            prevEl.classList.remove('highlight-flash');
-            void prevEl.offsetWidth;
-            prevEl.classList.add('highlight-flash');
-            setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
-        }
-
-        function syncPreviewScroll(sec, idx) {
-            activeQuestionIndex = idx;
-            if(!previewIsVisible) return;
-            const secChanged = (activePreviewSection !== sec);
-            activePreviewSection = sec;
-            if (secChanged) {
-                renderPreviewTabs();
-                renderAllPreviews();
-            }
-            setTimeout(() => {
-                scrollPreviewToQuestion(sec, idx);
-            }, secChanged ? 90 : 20);
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             renderConstantsTable();
             document.getElementById('rules').value = appState.rules.join('\n');
@@ -1501,6 +1384,7 @@
             renderAllQuestions();
             generateAIPrompt();
             
+            // Preview is hidden by default
             previewIsVisible = false;
             const right = document.getElementById('rightPanel'); 
             const left = document.getElementById('leftPanel'); 
@@ -1515,7 +1399,7 @@
             }
             renderPreviewTabs();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 150);
         });
@@ -1523,10 +1407,8 @@
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            const isQ = el.classList.contains('qblock-textarea');
-            const minH = isQ ? 48 : 36;
-            el.style.height = Math.max(el.scrollHeight, minH) + 'px';
-            if (typeof updateFastScrollElevator === 'function') updateFastScrollElevator();
+            el.style.height = (el.scrollHeight) + 'px';
+            updateFastScrollElevator();
         }
 
         function toggleTheme() {
@@ -1562,19 +1444,13 @@
             right.style.flex = '';
             right.style.maxWidth = '';
             right.style.maxHeight = '';
-            right.style.width = '';
-            right.style.height = '';
 
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
                 left.classList.remove('expanded'); 
                 left.classList.add('split-view');
                 res.style.display = 'flex';
-                renderPreviewTabs();
                 renderAllPreviews();
-                setTimeout(() => {
-                    scrollPreviewToQuestion(activePreviewSection, activeQuestionIndex);
-                }, 100);
             } else { 
                 right.classList.add('hidden-panel'); 
                 left.classList.add('expanded'); 
@@ -1613,165 +1489,70 @@
             });
         }
 
-        function formatMathToHTML(str, isDisplay) {
-            if (!str) return '';
-            let s = str.trim();
-
-            const greek = {
-                '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
-                '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
-                '\\Theta':'Θ', '\\iota':'ι', '\\kappa':'κ', '\\lambda':'λ', '\\Lambda':'Λ',
-                '\\mu':'μ', '\\nu':'ν', '\\xi':'ξ', '\\Xi':'Ξ', '\\pi':'π', '\\Pi':'Π',
-                '\\rho':'ρ', '\\sigma':'σ', '\\Sigma':'Σ', '\\tau':'τ', '\\upsilon':'υ',
-                '\\phi':'φ', '\\Phi':'Φ', '\\chi':'χ', '\\psi':'ψ', '\\Psi':'Ψ',
-                '\\omega':'ω', '\\Omega':'Ω'
-            };
-            for (let g in greek) {
-                s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+        function syncPreviewScroll(sec, idx) {
+            if(!previewIsVisible) return;
+            if(activePreviewSection !== sec) {
+                activePreviewSection = sec;
+                renderPreviewTabs();
             }
-
-            s = s.replace(/\\rightleftharpoons/g, '⇌')
-                 .replace(/\\leftrightarrow/g, '↔')
-                 .replace(/\\Rightarrow/g, '⇒')
-                 .replace(/\\Leftarrow/g, '⇐')
-                 .replace(/\\rightarrow/g, '→')
-                 .replace(/\\to\b/g, '→')
-                 .replace(/\\leftarrow/g, '←')
-                 .replace(/\\gets\b/g, '←')
-                 .replace(/\\uparrow/g, '↑')
-                 .replace(/\\downarrow/g, '↓');
-
-            s = s.replace(/\\times/g, '×')
-                 .replace(/\\cdot/g, '·')
-                 .replace(/\\div/g, '÷')
-                 .replace(/\\pm/g, '±')
-                 .replace(/\\mp/g, '∓')
-                 .replace(/\\approx/g, '≈')
-                 .replace(/\\neq/g, '≠')
-                 .replace(/\\ne\b/g, '≠')
-                 .replace(/\\leq/g, '≤')
-                 .replace(/\\geq/g, '≥')
-                 .replace(/\\le\b/g, '≤')
-                 .replace(/\\ge\b/g, '≥')
-                 .replace(/\\ll\b/g, '≪')
-                 .replace(/\\gg\b/g, '≫')
-                 .replace(/\\equiv/g, '≡')
-                 .replace(/\\propto/g, '∝')
-                 .replace(/\\infty/g, '∞')
-                 .replace(/\\partial/g, '∂')
-                 .replace(/\\nabla/g, '∇')
-                 .replace(/\\degree/g, '°')
-                 .replace(/\\circ/g, '°')
-                 .replace(/\\in\b/g, '∈')
-                 .replace(/\\notin/g, '∉')
-                 .replace(/\\subset/g, '⊂')
-                 .replace(/\\subseteq/g, '⊆')
-                 .replace(/\\cap/g, '∩')
-                 .replace(/\\cup/g, '∪')
-                 .replace(/\\forall/g, '∀')
-                 .replace(/\\exists/g, '∃')
-                 .replace(/\\hbar/g, 'ℏ');
-
-            s = s.replace(/\\text\{([^}]+)\}/g, '$1')
-                 .replace(/\\mathrm\{([^}]+)\}/g, '$1')
-                 .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
-                 .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
-
-            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;')
-                 .replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
-                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;')
-                 .replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
-                 .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
-
-            s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
-
-            let prevS = '';
-            while (prevS !== s) {
-                prevS = s;
-                s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)');
-            }
-
-            s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
-                 .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-                 .replace(/\\sqrt\b/g, '√');
-
-            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>')
-                 .replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
-
-            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                 .replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
-
-            s = s.replace(/\\[;,!]/g, ' ')
-                 .replace(/\\quad/g, ' &nbsp; ')
-                 .replace(/\\qquad/g, ' &nbsp;&nbsp; ')
-                 .replace(/\\([a-zA-Z]+)/g, '$1');
-
-            return isDisplay 
-                ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` 
-                : `<span style="font-family: serif;"><i>${s}</i></span>`;
-        }
-
-        function cleanLooseLatexSymbols(str) {
-            if (!str) return '';
-            return str.replace(/\\rightleftharpoons/g, '⇌')
-                      .replace(/\\rightarrow/g, '→')
-                      .replace(/\\to\b/g, '→')
-                      .replace(/\\leftarrow/g, '←')
-                      .replace(/\\times/g, '×')
-                      .replace(/\\cdot/g, '·')
-                      .replace(/\\pm/g, '±')
-                      .replace(/\\approx/g, '≈')
-                      .replace(/\\neq/g, '≠')
-                      .replace(/\\le\b/g, '≤')
-                      .replace(/\\ge\b/g, '≥');
-        }
-
-        function processMath(text, engine) {
-            if (!text) return '';
-            
-            let res = text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
-                let math = displayMath || inlineMath;
-                let isDisplay = !!displayMath;
-                let unescapedMath = math.trim();
-
-                if (engine === 'MATHML') {
-                    if (typeof katex !== 'undefined') {
-                        try { 
-                            return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
-                        } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
-                    }
+            setTimeout(() => {
+                const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
+                if(prevEl) {
+                    prevEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    prevEl.classList.add('highlight-flash');
+                    setTimeout(() => prevEl.classList.remove('highlight-flash'), 1500);
                 }
-                
-                return formatMathToHTML(unescapedMath, isDisplay);
-            });
-
-            if (engine === 'HTML_FALLBACK') {
-                res = cleanLooseLatexSymbols(res);
-            }
-
-            return res;
+            }, 50);
         }
 
         function parseFormatting(str) {
             if(!str) return '';
             let mathBlocks = [];
-            
             str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
                 mathBlocks.push(match);
-                return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
+                return `__MATH_${mathBlocks.length - 1}__`;
             });
             
             str = str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
                      .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
                      .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
                      
-            str = str.replace(/@@MATH_BLOCK_(\d+)@@/g, (match, i) => mathBlocks[parseInt(i)]);
+            str = str.replace(/__MATH_(\d+)__/g, (match, i) => mathBlocks[i]);
             return str;
         }
 
         function safeHTML(str) {
             if(!str) return '';
             return str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
+        }
+        
+        function processMath(text, engine) {
+            if (!text) return '';
+            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                let isDisplay = !!displayMath;
+                let unescapedMath = math; 
+
+                if (engine === 'MATHML') {
+                    if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                    try { 
+                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
+                    } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
+                } else if (engine === 'HTML_FALLBACK') {
+                    let str = unescapedMath;
+                    const greek = { '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ' };
+                    for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+                    str = str.replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\approx/g, '≈').replace(/\\pm/g, '±').replace(/\\partial/g, '∂').replace(/\\infty/g, '∞').replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←');
+                    str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;').replace(/\\text\{([^}]+)\}/g, '$1');
+                    str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan').replace(/\\ln/g, 'ln').replace(/\\log/g, 'log');
+                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
+                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
+                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
+                    str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
+                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
+                }
+                return match;
+            });
         }
 
         function updateRulesData() {
@@ -1851,7 +1632,6 @@
                 { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' }
             ];
             activePreviewSection = newName;
-            activeQuestionIndex = 0;
             renderMarksTable();
             renderAllQuestions();
             renderPreviewTabs();
@@ -1867,7 +1647,6 @@
                     const firstTextarea = secCard.querySelector('.qblock-textarea');
                     if (firstTextarea) {
                         try { firstTextarea.focus({ preventScroll: true }); } catch(err) { firstTextarea.focus(); }
-                        autoResize(firstTextarea);
                     }
                 }
                 updateFastScrollElevator();
@@ -1936,30 +1715,12 @@
             });
             renderMarksTable(); updateMissingImageAlert();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 50);
         }
 
-        function refreshQuestionBlock(sec, idx) {
-            const oldBlock = document.getElementById(`qblock-${sec}-${idx}`);
-            const q = appState.questionsBySection[sec]?.[idx];
-            if (!oldBlock || !q) return;
-
-            const scrollContainer = document.getElementById('leftContentScroll');
-            const savedScrollTop = scrollContainer ? scrollContainer.scrollTop : null;
-
-            const newBlock = createQuestionBlock(sec, idx, q);
-            oldBlock.replaceWith(newBlock);
-
-            newBlock.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize);
-
-            if (scrollContainer && savedScrollTop !== null) {
-                scrollContainer.scrollTop = savedScrollTop;
-                updateFastScrollElevator();
-            }
-        }
-
+        // Direct non-destructive DOM insertion to eliminate page jump
         function addQuestion(sec) {
             const newQ = { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' };
             if (!appState.questionsBySection[sec]) appState.questionsBySection[sec] = [];
@@ -1977,9 +1738,7 @@
                 if (badge) badge.innerText = `${appState.questionsBySection[sec].length} Qs`;
 
                 renderMarksTable();
-                if (activePreviewSection === sec) {
-                    debouncedRenderAllPreviews();
-                }
+                debouncedRenderAllPreviews();
 
                 scrollToElementInLeftPanel(newBlock);
                 newBlock.classList.add('highlight-flash');
@@ -1999,10 +1758,6 @@
         function createQuestionBlock(sec, idx, q) {
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
-
-            div.onclick = (e) => {
-                if (!e.target.closest('button')) syncPreviewScroll(sec, idx);
-            };
 
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
             (q.options || []).forEach((opt, oi) => {
@@ -2025,10 +1780,10 @@
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
-                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi}); syncPreviewScroll('${sec}', ${idx});">
+                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image (JPG, PNG, GIF, SVG)">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -2038,7 +1793,7 @@
             });
             optsHtml += `</div>`;
 
-            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value); syncPreviewScroll('${sec}', ${idx});"></div>`;
+            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value)"></div>`;
 
             const imgPreview = q.image === 'PLACEHOLDER' 
                 ? `<button class="btn btn-danger btn-sm highlight-flash" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🚨 UPLOAD MISSING IMAGE</button>`
@@ -2052,7 +1807,7 @@
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <div class="qblock-textarea-wrap">
-                        <textarea class="qblock-textarea" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value);">${safeQText}</textarea>
+                        <textarea class="qblock-textarea form-control auto-expand" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
                         <select class="form-control hide-desktop-only" style="width: auto; font-weight: 600; padding: 0.3rem 0.5rem; display: none;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                             <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                         </select>
@@ -2072,67 +1827,48 @@
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕ <span class="hide-mobile">Remove</span></button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
                 </div>
             `;
             
             if(window.innerWidth <= 768) {
-                const sel = div.querySelector('.hide-desktop-only');
-                if (sel) sel.style.display = 'block';
+                div.querySelector('.hide-desktop-only').style.display = 'block';
             }
 
             return div;
         }
 
-        function addOption(sec, idx) { 
-            appState.questionsBySection[sec][idx].options.push(''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-        }
+        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                refreshQuestionBlock(sec, idx); 
-                debouncedUpdateSingleQuestionPreview(sec, idx); 
+                renderAllQuestions(); debouncedUpdateSinglePreview(); 
             } 
         }
 
         function updateOptionText(sec, idx, oi, value) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
             const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg; 
-            debouncedUpdateSingleQuestionPreview(sec, idx);
+            q.options[oi] = value + optImg; debouncedUpdateSinglePreview();
         }
 
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx);
-            updateMissingImageAlert();
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview();
         }
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { 
-                q.correct = parseInt(value); 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            } 
-            else if (field === 'type') { 
-                q.type = value; 
-                refreshQuestionBlock(sec, idx); 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            } 
-            else { 
-                q[field] = value; 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            }
+            if (field === 'correct') { q.correct = parseInt(value); } 
+            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
+            else { q[field] = value; }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
             }
+            debouncedUpdateSinglePreview();
         }
 
         function populateSearchDropdown() { document.getElementById('searchSec').innerHTML = appState.sections.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); updateSearchHint(); }
@@ -2149,7 +1885,6 @@
                 scrollToElementInLeftPanel(block);
                 block.classList.add('highlight-flash'); 
                 setTimeout(()=>block.classList.remove('highlight-flash'), 1500); 
-                syncPreviewScroll(sec, idx);
             } else { 
                 showToast(`Q${qNum} not found in ${sec}.`, 'error'); 
             }
@@ -2179,12 +1914,7 @@
                 }
             });
         }
-        function removeImage(sec, idx) { 
-            updateQuestion(sec, idx, 'image', 0, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-            updateMissingImageAlert(); 
-        }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
 
         function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -2240,10 +1970,7 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-            closeModal('cropModal'); 
-            updateMissingImageAlert();
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
         }
 
         function saveOriginalImage() {
@@ -2260,8 +1987,8 @@
             currentCropBase64 = null;
             document.getElementById('liveCropPreviewImg').src = '';
             document.getElementById('cropImage').src = '';
-            refreshQuestionBlock(sec, idx);
-            debouncedUpdateSingleQuestionPreview(sec, idx);
+            renderAllQuestions();
+            debouncedUpdateSinglePreview();
             closeModal('cropModal');
             updateMissingImageAlert();
             showToast('Original image applied (preserved vector/GIF quality)', 'success');
@@ -2294,15 +2021,9 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            refreshQuestionBlock(currentTableData.sec, currentTableData.idx);
-            debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); 
-            closeModal('tableModal');
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('tableModal');
         }
-        function removeTable(sec, idx) { 
-            updateQuestion(sec, idx, 'table', 0, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-        }
+        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -2312,12 +2033,7 @@
             appState.sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `ptab ${sec.name === activePreviewSection ? 'active' : ''}`;
-                tab.innerText = sec.name; 
-                tab.onclick = () => { 
-                    activePreviewSection = sec.name; 
-                    renderPreviewTabs(); 
-                    renderAllPreviews(); 
-                };
+                tab.innerText = sec.name; tab.onclick = () => { activePreviewSection = sec.name; renderPreviewTabs(); renderAllPreviews(); };
                 tabsContainer.appendChild(tab);
             });
         }
@@ -2326,8 +2042,8 @@
             let processedText = safeHTML(q.text);
             let previewEngine = appState.renderEngine; 
             
-            if (previewEngine === 'HTML_FALLBACK') {
-                processedText = processMath(processedText, 'HTML_FALLBACK');
+            if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
+                processedText = processMath(processedText, previewEngine);
             }
             processedText = parseFormatting(processedText);
             
@@ -2348,8 +2064,8 @@
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
 
                     let safeOpt = safeHTML(rawOpt);
-                    if (previewEngine === 'HTML_FALLBACK') {
-                        safeOpt = processMath(safeOpt, 'HTML_FALLBACK');
+                    if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
+                        safeOpt = processMath(safeOpt, previewEngine);
                     }
                     safeOpt = parseFormatting(safeOpt);
 
@@ -2370,35 +2086,6 @@
             return html;
         }
 
-        function updateSingleQuestionPreview(sec, idx) {
-            if (!previewIsVisible) return;
-            if (activePreviewSection !== sec) {
-                syncPreviewScroll(sec, idx);
-                return;
-            }
-            const qBox = document.getElementById(`preview-qbox-${sec}-${idx}`);
-            const q = appState.questionsBySection[sec]?.[idx];
-            if (!qBox || !q) return;
-
-            qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
-
-            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
-                renderMathInElement(qBox, { 
-                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
-                    throwOnError: false 
-                });
-            }
-        }
-
-        function debouncedUpdateSingleQuestionPreview(sec, idx) {
-            if (!previewIsVisible) return;
-            const key = `${sec}-${idx}`;
-            if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
-            granularTimeouts[key] = setTimeout(() => {
-                updateSingleQuestionPreview(sec, idx);
-            }, 60);
-        }
-
         function renderAllPreviews() {
             if(!previewIsVisible) return;
             const area = document.getElementById('previewArea');
@@ -2409,12 +2096,18 @@
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
-            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
+            if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
             }
         }
 
         function debouncedRenderAllPreviews() {
+            if(!previewIsVisible) return;
+            clearTimeout(globalPreviewTimeout);
+            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
+        }
+
+        function debouncedUpdateSinglePreview() {
             if(!previewIsVisible) return;
             clearTimeout(globalPreviewTimeout);
             globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
@@ -2478,139 +2171,6 @@
                 autoResize(document.getElementById('cbtInput'));
             };
             reader.readAsText(file); evt.target.value = ''; 
-        }
-
-        async function generateCBTHTML() {
-            try {
-                const resp = await fetch('./Last.html');
-                if (!resp.ok) throw new Error('Cannot load ./Last.html');
-                let txt = await resp.text();
-
-                txt = txt.replace(/<title>.*?<\/title>/i, `<title>${appState.examTitle || 'Exam'}</title>`);
-                txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/i, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
-                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/i, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
-                txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/i, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
-                txt = txt.replace(/<div class="exam-title">.*?<\/div>/i, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
-                txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/i, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
-                
-                txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/i, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
-                txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/i, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
-                txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/i, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
-                if (!appState.audio.bg) txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/i, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
-
-                let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
-                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
-
-                txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/i, `<div class="header-exam-title-row">${appState.examTitle || ''} ${appState.examSubtitle ? ': ' + appState.examSubtitle : ''}</div>`);
-                txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/i, `$1${appState.examTitle || ''} ${appState.examSubtitle ? '- ' + appState.examSubtitle : ''}$2`);
-                
-                txt = txt.replace(/const TIMER_MODE = '[^']*';/i, `const TIMER_MODE = '${appState.timerMode}';`);
-                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/i, `const EXAM_DURATION_MINS = ${appState.duration || 90};`);
-                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/i, `const Q_FONT_FAMILY = "${appState.fontName}";`);
-                
-                let finalRules = [...appState.rules];
-                const durText = appState.duration ? `Total Duration: ${appState.duration} Minutes.` : `Total Duration: 180 Minutes.`;
-                const timerText = appState.timerMode === 'COUNTDOWN' ? "Timer is in Countdown mode (time counts down to zero)." : "Timer is in Stopwatch mode (counts up from zero).";
-                
-                finalRules = finalRules.map(r => {
-                    if (r.toLowerCase().includes('duration')) return durText;
-                    return r;
-                });
-                if (!finalRules.some(r => r.toLowerCase().includes('timer') || r.toLowerCase().includes('mode'))) {
-                    finalRules.push(timerText);
-                }
-
-                const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
-                const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
-                txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/i, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
-                
-                let katexCSS = ''; let katexJS = '';
-                if (appState.renderEngine !== 'HTML_FALLBACK') {
-                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
-                    katexJS = '\n<scr' + 'ipt defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"></scr' + 'ipt>\n<scr' + 'ipt defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== \'undefined\') { renderMathInElement(document.body, {delimiters: [{left: \'$$\', right: \'$$\', display: true}, {left: \'$\', right: \'$\', display: false}]}); }"></scr' + 'ipt>\n';
-                }
-                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
-
-                const qb = [];
-                for (const sec of appState.sections) {
-                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
-                        let processedText = safeHTML(q.text);
-                        if (appState.renderEngine === 'MATHML') { 
-                            processedText = processMath(processedText, 'MATHML'); 
-                        } else if (appState.renderEngine === 'HTML_FALLBACK') { 
-                            processedText = processMath(processedText, 'HTML_FALLBACK'); 
-                        }
-                        let finalFormattedText = parseFormatting(processedText);
-
-                        let finalOptionsHtmlReady = [];
-                        q.options.forEach(o => {
-                            let optText = o || '';
-                            let optImg = '';
-                            const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
-                            if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
-                            
-                            let processedOpt = safeHTML(optText);
-                            if (appState.renderEngine === 'MATHML') { 
-                                processedOpt = processMath(processedOpt, 'MATHML'); 
-                            } else if (appState.renderEngine === 'HTML_FALLBACK') { 
-                                processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); 
-                            }
-                            processedOpt = parseFormatting(processedOpt);
-
-                            if (optImg && optImg !== 'PLACEHOLDER') {
-                                processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
-                            }
-                            finalOptionsHtmlReady.push(processedOpt);
-                        });
-
-                        return {
-                            id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, 
-                            img: (q.image && q.image !== 'PLACEHOLDER') ? q.image : '', 
-                            table: q.table || '',
-                            options: q.type !== 'NAT' ? finalOptionsHtmlReady : [], correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
-                            marksCorrect: sec.marks, marksWrong: q.type === 'NAT' ? 0 : sec.negative
-                        };
-                    });
-                    qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
-                }
-
-                if (/(?:const|let|var)\s+QUESTION_BANK\s*=/i.test(txt)) {
-                    txt = txt.replace(/(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?\];?/i, 'const QUESTION_BANK = ' + JSON.stringify(qb, null, 2) + ';');
-                } else {
-                    txt = txt.replace(/<\/script>/i, '\nconst QUESTION_BANK = ' + JSON.stringify(qb, null, 2) + ';\n<' + '/script>');
-                }
-
-                const vkPatch = `
-                <style>
-                .q-text, .opt-text { white-space: pre-wrap !important; }
-                @media (max-width: 768px) {
-                    #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
-                }
-                </style>
-                <scr` + `ipt>
-                if (typeof answer === 'undefined') { window.answer = ""; }
-                document.addEventListener('input', e => { 
-                    if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
-                        e.target.value = e.target.value.replace('undefined', ''); 
-                        window.answer = e.target.value;
-                    }
-                });
-                setInterval(() => { 
-                    document.querySelectorAll('input').forEach(inp => { 
-                        if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
-                    }); 
-                }, 300);
-                </scr` + `ipt>`;
-                txt = txt.replace('</head>', vkPatch + '</head>');
-
-                const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const link = document.getElementById('downloadLinkHTML'); 
-                link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
-                
-                openModal('compileModal');
-                
-            } catch (e) { showToast('Error: ' + e.message, 'error'); }
         }
 
         function parseCBTFormat() {
@@ -2731,16 +2291,140 @@
 
             renderConstantsTable(); renderMarksTable(); renderAllQuestions(); 
             if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
-            activeQuestionIndex = 0;
             renderPreviewTabs(); 
             closeModal('pasteModal');
             showToast('Imported Successfully', 'success');
             
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
                 if(previewIsVisible) renderAllPreviews();
                 updateFastScrollElevator();
             }, 150);
+        }
+
+        async function generateCBTHTML() {
+            try {
+                const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
+                let txt = await resp.text();
+
+                txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle || 'Exam'}</title>`);
+                txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
+                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
+                txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
+                txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
+                txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
+                
+                txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
+                txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
+                txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
+                if (!appState.audio.bg) txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
+
+                let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
+                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
+
+                txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle || ''} ${appState.examSubtitle ? ': ' + appState.examSubtitle : ''}</div>`);
+                txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle || ''} ${appState.examSubtitle ? '- ' + appState.examSubtitle : ''}$2`);
+                
+                txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
+                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration || 90};`);
+                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
+                
+                let finalRules = [...appState.rules];
+                const durText = appState.duration ? `Total Duration: ${appState.duration} Minutes.` : `Total Duration: 180 Minutes.`;
+                const timerText = appState.timerMode === 'COUNTDOWN' ? "Timer is in Countdown mode (time counts down to zero)." : "Timer is in Stopwatch mode (counts up from zero).";
+                
+                finalRules = finalRules.map(r => {
+                    if (r.toLowerCase().includes('duration')) return durText;
+                    return r;
+                });
+                if (!finalRules.some(r => r.toLowerCase().includes('timer') || r.toLowerCase().includes('mode'))) {
+                    finalRules.push(timerText);
+                }
+
+                const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
+                const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
+                txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
+                
+                let katexCSS = ''; let katexJS = '';
+                if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK') {
+                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
+                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
+                }
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
+
+                const qb = [];
+                for (const sec of appState.sections) {
+                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
+                        let processedText = safeHTML(q.text);
+                        if (appState.mathMode === 'LATEX') {
+                            if (appState.renderEngine === 'MATHML') { processedText = processMath(processedText, 'MATHML'); }
+                            else if (appState.renderEngine === 'HTML_FALLBACK') { processedText = processMath(processedText, 'HTML_FALLBACK'); }
+                        }
+                        let finalFormattedText = parseFormatting(processedText);
+
+                        let finalOptionsHtmlReady = [];
+                        q.options.forEach(o => {
+                            let optText = o || '';
+                            let optImg = '';
+                            const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
+                            if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
+                            
+                            let processedOpt = safeHTML(optText);
+                            if (appState.mathMode === 'LATEX') {
+                                if (appState.renderEngine === 'MATHML') { processedOpt = processMath(processedOpt, 'MATHML'); }
+                                else if (appState.renderEngine === 'HTML_FALLBACK') { processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); }
+                            }
+                            processedOpt = parseFormatting(processedOpt);
+
+                            if (optImg && optImg !== 'PLACEHOLDER') {
+                                processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
+                            }
+                            finalOptionsHtmlReady.push(processedOpt);
+                        });
+
+                        return {
+                            id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, 
+                            img: (q.image && q.image !== 'PLACEHOLDER') ? q.image : '', 
+                            table: q.table || '',
+                            options: q.type !== 'NAT' ? finalOptionsHtmlReady : [], correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
+                            marksCorrect: sec.marks, marksWrong: q.type === 'NAT' ? 0 : sec.negative
+                        };
+                    });
+                    qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
+                }
+                txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
+
+                const vkPatch = `
+                <style>
+                .q-text, .opt-text { white-space: pre-wrap !important; }
+                @media (max-width: 768px) {
+                    #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
+                }
+                </style>
+                <script>
+                if (typeof answer === 'undefined') { window.answer = ""; }
+                document.addEventListener('input', e => { 
+                    if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
+                        e.target.value = e.target.value.replace('undefined', ''); 
+                        window.answer = e.target.value;
+                    }
+                });
+                setInterval(() => { 
+                    document.querySelectorAll('input').forEach(inp => { 
+                        if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
+                    }); 
+                }, 300);
+                <\/script>`;
+                txt = txt.replace('</head>', vkPatch + '</head>');
+
+                const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.getElementById('downloadLinkHTML'); 
+                link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
+                
+                openModal('compileModal');
+                
+            } catch (e) { showToast('Error: ' + e.message + ' (Ensure Last.html is present)', 'error'); }
         }
 
         function switchPrompt(mode) {
@@ -2752,14 +2436,11 @@
 
             if (mode === 'LATEX') {
                 document.getElementById('tab-btn-latex').classList.add('active');
-                engineNotice.style.display = 'none'; 
-                latexOptions.forEach(opt => opt.style.display = 'flex');
+                engineNotice.style.display = 'none'; latexOptions.forEach(opt => opt.style.display = 'flex');
             } else {
                 document.getElementById('tab-btn-html').classList.add('active');
-                engineNotice.style.display = 'block'; 
-                latexOptions.forEach(opt => opt.style.display = 'none');
-                document.getElementById('engineHtmlRadio').checked = true; 
-                appState.renderEngine = 'HTML_FALLBACK';
+                engineNotice.style.display = 'block'; latexOptions.forEach(opt => opt.style.display = 'none');
+                document.getElementById('engineHtmlRadio').checked = true; appState.renderEngine = 'HTML_FALLBACK';
                 if(previewIsVisible) debouncedRenderAllPreviews();
             }
             generateAIPrompt(); renderPreviewTabs(); 
@@ -2776,15 +2457,14 @@
 - DO NOT use \\( ... \\) or \\[ ... \\]. Use ONLY $ and $$.
 - MULTIPLICATION RULE: NEVER use the asterisk '*' for multiplication in math (e.g. $2 * 3$ breaks formatting). Always use \\times ($2 \\times 3$) or \\cdot ($2 \\cdot 3$).
 - FORBIDDEN: NEVER write scientific units or constants in Bengali. Use standard LaTeX (e.g., $m/s^2$, $C$).
-- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma) and arrows (\\rightarrow, \\rightleftharpoons).
+- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma).
 - COMPLEX MATRICES: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             } else {
                 modeSpecificRules = `CRITICAL HTML & IMAGE RULES:
-- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes like \\rightarrow.
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
 - MULTIPLICATION RULE: Use standard multiplication sign '×' or '·'.
-- ARROWS & SEQUENCES: In biological pathways, reactions, or developmental sequences, use the literal Unicode arrow '→' or '⇌'. NEVER write '\\rightarrow' or '$' in HTML mode.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ←, ⇌, ±, °, μ).
-- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>O, Ca<sup>2+</sup>, 10<sup>5</sup>).
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
+- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             }
 
@@ -2838,6 +2518,6 @@ Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`
                 el.select(); document.execCommand('copy'); showToast('Copied to clipboard!', 'success');
             }
         }
-  </script>
+    </script>
 </body>
 </html>
