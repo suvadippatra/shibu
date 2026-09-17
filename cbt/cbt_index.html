@@ -404,7 +404,7 @@
         
         /* Dedicated Question Textarea with zero transition lag and flex none to enable line expansion */
         .qblock-textarea {
-            width: 100%;
+            width: 100% !important;
             min-height: 48px;
             padding: 0.45rem 0.6rem;
             border: 1px solid var(--border);
@@ -413,10 +413,11 @@
             font-family: inherit;
             background: var(--bg-input);
             color: var(--text-main);
-            box-sizing: border-box;
+            box-sizing: border-box !important;
             line-height: 1.5;
             overflow-y: hidden;
             resize: vertical;
+            display: block !important;
             flex: none !important;
             transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
         }
@@ -1216,6 +1217,7 @@
         };
 
         let activePreviewSection = '';
+        let activeQuestionIndex = 0;
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
@@ -1518,6 +1520,7 @@
         }
 
         function syncPreviewScroll(sec, idx) {
+            activeQuestionIndex = idx;
             if(!previewIsVisible) return;
             const secChanged = (activePreviewSection !== sec);
             activePreviewSection = sec;
@@ -1527,7 +1530,7 @@
             }
             setTimeout(() => {
                 scrollPreviewToQuestion(sec, idx);
-            }, secChanged ? 80 : 20);
+            }, secChanged ? 90 : 20);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1558,6 +1561,7 @@
             }, 150);
         });
 
+        // Dedicated auto-resize without layout flex interference
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
@@ -1608,7 +1612,11 @@
                 left.classList.remove('expanded'); 
                 left.classList.add('split-view');
                 res.style.display = 'flex';
+                renderPreviewTabs();
                 renderAllPreviews();
+                setTimeout(() => {
+                    scrollPreviewToQuestion(activePreviewSection, activeQuestionIndex);
+                }, 100);
             } else { 
                 right.classList.add('hidden-panel'); 
                 left.classList.add('expanded'); 
@@ -1774,6 +1782,7 @@
                 { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' }
             ];
             activePreviewSection = newName;
+            activeQuestionIndex = 0;
             renderMarksTable();
             renderAllQuestions();
             renderPreviewTabs();
@@ -1863,6 +1872,26 @@
             }, 50);
         }
 
+        // Targeted in-place question block refresh (Prevents scroll jumping to Q1!)
+        function refreshQuestionBlock(sec, idx) {
+            const oldBlock = document.getElementById(`qblock-${sec}-${idx}`);
+            const q = appState.questionsBySection[sec]?.[idx];
+            if (!oldBlock || !q) return;
+
+            const scrollContainer = document.getElementById('leftContentScroll');
+            const savedScrollTop = scrollContainer ? scrollContainer.scrollTop : null;
+
+            const newBlock = createQuestionBlock(sec, idx, q);
+            oldBlock.replaceWith(newBlock);
+
+            newBlock.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize);
+
+            if (scrollContainer && savedScrollTop !== null) {
+                scrollContainer.scrollTop = savedScrollTop;
+                updateFastScrollElevator();
+            }
+        }
+
         function addQuestion(sec) {
             const newQ = { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' };
             if (!appState.questionsBySection[sec]) appState.questionsBySection[sec] = [];
@@ -1903,9 +1932,9 @@
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
 
-            // Sync preview on block click
+            // Sync preview whenever question card is clicked
             div.onclick = (e) => {
-                if (!e.target.closest('button, input, select')) syncPreviewScroll(sec, idx);
+                if (!e.target.closest('button')) syncPreviewScroll(sec, idx);
             };
 
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
@@ -1929,7 +1958,7 @@
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
-                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
+                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi}); syncPreviewScroll('${sec}', ${idx});">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
                             <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
@@ -1942,7 +1971,7 @@
             });
             optsHtml += `</div>`;
 
-            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value)"></div>`;
+            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value); syncPreviewScroll('${sec}', ${idx});"></div>`;
 
             const imgPreview = q.image === 'PLACEHOLDER' 
                 ? `<button class="btn btn-danger btn-sm highlight-flash" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🚨 UPLOAD MISSING IMAGE</button>`
@@ -1952,11 +1981,12 @@
 
             let safeQText = q.text || '';
 
+            // qblock-textarea has dedicated styling without .auto-expand flex conflicts
             div.innerHTML = `
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <div class="qblock-textarea-wrap">
-                        <textarea class="qblock-textarea auto-expand" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
+                        <textarea class="qblock-textarea" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value);">${safeQText}</textarea>
                         <select class="form-control hide-desktop-only" style="width: auto; font-weight: 600; padding: 0.3rem 0.5rem; display: none;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                             <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                         </select>
@@ -1988,13 +2018,18 @@
             return div;
         }
 
-        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); }
+        function addOption(sec, idx) { 
+            appState.questionsBySection[sec][idx].options.push(''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+        }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); 
+                refreshQuestionBlock(sec, idx); 
+                debouncedUpdateSingleQuestionPreview(sec, idx); 
             } 
         }
 
@@ -2008,8 +2043,9 @@
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
             q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); 
-            renderAllQuestions(); 
+            refreshQuestionBlock(sec, idx); 
             debouncedUpdateSingleQuestionPreview(sec, idx);
+            updateMissingImageAlert();
         }
 
         function updateQuestion(sec, idx, field, optIdx, value) {
@@ -2020,7 +2056,7 @@
             } 
             else if (field === 'type') { 
                 q.type = value; 
-                renderAllQuestions(); 
+                refreshQuestionBlock(sec, idx); 
                 debouncedUpdateSingleQuestionPreview(sec, idx);
             } 
             else { 
@@ -2077,7 +2113,12 @@
                 }
             });
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); updateMissingImageAlert(); }
+        function removeImage(sec, idx) { 
+            updateQuestion(sec, idx, 'image', 0, ''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+            updateMissingImageAlert(); 
+        }
 
         function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -2133,7 +2174,10 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); closeModal('cropModal'); updateMissingImageAlert();
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+            closeModal('cropModal'); 
+            updateMissingImageAlert();
         }
 
         function saveOriginalImage() {
@@ -2150,7 +2194,7 @@
             currentCropBase64 = null;
             document.getElementById('liveCropPreviewImg').src = '';
             document.getElementById('cropImage').src = '';
-            renderAllQuestions();
+            refreshQuestionBlock(sec, idx);
             debouncedUpdateSingleQuestionPreview(sec, idx);
             closeModal('cropModal');
             updateMissingImageAlert();
@@ -2184,9 +2228,15 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            renderAllQuestions(); debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); closeModal('tableModal');
+            refreshQuestionBlock(currentTableData.sec, currentTableData.idx);
+            debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); 
+            closeModal('tableModal');
         }
-        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSingleQuestionPreview(sec, idx); }
+        function removeTable(sec, idx) { 
+            updateQuestion(sec, idx, 'table', 0, ''); 
+            refreshQuestionBlock(sec, idx);
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+        }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -2483,6 +2533,7 @@
 
             renderConstantsTable(); renderMarksTable(); renderAllQuestions(); 
             if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
+            activeQuestionIndex = 0;
             renderPreviewTabs(); 
             closeModal('pasteModal');
             showToast('Imported Successfully', 'success');
@@ -2494,15 +2545,34 @@
             }, 150);
         }
 
+        // Rigorous exam template validator that distinguishes Last.html from cbt_index.html
+        function isValidExamTemplate(candidateTxt) {
+            if (!candidateTxt || typeof candidateTxt !== 'string') return false;
+            // Must contain the Question Bank marker
+            if (!candidateTxt.includes('QUESTION_BANK')) return false;
+            // Must NOT be the CBT Setter / Editor itself
+            const isEditor = candidateTxt.includes('id="cbtInput"') || 
+                             candidateTxt.includes('editor-inner-container') || 
+                             candidateTxt.includes('id="questionsListAll"') ||
+                             candidateTxt.includes('cbtFileUpload');
+            if (isEditor) return false;
+            // Must contain exam player markers
+            const hasExamMarkers = candidateTxt.includes('EXAM_DURATION_MINS') || 
+                                   candidateTxt.includes('TIMER_MODE') || 
+                                   candidateTxt.includes('EXAM_S_HTML') || 
+                                   candidateTxt.includes('scheme-table');
+            return hasExamMarkers;
+        }
+
         async function fetchValidTemplate() {
             // 1. Check in-memory cache
-            if (window._cachedLastHtmlTemplate && window._cachedLastHtmlTemplate.includes('QUESTION_BANK') && !window._cachedLastHtmlTemplate.includes('editor-inner-container')) {
+            if (isValidExamTemplate(window._cachedLastHtmlTemplate)) {
                 return window._cachedLastHtmlTemplate;
             }
             // 2. Check localStorage cache
             try {
                 const stored = localStorage.getItem('cbt_last_template');
-                if (stored && stored.includes('QUESTION_BANK') && !stored.includes('editor-inner-container') && !stored.includes('left-panel')) {
+                if (isValidExamTemplate(stored)) {
                     window._cachedLastHtmlTemplate = stored;
                     return stored;
                 }
@@ -2511,20 +2581,19 @@
             // 3. Multi-path resolution
             const candidatePaths = [
                 './Last.html',
-                '../Last.html',
-                './last.html',
-                '../last.html',
                 'Last.html',
-                'last.html'
+                './last.html',
+                'last.html',
+                '../Last.html',
+                '../last.html'
             ];
 
             for (const path of candidatePaths) {
                 try {
-                    const resp = await fetch(path);
-                    if (resp.ok) {
+                    const resp = await fetch(path + '?_v=' + Date.now(), { cache: 'no-cache' });
+                    if (resp.ok && resp.status === 200) {
                         const candidateTxt = await resp.text();
-                        // STRICT VALIDATION: Ensure it is the exam template and NOT the editor
-                        if (candidateTxt.includes('QUESTION_BANK') && !candidateTxt.includes('editor-inner-container') && !candidateTxt.includes('left-panel')) {
+                        if (isValidExamTemplate(candidateTxt)) {
                             window._cachedLastHtmlTemplate = candidateTxt;
                             try { localStorage.setItem('cbt_last_template', candidateTxt); } catch(err) {}
                             return candidateTxt;
@@ -2543,7 +2612,7 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
-                if (!text.includes('QUESTION_BANK') || text.includes('editor-inner-container') || text.includes('left-panel')) {
+                if (!isValidExamTemplate(text)) {
                     showToast('Invalid Last.html file: missing QUESTION_BANK marker or editor file selected.', 'error');
                     return;
                 }
