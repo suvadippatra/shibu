@@ -189,7 +189,6 @@
             min-width: 0;
         }
 
-        /* Fast Scroll Rail */
         .fast-scroll-rail {
             position: absolute;
             top: 0;
@@ -298,7 +297,6 @@
         details.card[open] > summary { border-bottom-color: var(--border); margin-bottom: 0.85rem; }
         .card-inner { padding: 0 1rem; width: 100%; min-width: 0; }
 
-        /* Responsive Question Grid */
         .section-questions-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -322,7 +320,6 @@
             }
         }
 
-        /* Strict Split-View Override */
         .left-panel.split-view .section-questions-grid {
             grid-template-columns: 1fr !important;
         }
@@ -418,7 +415,6 @@
         }
         .qblock-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         
-        /* Options Grid */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -594,7 +590,6 @@
             .hide-mobile { display: none !important; }
         }
 
-        /* Top-Bottom split ONLY in narrow Portrait orientation */
         @media (max-width: 1024px) and (orientation: portrait) {
             .main { flex-direction: column !important; }
             
@@ -637,7 +632,6 @@
             }
         }
 
-        /* Side-by-side layout with VERTICAL divider in Landscape mode or on Desktops */
         @media (min-width: 1025px), (orientation: landscape) {
             .main { flex-direction: row !important; }
             .left-panel,
@@ -718,7 +712,6 @@
                     <button class="dropdown-item" onclick="openModal('engineModal'); closeDropdown();">⚙️ Math Engine Options</button>
                     <button class="dropdown-item" onclick="revealAllImages(); closeDropdown();">🖼️ Show All Images (20s)</button>
                     <button class="dropdown-item" onclick="generateCBTHTML(); closeDropdown();" style="color: var(--success); font-weight: bold;">🚀 Compile Final HTML</button>
-                    <button class="dropdown-item" onclick="openModal('templateModal'); closeDropdown();">📄 Load / Change Last.html Template</button>
                     <button class="dropdown-item" onclick="openModal('helpModal'); closeDropdown();">❓ Help & Guides</button>
                     <button class="dropdown-item" onclick="clearWorkspace(); closeDropdown();" style="color: var(--danger);">🧹 Clear Workspace (Free RAM)</button>
                     
@@ -856,21 +849,6 @@
             </div>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Your standalone offline exam file has been generated successfully. Tap or long-press the button below to save it.</p>
             <a id="downloadLinkHTML" class="btn btn-primary btn-block" style="padding: 0.8rem; font-size: 1rem; text-decoration: none; border-radius: var(--radius-sm);" href="#" download="">⬇️ Download HTML Exam</a>
-        </div>
-    </div>
-
-    <div class="modal" id="templateModal">
-        <div class="modal-content" style="max-width: 480px; text-align: center;">
-            <div class="modal-header">
-                <h2 style="color: var(--primary);">📄 Select Last.html Template</h2>
-                <button class="modal-close" onclick="closeModal('templateModal')">✕</button>
-            </div>
-            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.2rem; line-height: 1.6; text-align: left;">
-                The master exam template <code>Last.html</code> could not be fetched automatically (expected when running under <code>file:///</code> or when hosted in a subfolder).<br><br>
-                Please select your repository's <code>Last.html</code> file. The system will verify and save it to your browser storage permanently so you only have to do this once.
-            </p>
-            <button class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.95rem;" onclick="document.getElementById('lastHtmlFileInput').click()">📂 Browse Last.html File</button>
-            <input type="file" id="lastHtmlFileInput" accept=".html,.htm" style="display:none;" onchange="handleTemplateUpload(event)">
         </div>
     </div>
 
@@ -1208,7 +1186,6 @@
         let globalPreviewTimeout = null;
         const imageTimers = {};
 
-        // Memory load tracker
         setInterval(() => {
             const nodeCount = document.querySelectorAll('*').length;
             const bar = document.getElementById('memStatusBar');
@@ -1342,7 +1319,6 @@
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         }
 
-        // Pointer Events support
         resizer.addEventListener('pointerdown', function(e) {
             e.preventDefault();
             try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
@@ -1356,7 +1332,6 @@
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
 
-        // Dedicated Touch Events for mobile
         resizer.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length === 1) {
                 e.preventDefault();
@@ -1470,7 +1445,6 @@
         leftScrollRail.addEventListener('pointercancel', stopScrubbing);
         leftContentScroll.addEventListener('scroll', updateFastScrollElevator, { passive: true });
 
-        // Container-scoped smooth scrolling
         function scrollToElementInLeftPanel(targetEl) {
             if (!targetEl || !leftContentScroll) return;
             const containerRect = leftContentScroll.getBoundingClientRect();
@@ -1500,7 +1474,7 @@
             });
 
             prevEl.classList.remove('highlight-flash');
-            void prevEl.offsetWidth; // Reflow
+            void prevEl.offsetWidth;
             prevEl.classList.add('highlight-flash');
             setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
         }
@@ -1544,6 +1518,9 @@
                 document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 150);
+
+            // Pre-fetch Last.html cleanly from the cbt directory
+            getTemplateHtml();
         });
 
         function autoResize(el) {
@@ -2506,6 +2483,163 @@
             reader.readAsText(file); evt.target.value = ''; 
         }
 
+        async function getTemplateHtml() {
+            if (window._cachedLastHtmlTemplate) {
+                return window._cachedLastHtmlTemplate;
+            }
+
+            const candidateUrls = ['./Last.html', 'Last.html', 'cbt/Last.html'];
+
+            for (const url of candidateUrls) {
+                try {
+                    const resp = await fetch(url, { cache: 'no-cache' });
+                    if (resp.ok) {
+                        const txt = await resp.text();
+                        if (txt && (txt.includes('<html') || txt.includes('<!DOCTYPE') || txt.includes('<!doctype')) && !txt.includes('editor-inner-container')) {
+                            window._cachedLastHtmlTemplate = txt;
+                            return txt;
+                        }
+                    }
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        async function generateCBTHTML() {
+            try {
+                let txt = await getTemplateHtml();
+                if (!txt) {
+                    showToast('Could not load cbt/Last.html. Please ensure Last.html is present in the cbt directory.', 'error');
+                    return;
+                }
+
+                txt = txt.replace(/<title>.*?<\/title>/i, `<title>${appState.examTitle || 'Exam'}</title>`);
+                txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/i, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
+                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/i, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
+                txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/i, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
+                txt = txt.replace(/<div class="exam-title">.*?<\/div>/i, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
+                txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/i, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
+                
+                txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/i, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
+                txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/i, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
+                txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/i, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
+                if (!appState.audio.bg) txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/i, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
+
+                let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
+                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
+
+                txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/i, `<div class="header-exam-title-row">${appState.examTitle || ''} ${appState.examSubtitle ? ': ' + appState.examSubtitle : ''}</div>`);
+                txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/i, `$1${appState.examTitle || ''} ${appState.examSubtitle ? '- ' + appState.examSubtitle : ''}$2`);
+                
+                txt = txt.replace(/const TIMER_MODE = '[^']*';/i, `const TIMER_MODE = '${appState.timerMode}';`);
+                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/i, `const EXAM_DURATION_MINS = ${appState.duration || 90};`);
+                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/i, `const Q_FONT_FAMILY = "${appState.fontName}";`);
+                
+                let finalRules = [...appState.rules];
+                const durText = appState.duration ? `Total Duration: ${appState.duration} Minutes.` : `Total Duration: 180 Minutes.`;
+                const timerText = appState.timerMode === 'COUNTDOWN' ? "Timer is in Countdown mode (time counts down to zero)." : "Timer is in Stopwatch mode (counts up from zero).";
+                
+                finalRules = finalRules.map(r => {
+                    if (r.toLowerCase().includes('duration')) return durText;
+                    return r;
+                });
+                if (!finalRules.some(r => r.toLowerCase().includes('timer') || r.toLowerCase().includes('mode'))) {
+                    finalRules.push(timerText);
+                }
+
+                const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
+                const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
+                txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/i, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
+                
+                let katexCSS = ''; let katexJS = '';
+                if (appState.renderEngine !== 'HTML_FALLBACK') {
+                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
+                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
+                }
+                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
+
+                const qb = [];
+                for (const sec of appState.sections) {
+                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
+                        let processedText = safeHTML(q.text);
+                        if (appState.renderEngine === 'MATHML') { 
+                            processedText = processMath(processedText, 'MATHML'); 
+                        } else if (appState.renderEngine === 'HTML_FALLBACK') { 
+                            processedText = processMath(processedText, 'HTML_FALLBACK'); 
+                        }
+                        let finalFormattedText = parseFormatting(processedText);
+
+                        let finalOptionsHtmlReady = [];
+                        q.options.forEach(o => {
+                            let optText = o || '';
+                            let optImg = '';
+                            const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
+                            if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
+                            
+                            let processedOpt = safeHTML(optText);
+                            if (appState.renderEngine === 'MATHML') { 
+                                processedOpt = processMath(processedOpt, 'MATHML'); 
+                            } else if (appState.renderEngine === 'HTML_FALLBACK') { 
+                                processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); 
+                            }
+                            processedOpt = parseFormatting(processedOpt);
+
+                            if (optImg && optImg !== 'PLACEHOLDER') {
+                                processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
+                            }
+                            finalOptionsHtmlReady.push(processedOpt);
+                        });
+
+                        return {
+                            id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, 
+                            img: (q.image && q.image !== 'PLACEHOLDER') ? q.image : '', 
+                            table: q.table || '',
+                            options: q.type !== 'NAT' ? finalOptionsHtmlReady : [], correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
+                            marksCorrect: sec.marks, marksWrong: q.type === 'NAT' ? 0 : sec.negative
+                        };
+                    });
+                    qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
+                }
+
+                if (/(?:const|let|var)\s+QUESTION_BANK\s*=/i.test(txt)) {
+                    txt = txt.replace(/(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?\];?/i, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
+                } else {
+                    txt = txt.replace(/<\/script>/i, `\nconst QUESTION_BANK = ${JSON.stringify(qb, null, 2)};\n</script>`);
+                }
+
+                const vkPatch = `
+                <style>
+                .q-text, .opt-text { white-space: pre-wrap !important; }
+                @media (max-width: 768px) {
+                    #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
+                }
+                </style>
+                <script>
+                if (typeof answer === 'undefined') { window.answer = ""; }
+                document.addEventListener('input', e => { 
+                    if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
+                        e.target.value = e.target.value.replace('undefined', ''); 
+                        window.answer = e.target.value;
+                    }
+                });
+                setInterval(() => { 
+                    document.querySelectorAll('input').forEach(inp => { 
+                        if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
+                    }); 
+                }, 300);
+                <\/script>`;
+                txt = txt.replace('</head>', vkPatch + '</head>');
+
+                const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.getElementById('downloadLinkHTML'); 
+                link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
+                
+                openModal('compileModal');
+                
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        }
+
         function parseCBTFormat() {
             let txt = document.getElementById('cbtInput').value; 
             if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
@@ -2634,252 +2768,6 @@
                 if(previewIsVisible) renderAllPreviews();
                 updateFastScrollElevator();
             }, 150);
-        }
-
-        function isValidExamTemplate(candidateTxt) {
-            if (!candidateTxt || typeof candidateTxt !== 'string') return false;
-
-            if (candidateTxt.includes('octolytics-dimension') || 
-               (candidateTxt.includes('github.com') && candidateTxt.includes('data-turbo-body'))) {
-                return false;
-            }
-
-            const isEditor = candidateTxt.includes('id="cbtInput"') || 
-                             candidateTxt.includes('editor-inner-container') || 
-                             candidateTxt.includes('id="questionsListAll"') ||
-                             candidateTxt.includes('cbtFileUpload');
-            if (isEditor) return false;
-
-            if (!candidateTxt.includes('QUESTION_BANK')) return false;
-
-            const hasExamMarkers = candidateTxt.includes('EXAM_DURATION_MINS') || 
-                                   candidateTxt.includes('TIMER_MODE') || 
-                                   candidateTxt.includes('EXAM_S_HTML') || 
-                                   candidateTxt.includes('scheme-table') ||
-                                   candidateTxt.includes('QUESTION_BANK');
-            return hasExamMarkers;
-        }
-
-        async function fetchValidTemplate() {
-            if (isValidExamTemplate(window._cachedLastHtmlTemplate)) {
-                return window._cachedLastHtmlTemplate;
-            }
-
-            try {
-                const stored = localStorage.getItem('cbt_last_template');
-                if (isValidExamTemplate(stored)) {
-                    window._cachedLastHtmlTemplate = stored;
-                    return stored;
-                }
-            } catch(e) {}
-
-            let ghUser = 'suvadippatra';
-            let ghRepo = 'shibu';
-            let ghSub = 'cbt';
-            try {
-                const host = window.location.hostname;
-                const pathSegments = window.location.pathname.split('/').filter(Boolean);
-                if (host.endsWith('github.io')) {
-                    ghUser = host.split('.')[0];
-                    if (pathSegments.length > 0) ghRepo = pathSegments[0];
-                    if (pathSegments.length > 2) ghSub = pathSegments.slice(1, -1).join('/');
-                } else if (host === 'github.com' && pathSegments.length >= 2) {
-                    ghUser = pathSegments[0];
-                    ghRepo = pathSegments[1];
-                    const blobIndex = pathSegments.findIndex(s => s === 'blob' || s === 'tree');
-                    if (blobIndex !== -1 && pathSegments.length > blobIndex + 2) {
-                        ghSub = pathSegments.slice(blobIndex + 2, -1).join('/');
-                    }
-                }
-            } catch (e) {}
-
-            const candidatePaths = [
-                './Last.html',
-                'Last.html',
-                './last.html',
-                'last.html',
-                '../Last.html',
-                '../last.html',
-                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/main/${ghSub ? ghSub + '/' : ''}Last.html`,
-                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/main/${ghSub ? ghSub + '/' : ''}last.html`,
-                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/master/${ghSub ? ghSub + '/' : ''}Last.html`,
-                'https://raw.githubusercontent.com/suvadippatra/shibu/main/cbt/Last.html',
-                'https://raw.githubusercontent.com/suvadippatra/shibu/main/cbt/last.html'
-            ];
-
-            for (const path of candidatePaths) {
-                try {
-                    const fetchUrl = path.startsWith('http') ? path : (path + '?_v=' + Date.now());
-                    const resp = await fetch(fetchUrl, { cache: 'no-cache' });
-                    if (resp.ok && (resp.status === 200 || resp.status === 0)) {
-                        const candidateTxt = await resp.text();
-                        if (isValidExamTemplate(candidateTxt)) {
-                            window._cachedLastHtmlTemplate = candidateTxt;
-                            try { localStorage.setItem('cbt_last_template', candidateTxt); } catch(err) {}
-                            return candidateTxt;
-                        }
-                    }
-                } catch(err) {
-                    // Continue to next candidate endpoint
-                }
-            }
-            return null;
-        }
-
-        function handleTemplateUpload(evt) {
-            const file = evt.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const text = e.target.result;
-                if (!isValidExamTemplate(text)) {
-                    showToast('Invalid Last.html file: missing QUESTION_BANK marker or editor file selected.', 'error');
-                    return;
-                }
-                window._cachedLastHtmlTemplate = text;
-                try { localStorage.setItem('cbt_last_template', text); } catch(err) {}
-                closeModal('templateModal');
-                showToast('Last.html template loaded and saved permanently!', 'success');
-                generateCBTHTML();
-            };
-            reader.readAsText(file);
-            evt.target.value = '';
-        }
-
-        async function generateCBTHTML() {
-            try {
-                let txt = await fetchValidTemplate();
-                if (!txt) {
-                    openModal('templateModal');
-                    return;
-                }
-
-                txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle || 'Exam'}</title>`);
-                txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
-                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
-                txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
-                txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
-                txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
-                
-                txt = txt.replace(/const BACKGROUND_AUDIO_BASE64 = ".*?";/, `const BACKGROUND_AUDIO_BASE64 = "${appState.audio.bg}";`);
-                txt = txt.replace(/const START_EXAM_AUDIO_B64 = ".*?";/, `const START_EXAM_AUDIO_B64 = "${appState.audio.start}";`);
-                txt = txt.replace(/const SUBMIT_EXAM_AUDIO_B64 = ".*?";/, `const SUBMIT_EXAM_AUDIO_B64 = "${appState.audio.submit}";`);
-                if (!appState.audio.bg) txt = txt.replace(/<button class="tool-btn" id="btn-audio".*?<\/button>/, '<button class="tool-btn hidden" id="btn-audio" style="display:none;"></button>');
-
-                let cHtml = appState.constants.map(c => `<div class="const-card"><div class="const-text-line">${c.name} : <strong>${c.value}</strong></div></div>`).join('');
-                txt = txt.replace(/<!-- PARAMETER 5 \(Global\): List of Constants\. -->[\s\S]*?<!-- RESULT GATEWAY -->/i, `<!-- PARAMETER 5 (Global): List of Constants. -->\n<div class="const-list">\n${cHtml}\n</div>\n</div>\n</div>\n<!-- RESULT GATEWAY -->`);
-
-                txt = txt.replace(/<div class="header-exam-title-row">.*?<\/div>/, `<div class="header-exam-title-row">${appState.examTitle || ''} ${appState.examSubtitle ? ': ' + appState.examSubtitle : ''}</div>`);
-                txt = txt.replace(/(<div class="print-secondary-header">\s*<!-- PARAMETER 6 \(Global\): Exam Name & Subtitle for Print Header\. -->\s*<div>).*?(<\/div>)/, `$1${appState.examTitle || ''} ${appState.examSubtitle ? '- ' + appState.examSubtitle : ''}$2`);
-                
-                txt = txt.replace(/const TIMER_MODE = '[^']*';/, `const TIMER_MODE = '${appState.timerMode}';`);
-                txt = txt.replace(/const EXAM_DURATION_MINS = \d+;/, `const EXAM_DURATION_MINS = ${appState.duration || 90};`);
-                txt = txt.replace(/const Q_FONT_FAMILY = ".*?";/, `const Q_FONT_FAMILY = "${appState.fontName}";`);
-                
-                let finalRules = [...appState.rules];
-                const durText = appState.duration ? `Total Duration: ${appState.duration} Minutes.` : `Total Duration: 180 Minutes.`;
-                const timerText = appState.timerMode === 'COUNTDOWN' ? "Timer is in Countdown mode (time counts down to zero)." : "Timer is in Stopwatch mode (counts up from zero).";
-                
-                finalRules = finalRules.map(r => {
-                    if (r.toLowerCase().includes('duration')) return durText;
-                    return r;
-                });
-                if (!finalRules.some(r => r.toLowerCase().includes('timer') || r.toLowerCase().includes('mode'))) {
-                    finalRules.push(timerText);
-                }
-
-                const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
-                const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
-                txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
-                
-                let katexCSS = ''; let katexJS = '';
-                if (appState.renderEngine !== 'HTML_FALLBACK') {
-                    katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
-                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
-                }
-                txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
-
-                const qb = [];
-                for (const sec of appState.sections) {
-                    const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
-                        let processedText = safeHTML(q.text);
-                        if (appState.renderEngine === 'MATHML') { 
-                            processedText = processMath(processedText, 'MATHML'); 
-                        } else if (appState.renderEngine === 'HTML_FALLBACK') { 
-                            processedText = processMath(processedText, 'HTML_FALLBACK'); 
-                        }
-                        let finalFormattedText = parseFormatting(processedText);
-
-                        let finalOptionsHtmlReady = [];
-                        q.options.forEach(o => {
-                            let optText = o || '';
-                            let optImg = '';
-                            const imgMatch = optText.match(/\|\|IMG:(.+?)\|\|/);
-                            if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
-                            
-                            let processedOpt = safeHTML(optText);
-                            if (appState.renderEngine === 'MATHML') { 
-                                processedOpt = processMath(processedOpt, 'MATHML'); 
-                            } else if (appState.renderEngine === 'HTML_FALLBACK') { 
-                                processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); 
-                            }
-                            processedOpt = parseFormatting(processedOpt);
-
-                            if (optImg && optImg !== 'PLACEHOLDER') {
-                                processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
-                            }
-                            finalOptionsHtmlReady.push(processedOpt);
-                        });
-
-                        return {
-                            id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, 
-                            img: (q.image && q.image !== 'PLACEHOLDER') ? q.image : '', 
-                            table: q.table || '',
-                            options: q.type !== 'NAT' ? finalOptionsHtmlReady : [], correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
-                            marksCorrect: sec.marks, marksWrong: q.type === 'NAT' ? 0 : sec.negative
-                        };
-                    });
-                    qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
-                }
-
-                txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
-
-                if (!txt.includes('QUESTION_BANK') || txt.includes('editor-inner-container')) {
-                    showToast('Compilation aborted: template was contaminated or invalid.', 'error');
-                    return;
-                }
-
-                const vkPatch = `
-                <style>
-                .q-text, .opt-text { white-space: pre-wrap !important; }
-                @media (max-width: 768px) {
-                    #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
-                }
-                </style>
-                <script>
-                if (typeof answer === 'undefined') { window.answer = ""; }
-                document.addEventListener('input', e => { 
-                    if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
-                        e.target.value = e.target.value.replace('undefined', ''); 
-                        window.answer = e.target.value;
-                    }
-                });
-                setInterval(() => { 
-                    document.querySelectorAll('input').forEach(inp => { 
-                        if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
-                    }); 
-                }, 300);
-                <\/script>`;
-                txt = txt.replace('</head>', vkPatch + '</head>');
-
-                const blob = new Blob([txt], { type: 'text/html; charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const link = document.getElementById('downloadLinkHTML'); 
-                link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}_Final.html`;
-                
-                openModal('compileModal');
-                
-            } catch (e) { showToast('Error: ' + e.message, 'error'); }
         }
 
         function switchPrompt(mode) {
