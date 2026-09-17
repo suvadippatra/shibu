@@ -2680,19 +2680,29 @@
         // Rigorous exam template validator that distinguishes Last.html from cbt_index.html
         function isValidExamTemplate(candidateTxt) {
             if (!candidateTxt || typeof candidateTxt !== 'string') return false;
-            // Must contain the Question Bank marker
-            if (!candidateTxt.includes('QUESTION_BANK')) return false;
+
+            // Reject GitHub web UI wrappers (e.g. when fetched from github.com/.../blob/...)
+            if (candidateTxt.includes('octolytics-dimension') || 
+               (candidateTxt.includes('github.com') && candidateTxt.includes('data-turbo-body'))) {
+                return false;
+            }
+
             // Must NOT be the CBT Setter / Editor itself
             const isEditor = candidateTxt.includes('id="cbtInput"') || 
                              candidateTxt.includes('editor-inner-container') || 
                              candidateTxt.includes('id="questionsListAll"') ||
                              candidateTxt.includes('cbtFileUpload');
             if (isEditor) return false;
+
+            // Must contain the Question Bank marker
+            if (!candidateTxt.includes('QUESTION_BANK')) return false;
+
             // Must contain exam player markers
             const hasExamMarkers = candidateTxt.includes('EXAM_DURATION_MINS') || 
                                    candidateTxt.includes('TIMER_MODE') || 
                                    candidateTxt.includes('EXAM_S_HTML') || 
-                                   candidateTxt.includes('scheme-table');
+                                   candidateTxt.includes('scheme-table') ||
+                                   candidateTxt.includes('QUESTION_BANK');
             return hasExamMarkers;
         }
 
@@ -2701,6 +2711,7 @@
             if (isValidExamTemplate(window._cachedLastHtmlTemplate)) {
                 return window._cachedLastHtmlTemplate;
             }
+
             // 2. Check localStorage cache
             try {
                 const stored = localStorage.getItem('cbt_last_template');
@@ -2710,20 +2721,47 @@
                 }
             } catch(e) {}
 
-            // 3. Multi-path resolution
+            // 3. Auto-detect GitHub user, repo, and subfolder
+            let ghUser = 'suvadippatra';
+            let ghRepo = 'shibu';
+            let ghSub = 'cbt';
+            try {
+                const host = window.location.hostname;
+                const pathSegments = window.location.pathname.split('/').filter(Boolean);
+                if (host.endsWith('github.io')) {
+                    ghUser = host.split('.')[0];
+                    if (pathSegments.length > 0) ghRepo = pathSegments[0];
+                    if (pathSegments.length > 2) ghSub = pathSegments.slice(1, -1).join('/');
+                } else if (host === 'github.com' && pathSegments.length >= 2) {
+                    ghUser = pathSegments[0];
+                    ghRepo = pathSegments[1];
+                    const blobIndex = pathSegments.findIndex(s => s === 'blob' || s === 'tree');
+                    if (blobIndex !== -1 && pathSegments.length > blobIndex + 2) {
+                        ghSub = pathSegments.slice(blobIndex + 2, -1).join('/');
+                    }
+                }
+            } catch (e) {}
+
+            // 4. Candidate paths (Relative + Full URLs + Raw GitHub CORS-friendly endpoints)
             const candidatePaths = [
                 './Last.html',
                 'Last.html',
                 './last.html',
                 'last.html',
                 '../Last.html',
-                '../last.html'
+                '../last.html',
+                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/main/${ghSub ? ghSub + '/' : ''}Last.html`,
+                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/main/${ghSub ? ghSub + '/' : ''}last.html`,
+                `https://raw.githubusercontent.com/${ghUser}/${ghRepo}/master/${ghSub ? ghSub + '/' : ''}Last.html`,
+                'https://raw.githubusercontent.com/suvadippatra/shibu/main/cbt/Last.html',
+                'https://raw.githubusercontent.com/suvadippatra/shibu/main/cbt/last.html'
             ];
 
             for (const path of candidatePaths) {
                 try {
-                    const resp = await fetch(path + '?_v=' + Date.now(), { cache: 'no-cache' });
-                    if (resp.ok && resp.status === 200) {
+                    const fetchUrl = path.startsWith('http') ? path : (path + '?_v=' + Date.now());
+                    const resp = await fetch(fetchUrl, { cache: 'no-cache' });
+                    if (resp.ok && (resp.status === 200 || resp.status === 0)) {
                         const candidateTxt = await resp.text();
                         if (isValidExamTemplate(candidateTxt)) {
                             window._cachedLastHtmlTemplate = candidateTxt;
@@ -2732,7 +2770,7 @@
                         }
                     }
                 } catch(err) {
-                    // Try next candidate
+                    // Continue to next candidate endpoint
                 }
             }
             return null;
