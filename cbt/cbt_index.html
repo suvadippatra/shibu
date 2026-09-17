@@ -63,7 +63,6 @@
             background-color: var(--primary);
         }
 
-        /* Fixed viewport lock preventing browser auto-scroll outside application */
         html {
             height: 100%;
             height: 100dvh;
@@ -98,7 +97,6 @@
             -webkit-user-select: none !important;
         }
 
-        /* Top Navigation */
         .navbar {
             flex: 0 0 auto;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -229,7 +227,6 @@
             cursor: grabbing;
         }
 
-        /* Split-Screen Resizer */
         .resizer {
             width: 14px;
             cursor: col-resize;
@@ -487,7 +484,6 @@
         .preview-option.correct { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--primary); padding: 0.5rem; color: var(--primary-dark); font-weight: 600; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
         
-        /* Responsive Modals */
         .modal {
             display: none;
             position: fixed;
@@ -587,7 +583,6 @@
         
         .hide-mobile { display: inline; }
 
-        /* General mobile & compact toolbar adaptations */
         @media (max-width: 1024px) {
             .nav-text-mobile-hide { display: none; }
             .navbar { padding: 0.6rem 1rem; gap: 0.4rem; }
@@ -710,16 +705,12 @@
     <nav class="navbar">
         <div class="navbar-brand"><div class="navbar-icon">📝</div><span>CBT</span></div>
         <div class="navbar-actions">
-            <!-- Global Image Missing Notification -->
             <button class="btn-icon hidden" id="missingImgIcon" onclick="openModal('missingImageModal')" style="color: #fca5a5; background: rgba(239, 68, 68, 0.2); border-color: var(--danger);" title="Missing Images">🚨 <span class="nav-text-mobile-hide" id="missingImgCount">0</span></button>
-            
-            <!-- Core Tools -->
             <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
             <button class="btn-icon" id="previewToggleBtn" title="Toggle Live Preview" onclick="togglePreviewLayout()">👁️</button>
             <button class="btn-icon" onclick="openPromptModal()" title="Copy AI Prompt">🤖<span class="nav-text-mobile-hide"> Prompt</span></button>
             <button class="btn-icon" onclick="openModal('pasteModal')" title="Import/Export CBT">📌<span class="nav-text-mobile-hide"> Import</span></button>
             
-            <!-- Triple Dot Menu -->
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)" title="Menu">⋮</button>
                 <div class="dropdown-content" id="mainMenu">
@@ -832,7 +823,6 @@
                     </div>
                 </div>
 
-                <!-- Linux-style fast scroll elevator rail -->
                 <div class="fast-scroll-rail" id="leftScrollRail" title="Drag or click to scroll page">
                     <div class="fast-scroll-thumb" id="leftScrollThumb"></div>
                 </div>
@@ -845,7 +835,6 @@
             </div>
         </div>
 
-        <!-- Draggable Resizer -->
         <div class="resizer" id="dragMe" title="Drag to adjust split view"></div>
 
         <div class="right-panel hidden-panel" id="rightPanel">
@@ -870,7 +859,6 @@
         </div>
     </div>
 
-    <!-- Template Recovery Modal -->
     <div class="modal" id="templateModal">
         <div class="modal-content" style="max-width: 480px; text-align: center;">
             <div class="modal-header">
@@ -1098,7 +1086,6 @@
                 </div>
             </div>
             
-            <!-- ENGLISH COMPREHENSIVE GUIDE -->
             <div id="help-eng" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Advanced Features & Best Practices</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1144,7 +1131,6 @@
                 </ul>
             </div>
             
-            <!-- BENGALI COMPREHENSIVE GUIDE -->
             <div id="help-ben" class="hidden" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অ্যাডভান্সড ফিচার ও সেরা কার্যপ্রণালী</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1541,7 +1527,6 @@
             renderAllQuestions();
             generateAIPrompt();
             
-            // Preview is hidden by default
             previewIsVisible = false;
             const right = document.getElementById('rightPanel'); 
             const left = document.getElementById('leftPanel'); 
@@ -1561,7 +1546,6 @@
             }, 150);
         });
 
-        // Dedicated auto-resize without layout flex interference
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
@@ -1655,12 +1639,10 @@
             });
         }
 
-        // Format LaTeX math to clean HTML fallback
         function formatMathToHTML(str, isDisplay) {
             if (!str) return '';
             let s = str.trim();
 
-            // Greek symbols
             const greek = {
                 '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
                 '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
@@ -1674,7 +1656,6 @@
                 s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
             }
 
-            // Directional and reaction arrows
             s = s.replace(/\\rightleftharpoons/g, '⇌')
                  .replace(/\\leftrightarrow/g, '↔')
                  .replace(/\\Rightarrow/g, '⇒')
@@ -1686,7 +1667,6 @@
                  .replace(/\\uparrow/g, '↑')
                  .replace(/\\downarrow/g, '↓');
 
-            // Operators & relation symbols
             s = s.replace(/\\times/g, '×')
                  .replace(/\\cdot/g, '·')
                  .replace(/\\div/g, '÷')
@@ -1718,43 +1698,35 @@
                  .replace(/\\exists/g, '∃')
                  .replace(/\\hbar/g, 'ℏ');
 
-            // Text styles and wrappers
             s = s.replace(/\\text\{([^}]+)\}/g, '$1')
                  .replace(/\\mathrm\{([^}]+)\}/g, '$1')
                  .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
                  .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
 
-            // Accents and vectors
             s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;')
                  .replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
                  .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;')
                  .replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
                  .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
 
-            // Standard functions
             s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
 
-            // Fractions: iterative replacement to handle nested fractions cleanly
             let prevS = '';
             while (prevS !== s) {
                 prevS = s;
                 s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)');
             }
 
-            // Roots
             s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
                  .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
                  .replace(/\\sqrt\b/g, '√');
 
-            // Exponents
             s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>')
                  .replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
 
-            // Subscripts
             s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
                  .replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
 
-            // Spacing commands and remaining backslash tokens
             s = s.replace(/\\[;,!]/g, ' ')
                  .replace(/\\quad/g, ' &nbsp; ')
                  .replace(/\\qquad/g, ' &nbsp;&nbsp; ')
@@ -1765,7 +1737,6 @@
                 : `<span style="font-family: serif;"><i>${s}</i></span>`;
         }
 
-        // Cleans loose LaTeX arrow or math commands that might appear outside $ signs in HTML mode
         function cleanLooseLatexSymbols(str) {
             if (!str) return '';
             return str.replace(/\\rightleftharpoons/g, '⇌')
@@ -1781,11 +1752,9 @@
                       .replace(/\\ge\b/g, '≥');
         }
 
-        // Process mathematical markup based on chosen engine
         function processMath(text, engine) {
             if (!text) return '';
             
-            // Process math wrapped in $$...$$ or $...$
             let res = text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
                 let math = displayMath || inlineMath;
                 let isDisplay = !!displayMath;
@@ -1799,11 +1768,9 @@
                     }
                 }
                 
-                // HTML_FALLBACK or fallback if MathML rendering is not ready
                 return formatMathToHTML(unescapedMath, isDisplay);
             });
 
-            // Also clean up any loose LaTeX commands in HTML Fallback mode
             if (engine === 'HTML_FALLBACK') {
                 res = cleanLooseLatexSymbols(res);
             }
@@ -1811,12 +1778,10 @@
             return res;
         }
 
-        // Bulletproof formatting parser using unique collision-free tokens
         function parseFormatting(str) {
             if(!str) return '';
             let mathBlocks = [];
             
-            // CRITICAL FIX: Use @@MATH_BLOCK_${i}@@ to prevent collision with Markdown underlines (__...__)
             str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
                 mathBlocks.push(match);
                 return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
@@ -2061,7 +2026,6 @@
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
 
-            // Sync preview whenever question card is clicked
             div.onclick = (e) => {
                 if (!e.target.closest('button')) syncPreviewScroll(sec, idx);
             };
@@ -2384,12 +2348,10 @@
             });
         }
 
-        // Generate clean preview HTML with universal fallback protection
         function generateSinglePreviewHTML(sec, idx, q) {
             let processedText = safeHTML(q.text);
             let previewEngine = appState.renderEngine; 
             
-            // Universal Math & Arrow Transformation if in Pure HTML Fallback mode
             if (previewEngine === 'HTML_FALLBACK') {
                 processedText = processMath(processedText, 'HTML_FALLBACK');
             }
@@ -2434,7 +2396,6 @@
             return html;
         }
 
-        // Granular O(1) Preview Updater
         function updateSingleQuestionPreview(sec, idx) {
             if (!previewIsVisible) return;
             if (activePreviewSection !== sec) {
@@ -2447,7 +2408,6 @@
 
             qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
 
-            // Trigger KaTeX render if using MathML or KaTeX Online mode
             if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(qBox, { 
                     delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
@@ -2475,7 +2435,6 @@
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
-            // Trigger KaTeX render on entire preview panel if in MathML or KaTeX Online mode
             if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
             }
@@ -2677,27 +2636,22 @@
             }, 150);
         }
 
-        // Rigorous exam template validator that distinguishes Last.html from cbt_index.html
         function isValidExamTemplate(candidateTxt) {
             if (!candidateTxt || typeof candidateTxt !== 'string') return false;
 
-            // Reject GitHub web UI wrappers (e.g. when fetched from github.com/.../blob/...)
             if (candidateTxt.includes('octolytics-dimension') || 
                (candidateTxt.includes('github.com') && candidateTxt.includes('data-turbo-body'))) {
                 return false;
             }
 
-            // Must NOT be the CBT Setter / Editor itself
             const isEditor = candidateTxt.includes('id="cbtInput"') || 
                              candidateTxt.includes('editor-inner-container') || 
                              candidateTxt.includes('id="questionsListAll"') ||
                              candidateTxt.includes('cbtFileUpload');
             if (isEditor) return false;
 
-            // Must contain the Question Bank marker
             if (!candidateTxt.includes('QUESTION_BANK')) return false;
 
-            // Must contain exam player markers
             const hasExamMarkers = candidateTxt.includes('EXAM_DURATION_MINS') || 
                                    candidateTxt.includes('TIMER_MODE') || 
                                    candidateTxt.includes('EXAM_S_HTML') || 
@@ -2707,12 +2661,10 @@
         }
 
         async function fetchValidTemplate() {
-            // 1. Check in-memory cache
             if (isValidExamTemplate(window._cachedLastHtmlTemplate)) {
                 return window._cachedLastHtmlTemplate;
             }
 
-            // 2. Check localStorage cache
             try {
                 const stored = localStorage.getItem('cbt_last_template');
                 if (isValidExamTemplate(stored)) {
@@ -2721,7 +2673,6 @@
                 }
             } catch(e) {}
 
-            // 3. Auto-detect GitHub user, repo, and subfolder
             let ghUser = 'suvadippatra';
             let ghRepo = 'shibu';
             let ghSub = 'cbt';
@@ -2742,7 +2693,6 @@
                 }
             } catch (e) {}
 
-            // 4. Candidate paths (Relative + Full URLs + Raw GitHub CORS-friendly endpoints)
             const candidatePaths = [
                 './Last.html',
                 'Last.html',
@@ -2790,7 +2740,6 @@
                 try { localStorage.setItem('cbt_last_template', text); } catch(err) {}
                 closeModal('templateModal');
                 showToast('Last.html template loaded and saved permanently!', 'success');
-                // Automatically compile
                 generateCBTHTML();
             };
             reader.readAsText(file);
@@ -2893,7 +2842,6 @@
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
 
-                // FAILSAFE VALIDATION: Ensure template was genuinely updated
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
 
                 if (!txt.includes('QUESTION_BANK') || txt.includes('editor-inner-container')) {
