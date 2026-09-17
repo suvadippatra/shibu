@@ -126,7 +126,6 @@
         .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
 
-        /* Main Workspace */
         .main {
             flex: 1 1 0;
             min-height: 0;
@@ -192,7 +191,7 @@
             min-width: 0;
         }
 
-        /* Linux-Style Fast Scroll Rail */
+        /* Fast Scroll Rail */
         .fast-scroll-rail {
             position: absolute;
             top: 0;
@@ -402,7 +401,6 @@
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 0.3rem;}
         
-        /* Dedicated Question Textarea with zero transition lag and flex none to enable line expansion */
         .qblock-textarea {
             width: 100% !important;
             min-height: 48px;
@@ -922,11 +920,11 @@
             </div>
             <div class="engine-options" style="overflow-y: auto; max-height: 55vh; padding-right: 0.2rem;">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.6rem; margin-bottom:0.75rem; font-size:0.85rem; color:var(--text-main);">
-                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX mode if you need math rendering.
+                    <strong>HTML Mode Active:</strong> Pure HTML Fallback automatically transforms math and arrow symbols into universal HTML entities. You can switch to Native MathML or KaTeX if you need publication-grade rendering.
                 </div>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
-                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses Unicode symbols and sub/sup scripts.</label>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
@@ -1117,11 +1115,12 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX Formulas:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
                     <li><strong>Multiplication Symbol Rule:</strong> NEVER use the asterisk <code>*</code> for multiplication in math (e.g., <code>$2 * 3$</code> collides with Markdown italics). Always write <code>\times</code> (for $\times$) or <code>\cdot</code> (for $\cdot$).</li>
-                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, do not use LaTeX backslashes. Use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts.</li>
+                    <li><strong>Arrows & Chemical Pathways:</strong> Use <code>\rightarrow</code> ($ \rightarrow $) or <code>\rightleftharpoons</code> ($ \rightleftharpoons $) in LaTeX mode. In HTML mode, use standard Unicode arrows like → or ⇌. The engine automatically translates them even if enclosed in dollar signs.</li>
+                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →, ⇌) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts (e.g., H<sub>2</sub>O).</li>
                     <li><strong>Compilation Engine Options:</strong> 
                         <br>• <strong>Native MathML:</strong> Lightweight offline math rendered directly by the browser engine.
                         <br>• <strong>KaTeX (Online):</strong> Publication-grade typography requiring an internet connection.
-                        <br>• <strong>Pure HTML Fallback:</strong> Converts math to lightweight italicized HTML with sub/sup scripts for maximum offline compatibility.</li>
+                        <br>• <strong>Pure HTML Fallback:</strong> Converts math and arrows to lightweight HTML with sub/sup scripts and Unicode for universal offline compatibility.</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Sections, Marking, and Max Attempts</h3>
@@ -1162,6 +1161,7 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX সমীকরণ:</strong> সাধারণ সূত্রের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং ডিসপ্লে ব্লকের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
                     <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার <code>*</code> ব্যবহার করবেন না (যেমন <code>$2 * 3$</code> দিলে ইটালিক কোডের সাথে সংঘর্ষ হবে)। সবসময় <code>\times</code> ($2 \times 3$) অথবা <code>\cdot</code> ব্যবহার করুন।</li>
+                    <li><strong>তীরচিহ্ন ও জৈব রাসায়নিক ধাপ:</strong> LaTeX মোডে <code>\rightarrow</code> বা <code>\rightleftharpoons</code> ব্যবহার করুন। HTML মোডে সরাসরি ইউনিকোড তীরচিহ্ন (→ বা ⇌) ব্যবহার করবেন।</li>
                     <li><strong>HTML মোড প্রতীক:</strong> HTML মোডে সরাসরি লেখার সময় ব্যাকস্ল্যাশ ছাড়া ইউনিকোড প্রতীক (π, α, β, θ, ±, √, ×, ÷, →) এবং পাওয়ার/সাবস্ক্রিপ্টের জন্য <code>&lt;sup&gt;2&lt;/sup&gt;</code> ও <code>&lt;sub&gt;2&lt;/sub&gt;</code> ট্যাগ দিন।</li>
                     <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
                 </ul>
@@ -1655,54 +1655,184 @@
             });
         }
 
+        // Format LaTeX math to clean HTML fallback
+        function formatMathToHTML(str, isDisplay) {
+            if (!str) return '';
+            let s = str.trim();
+
+            // Greek symbols
+            const greek = {
+                '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
+                '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
+                '\\Theta':'Θ', '\\iota':'ι', '\\kappa':'κ', '\\lambda':'λ', '\\Lambda':'Λ',
+                '\\mu':'μ', '\\nu':'ν', '\\xi':'ξ', '\\Xi':'Ξ', '\\pi':'π', '\\Pi':'Π',
+                '\\rho':'ρ', '\\sigma':'σ', '\\Sigma':'Σ', '\\tau':'τ', '\\upsilon':'υ',
+                '\\phi':'φ', '\\Phi':'Φ', '\\chi':'χ', '\\psi':'ψ', '\\Psi':'Ψ',
+                '\\omega':'ω', '\\Omega':'Ω'
+            };
+            for (let g in greek) {
+                s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+            }
+
+            // Directional and reaction arrows
+            s = s.replace(/\\rightleftharpoons/g, '⇌')
+                 .replace(/\\leftrightarrow/g, '↔')
+                 .replace(/\\Rightarrow/g, '⇒')
+                 .replace(/\\Leftarrow/g, '⇐')
+                 .replace(/\\rightarrow/g, '→')
+                 .replace(/\\to\b/g, '→')
+                 .replace(/\\leftarrow/g, '←')
+                 .replace(/\\gets\b/g, '←')
+                 .replace(/\\uparrow/g, '↑')
+                 .replace(/\\downarrow/g, '↓');
+
+            // Operators & relation symbols
+            s = s.replace(/\\times/g, '×')
+                 .replace(/\\cdot/g, '·')
+                 .replace(/\\div/g, '÷')
+                 .replace(/\\pm/g, '±')
+                 .replace(/\\mp/g, '∓')
+                 .replace(/\\approx/g, '≈')
+                 .replace(/\\neq/g, '≠')
+                 .replace(/\\ne\b/g, '≠')
+                 .replace(/\\leq/g, '≤')
+                 .replace(/\\geq/g, '≥')
+                 .replace(/\\le\b/g, '≤')
+                 .replace(/\\ge\b/g, '≥')
+                 .replace(/\\ll\b/g, '≪')
+                 .replace(/\\gg\b/g, '≫')
+                 .replace(/\\equiv/g, '≡')
+                 .replace(/\\propto/g, '∝')
+                 .replace(/\\infty/g, '∞')
+                 .replace(/\\partial/g, '∂')
+                 .replace(/\\nabla/g, '∇')
+                 .replace(/\\degree/g, '°')
+                 .replace(/\\circ/g, '°')
+                 .replace(/\\in\b/g, '∈')
+                 .replace(/\\notin/g, '∉')
+                 .replace(/\\subset/g, '⊂')
+                 .replace(/\\subseteq/g, '⊆')
+                 .replace(/\\cap/g, '∩')
+                 .replace(/\\cup/g, '∪')
+                 .replace(/\\forall/g, '∀')
+                 .replace(/\\exists/g, '∃')
+                 .replace(/\\hbar/g, 'ℏ');
+
+            // Text styles and wrappers
+            s = s.replace(/\\text\{([^}]+)\}/g, '$1')
+                 .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+                 .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
+                 .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
+
+            // Accents and vectors
+            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;')
+                 .replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
+                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;')
+                 .replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
+                 .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
+
+            // Standard functions
+            s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
+
+            // Fractions: iterative replacement to handle nested fractions cleanly
+            let prevS = '';
+            while (prevS !== s) {
+                prevS = s;
+                s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)');
+            }
+
+            // Roots
+            s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
+                 .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+                 .replace(/\\sqrt\b/g, '√');
+
+            // Exponents
+            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>')
+                 .replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
+
+            // Subscripts
+            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
+                 .replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
+
+            // Spacing commands and remaining backslash tokens
+            s = s.replace(/\\[;,!]/g, ' ')
+                 .replace(/\\quad/g, ' &nbsp; ')
+                 .replace(/\\qquad/g, ' &nbsp;&nbsp; ')
+                 .replace(/\\([a-zA-Z]+)/g, '$1');
+
+            return isDisplay 
+                ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` 
+                : `<span style="font-family: serif;"><i>${s}</i></span>`;
+        }
+
+        // Cleans loose LaTeX arrow or math commands that might appear outside $ signs in HTML mode
+        function cleanLooseLatexSymbols(str) {
+            if (!str) return '';
+            return str.replace(/\\rightleftharpoons/g, '⇌')
+                      .replace(/\\rightarrow/g, '→')
+                      .replace(/\\to\b/g, '→')
+                      .replace(/\\leftarrow/g, '←')
+                      .replace(/\\times/g, '×')
+                      .replace(/\\cdot/g, '·')
+                      .replace(/\\pm/g, '±')
+                      .replace(/\\approx/g, '≈')
+                      .replace(/\\neq/g, '≠')
+                      .replace(/\\le\b/g, '≤')
+                      .replace(/\\ge\b/g, '≥');
+        }
+
+        // Process mathematical markup based on chosen engine
+        function processMath(text, engine) {
+            if (!text) return '';
+            
+            // Process math wrapped in $$...$$ or $...$
+            let res = text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                let isDisplay = !!displayMath;
+                let unescapedMath = math.trim();
+
+                if (engine === 'MATHML') {
+                    if (typeof katex !== 'undefined') {
+                        try { 
+                            return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
+                        } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
+                    }
+                }
+                
+                // HTML_FALLBACK or fallback if MathML rendering is not ready
+                return formatMathToHTML(unescapedMath, isDisplay);
+            });
+
+            // Also clean up any loose LaTeX commands in HTML Fallback mode
+            if (engine === 'HTML_FALLBACK') {
+                res = cleanLooseLatexSymbols(res);
+            }
+
+            return res;
+        }
+
+        // Bulletproof formatting parser using unique collision-free tokens
         function parseFormatting(str) {
             if(!str) return '';
             let mathBlocks = [];
+            
+            // CRITICAL FIX: Use @@MATH_BLOCK_${i}@@ to prevent collision with Markdown underlines (__...__)
             str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
                 mathBlocks.push(match);
-                return `__MATH_${mathBlocks.length - 1}__`;
+                return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
             });
             
             str = str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
                      .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
                      .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
                      
-            str = str.replace(/__MATH_(\d+)__/g, (match, i) => mathBlocks[i]);
+            str = str.replace(/@@MATH_BLOCK_(\d+)@@/g, (match, i) => mathBlocks[parseInt(i)]);
             return str;
         }
 
         function safeHTML(str) {
             if(!str) return '';
             return str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
-        }
-        
-        function processMath(text, engine) {
-            if (!text) return '';
-            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
-                let math = displayMath || inlineMath;
-                let isDisplay = !!displayMath;
-                let unescapedMath = math; 
-
-                if (engine === 'MATHML') {
-                    if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
-                    try { 
-                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
-                    } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
-                } else if (engine === 'HTML_FALLBACK') {
-                    let str = unescapedMath;
-                    const greek = { '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ' };
-                    for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
-                    str = str.replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\approx/g, '≈').replace(/\\pm/g, '±').replace(/\\partial/g, '∂').replace(/\\infty/g, '∞').replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←');
-                    str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;').replace(/\\text\{([^}]+)\}/g, '$1');
-                    str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan').replace(/\\ln/g, 'ln').replace(/\\log/g, 'log');
-                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
-                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
-                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
-                    str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
-                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
-                }
-                return match;
-            });
         }
 
         function updateRulesData() {
@@ -1872,7 +2002,6 @@
             }, 50);
         }
 
-        // Targeted in-place question block refresh (Prevents scroll jumping to Q1!)
         function refreshQuestionBlock(sec, idx) {
             const oldBlock = document.getElementById(`qblock-${sec}-${idx}`);
             const q = appState.questionsBySection[sec]?.[idx];
@@ -1981,7 +2110,6 @@
 
             let safeQText = q.text || '';
 
-            // qblock-textarea has dedicated styling without .auto-expand flex conflicts
             div.innerHTML = `
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
@@ -2234,7 +2362,7 @@
         }
         function removeTable(sec, idx) { 
             updateQuestion(sec, idx, 'table', 0, ''); 
-            refreshQuestionBlock(sec, idx);
+            refreshQuestionBlock(sec, idx); 
             debouncedUpdateSingleQuestionPreview(sec, idx); 
         }
 
@@ -2256,12 +2384,14 @@
             });
         }
 
+        // Generate clean preview HTML with universal fallback protection
         function generateSinglePreviewHTML(sec, idx, q) {
             let processedText = safeHTML(q.text);
             let previewEngine = appState.renderEngine; 
             
-            if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
-                processedText = processMath(processedText, previewEngine);
+            // Universal Math & Arrow Transformation if in Pure HTML Fallback mode
+            if (previewEngine === 'HTML_FALLBACK') {
+                processedText = processMath(processedText, 'HTML_FALLBACK');
             }
             processedText = parseFormatting(processedText);
             
@@ -2282,8 +2412,8 @@
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
 
                     let safeOpt = safeHTML(rawOpt);
-                    if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
-                        safeOpt = processMath(safeOpt, previewEngine);
+                    if (previewEngine === 'HTML_FALLBACK') {
+                        safeOpt = processMath(safeOpt, 'HTML_FALLBACK');
                     }
                     safeOpt = parseFormatting(safeOpt);
 
@@ -2317,7 +2447,8 @@
 
             qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
 
-            if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
+            // Trigger KaTeX render if using MathML or KaTeX Online mode
+            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(qBox, { 
                     delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
                     throwOnError: false 
@@ -2344,7 +2475,8 @@
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
-            if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
+            // Trigger KaTeX render on entire preview panel if in MathML or KaTeX Online mode
+            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
             }
         }
@@ -2674,7 +2806,7 @@
                 txt = txt.replace(/(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/, `const EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;`);
                 
                 let katexCSS = ''; let katexJS = '';
-                if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK') {
+                if (appState.renderEngine !== 'HTML_FALLBACK') {
                     katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
                     katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
@@ -2684,9 +2816,10 @@
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
                         let processedText = safeHTML(q.text);
-                        if (appState.mathMode === 'LATEX') {
-                            if (appState.renderEngine === 'MATHML') { processedText = processMath(processedText, 'MATHML'); }
-                            else if (appState.renderEngine === 'HTML_FALLBACK') { processedText = processMath(processedText, 'HTML_FALLBACK'); }
+                        if (appState.renderEngine === 'MATHML') { 
+                            processedText = processMath(processedText, 'MATHML'); 
+                        } else if (appState.renderEngine === 'HTML_FALLBACK') { 
+                            processedText = processMath(processedText, 'HTML_FALLBACK'); 
                         }
                         let finalFormattedText = parseFormatting(processedText);
 
@@ -2698,9 +2831,10 @@
                             if (imgMatch) { optImg = imgMatch[1]; optText = optText.replace(imgMatch[0], ''); }
                             
                             let processedOpt = safeHTML(optText);
-                            if (appState.mathMode === 'LATEX') {
-                                if (appState.renderEngine === 'MATHML') { processedOpt = processMath(processedOpt, 'MATHML'); }
-                                else if (appState.renderEngine === 'HTML_FALLBACK') { processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); }
+                            if (appState.renderEngine === 'MATHML') { 
+                                processedOpt = processMath(processedOpt, 'MATHML'); 
+                            } else if (appState.renderEngine === 'HTML_FALLBACK') { 
+                                processedOpt = processMath(processedOpt, 'HTML_FALLBACK'); 
                             }
                             processedOpt = parseFormatting(processedOpt);
 
@@ -2771,11 +2905,14 @@
 
             if (mode === 'LATEX') {
                 document.getElementById('tab-btn-latex').classList.add('active');
-                engineNotice.style.display = 'none'; latexOptions.forEach(opt => opt.style.display = 'flex');
+                engineNotice.style.display = 'none'; 
+                latexOptions.forEach(opt => opt.style.display = 'flex');
             } else {
                 document.getElementById('tab-btn-html').classList.add('active');
-                engineNotice.style.display = 'block'; latexOptions.forEach(opt => opt.style.display = 'none');
-                document.getElementById('engineHtmlRadio').checked = true; appState.renderEngine = 'HTML_FALLBACK';
+                engineNotice.style.display = 'block'; 
+                latexOptions.forEach(opt => opt.style.display = 'none');
+                document.getElementById('engineHtmlRadio').checked = true; 
+                appState.renderEngine = 'HTML_FALLBACK';
                 if(previewIsVisible) debouncedRenderAllPreviews();
             }
             generateAIPrompt(); renderPreviewTabs(); 
@@ -2792,14 +2929,15 @@
 - DO NOT use \\( ... \\) or \\[ ... \\]. Use ONLY $ and $$.
 - MULTIPLICATION RULE: NEVER use the asterisk '*' for multiplication in math (e.g. $2 * 3$ breaks formatting). Always use \\times ($2 \\times 3$) or \\cdot ($2 \\cdot 3$).
 - FORBIDDEN: NEVER write scientific units or constants in Bengali. Use standard LaTeX (e.g., $m/s^2$, $C$).
-- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma).
+- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma) and arrows (\\rightarrow, \\rightleftharpoons).
 - COMPLEX MATRICES: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             } else {
                 modeSpecificRules = `CRITICAL HTML & IMAGE RULES:
-- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes like \\rightarrow.
 - MULTIPLICATION RULE: Use standard multiplication sign '×' or '·'.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
-- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.
+- ARROWS & SEQUENCES: In biological pathways, reactions, or developmental sequences, use the literal Unicode arrow '→' or '⇌'. NEVER write '\\rightarrow' or '$' in HTML mode.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ←, ⇌, ±, °, μ).
+- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>O, Ca<sup>2+</sup>, 10<sup>5</sup>).
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             }
 
