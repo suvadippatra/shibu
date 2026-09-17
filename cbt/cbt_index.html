@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CBT</title>
     
-    <!-- Cropper.js (Local repository prioritized with CDN fallback) -->
+    <!-- Cropper.js (Local prioritized with CDN fallback) -->
     <link rel="stylesheet" href="vendor/cropper/cropper.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css';">
     <script src="vendor/cropper/cropper.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js';"></script>
 
-    <!-- KaTeX Core & Fonts (Local repository prioritized with CDN fallback) -->
+    <!-- KaTeX Core & Fonts (Local prioritized with CDN fallback) -->
     <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
     <script src="../libs/katex.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js';"></script>
     <script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js';"></script>
@@ -121,7 +121,7 @@
         .btn-icon:hover { background: rgba(255, 255, 255, 0.2); border-color: white; transform: translateY(-1px); }
 
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 260px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 270px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s ease-out; }
         .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
@@ -230,7 +230,7 @@
             cursor: grabbing;
         }
 
-        /* Split-Screen Resizer (Touch & Pointer friendly) */
+        /* Split-Screen Resizer */
         .resizer {
             width: 14px;
             cursor: col-resize;
@@ -326,7 +326,7 @@
             }
         }
 
-        /* Strict Split-View Override: 1 spacious column when preview is open */
+        /* Strict Split-View Override */
         .left-panel.split-view .section-questions-grid {
             grid-template-columns: 1fr !important;
         }
@@ -360,7 +360,6 @@
         .form-group { margin-bottom: 0.75rem; min-width: 0; }
         .form-group label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.3rem; color: var(--text-muted); }
         
-        /* Form Control without transition on height to enable instant auto-expansion */
         .form-control {
             width: 100%;
             padding: 0.4rem 0.6rem;
@@ -403,11 +402,11 @@
         .qnum { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 0.2rem; }
         .qblock-textarea-wrap { flex: 1 1 0; min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 0.3rem;}
         
-        /* Dedicated Question Textarea with fluid vertical expansion */
+        /* Dedicated Question Textarea with zero transition lag and flex none to enable line expansion */
         .qblock-textarea {
             width: 100%;
-            min-height: 44px;
-            padding: 0.4rem 0.6rem;
+            min-height: 48px;
+            padding: 0.45rem 0.6rem;
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             font-size: 0.9rem;
@@ -418,11 +417,12 @@
             line-height: 1.5;
             overflow-y: hidden;
             resize: vertical;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            flex: none !important;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
         }
         .qblock-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         
-        /* 1-Column Options Grid */
+        /* Options Grid */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -728,6 +728,7 @@
                     <button class="dropdown-item" onclick="openModal('engineModal'); closeDropdown();">⚙️ Math Engine Options</button>
                     <button class="dropdown-item" onclick="revealAllImages(); closeDropdown();">🖼️ Show All Images (20s)</button>
                     <button class="dropdown-item" onclick="generateCBTHTML(); closeDropdown();" style="color: var(--success); font-weight: bold;">🚀 Compile Final HTML</button>
+                    <button class="dropdown-item" onclick="openModal('templateModal'); closeDropdown();">📄 Load / Change Last.html Template</button>
                     <button class="dropdown-item" onclick="openModal('helpModal'); closeDropdown();">❓ Help & Guides</button>
                     <button class="dropdown-item" onclick="clearWorkspace(); closeDropdown();" style="color: var(--danger);">🧹 Clear Workspace (Free RAM)</button>
                     
@@ -845,7 +846,7 @@
             </div>
         </div>
 
-        <!-- Draggable Resizer with unified Touch & Pointer events -->
+        <!-- Draggable Resizer -->
         <div class="resizer" id="dragMe" title="Drag to adjust split view"></div>
 
         <div class="right-panel hidden-panel" id="rightPanel">
@@ -867,6 +868,22 @@
             </div>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Your standalone offline exam file has been generated successfully. Tap or long-press the button below to save it.</p>
             <a id="downloadLinkHTML" class="btn btn-primary btn-block" style="padding: 0.8rem; font-size: 1rem; text-decoration: none; border-radius: var(--radius-sm);" href="#" download="">⬇️ Download HTML Exam</a>
+        </div>
+    </div>
+
+    <!-- Template Recovery Modal -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content" style="max-width: 480px; text-align: center;">
+            <div class="modal-header">
+                <h2 style="color: var(--primary);">📄 Select Last.html Template</h2>
+                <button class="modal-close" onclick="closeModal('templateModal')">✕</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.2rem; line-height: 1.6; text-align: left;">
+                The master exam template <code>Last.html</code> could not be fetched automatically (expected when running under <code>file:///</code> or when hosted in a subfolder).<br><br>
+                Please select your repository's <code>Last.html</code> file. The system will verify and save it to your browser storage permanently so you only have to do this once.
+            </p>
+            <button class="btn btn-primary btn-block" style="padding: 0.75rem; font-size: 0.95rem;" onclick="document.getElementById('lastHtmlFileInput').click()">📂 Browse Last.html File</button>
+            <input type="file" id="lastHtmlFileInput" accept=".html,.htm" style="display:none;" onchange="handleTemplateUpload(event)">
         </div>
     </div>
 
@@ -1351,7 +1368,7 @@
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
 
-        // Dedicated Touch Events with passive: false for reliable finger dragging on mobile
+        // Dedicated Touch Events for mobile
         resizer.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length === 1) {
                 e.preventDefault();
@@ -1495,7 +1512,7 @@
             });
 
             prevEl.classList.remove('highlight-flash');
-            void prevEl.offsetWidth; // Trigger DOM reflow to restart animation
+            void prevEl.offsetWidth; // Reflow
             prevEl.classList.add('highlight-flash');
             setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
         }
@@ -1506,7 +1523,7 @@
             activePreviewSection = sec;
             if (secChanged) {
                 renderPreviewTabs();
-                renderAllPreviews(); // Immediately render target section
+                renderAllPreviews();
             }
             setTimeout(() => {
                 scrollPreviewToQuestion(sec, idx);
@@ -1541,12 +1558,13 @@
             }, 150);
         });
 
-        // Instant auto-resizing text box logic without height transition lag
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            el.style.height = Math.max(el.scrollHeight, 44) + 'px';
-            updateFastScrollElevator();
+            const isQ = el.classList.contains('qblock-textarea');
+            const minH = isQ ? 48 : 36;
+            el.style.height = Math.max(el.scrollHeight, minH) + 'px';
+            if (typeof updateFastScrollElevator === 'function') updateFastScrollElevator();
         }
 
         function toggleTheme() {
@@ -1845,7 +1863,6 @@
             }, 50);
         }
 
-        // Direct non-destructive DOM insertion to eliminate page jump
         function addQuestion(sec) {
             const newQ = { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' };
             if (!appState.questionsBySection[sec]) appState.questionsBySection[sec] = [];
@@ -2237,7 +2254,7 @@
             return html;
         }
 
-        // Granular O(1) Preview Updater: updates ONLY the question being edited
+        // Granular O(1) Preview Updater
         function updateSingleQuestionPreview(sec, idx) {
             if (!previewIsVisible) return;
             if (activePreviewSection !== sec) {
@@ -2264,7 +2281,7 @@
             if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
             granularTimeouts[key] = setTimeout(() => {
                 updateSingleQuestionPreview(sec, idx);
-            }, 60); // Fast 60ms real-time responsiveness
+            }, 60);
         }
 
         function renderAllPreviews() {
@@ -2477,10 +2494,77 @@
             }, 150);
         }
 
+        async function fetchValidTemplate() {
+            // 1. Check in-memory cache
+            if (window._cachedLastHtmlTemplate && window._cachedLastHtmlTemplate.includes('QUESTION_BANK') && !window._cachedLastHtmlTemplate.includes('editor-inner-container')) {
+                return window._cachedLastHtmlTemplate;
+            }
+            // 2. Check localStorage cache
+            try {
+                const stored = localStorage.getItem('cbt_last_template');
+                if (stored && stored.includes('QUESTION_BANK') && !stored.includes('editor-inner-container') && !stored.includes('left-panel')) {
+                    window._cachedLastHtmlTemplate = stored;
+                    return stored;
+                }
+            } catch(e) {}
+
+            // 3. Multi-path resolution
+            const candidatePaths = [
+                './Last.html',
+                '../Last.html',
+                './last.html',
+                '../last.html',
+                'Last.html',
+                'last.html'
+            ];
+
+            for (const path of candidatePaths) {
+                try {
+                    const resp = await fetch(path);
+                    if (resp.ok) {
+                        const candidateTxt = await resp.text();
+                        // STRICT VALIDATION: Ensure it is the exam template and NOT the editor
+                        if (candidateTxt.includes('QUESTION_BANK') && !candidateTxt.includes('editor-inner-container') && !candidateTxt.includes('left-panel')) {
+                            window._cachedLastHtmlTemplate = candidateTxt;
+                            try { localStorage.setItem('cbt_last_template', candidateTxt); } catch(err) {}
+                            return candidateTxt;
+                        }
+                    }
+                } catch(err) {
+                    // Try next candidate
+                }
+            }
+            return null;
+        }
+
+        function handleTemplateUpload(evt) {
+            const file = evt.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                if (!text.includes('QUESTION_BANK') || text.includes('editor-inner-container') || text.includes('left-panel')) {
+                    showToast('Invalid Last.html file: missing QUESTION_BANK marker or editor file selected.', 'error');
+                    return;
+                }
+                window._cachedLastHtmlTemplate = text;
+                try { localStorage.setItem('cbt_last_template', text); } catch(err) {}
+                closeModal('templateModal');
+                showToast('Last.html template loaded and saved permanently!', 'success');
+                // Automatically compile
+                generateCBTHTML();
+            };
+            reader.readAsText(file);
+            evt.target.value = '';
+        }
+
         async function generateCBTHTML() {
             try {
-                const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
-                let txt = await resp.text();
+                let txt = await fetchValidTemplate();
+                if (!txt) {
+                    openModal('templateModal');
+                    return;
+                }
 
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle || 'Exam'}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
@@ -2567,7 +2651,14 @@
                     });
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
+
+                // FAILSAFE VALIDATION: Ensure template was genuinely updated
                 txt = txt.replace(/const QUESTION_BANK = \[[\s\S]*?\];/, `const QUESTION_BANK = ${JSON.stringify(qb, null, 2)};`);
+
+                if (!txt.includes('QUESTION_BANK') || txt.includes('editor-inner-container')) {
+                    showToast('Compilation aborted: template was contaminated or invalid.', 'error');
+                    return;
+                }
 
                 const vkPatch = `
                 <style>
@@ -2599,7 +2690,7 @@
                 
                 openModal('compileModal');
                 
-            } catch (e) { showToast('Error: ' + e.message + ' (Ensure Last.html is present)', 'error'); }
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
         }
 
         function switchPrompt(mode) {
