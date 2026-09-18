@@ -12,6 +12,7 @@
 
     <script>
         // Math Rendering Engine Detection
+        // Will be overridden by compiler based on user selection
         window.mathRenderEngine = 'mathml'; // Options: 'mathml', 'html_fallback', 'katex_online'
     </script>
 
@@ -306,7 +307,7 @@
             z-index: 100; 
             display: none; 
             overflow: hidden; 
-            /* Fix: Do not zoom the entire panel */
+            /* Fix: Do not zoom the entire panel on touch */
         }
         .fp-head { background: #0056b3; color: white; padding: 8px 12px; cursor: move; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .fp-body { padding: 10px; background: #e0e0e0; max-height: 450px; overflow-y: auto; }
@@ -400,8 +401,8 @@
         .const-list { display: flex; flex-direction: column; gap: 8px; padding: 5px; }
         .const-card { background: transparent; padding: 5px 0; border: none; border-bottom: 1px dashed #999; border-radius: 0; box-shadow: none; font-size: 0.95rem; font-family: 'Segoe UI', serif; }
         .const-card:last-child { border-bottom: none; }
-        .const-text-line { color: #2d3436; }
-        .const-text-line strong { color: #000; }
+        .const-text-line { color: var(--text-dark); }
+        .const-text-line strong { color: var(--primary); }
 
         /* --- SUBMISSION & REPORT --- */
         .modal-card { background: var(--panel-bg); color: var(--text-dark); padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
@@ -531,7 +532,7 @@
             .header-row-line strong { width: auto; }
             .header-photo { margin: 15px auto 0; }
             
-            /* Mobile adjustment for VK to fit screen width */
+            /* Mobile adjustment for VK */
             .vk-btn { font-size: 0.9rem; padding: 8px 0; }
         }
 
@@ -631,10 +632,6 @@
         }
     </style>
 
-    <style>
-    /* Prevent Virtual Keyboard locking overrides on Mobile */
-    .q-text, .opt-text { white-space: pre-wrap !important; }
-    </style>
     <script>
     if (typeof answer === 'undefined') { window.answer = ""; }
     document.addEventListener('input', e => { 
@@ -724,7 +721,7 @@
         <h2 style="color:var(--primary); margin-bottom: 5px;">Aapna Testing Agency</h2>
         <h1 style="color:var(--text-dark); margin-bottom: 5px;">Aapna Exam</h1>
         
-        <!-- FIX 1: Centered Login Screen Text -->
+        <!-- Centered Login Screen Text -->
         <div style="text-align: center;">
             <p style="color:var(--text-muted); margin-bottom: 0px;">Identify yourself to proceed</p>
             <p style="color:var(--text-muted); margin-bottom: 30px;">Did you bring your id card, two passport photo and transparent watter bottle?</p>
@@ -785,13 +782,13 @@
             <div class="zoom-container"><input type="range" min="0.8" max="1.8" step="0.1" value="1" oninput="applyZoom(this.value)"></div>
             <button class="tool-btn" id="btn-audio" onclick="toggleAudio()" title="Background Audio"><span style="font-size:1.2rem;">🎧</span></button>
             
-            <!-- FIX 7: Dark Mode Toggle -->
+            <!-- Dark Mode Toggle -->
             <button class="tool-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><span style="font-size:1.1rem;">🌙</span></button>
 
             <button class="tool-btn" onclick="document.getElementById('info-modal').classList.remove('hidden')" title="Exam Info">
                 <span style="font-size:1.1rem; font-weight:bold; font-family:serif; font-style:italic;">i</span>
             </button>
-            <button class="tool-btn" onclick="toggleFloat('calc-panel')" title="Calculator"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h10V4H7zm2 2h6v2H9V6zm0 4h2v2H9v-2zm4 0h2v2H9v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg></button>
+            <button class="tool-btn" onclick="toggleFloat('calc-panel')" title="Calculator"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h10V4H7zm2 2h6v2H9V6zm0 4h2v2H9v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg></button>
             <button class="tool-btn" onclick="toggleFloat('const-panel')" title="Constants"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></button>
             <button class="tool-btn" onclick="toggleFullScreen(document.documentElement)" title="Full Screen"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
         </div>
@@ -1095,64 +1092,28 @@
 
     // PARAMETER 8 (Global): Attempt Rules (Instructional Text). 
     /*<INST_START>*/
-const EXAM_S_HTML = `<div class="inst-section"><h3>📋 Instructions</h3><p>1. The examination will consist of Objective Type Questions (MCQs) and Numerical Answer Types (NATs).</p><p>2. Total Duration: 180 Minutes.</p><p>3. The examination console is equipped with specific tools to aid your performance. A Zoom Slider is located in the top toolbar. An On-Screen Scientific Calculator is available for mathematical computations.</p><p>4. For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers.</p><p>5. Timer is in Stopwatch mode (counts up from zero).</p></div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
+const EXAM_S_HTML = `
+        <div class="inst-section">
+            <h3>Exam Layout & Instructions</h3>
+            <p>1. The examination will consist of <strong>Objective Type Questions (MCQs)</strong> and Numerical Answer Types (NATs).<br>
+            2. Total Duration: <strong>180 Minutes</strong>.<br>
+            3. The examination console is equipped with specific tools to aid your performance. A <strong>Zoom Slider</strong> is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An <strong>On-Screen Scientific Calculator</strong> is available for mathematical computations. You may also access a <strong>Table of Universal Constants</strong> at any time.<br>
+            4. For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers.</p>
+        </div>
+    `;
 /*<INST_END>*/
 
     // PARAMETER 9 (Section Level & Question Level): Core Question Bank structure.
     /*<QB_START>*/
 const QUESTION_BANK = [
-  {
-    "sectionTitle": "Section A: Demonstration",
-    "marksCorrect": 5,
-    "marksWrong": 1,
-    "maxAttempts": 4,
-    "questions": [
-      {
-        "id": 1,
-        "type": "MCQ",
-        "text": "Given below are two statements:\n<strong>Statement I:</strong> The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n<strong>Statement II:</strong> Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:",
-        "img": "",
-        "table": "",
-        "options": [
-          "Statement I is correct but Statement II is incorrect.",
-          "Statement I is incorrect but Statement II is correct.",
-          "Both Statement I and Statement II are correct.",
-          "Both Statement I and Statement II are incorrect."
-        ],
-        "correct": 2,
-        "marksCorrect": 5,
-        "marksWrong": 1
-      },
-      {
-        "id": 2,
-        "type": "MCQ",
-        "text": "Match List-I with List-II:",
-        "img": "",
-        "table": "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>",
-        "options": [
-          "A-II, B-III, C-I, D-IV",
-          "A-I, B-IV, C-II, D-III",
-          "A-III, B-I, C-IV, D-II",
-          "A-IV, B-II, C-III, D-I"
-        ],
-        "correct": 0,
-        "marksCorrect": 5,
-        "marksWrong": 1
-      },
-      {
-        "id": 3,
-        "type": "NAT",
-        "text": "The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .",
-        "img": "",
-        "table": "",
-        "options": [],
-        "correct": "2.5-3.5",
-        "marksCorrect": 5,
-        "marksWrong": 0
-      }
-    ]
-  }
-];
+        { sectionTitle: "Section A: Demonstration", marksCorrect: 5, marksWrong: 1, maxAttempts: 4, 
+        questions: [ 
+                { id:1, type: "MCQ", text:"Given below are two statements:\n**Statement I:** The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n**Statement II:** Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:", img:"", options:["Statement I is correct but Statement II is incorrect.","Statement I is incorrect but Statement II is correct.","Both Statement I and Statement II are correct.","Both Statement I and Statement II are incorrect."], correct:2 },
+                { id:2, type: "MCQ", text:"Match List-I with List-II:", table: "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>", options:["A-II, B-III, C-I, D-IV","A-I, B-IV, C-II, D-III","A-III, B-I, C-IV, D-II","A-IV, B-II, C-III, D-I"], correct:0 },
+                { id:3, type: "NAT", text:"The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .", img:"", options:[], correct:"2.5-3.5" }
+            ]
+        }
+    ];
 /*</QB_END>*/
 
     // ==========================================================
@@ -1165,20 +1126,25 @@ const QUESTION_BANK = [
     let qCounter = 0;
     let activeSectionIndex = 0; 
     
-    // CRITICAL MATH RENDER: Triggers KaTeX auto-render on newly injected innerHTML if active.
+    // CRITICAL MATH RENDER: Triggers KaTeX auto-render asynchronously to prevent blocking/lag
     function triggerMathRender() {
         if (window.renderMathInElement) {
-            try {
-                renderMathInElement(document.body, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false}
-                    ],
-                    throwOnError: false
-                });
-            } catch (e) {
-                console.warn("Math rendering failed: ", e);
-            }
+            setTimeout(() => {
+                const renderArea = document.getElementById('q-render-area');
+                if (renderArea) {
+                    try {
+                        renderMathInElement(renderArea, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                    } catch (e) {
+                        console.warn("Math rendering failed: ", e);
+                    }
+                }
+            }, 50); // Small delay to allow DOM to paint text first
         }
     }
 
@@ -1188,7 +1154,13 @@ const QUESTION_BANK = [
             document.getElementById('s-content-area').innerHTML = EXAM_S_HTML;
             generateSchemeTable();
             generateInfoModalTable();
-            triggerMathRender(); // Render instructions if they have math
+            // Render instructions if they have math
+            if (window.renderMathInElement) {
+                renderMathInElement(document.getElementById('s-content-area'), {
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                    throwOnError: false
+                });
+            }
         }
     };
     
@@ -1586,7 +1558,7 @@ const QUESTION_BANK = [
             saveBtn.disabled = false;
         }
         
-        // Critical Render call for KaTeX Online Mode
+        // Critical Render call for KaTeX Online Mode (Asynchronous to prevent lag)
         triggerMathRender();
     }
 
@@ -1943,8 +1915,15 @@ const QUESTION_BANK = [
             list.appendChild(block);
         });
         
-        // Critical Render call for KaTeX Online Mode in Report
-        triggerMathRender();
+        // Critical Render call for KaTeX Online Mode in Report (Asynchronous to prevent lag)
+        if (window.renderMathInElement) {
+            setTimeout(() => {
+                renderMathInElement(document.getElementById('detailed-sheet-view'), {
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                    throwOnError: false
+                });
+            }, 50);
+        }
     }
 
     function showDetailedSheet() { document.getElementById('result-gateway').classList.add('hidden'); document.getElementById('detailed-sheet-view').style.display = 'block'; }
@@ -1970,7 +1949,7 @@ const QUESTION_BANK = [
         // FIX 2: Float Panels (calc, keyboard) intentionally NOT zoomed so they don't jump on touch
         const infoTarget = document.getElementById('info-modal-target');
         if (infoTarget) {
-            infoTarget.style.transform = `scale(${v})`;
+            infoTarget.style.zoom = v; // Apply native zoom to info modal instead of transform
         }
     }
 
