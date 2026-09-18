@@ -2480,135 +2480,6 @@
             reader.readAsText(file); evt.target.value = ''; 
         }
 
-        function parseCBTFormat() {
-            let txt = document.getElementById('cbtInput').value; 
-            if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
-
-            txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
-            txt = txt.replace(/\\n/g, '\n');
-            txt = txt.replace(/(Statement|Assertion|List|Reason)[\s\n]+(I{1,3}|A|B|R)[\s\n]*:/gi, '$1 $2:');
-            txt = txt.replace(/\n([QOAI]\s*:)/gi, '\n$1');
-
-            const lines = txt.split('\n'); 
-            let mode = null, curSec = null, curQ = null, lastField = null; 
-            
-            appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
-            appState.audio = { bg: '', start: '', submit: '' };
-            appState.agencyName = ''; appState.examTitle = ''; appState.examSubtitle = ''; appState.duration = '';
-
-            lines.forEach(line => {
-                const tr = line.trim(); 
-                if (!tr && lastField !== 'T' && lastField !== 'Q' && lastField !== 'O') return; 
-                if (tr.startsWith('#')) return;
-                
-                if (tr.startsWith('[EXAM_INFO]')) { mode = 'exam'; lastField = null; }
-                else if (tr.startsWith('[CONSTANTS]')) { mode = 'constants'; lastField = null; }
-                else if (tr.startsWith('[SECTION:')) {
-                    mode = 'questions'; lastField = null;
-                    const m = tr.match(/\[SECTION:(.*?)(?:\|Marks:([\d.]+))?(?:\|Neg:([\d.]+))?(?:\|MaxAtt:(\d+))?\]/);
-                    if(m) { 
-                        curSec = m[1].trim(); 
-                        appState.sections.push({ name: curSec, marks: parseFloat(m[2])||4, negative: parseFloat(m[3])||1, maxAttempts: parseInt(m[4])||0 }); 
-                        appState.questionsBySection[curSec] = []; curQ = null; 
-                    }
-                }
-                else if (mode === 'exam') {
-                    if (tr.startsWith('Agency:')) { appState.agencyName = tr.substring(7).trim(); document.getElementById('agencyName').value = appState.agencyName; }
-                    if (tr.startsWith('Title:')) { appState.examTitle = tr.substring(6).trim(); document.getElementById('examTitle').value = appState.examTitle; }
-                    if (tr.startsWith('Subtitle:')) { appState.examSubtitle = tr.substring(9).trim(); document.getElementById('examSubtitle').value = appState.examSubtitle; }
-                    if (tr.toLowerCase().startsWith('duration:')) { appState.duration = parseInt(tr.substring(9)) || ''; document.getElementById('duration').value = appState.duration; }
-                    if (tr.toLowerCase().startsWith('timer:')) { 
-                        appState.timerMode = tr.substring(6).trim().toUpperCase(); 
-                        const tSelect = document.getElementById('timerMode');
-                        if(tSelect) tSelect.value = appState.timerMode;
-                    }
-                    if (tr.startsWith('Font:')) { appState.fontName = tr.substring(5).trim(); document.getElementById('fontSelect').value = appState.fontName; document.documentElement.style.setProperty('--preview-font', appState.fontName); }
-                    if (tr.startsWith('MathMode:')) { appState.mathMode = tr.substring(9).trim(); switchPrompt(appState.mathMode); }
-                    if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
-                    if (tr.startsWith('AudioBg:')) { appState.audio.bg = tr.substring(8).trim(); document.getElementById('audioBg').value = appState.audio.bg; }
-                    if (tr.startsWith('AudioStart:')) { appState.audio.start = tr.substring(11).trim(); document.getElementById('audioStart').value = appState.audio.start; }
-                    if (tr.startsWith('AudioSubmit:')) { appState.audio.submit = tr.substring(12).trim(); document.getElementById('audioSubmit').value = appState.audio.submit; }
-                }
-                else if (mode === 'constants') { const idx = tr.indexOf(':'); if(idx > 0) appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
-                else if (mode === 'questions' && curSec) {
-                    if (/^QType\s*:/i.test(tr)) {
-                        curQ = { type: tr.replace(/^QType\s*:/i, '').trim().toUpperCase(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
-                        appState.questionsBySection[curSec].push(curQ); lastField = 'type';
-                    }
-                    else if (/^Q\s*:/i.test(tr)) { 
-                        if (!curQ || curQ.text !== '') { curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; appState.questionsBySection[curSec].push(curQ); }
-                        curQ.text = tr.replace(/^Q\s*:/i, '').trim(); lastField = 'Q';
-                    }
-                    else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
-                        curQ.options.push(tr.replace(/^O\s*:/i, '').trim());
-                        lastField = 'O';
-                    }
-                    else if (/^A\s*:/i.test(tr) && curQ) {
-                        let val = tr.replace(/^A\s*:/i, '').trim();
-                        if (curQ.type === 'MCQ' && val.length > 3) {
-                            if (lastField === 'Q') curQ.text += '\n' + tr;
-                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
-                        } else {
-                            if (curQ.type === 'NAT') curQ.correctNat = val;
-                            else {
-                                let letter = val.replace(/[^a-zA-Z]/g, '').charAt(0);
-                                if(letter) curQ.correct = letter.toUpperCase().charCodeAt(0) - 65;
-                            }
-                            lastField = 'A';
-                        }
-                    }
-                    else if (/^T\s*:/i.test(tr) && curQ) { 
-                        curQ.table = tr.replace(/^T\s*:/i, '').trim(); lastField = 'T';
-                    }
-                    else if (/^I\s*:/i.test(tr) && curQ) { 
-                        let imgUrl = tr.replace(/^I\s*:/i, '').trim(); 
-                        if (imgUrl === '[IMAGE]' || imgUrl === '[IMAGE_PLACEHOLDER]') curQ.image = 'PLACEHOLDER';
-                        else if (imgUrl.startsWith('http') || imgUrl.startsWith('data:') || imgUrl.startsWith('./')) { curQ.image = imgUrl; lastField = 'I'; } 
-                        else {
-                            if (lastField === 'Q') curQ.text += '\n' + tr;
-                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
-                        }
-                    }
-                    else {
-                        if (curQ && tr) {
-                            if (lastField === 'Q') curQ.text += '\n' + tr;
-                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
-                            else if (lastField === 'T') curQ.table += ' ' + tr;
-                        }
-                    }
-                }
-            });
-            
-            appState.sections.forEach(sec => {
-                (appState.questionsBySection[sec.name] || []).forEach(q => {
-                    if (q.text.includes('[IMAGE]') || q.text.includes('[IMAGE_PLACEHOLDER]')) {
-                        q.image = 'PLACEHOLDER';
-                        q.text = q.text.replace(/\[IMAGE\]/gi, '').replace(/\[IMAGE_PLACEHOLDER\]/gi, '').trim();
-                    }
-                    q.options = q.options.map(opt => {
-                        if (opt.includes('[IMAGE]') || opt.includes('[IMAGE_PLACEHOLDER]')) {
-                            return opt.replace(/\[IMAGE\]/gi, '').replace(/\[IMAGE_PLACEHOLDER\]/gi, '').trim() + '||IMG:PLACEHOLDER||';
-                        }
-                        return opt;
-                    });
-                });
-            });
-
-            if (appState.rules.length === 0) { appState.rules = [...defaultRules]; document.getElementById('rules').value = appState.rules.join('\n'); }
-
-            renderConstantsTable(); renderMarksTable(); renderAllQuestions(); 
-            if(appState.sections.length > 0) activePreviewSection = appState.sections[0].name;
-            renderPreviewTabs(); 
-            closeModal('pasteModal');
-            showToast('Imported Successfully', 'success');
-            
-            setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
-                if(previewIsVisible) renderAllPreviews();
-                updateFastScrollElevator();
-            }, 150);
-        }
-
         async function generateCBTHTML() {
             try {
                 const resp = await fetch('./Last.html'); if (!resp.ok) throw new Error('Cannot load ./Last.html');
@@ -2616,7 +2487,7 @@
 
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle || 'Exam'}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
-                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
+                txt = txt.replace(/<h1 style="color:(#666|var\(--text-dark\)); margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:var(--text-dark); margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
@@ -2653,7 +2524,6 @@
                 const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 
-                // BULLETPROOF EXAM_S_HTML REPLACEMENT WITH MARKERS
                 let instRegex = /\/\*<INST_START>\*\/[\s\S]*?\/\*<INST_END>\*\//i;
                 if (!instRegex.test(txt)) {
                     instRegex = /(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/i;
@@ -2667,7 +2537,7 @@
                 let katexCSS = ''; let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK') {
                     katexCSS = '<link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css\';">';
-                    katexJS = `\n<script src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
+                    katexJS = `\n<script defer src="../libs/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js\';"><\/script>\n<script defer src="../libs/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
                 txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
 
@@ -2696,7 +2566,7 @@
                             processedOpt = parseFormatting(processedOpt);
 
                             if (optImg && optImg !== 'PLACEHOLDER') {
-                                processedOpt += `<br><img src="${optImg}" style="max-height:120px; border-radius:4px; margin-top:5px; border:1px solid #ccc;">`;
+                                processedOpt += `<br><img src="${optImg}" onclick="openLightbox(this.src)" style="max-height:25vh; max-width:100%; object-fit:contain; border-radius:4px; margin-top:5px; border:1px solid var(--border-color); cursor:pointer; background:white;">`;
                             }
                             finalOptionsHtmlReady.push(processedOpt);
                         });
@@ -2712,26 +2582,22 @@
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
                 
-                // BULLETPROOF QUESTION_BANK REPLACEMENT WITH SAFEGUARDS
                 let qbRegex = /\/\*<QB_START>\*\/[\s\S]*?\/\*<QB_END>\*\//i;
                 if (!qbRegex.test(txt)) {
                     qbRegex = /(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?(?=\s*\/\/ ==========================================================)/i;
                 }
                 if (!qbRegex.test(txt)) {
-                    qbRegex = /(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?\];/i; // Final Fallback
+                    qbRegex = /(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?\];/i;
                 }
                 
-                const safeQBInject = `/*<QB_START>*/\nconst QUESTION_BANK = ${JSON.stringify(qb, null, 2)};\n/*</QB_END>*/`;
+                const safeQBInject = `/*<QB_START>*/\nconst QUESTION_BANK = ${JSON.stringify(qb, null, 2)};\n/*<QB_END>*/`;
                 txt = txt.replace(qbRegex, safeQBInject);
 
-                // Guard against duplicate VK Panel CSS injections
                 if (!txt.includes('.q-text, .opt-text { white-space: pre-wrap !important; }')) {
                     const vkPatch = `
                     <style>
+                    /* Prevent Virtual Keyboard locking overrides on Mobile */
                     .q-text, .opt-text { white-space: pre-wrap !important; }
-                    @media (max-width: 768px) {
-                        #virtual-keyboard, .keyboard-container, .virtual-keyboard { transform: scale(0.85); transform-origin: bottom center; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
-                    }
                     </style>
                     <script>
                     if (typeof answer === 'undefined') { window.answer = ""; }
