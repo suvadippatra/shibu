@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,23 +11,34 @@
     <!-- PARAMETER 13 (Font Family) - Will be injected as Q_FONT_FAMILY constant -->
 
     <script>
-        // CORRECTION 2B: Math Rendering Engine Detection
-        // Will be overridden by compiler based on user selection
+        // Math Rendering Engine Detection
         window.mathRenderEngine = 'mathml'; // Options: 'mathml', 'html_fallback', 'katex_online'
     </script>
 
     <style>
+        /* === DARK MODE & THEME VARIABLES === */
         :root {
             --primary: #3db2d4; 
             --header-bg: #2d3436;
+            --bg-main: #f4f6f8;
             --panel-bg: #ffffff;
             --nta-green: #28a745;
             --nta-red: #dc3545;
             --nta-purple: #6f42c1;
-            --nta-grey: #e9ecef;
             --text-dark: #2d3436;
+            --text-muted: #666666;
             --border-color: #dfe6e9;
             --q-font: Arial, sans-serif; 
+        }
+
+        [data-theme="dark"] {
+            --primary: #38bdf8;
+            --header-bg: #0f172a;
+            --bg-main: #020617;
+            --panel-bg: #1e293b;
+            --text-dark: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -38,9 +49,11 @@
             position: fixed; 
             top: 0; left: 0; right: 0; bottom: 0;
             width: 100%; height: 100%;
-            background-color: #f4f6f8; 
+            background-color: var(--bg-main); 
+            color: var(--text-dark);
             display: flex; flex-direction: column;
             overflow: hidden; 
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* Utilities */
@@ -51,43 +64,43 @@
         /* HIDE PRINT ELEMENTS ON SCREEN */
         .print-footer, .print-secondary-header { display: none; }
 
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f8; z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
 
         /* Audio Toast Notification Style */
         .audio-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 25px; border-radius: 30px; font-size: 0.9rem; z-index: 5000; animation: fadeOut 2.5s forwards; pointer-events: none; }
         @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
 
         /* --- LOGIN SCREEN --- */
-        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 500px; } 
+        .login-card { background: var(--panel-bg); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 500px; } 
         .avatar-grid { display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
-        .avatar-option { font-size: 2.2rem; cursor: pointer; border: 3px solid transparent; border-radius: 50%; padding: 10px; transition: all 0.2s; background: #f8f9fa; }
-        .avatar-option.selected { border-color: var(--primary); background: #e3f2fd; transform: scale(1.15); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .inp-name { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; cursor: pointer; background: #fff; }
+        .avatar-option { font-size: 2.2rem; cursor: pointer; border: 3px solid transparent; border-radius: 50%; padding: 10px; transition: all 0.2s; background: var(--bg-main); }
+        .avatar-option.selected { border-color: var(--primary); transform: scale(1.15); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .inp-name { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; margin-bottom: 20px; cursor: pointer; background: var(--bg-main); color: var(--text-dark); }
 
         /* --- INSTRUCTION PAGE --- */
-        .instruction-container { width: 90%; max-width: 1000px; height: 90%; background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
-        .inst-header { padding: 20px 30px; border-bottom: 3px solid var(--primary); display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .inst-user-profile { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 5px 15px; border-radius: 30px; border: 1px solid #eee; }
-        .inst-body { flex: 1; overflow-y: auto; padding: 30px; line-height: 1.6; color: #444; }
+        .instruction-container { width: 90%; max-width: 1000px; height: 90%; background: var(--panel-bg); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
+        .inst-header { padding: 20px 30px; border-bottom: 3px solid var(--primary); display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); }
+        .inst-user-profile { display: flex; align-items: center; gap: 10px; background: var(--bg-main); padding: 5px 15px; border-radius: 30px; border: 1px solid var(--border-color); }
+        .inst-body { flex: 1; overflow-y: auto; padding: 30px; line-height: 1.6; color: var(--text-dark); }
         .inst-section { margin-bottom: 30px; }
-        .inst-section h3 { color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px; }
+        .inst-section h3 { color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px; }
         .scheme-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
-        .scheme-table th, .scheme-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        .scheme-table th { background: #f1f2f6; }
+        .scheme-table th, .scheme-table td { border: 1px solid var(--border-color); padding: 10px; text-align: center; }
+        .scheme-table th { background: var(--bg-main); }
         
         .inst-status-icon { display: inline-block; width: 16px; height: 16px; margin: 0 4px; vertical-align: middle; font-size: 10px; text-align: center; line-height: 16px; }
         .inst-status-icon.circle { border-radius: 50%; }
         .inst-status-icon.square { border-radius: 3px; }
         .inst-status-icon.poly { clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%); border-radius: 3px; height: 18px; }
 
-        .inst-footer { padding: 15px 30px; border-top: 1px solid #eee; background: #f9f9f9; display: flex; flex-direction: column; gap: 15px; }
+        .inst-footer { padding: 15px 30px; border-top: 1px solid var(--border-color); background: var(--panel-bg); display: flex; flex-direction: column; gap: 15px; }
         .inst-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         
-        .dev-declaration { font-size: 0.8rem; color: #666; text-align: center; padding-top: 10px; border-top: 1px dotted #ccc; width: 100%; }
+        .dev-declaration { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding-top: 10px; border-top: 1px dotted var(--border-color); width: 100%; }
         .dev-declaration a { color: var(--primary); text-decoration: none; font-weight: bold; }
         
         /* --- HEADER & TOOLBAR --- */
-        header { background: var(--header-bg); color: white; padding: 0 15px; height: 60px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 50; flex-shrink: 0; }
+        header { background: var(--header-bg); color: white; padding: 0 15px; height: 60px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 50; flex-shrink: 0; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 36px; height: 36px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); font-size: 0.8rem; flex-shrink: 0; overflow: hidden; }
         .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
@@ -98,9 +111,9 @@
         .zoom-label { font-size: 0.8rem; color: #dfe6e9; }
         input[type=range] { width: 120px; cursor: pointer; accent-color: var(--primary); }
         .tool-btn { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;}
-        .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+        .tool-btn:hover { background: rgba(255,255,255,0.2); border-color: white; }
         .tool-icon { width: 20px; height: 20px; fill: white; }
-        .timer-box { font-family: 'Courier New', monospace; font-weight: 700; font-size: 1.2rem; color: #fab1a0; background: #2d3436; padding: 5px 10px; border: 1px solid #636e72; border-radius: 4px; white-space: nowrap; }
+        .timer-box { font-family: 'Courier New', monospace; font-weight: 700; font-size: 1.2rem; color: #fab1a0; background: rgba(0,0,0,0.3); padding: 5px 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; white-space: nowrap; }
 
         /* --- EXAM LAYOUT --- */
         .main-container { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
@@ -109,21 +122,21 @@
             flex: 1; 
             display: flex; 
             flex-direction: column; 
-            background: white; 
+            background: var(--panel-bg); 
             position: relative; 
             z-index: 1; 
-            box-shadow: inset 15px 0 20px -15px rgba(0,0,0,0.15), inset -15px 0 20px -15px rgba(0,0,0,0.15); 
+            box-shadow: inset 15px 0 20px -15px rgba(0,0,0,0.05), inset -15px 0 20px -15px rgba(0,0,0,0.05); 
             min-width: 0; 
         }
         
-        .q-scroll-view { flex: 1; overflow-y: auto; padding: 30px; transform-origin: top left; padding-bottom: 200px; }
+        .q-scroll-view { flex: 1; overflow-y: auto; padding: 30px; padding-bottom: 200px; }
         
         /* Smooth Scroll Buttons */
         .section-nav-bar {
             flex-shrink: 0;
             display: flex;
             align-items: center;
-            background: #e9ecef;
+            background: var(--bg-main);
             border-bottom: 2px solid var(--primary);
             position: relative;
             padding: 0 5px;
@@ -143,9 +156,9 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            border: 1px solid #b2bec3;
-            background: white;
-            color: #2d3436;
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            color: var(--text-dark);
             font-weight: bold;
             font-size: 1.2rem;
             line-height: 1; 
@@ -173,7 +186,7 @@
 
         .section-tab { 
             flex-shrink: 0; 
-            padding: 10px 25px; margin-right: 5px; background: #b2bec3; color: white; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-top-left-radius: 8px; border-top-right-radius: 8px; transition: all 0.2s; border: 1px solid rgba(0,0,0,0.1); border-bottom: none; opacity: 0.8; 
+            padding: 10px 25px; margin-right: 5px; background: var(--border-color); color: var(--text-dark); font-weight: 600; font-size: 0.95rem; cursor: pointer; border-top-left-radius: 8px; border-top-right-radius: 8px; transition: all 0.2s; border: 1px solid rgba(0,0,0,0.1); border-bottom: none; opacity: 0.8; 
         }
         
         .section-tab:hover { opacity: 1; }
@@ -187,37 +200,42 @@
             white-space: pre-wrap; 
             font-family: var(--q-font);
         }
-        .q-num-inline { font-weight: 800; color: #000; margin-right: 5px; }
-        .question-content img { max-width: 100%; height: auto; display: block; margin: 15px 0; border:1px solid #eee; border-radius: 4px; }
+        .q-num-inline { font-weight: 800; color: var(--text-dark); margin-right: 5px; }
         
-        .table-container { margin: 15px 0; overflow-x: auto; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #dfe6e9; font-family: var(--q-font); }
-        .question-content table { border-collapse: collapse; width: 100%; max-width: 800px; background: white; }
-        .question-content th, .question-content td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; font-size: 1rem; }
-        .question-content th { background-color: #f8f9fa; font-weight: 600; }
+        /* FIX: Max height capped to 25vh, clickable pointer */
+        .question-content img { max-width: 100%; max-height: 25vh; object-fit: contain; display: block; margin: 15px 0; border:1px solid var(--border-color); border-radius: 4px; cursor: pointer; background: white;}
+        
+        .table-container { margin: 15px 0; overflow-x: auto; background: var(--panel-bg); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--q-font); }
+        .question-content table { border-collapse: collapse; width: 100%; max-width: 800px; background: var(--panel-bg); }
+        .question-content th, .question-content td { border: 1px solid var(--border-color); padding: 8px 12px; text-align: left; vertical-align: top; font-size: 1rem; }
+        .question-content th { background-color: var(--bg-main); font-weight: 600; }
 
+        /* FIX: Reduced padding for Options to avoid overheight */
         .option-item { 
-            display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; white-space: pre-wrap; 
-            font-family: var(--q-font);
+            display: flex; align-items: center; gap: 15px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; white-space: pre-wrap; 
+            font-family: var(--q-font); color: var(--text-dark);
         }
-        .option-item:hover { background: #f8f9fa; border-color: var(--primary); }
-        .option-item.selected { background: #e3f2fd; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
-        .option-item img { max-height: 150px; max-width: 100%; display: block; border: 1px solid #ccc; border-radius: 4px; }
+        .option-item:hover { background: var(--bg-main); border-color: var(--primary); }
+        .option-item.selected { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
         
-        .nat-container { margin-bottom: 25px; padding: 15px; background: #f8f9fa; border: 1px dashed var(--primary); border-radius: 8px; max-width: 400px;}
-        .nat-input { width: 100%; padding: 12px 15px; border: 2px solid #b2bec3; border-radius: 6px; font-size: 1.2rem; font-weight: bold; font-family: monospace; cursor: pointer; background: white; color: var(--text-dark); transition: border-color 0.2s; }
+        /* FIX: Option images capped at 25vh */
+        .option-item img { max-height: 25vh; max-width: 100%; object-fit: contain; display: block; border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; background: white;}
+        
+        .nat-container { margin-bottom: 25px; padding: 15px; background: var(--bg-main); border: 1px dashed var(--primary); border-radius: 8px; max-width: 400px;}
+        .nat-input { width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; font-family: monospace; cursor: pointer; background: var(--panel-bg); color: var(--text-dark); transition: border-color 0.2s; }
         .nat-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(61,178,212,0.2); outline: none;}
 
-        .footer-bar { height: 60px; flex-shrink: 0; border-top: 1px solid var(--border-color); background: #fff; display: flex; align-items: center; padding: 0 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 10; gap: 10px; }
+        .footer-bar { height: 60px; flex-shrink: 0; border-top: 1px solid var(--border-color); background: var(--panel-bg); display: flex; align-items: center; padding: 0 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 10; gap: 10px; }
         .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: white; font-size: 0.9rem; white-space: nowrap; }
         .btn-nav { background: var(--primary); }
         .btn-save { background: var(--nta-green); }
         .btn-review { background: var(--nta-purple); }
-        .btn-clear { background: white; color: #333; border: 1px solid #ccc; }
+        .btn-clear { background: var(--bg-main); color: var(--text-dark); border: 1px solid var(--border-color); }
         
         /* --- DYNAMIC SIDEBAR WITH TOGGLE --- */
         .sidebar { 
             width: 320px; 
-            background: #fff; 
+            background: var(--panel-bg); 
             border-left: 1px solid var(--border-color); 
             display: flex; 
             flex-direction: column; 
@@ -253,19 +271,19 @@
             user-select: none;
         }
 
-        .profile-card { padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; background: #f8f9fa; flex-shrink: 0; }
-        .profile-img { width: 40px; height: 40px; background: #dfe6e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .palette-legend { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem; background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        .profile-card { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; background: var(--bg-main); flex-shrink: 0; }
+        .profile-img { width: 40px; height: 40px; background: var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .palette-legend { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .leg-item { display: flex; align-items: center; gap: 5px; }
         .leg-color { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: bold; }
         
         .palette-grid { flex: 1; overflow-y: auto; padding: 15px; max-height: calc(100vh - 200px); }
-        .palette-section-header { background: #e3f2fd; color: var(--primary); padding: 8px; text-align: center; font-weight: bold; font-size: 0.9rem; border-radius: 4px; margin-bottom: 15px; border: 1px solid #bbdefb; }
+        .palette-section-header { background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 8px; text-align: center; font-weight: bold; font-size: 0.9rem; border-radius: 4px; margin-bottom: 15px; border: 1px solid var(--primary); }
         
         .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .p-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid #ccc; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; position: relative; transition: transform 0.1s; }
-        .p-btn:hover { background-color: #f1f1f1; }
-        .p-btn.active { border: 3px solid #0984e3 !important; z-index: 2; transform: scale(1.1); box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3); }
+        .p-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-dark); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; position: relative; transition: transform 0.1s; }
+        .p-btn:hover { background-color: var(--bg-main); }
+        .p-btn.active { border: 3px solid var(--primary) !important; z-index: 2; transform: scale(1.1); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
         
         .status-ans { background: var(--nta-green) !important; color: white !important; border-color: var(--nta-green) !important; }
         .status-not-ans { background: var(--nta-red) !important; color: white !important; border-color: var(--nta-red) !important; border-radius: 4px; clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%); }
@@ -273,7 +291,7 @@
         .status-rev-ans { background: var(--nta-purple) !important; color: white !important; border-color: var(--nta-purple) !important; position: relative; }
         .status-rev-ans::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; background: var(--nta-green); color: white; width: 14px; height: 14px; font-size: 9px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; z-index: 5; }
 
-        .sidebar-footer { padding: 15px; border-top: 1px solid #eee; text-align: center; background: #fff; flex-shrink: 0; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid var(--border-color); text-align: center; background: var(--panel-bg); flex-shrink: 0; }
         .btn-submit { width: 100%; background: #27ae60; padding: 12px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: none; }
 
         /* --- FLOATING PANELS & ZOOM WRAPPER --- */
@@ -288,14 +306,14 @@
             z-index: 100; 
             display: none; 
             overflow: hidden; 
-            transform-origin: top left; 
+            /* Fix: Do not zoom the entire panel */
         }
         .fp-head { background: #0056b3; color: white; padding: 8px 12px; cursor: move; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .fp-body { padding: 10px; background: #e0e0e0; max-height: 450px; overflow-y: auto; }
         
         #calc-panel { width: 450px; }
         .calc-display-area { background: white; border: 1px solid #999; padding: 5px; margin-bottom: 5px; position:relative;}
-        .calc-input { width: 100%; border: none; text-align: right; font-size: 1.2rem; outline: none; background:transparent;}
+        .calc-input { width: 100%; border: none; text-align: right; font-size: 1.2rem; outline: none; background:transparent; color: black;}
         .calc-top-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 5px; }
         .calc-main-body { display: flex; gap: 10px; }
         .calc-left-panel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; flex: 1; }
@@ -380,63 +398,65 @@
 
         /* Constants Style */
         .const-list { display: flex; flex-direction: column; gap: 8px; padding: 5px; }
-        .const-card { background: transparent; padding: 5px 0; border: none; border-bottom: 1px dashed #ccc; border-radius: 0; box-shadow: none; font-size: 0.95rem; font-family: 'Segoe UI', serif; }
+        .const-card { background: transparent; padding: 5px 0; border: none; border-bottom: 1px dashed #999; border-radius: 0; box-shadow: none; font-size: 0.95rem; font-family: 'Segoe UI', serif; }
         .const-card:last-child { border-bottom: none; }
         .const-text-line { color: #2d3436; }
         .const-text-line strong { color: #000; }
 
         /* --- SUBMISSION & REPORT --- */
-        .modal-card { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
-        .modal-title { font-size: 1.4rem; color: #d63031; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
+        .modal-card { background: var(--panel-bg); color: var(--text-dark); padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        .modal-title { font-size: 1.4rem; color: #d63031; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-top: 0; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; background: var(--bg-main); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
         .stat-row { display: flex; justify-content: space-between; font-size: 0.95rem; }
         .stat-val { font-weight: bold; }
-        .gateway-container { width: 90%; max-width: 600px; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); text-align: center; }
+        .gateway-container { width: 90%; max-width: 600px; background: var(--panel-bg); color: var(--text-dark); padding: 40px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); text-align: center; }
         .gateway-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0; }
-        .gateway-card { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .gateway-val { display: block; font-size: 1.8rem; font-weight: bold; color: #333; }
+        .gateway-card { background: var(--bg-main); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .gateway-val { display: block; font-size: 1.8rem; font-weight: bold; color: var(--text-dark); }
         
-        .detailed-sheet-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; overflow-y: auto; padding: 40px; display: none; }
+        .detailed-sheet-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--panel-bg); z-index: 3000; overflow-y: auto; padding: 40px; display: none; }
         
         /* Report Header */
-        .report-header-grid { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0; margin-bottom: 0; background: white; position: relative; z-index: 200; border-bottom: none !important; }
+        .report-header-grid { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0; margin-bottom: 0; background: var(--panel-bg); position: relative; z-index: 200; border-bottom: none !important; }
         
         .header-content-left { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         
-        .header-exam-title-row { font-size: 1.3rem; font-weight: 800; color: #000; margin-bottom: 5px; }
+        .header-exam-title-row { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 5px; }
         
         .header-info-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
-        .header-row-line { font-size: 1rem; color: #000; }
-        .header-row-line strong { color: #555; font-weight: 600; margin-right: 5px; }
+        .header-row-line { font-size: 1rem; color: var(--text-dark); }
+        .header-row-line strong { color: var(--text-muted); font-weight: 600; margin-right: 5px; }
         
-        .header-photo { width: 100px; height: 120px; object-fit: contain; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: #f5f5f5; border: 1px solid #eee; border-radius: 4px; margin-left: 20px; }
+        .header-photo { width: 100px; height: 120px; object-fit: contain; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 4px; margin-left: 20px; }
         
         /* Perf Summary */
-        .print-perf-summary { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; background: #f1f3f5; padding: 10px; border-radius: 4px; font-size: 0.8rem; text-align: center; margin-bottom: 25px; }
+        .print-perf-summary { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; background: var(--bg-main); padding: 10px; border-radius: 4px; font-size: 0.8rem; text-align: center; margin-bottom: 25px; }
         .pps-item { display: flex; flex-direction: column; }
-        .pps-val { font-weight: bold; color: #222; }
+        .pps-val { font-weight: bold; color: var(--text-dark); }
         
         /* Question List */
-        .print-section-title { text-align: center; font-weight: bold; font-size: 0.9rem; background: #f0f0f0; padding: 5px; margin: 20px 0 10px 0; border-radius: 4px; border: 1px solid #ddd; }
+        .print-section-title { text-align: center; font-weight: bold; font-size: 0.9rem; background: var(--bg-main); padding: 5px; margin: 20px 0 10px 0; border-radius: 4px; border: 1px solid var(--border-color); }
         .print-q-block { margin-bottom: 20px; break-inside: avoid; page-break-inside: avoid; }
-        .print-q-text { font-size: 1rem; font-weight: 600; color: #000; margin-bottom: 10px; width: 100%; padding-top: 10px; border-top: 1px dotted #ccc; white-space: pre-wrap; font-family: var(--q-font); }
-        .print-q-text img { display: block; max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #eee; }
+        .print-q-text { font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 10px; width: 100%; padding-top: 10px; border-top: 1px dotted var(--border-color); white-space: pre-wrap; font-family: var(--q-font); }
         
-        .print-q-text table { border-collapse: collapse; margin: 10px 0; width: 100%; border: 1px solid #999; }
-        .print-q-text th, .print-q-text td { border: 1px solid #999; padding: 4px; text-align: left; }
+        /* FIX: Max height capped on report screen too */
+        .print-q-text img { display: block; max-width: 100%; max-height: 25vh; object-fit: contain; margin-top: 10px; border: 1px solid var(--border-color); cursor: pointer; background: white;}
+        
+        .print-q-text table { border-collapse: collapse; margin: 10px 0; width: 100%; border: 1px solid var(--border-color); }
+        .print-q-text th, .print-q-text td { border: 1px solid var(--border-color); padding: 4px; text-align: left; }
 
         .print-q-block:first-child .print-q-text { border-top: none; }
         .print-q-body { display: flex; gap: 20px; }
         .print-opt-col { flex: 0 0 70%; display: flex; flex-direction: column; gap: 4px; padding: 0; border: none; }
         .print-opt-item { font-size: 0.9rem; padding: 4px 8px; border-radius: 3px; border: 1px solid transparent; white-space: pre-wrap; font-family: var(--q-font); }
-        .po-correct { background-color: #fff; color: #155724; font-weight:bold; border: 1px solid #c3e6cb; } 
-        .po-wrong-sel { border: 1px solid #f5c6cb; color: #721c24; }
-        .po-neutral { color: #555; }
-        .print-meta-col { flex: 0 0 30%; display: flex; flex-direction: column; justify-content: center; gap: 4px; font-size: 0.85rem; color: #444; border: 1px solid #999; padding: 10px; border-radius: 4px; }
+        .po-correct { background-color: var(--bg-main); color: var(--nta-green); font-weight:bold; border: 1px solid var(--nta-green); } 
+        .po-wrong-sel { border: 1px solid var(--nta-red); color: var(--nta-red); }
+        .po-neutral { color: var(--text-muted); border: 1px solid var(--border-color); }
+        .print-meta-col { flex: 0 0 30%; display: flex; flex-direction: column; justify-content: center; gap: 4px; font-size: 0.85rem; color: var(--text-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; }
         .pm-row { display: flex; justify-content: space-between; margin-bottom: 2px;}
         .pm-val { font-weight: bold; }
         
-        .report-back-btn { position: fixed; bottom: 30px; right: 30px; padding: 12px 25px; background: #333; color: white; border: none; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer; }
+        .report-back-btn { position: fixed; bottom: 30px; right: 30px; padding: 12px 25px; background: var(--primary); color: white; border: none; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer; font-weight: bold;}
 
         /* Responsive Modal Container Adjustments */
         .info-modal-wrapper {
@@ -445,7 +465,7 @@
         }
 
         .info-modal-card {
-            background: white; 
+            background: var(--panel-bg); 
             padding: 25px; 
             border-radius: 8px; 
             width: 90vw; 
@@ -494,7 +514,7 @@
             #calc-panel { top: 50% !important; left: 50% !important; transform: translate(-50%, -50%); width: 95% !important; max-width: 400px; }
             .calc-main-body { flex-direction: column; }
             .calc-left-panel, .calc-right-panel { grid-template-columns: repeat(5, 1fr); width: 100%; }
-            .footer-bar { height: auto; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 8px; padding: 10px; background: #fff; }
+            .footer-bar { height: auto; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 8px; padding: 10px; background: var(--panel-bg); }
             .footer-bar div { display: contents; } 
             .btn { margin: 0 !important; width: 100%; }
             .btn-review { grid-column: 1; grid-row: 1; font-size: 0.8rem; }
@@ -503,7 +523,7 @@
             .btn-save { font-size: 0.8rem; width:100%; }
             .print-q-body { flex-direction: column; }
             .print-opt-col { border: none; padding: 0; }
-            .print-meta-col { border: 1px solid #ccc; margin-top: 10px; }
+            .print-meta-col { border: 1px solid var(--border-color); margin-top: 10px; }
             .print-perf-summary { grid-template-columns: 1fr 1fr; }
             .report-header-grid { flex-direction: column; text-align: center; }
             .header-content-left { width: 100%; align-items: center; }
@@ -610,8 +630,33 @@
             .print-first-page-mask { position: absolute; top: 0; left: 0; right: 0; height: 1.2cm; background: white; z-index: 200; display: block !important; }
         }
     </style>
+
+    <style>
+    /* Prevent Virtual Keyboard locking overrides on Mobile */
+    .q-text, .opt-text { white-space: pre-wrap !important; }
+    </style>
+    <script>
+    if (typeof answer === 'undefined') { window.answer = ""; }
+    document.addEventListener('input', e => { 
+        if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
+            e.target.value = e.target.value.replace('undefined', ''); 
+            window.answer = e.target.value;
+        }
+    });
+    setInterval(() => { 
+        document.querySelectorAll('input').forEach(inp => { 
+            if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
+        }); 
+    }, 300);
+    </script>
 </head>
 <body>
+
+    <!-- Image Lightbox Modal -->
+    <div id="image-lightbox" class="overlay hidden" style="background: rgba(0,0,0,0.9); z-index: 9999;" onclick="this.classList.add('hidden')">
+        <span style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; background: white; border-radius: 8px;">
+    </div>
 
     <!-- Print Specific Fixed Elements -->
     <div class="print-footer">
@@ -641,10 +686,10 @@
                 <div class="stat-row"><span>Answered:</span> <span class="stat-val" style="color:var(--nta-green)" id="sub-ans">0</span></div>
                 <div class="stat-row"><span>Not Answered:</span> <span class="stat-val" style="color:var(--nta-red)" id="sub-not-ans">0</span></div>
                 <div class="stat-row"><span>Marked for Review:</span> <span class="stat-val" style="color:var(--nta-purple)" id="sub-rev">0</span></div>
-                <div class="stat-row"><span>Not Visited:</span> <span class="stat-val" style="color:#666" id="sub-not-visit">0</span></div>
+                <div class="stat-row"><span>Not Visited:</span> <span class="stat-val" style="color:var(--text-muted)" id="sub-not-visit">0</span></div>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:15px; margin-top:20px;">
-                <button id="btn-cancel-sub" class="btn" style="background:#636e72;" onclick="closeModal()">Cancel</button>
+                <button id="btn-cancel-sub" class="btn" style="background:var(--text-muted);" onclick="closeModal()">Cancel</button>
                 <button id="btn-confirm-sub" class="btn btn-save" onclick="confirmSubmit()">Final Submit</button>
             </div>
         </div>
@@ -655,7 +700,7 @@
         <div class="info-modal-wrapper" id="info-modal-target">
             <div class="info-modal-card">
                 <h3 class="modal-title" style="color:var(--primary); margin-bottom: 10px;">Examination Rules & Section Limits</h3>
-                <p style="font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.4; text-align: left;">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; text-align: left;">
                     <strong>Notice:</strong> For sections with a restricted attempt limit, only your first answered questions (chronologically by question number) up to the section limit will be evaluated. Any attempts exceeding the defined limit will be ignored during scoring. Questions 'Marked for Review & Answered' will be counted.
                 </p>
                 <div class="info-table-container">
@@ -677,14 +722,18 @@
     <div id="login-screen" class="overlay">
         <!-- PARAMETER 2 (Global): Agency Name and Exam Title (Login View). -->
         <h2 style="color:var(--primary); margin-bottom: 5px;">Aapna Testing Agency</h2>
-        <h1 style="color:#666; margin-bottom: 5px;">Aapna Exam</h1>
-        <p style="color:#666; margin-bottom: 0px;">Identify yourself to proceed</p>
-        <p style="color:#666; margin-bottom: 30px;">Did you bring your id card, two passport photo and transparent watter bottle?</p>
+        <h1 style="color:var(--text-dark); margin-bottom: 5px;">Aapna Exam</h1>
+        
+        <!-- FIX 1: Centered Login Screen Text -->
+        <div style="text-align: center;">
+            <p style="color:var(--text-muted); margin-bottom: 0px;">Identify yourself to proceed</p>
+            <p style="color:var(--text-muted); margin-bottom: 30px;">Did you bring your id card, two passport photo and transparent watter bottle?</p>
+        </div>
         
         <div class="login-card">
             <!-- Input for Name with Virtual Keyboard trigger -->
             <input type="text" id="user-name" class="inp-name" placeholder="Enter Candidate Name (Tap for Keyboard)" autocomplete="off" readonly onclick="openVK('login')">
-            <p style="color:#666; font-size:0.9rem;">Select Avatar</p>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Select Avatar</p>
             <div class="avatar-grid">
                 <div class="avatar-option" onclick="selectAvatar(this, '👨‍⚕️')">👨‍⚕️</div>
                 <div class="avatar-option" onclick="selectAvatar(this, '👷')">👷</div>
@@ -703,7 +752,7 @@
                 <div>
                     <!-- PARAMETER 3 (Global): Exam Name (Instructions View). -->
                     <h2 style="margin:0; color:var(--text-dark);">NEET Re-Exam (2024)</h2>
-                    <div style="font-size:0.9rem; color:#666; margin-top:5px;" id="current-date-time">Loading date...</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;" id="current-date-time">Loading date...</div>
                 </div>
                 <div class="inst-user-profile"><span id="inst-name-disp">Candidate</span><span id="inst-avatar-disp" style="font-size:1.5rem;">🎓</span></div>
             </div>
@@ -736,6 +785,9 @@
             <div class="zoom-container"><input type="range" min="0.8" max="1.8" step="0.1" value="1" oninput="applyZoom(this.value)"></div>
             <button class="tool-btn" id="btn-audio" onclick="toggleAudio()" title="Background Audio"><span style="font-size:1.2rem;">🎧</span></button>
             
+            <!-- FIX 7: Dark Mode Toggle -->
+            <button class="tool-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><span style="font-size:1.1rem;">🌙</span></button>
+
             <button class="tool-btn" onclick="document.getElementById('info-modal').classList.remove('hidden')" title="Exam Info">
                 <span style="font-size:1.1rem; font-weight:bold; font-family:serif; font-style:italic;">i</span>
             </button>
@@ -773,7 +825,7 @@
                 <div class="profile-img" id="side-avatar">🎓</div>
                 <div style="font-size:0.9rem;">
                     <strong id="side-name">Candidate</strong><br>
-                    <span id="side-id" style="color:#666">ID: 2026-EXAM</span>
+                    <span id="side-id" style="color:var(--text-muted)">ID: 2026-EXAM</span>
                 </div>
             </div>
             <div class="palette-legend">
@@ -781,7 +833,7 @@
                 <div class="leg-item"><div class="leg-color status-not-ans">3</div> Not Ans</div>
                 <div class="leg-item"><div class="leg-color status-rev">7</div> Review</div>
                 <div class="leg-item"><div class="leg-color status-rev-ans">1</div> Ans+Rev</div>
-                <div class="leg-item"><div class="leg-color" style="border:1px solid #ccc; color:#333">0</div> Not Visited</div>
+                <div class="leg-item"><div class="leg-color" style="border:1px solid var(--border-color); color:var(--text-dark)">0</div> Not Visited</div>
             </div>
             <div class="palette-grid" id="palette-grid">
                 <!-- Content injected via JS -->
@@ -974,10 +1026,10 @@
     </div>
 
     <!-- RESULT GATEWAY -->
-    <div id="result-gateway" class="hidden overlay" style="background:#f4f6f8;">
+    <div id="result-gateway" class="hidden overlay">
         <div class="gateway-container">
             <div class="gateway-title">Examination Submitted</div>
-            <p style="color:#666; margin-bottom:30px;">Your response has been successfully recorded.</p>
+            <p style="color:var(--text-muted); margin-bottom:30px;">Your response has been successfully recorded.</p>
             <div class="gateway-stats">
                 <div class="gateway-card"><span class="gateway-val" style="color:var(--primary)" id="gt-score">0</span><span class="gateway-lbl">Score</span></div>
                 <div class="gateway-card"><span class="gateway-val" style="color:var(--nta-green)" id="gt-correct">0</span><span class="gateway-lbl">Correct</span></div>
@@ -1042,26 +1094,66 @@
     const SUBMIT_EXAM_AUDIO_B64 = ""; 
 
     // PARAMETER 8 (Global): Attempt Rules (Instructional Text). 
-    const EXAM_S_HTML = `
-        <div class="inst-section">
-            <h3>Exam Layout & Instructions</h3>
-            <p>1. The examination will consist of <strong>Objective Type Questions (MCQs)</strong> and Numerical Answer Types (NATs).<br>
-            2. Total Duration: <strong>180 Minutes</strong>.<br>
-            3. The examination console is equipped with specific tools to aid your performance. A <strong>Zoom Slider</strong> is located in the top toolbar, allowing you to adjust the size of text and images for better readability. An <strong>On-Screen Scientific Calculator</strong> is available for mathematical computations. You may also access a <strong>Table of Universal Constants</strong> at any time.<br>
-            4. For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers.</p>
-        </div>
-    `;
+    /*<INST_START>*/
+const EXAM_S_HTML = `<div class="inst-section"><h3>📋 Instructions</h3><p>1. The examination will consist of Objective Type Questions (MCQs) and Numerical Answer Types (NATs).</p><p>2. Total Duration: 180 Minutes.</p><p>3. The examination console is equipped with specific tools to aid your performance. A Zoom Slider is located in the top toolbar. An On-Screen Scientific Calculator is available for mathematical computations.</p><p>4. For Fill-in-the-blank or NAT type questions, an on-screen Virtual Keyboard will automatically appear to facilitate entering text or decimal numbers.</p><p>5. Timer is in Stopwatch mode (counts up from zero).</p></div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
+/*<INST_END>*/
 
     // PARAMETER 9 (Section Level & Question Level): Core Question Bank structure.
-    const QUESTION_BANK = [
-        { sectionTitle: "Section A: Demonstration", marksCorrect: 5, marksWrong: 1, maxAttempts: 4, 
-        questions: [ 
-                { id:1, type: "MCQ", text:"Given below are two statements:\n**Statement I:** The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n**Statement II:** Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:", img:"", options:["Statement I is correct but Statement II is incorrect.","Statement I is incorrect but Statement II is correct.","Both Statement I and Statement II are correct.","Both Statement I and Statement II are incorrect."], correct:2 },
-                { id:2, type: "MCQ", text:"Match List-I with List-II:", table: "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>", options:["A-II, B-III, C-I, D-IV","A-I, B-IV, C-II, D-III","A-III, B-I, C-IV, D-II","A-IV, B-II, C-III, D-I"], correct:0 },
-                { id:3, type: "NAT", text:"The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .", img:"", options:[], correct:"2.5-3.5" }
-            ]
-        }
-    ];
+    /*<QB_START>*/
+const QUESTION_BANK = [
+  {
+    "sectionTitle": "Section A: Demonstration",
+    "marksCorrect": 5,
+    "marksWrong": 1,
+    "maxAttempts": 4,
+    "questions": [
+      {
+        "id": 1,
+        "type": "MCQ",
+        "text": "Given below are two statements:\n<strong>Statement I:</strong> The ethical argument for conserving biodiversity relates to what we owe to millions of plant, animal and microbe species with whom we share this planet.\n<strong>Statement II:</strong> Philosophically or spiritually, we need to realise that every species has an intrinsic value, even if it may not be of current or any economic value to us.\n\nIn the light of the above statements, choose the most appropriate answer from the options given below:",
+        "img": "",
+        "table": "",
+        "options": [
+          "Statement I is correct but Statement II is incorrect.",
+          "Statement I is incorrect but Statement II is correct.",
+          "Both Statement I and Statement II are correct.",
+          "Both Statement I and Statement II are incorrect."
+        ],
+        "correct": 2,
+        "marksCorrect": 5,
+        "marksWrong": 1
+      },
+      {
+        "id": 2,
+        "type": "MCQ",
+        "text": "Match List-I with List-II:",
+        "img": "",
+        "table": "<table><tr><td>(A)</td><td>Narrowly utilitarian</td><td>(I)</td><td>The decrease in species diversity from the equator to the poles.</td></tr><tr><td>(B)</td><td>Edward Wilson</td><td>(II)</td><td>Discovering new products like medicinal compounds</td></tr><tr><td>(C)</td><td>Latitudinal gradient</td><td>(III)</td><td>Popularised the term 'biodiversity'</td></tr><tr><td>(D)</td><td>Biodiversity Hotspots</td><td>(IV)</td><td>Regions with very high levels of species richness and high endemism</td></tr></table>",
+        "options": [
+          "A-II, B-III, C-I, D-IV",
+          "A-I, B-IV, C-II, D-III",
+          "A-III, B-I, C-IV, D-II",
+          "A-IV, B-II, C-III, D-I"
+        ],
+        "correct": 0,
+        "marksCorrect": 5,
+        "marksWrong": 1
+      },
+      {
+        "id": 3,
+        "type": "NAT",
+        "text": "The electric field in a certain region is given by E = αx î. If the charge contained in a cube of side a is q, the value of α (rounded off to one decimal place) is___________ .",
+        "img": "",
+        "table": "",
+        "options": [],
+        "correct": "2.5-3.5",
+        "marksCorrect": 5,
+        "marksWrong": 0
+      }
+    ]
+  }
+];
+/*</QB_END>*/
 
     // ==========================================================
     // SYSTEM LOGIC
@@ -1125,19 +1217,19 @@
                 <td>${sec.sectionTitle}</td>
                 <td>${count}</td>
                 <td style="font-weight:bold; color:var(--primary);">${maxAtt}</td>
-                <td style="color:green;">+${marksC}</td>
-                <td style="color:red;">-${marksW}</td>
+                <td style="color:var(--nta-green);">+${marksC}</td>
+                <td style="color:var(--nta-red);">-${marksW}</td>
                 <td>${secMax}</td>
             </tr>`;
         });
         
         tbody.innerHTML = htmlRows;
         tfoot.innerHTML = `<tr>
-            <td style="font-weight:bold; background:#e9ecef;">Total</td>
-            <td style="font-weight:bold; background:#e9ecef;">${totalQs}</td>
-            <td style="font-weight:bold; background:#e9ecef; color:var(--primary);">${totalAttempts}</td>
-            <td colspan="2" style="background:#e9ecef;"></td>
-            <td style="font-weight:bold; background:#e9ecef;">${totalMaxMarks}</td>
+            <td style="font-weight:bold; background:var(--bg-main);">Total</td>
+            <td style="font-weight:bold; background:var(--bg-main);">${totalQs}</td>
+            <td style="font-weight:bold; background:var(--bg-main); color:var(--primary);">${totalAttempts}</td>
+            <td colspan="2" style="background:var(--bg-main);"></td>
+            <td style="font-weight:bold; background:var(--bg-main);">${totalMaxMarks}</td>
         </tr>`;
     }
 
@@ -1158,8 +1250,8 @@
                 <td style="text-align: left;">${sec.sectionTitle}</td>
                 <td>${count}</td>
                 <td style="font-weight:bold; color:var(--primary);">${maxAtt}</td>
-                <td style="color:green;">+${marksC}</td>
-                <td style="color:red;">-${marksW}</td>
+                <td style="color:var(--nta-green);">+${marksC}</td>
+                <td style="color:var(--nta-red);">-${marksW}</td>
                 <td>${secMax}</td>
             </tr>`;
         });
@@ -1204,6 +1296,21 @@
     let lastSwitchTime = 0;
     let totalExamTime = 0;
     let audioObj = null;
+
+    // FIX 7: Dark Mode Function
+    function toggleTheme() {
+        const html = document.documentElement; 
+        if (html.getAttribute('data-theme') === 'dark') { html.setAttribute('data-theme', 'light'); } 
+        else { html.setAttribute('data-theme', 'dark'); }
+    }
+
+    // FIX 4: Image Lightbox Function
+    function openLightbox(src) {
+        const lightbox = document.getElementById('image-lightbox');
+        const img = document.getElementById('lightbox-img');
+        img.src = src;
+        lightbox.classList.remove('hidden');
+    }
 
     function selectAvatar(el, icon) {
         document.querySelectorAll('.avatar-option').forEach(e => e.classList.remove('selected'));
@@ -1436,7 +1543,8 @@
         if(status[currQ] === 'not-visited') { status[currQ] = 'not-ans'; }
 
         const q = QUESTIONS[idx];
-        let imgHtml = q.img ? `<img src="${q.img}" alt="Question Image" onerror="this.style.display='none'">` : '';
+        // FIX 4: Attached onclick=openLightbox(this.src)
+        let imgHtml = q.img ? `<img src="${q.img}" onclick="openLightbox(this.src)" alt="Question Image" onerror="this.style.display='none'">` : '';
         let tableHtml = q.table ? `<div class="table-container">${q.table}</div>` : ''; 
 
         let dynamicInputHtml = '';
@@ -1684,6 +1792,30 @@
                 if(document.getElementById('gt-time')) document.getElementById('gt-time').innerText = avgTime + "s";
                 
                 prepareReport(score, accuracy, avgTime, attempt, correct, wrong, notAns);
+
+                // ======= EXTERNAL STATS HOOK (For parent systems to save marks) =======
+                const examStats = {
+                    score: score,
+                    correct: correct,
+                    wrong: wrong,
+                    accuracy: accuracy,
+                    attempted: attempt,
+                    notAnswered: notAns,
+                    totalQuestions: QUESTIONS.length,
+                    avgTimeSeconds: avgTime,
+                    candidateId: USER_DATA.id,
+                    candidateName: USER_DATA.name
+                };
+                
+                // 1. Dispatch as a Custom Event directly on the window object
+                window.dispatchEvent(new CustomEvent('onExamSubmit', { detail: examStats }));
+                
+                // 2. Safely post message to parent frame (if running inside an iframe in your system)
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'EXAM_SUBMITTED', payload: examStats }, '*');
+                }
+                // ======================================================================
+
             } catch(e) {
                 console.error("Scoring error", e);
                 alert("An error occurred during scoring. Please check console.");
@@ -1792,7 +1924,8 @@
                 });
             }
             
-            let imgHtml = q.img ? `<img src="${q.img}" alt="Question Image">` : '';
+            // FIX 4: Attached onclick=openLightbox(this.src) for Report view too
+            let imgHtml = q.img ? `<img src="${q.img}" onclick="openLightbox(this.src)" alt="Question Image">` : '';
             let tableHtml = q.table ? `<div style="margin: 10px 0;">${q.table}</div>` : '';
 
             let outcomeStr = !isAttempted ? '-' : (evaluated ? (q.type === 'NAT' ? 'Filled' : String.fromCharCode(65+userAns)) : 'Not Evaluated');
@@ -1831,18 +1964,11 @@
     }
 
     function applyZoom(v) { 
-        document.getElementById('zoom-target').style.transform = `scale(${v})`; 
-        document.getElementById('zoom-target').style.width = `${100/v}%`; 
-
-        const calc = document.getElementById('calc-panel');
-        const consts = document.getElementById('const-panel');
-        const vk = document.getElementById('vk-panel');
-        const infoTarget = document.getElementById('info-modal-target');
-
-        calc.style.transform = `scale(${v})`;
-        consts.style.transform = `scale(${v})`;
-        vk.style.transform = `scale(${v})`;
+        // FIX 3: Using CSS 'zoom' properly resizes the box models, preventing huge white bottom borders
+        document.getElementById('zoom-target').style.zoom = v; 
         
+        // FIX 2: Float Panels (calc, keyboard) intentionally NOT zoomed so they don't jump on touch
+        const infoTarget = document.getElementById('info-modal-target');
         if (infoTarget) {
             infoTarget.style.transform = `scale(${v})`;
         }
