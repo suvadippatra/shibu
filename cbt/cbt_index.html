@@ -886,11 +886,11 @@
             </div>
             <div class="engine-options" style="overflow-y: auto; max-height: 55vh; padding-right: 0.2rem;">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.6rem; margin-bottom:0.75rem; font-size:0.85rem; color:var(--text-main);">
-                    <strong>HTML Mode Active:</strong> Pure HTML Fallback automatically transforms math and arrow symbols into universal HTML entities. You can switch to Native MathML or KaTeX if you need publication-grade rendering.
+                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX mode if you need math rendering.
                 </div>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
-                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses Unicode symbols and sub/sup scripts.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
@@ -1064,6 +1064,7 @@
                 </div>
             </div>
             
+            <!-- ENGLISH COMPREHENSIVE GUIDE -->
             <div id="help-eng" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Advanced Features & Best Practices</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1080,12 +1081,11 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX Formulas:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
                     <li><strong>Multiplication Symbol Rule:</strong> NEVER use the asterisk <code>*</code> for multiplication in math (e.g., <code>$2 * 3$</code> collides with Markdown italics). Always write <code>\times</code> (for $\times$) or <code>\cdot</code> (for $\cdot$).</li>
-                    <li><strong>Arrows & Chemical Pathways:</strong> Use <code>\rightarrow</code> ($ \rightarrow $) or <code>\rightleftharpoons</code> ($ \rightleftharpoons $) in LaTeX mode. In HTML mode, use standard Unicode arrows like → or ⇌. The engine automatically translates them even if enclosed in dollar signs.</li>
-                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →, ⇌) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts (e.g., H<sub>2</sub>O).</li>
+                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, do not use LaTeX backslashes. Use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts.</li>
                     <li><strong>Compilation Engine Options:</strong> 
                         <br>• <strong>Native MathML:</strong> Lightweight offline math rendered directly by the browser engine.
                         <br>• <strong>KaTeX (Online):</strong> Publication-grade typography requiring an internet connection.
-                        <br>• <strong>Pure HTML Fallback:</strong> Converts math and arrows to lightweight HTML with sub/sup scripts and Unicode for universal offline compatibility.</li>
+                        <br>• <strong>Pure HTML Fallback:</strong> Converts math to lightweight italicized HTML with sub/sup scripts for maximum offline compatibility.</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Sections, Marking, and Max Attempts</h3>
@@ -1109,6 +1109,7 @@
                 </ul>
             </div>
             
+            <!-- BENGALI COMPREHENSIVE GUIDE -->
             <div id="help-ben" class="hidden" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অ্যাডভান্সড ফিচার ও সেরা কার্যপ্রণালী</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1180,11 +1181,11 @@
         };
 
         let activePreviewSection = '';
-        let activeQuestionIndex = 0;
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
 
+        // Memory load tracker
         setInterval(() => {
             const nodeCount = document.querySelectorAll('*').length;
             const bar = document.getElementById('memStatusBar');
@@ -1284,30 +1285,40 @@
                 const isColumn = window.getComputedStyle(mainContainer).flexDirection === 'column';
 
                 if (!isColumn) {
-                    const newWidth = Math.max(18, Math.min(82, ((clientX - mainRect.left) / mainRect.width) * 100));
-                    leftPanel.style.setProperty('flex', `0 0 ${newWidth}%`, 'important');
-                    leftPanel.style.setProperty('max-width', `${newWidth}%`, 'important');
-                    leftPanel.style.setProperty('width', `${newWidth}%`, 'important');
-                    rightPanel.style.setProperty('flex', `1 1 ${100 - newWidth}%`, 'important');
-                    rightPanel.style.setProperty('max-width', `${100 - newWidth}%`, 'important');
-                    rightPanel.style.setProperty('width', `${100 - newWidth}%`, 'important');
+                    const newWidth = ((clientX - mainRect.left) / mainRect.width) * 100;
+                    if (newWidth >= 18 && newWidth <= 82) {
+                        leftPanel.style.flex = `0 0 ${newWidth}%`;
+                        leftPanel.style.maxWidth = `${newWidth}%`;
+                        leftPanel.style.width = `${newWidth}%`;
+                        rightPanel.style.flex = `1 1 ${100 - newWidth}%`;
+                        rightPanel.style.maxWidth = `${100 - newWidth}%`;
+                    }
                 } else {
-                    const newHeight = Math.max(15, Math.min(85, ((clientY - mainRect.top) / mainRect.height) * 100));
-                    leftPanel.style.setProperty('flex', `0 0 ${newHeight}%`, 'important');
-                    leftPanel.style.setProperty('height', `${newHeight}%`, 'important');
-                    leftPanel.style.setProperty('max-height', `none`, 'important');
-                    rightPanel.style.setProperty('flex', `1 1 ${100 - newHeight}%`, 'important');
-                    rightPanel.style.setProperty('height', `${100 - newHeight}%`, 'important');
-                    rightPanel.style.setProperty('max-height', `none`, 'important');
+                    const newHeight = ((clientY - mainRect.top) / mainRect.height) * 100;
+                    if (newHeight >= 15 && newHeight <= 85) {
+                        leftPanel.style.flex = `0 0 ${newHeight}%`;
+                        leftPanel.style.maxHeight = `${newHeight}%`;
+                        leftPanel.style.height = `${newHeight}%`;
+                        rightPanel.style.flex = `1 1 ${100 - newHeight}%`;
+                        rightPanel.style.maxHeight = `${100 - newHeight}%`;
+                    }
                 }
             });
         }
 
-        function startResizing(e) {
+        resizer.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
             isResizing = true;
             document.body.classList.add('is-resizing');
             resizer.classList.add('resizing');
-        }
+        });
+
+        resizer.addEventListener('pointermove', function(e) {
+            if (!isResizing) return;
+            e.preventDefault();
+            handleResizeMove(e.clientX, e.clientY);
+        });
 
         function stopResizing(e) {
             if (!isResizing) return;
@@ -1318,34 +1329,8 @@
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         }
 
-        resizer.addEventListener('pointerdown', function(e) {
-            e.preventDefault();
-            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
-            startResizing(e);
-        });
-        resizer.addEventListener('pointermove', function(e) {
-            if (!isResizing) return;
-            e.preventDefault();
-            handleResizeMove(e.clientX, e.clientY);
-        });
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
-
-        resizer.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches.length === 1) {
-                e.preventDefault();
-                startResizing(e);
-            }
-        }, { passive: false });
-        window.addEventListener('touchmove', function(e) {
-            if (!isResizing) return;
-            if (e.touches && e.touches.length === 1) {
-                e.preventDefault();
-                handleResizeMove(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: false });
-        window.addEventListener('touchend', stopResizing);
-        window.addEventListener('touchcancel', stopResizing);
 
         window.addEventListener('resize', () => {
             if (leftPanel) {
@@ -1359,33 +1344,14 @@
                 rightPanel.style.flex = '';
                 rightPanel.style.maxWidth = '';
                 rightPanel.style.maxHeight = '';
-                rightPanel.style.width = '';
-                rightPanel.style.height = '';
             }
             updateFastScrollElevator();
-        });
-
-        window.addEventListener('orientationchange', () => {
-            if (leftPanel) {
-                leftPanel.style.flex = '';
-                leftPanel.style.maxWidth = '';
-                leftPanel.style.maxHeight = '';
-                leftPanel.style.width = '';
-                leftPanel.style.height = '';
-            }
-            if (rightPanel) {
-                rightPanel.style.flex = '';
-                rightPanel.style.maxWidth = '';
-                rightPanel.style.maxHeight = '';
-                rightPanel.style.width = '';
-                rightPanel.style.height = '';
-            }
-            setTimeout(updateFastScrollElevator, 150);
         });
 
         const leftContentScroll = document.getElementById('leftContentScroll');
         const leftScrollRail = document.getElementById('leftScrollRail');
         const leftScrollThumb = document.getElementById('leftScrollThumb');
+        let isScrubbing = false;
 
         function updateFastScrollElevator() {
             if (!leftContentScroll || !leftScrollThumb || !leftScrollRail) return;
@@ -1423,74 +1389,29 @@
             updateFastScrollElevator();
         }
 
-        let isScrubbing = false;
         leftScrollRail.addEventListener('pointerdown', function(e) {
             e.preventDefault();
             try { leftScrollRail.setPointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = true;
             handleScrub(e.clientY);
         });
+
         leftScrollRail.addEventListener('pointermove', function(e) {
             if (!isScrubbing) return;
             e.preventDefault();
             handleScrub(e.clientY);
         });
+
         function stopScrubbing(e) {
             if (!isScrubbing) return;
             try { if (e && e.pointerId) leftScrollRail.releasePointerCapture(e.pointerId); } catch(err) {}
             isScrubbing = false;
         }
+
         leftScrollRail.addEventListener('pointerup', stopScrubbing);
         leftScrollRail.addEventListener('pointercancel', stopScrubbing);
+
         leftContentScroll.addEventListener('scroll', updateFastScrollElevator, { passive: true });
-
-        function scrollToElementInLeftPanel(targetEl) {
-            if (!targetEl || !leftContentScroll) return;
-            const containerRect = leftContentScroll.getBoundingClientRect();
-            const targetRect = targetEl.getBoundingClientRect();
-            const relativeTop = targetRect.top - containerRect.top;
-            
-            if (relativeTop < 0 || relativeTop + targetRect.height > containerRect.height) {
-                leftContentScroll.scrollTo({
-                    top: leftContentScroll.scrollTop + relativeTop - 20,
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        function scrollPreviewToQuestion(sec, idx) {
-            const prevArea = document.getElementById('previewArea');
-            const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
-            if (!prevArea || !prevEl) return;
-            
-            const containerRect = prevArea.getBoundingClientRect();
-            const elRect = prevEl.getBoundingClientRect();
-            const relativeOffset = elRect.top - containerRect.top;
-            
-            prevArea.scrollTo({
-                top: prevArea.scrollTop + relativeOffset - 24,
-                behavior: 'smooth'
-            });
-
-            prevEl.classList.remove('highlight-flash');
-            void prevEl.offsetWidth;
-            prevEl.classList.add('highlight-flash');
-            setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
-        }
-
-        function syncPreviewScroll(sec, idx) {
-            activeQuestionIndex = idx;
-            if(!previewIsVisible) return;
-            const secChanged = (activePreviewSection !== sec);
-            activePreviewSection = sec;
-            if (secChanged) {
-                renderPreviewTabs();
-                renderAllPreviews();
-            }
-            setTimeout(() => {
-                scrollPreviewToQuestion(sec, idx);
-            }, secChanged ? 90 : 20);
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             renderConstantsTable();
@@ -1500,6 +1421,7 @@
             renderAllQuestions();
             generateAIPrompt();
             
+            // Preview is hidden by default
             previewIsVisible = false;
             const right = document.getElementById('rightPanel'); 
             const left = document.getElementById('leftPanel'); 
@@ -1514,7 +1436,7 @@
             }
             renderPreviewTabs();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 150);
         });
@@ -1522,10 +1444,8 @@
         function autoResize(el) {
             if(!el) return;
             el.style.height = 'auto';
-            const isQ = el.classList.contains('qblock-textarea');
-            const minH = isQ ? 48 : 36;
-            el.style.height = Math.max(el.scrollHeight, minH) + 'px';
-            if (typeof updateFastScrollElevator === 'function') updateFastScrollElevator();
+            el.style.height = (el.scrollHeight) + 'px';
+            updateFastScrollElevator();
         }
 
         function toggleTheme() {
@@ -1561,19 +1481,13 @@
             right.style.flex = '';
             right.style.maxWidth = '';
             right.style.maxHeight = '';
-            right.style.width = '';
-            right.style.height = '';
 
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
                 left.classList.remove('expanded'); 
                 left.classList.add('split-view');
                 res.style.display = 'flex';
-                renderPreviewTabs();
                 renderAllPreviews();
-                setTimeout(() => {
-                    scrollPreviewToQuestion(activePreviewSection, activeQuestionIndex);
-                }, 100);
             } else { 
                 right.classList.add('hidden-panel'); 
                 left.classList.add('expanded'); 
@@ -1612,165 +1526,71 @@
             });
         }
 
-        function formatMathToHTML(str, isDisplay) {
-            if (!str) return '';
-            let s = str.trim();
-
-            const greek = {
-                '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
-                '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
-                '\\Theta':'Θ', '\\iota':'ι', '\\kappa':'κ', '\\lambda':'λ', '\\Lambda':'Λ',
-                '\\mu':'μ', '\\nu':'ν', '\\xi':'ξ', '\\Xi':'Ξ', '\\pi':'π', '\\Pi':'Π',
-                '\\rho':'ρ', '\\sigma':'σ', '\\Sigma':'Σ', '\\tau':'τ', '\\upsilon':'υ',
-                '\\phi':'φ', '\\Phi':'Φ', '\\chi':'χ', '\\psi':'ψ', '\\Psi':'Ψ',
-                '\\omega':'ω', '\\Omega':'Ω'
-            };
-            for (let g in greek) {
-                s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+        function syncPreviewScroll(sec, idx) {
+            if(!previewIsVisible) return;
+            if(activePreviewSection !== sec) {
+                activePreviewSection = sec;
+                renderPreviewTabs();
             }
-
-            s = s.replace(/\\rightleftharpoons/g, '⇌')
-                 .replace(/\\leftrightarrow/g, '↔')
-                 .replace(/\\Rightarrow/g, '⇒')
-                 .replace(/\\Leftarrow/g, '⇐')
-                 .replace(/\\rightarrow/g, '→')
-                 .replace(/\\to\b/g, '→')
-                 .replace(/\\leftarrow/g, '←')
-                 .replace(/\\gets\b/g, '←')
-                 .replace(/\\uparrow/g, '↑')
-                 .replace(/\\downarrow/g, '↓');
-
-            s = s.replace(/\\times/g, '×')
-                 .replace(/\\cdot/g, '·')
-                 .replace(/\\div/g, '÷')
-                 .replace(/\\pm/g, '±')
-                 .replace(/\\mp/g, '∓')
-                 .replace(/\\approx/g, '≈')
-                 .replace(/\\neq/g, '≠')
-                 .replace(/\\ne\b/g, '≠')
-                 .replace(/\\leq/g, '≤')
-                 .replace(/\\geq/g, '≥')
-                 .replace(/\\le\b/g, '≤')
-                 .replace(/\\ge\b/g, '≥')
-                 .replace(/\\ll\b/g, '≪')
-                 .replace(/\\gg\b/g, '≫')
-                 .replace(/\\equiv/g, '≡')
-                 .replace(/\\propto/g, '∝')
-                 .replace(/\\infty/g, '∞')
-                 .replace(/\\partial/g, '∂')
-                 .replace(/\\nabla/g, '∇')
-                 .replace(/\\degree/g, '°')
-                 .replace(/\\circ/g, '°')
-                 .replace(/\\in\b/g, '∈')
-                 .replace(/\\notin/g, '∉')
-                 .replace(/\\subset/g, '⊂')
-                 .replace(/\\subseteq/g, '⊆')
-                 .replace(/\\cap/g, '∩')
-                 .replace(/\\cup/g, '∪')
-                 .replace(/\\forall/g, '∀')
-                 .replace(/\\exists/g, '∃')
-                 .replace(/\\hbar/g, 'ℏ');
-
-            s = s.replace(/\\text\{([^}]+)\}/g, '$1')
-                 .replace(/\\mathrm\{([^}]+)\}/g, '$1')
-                 .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
-                 .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
-
-            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;')
-                 .replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
-                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;')
-                 .replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
-                 .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
-
-            s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
-
-            let prevS = '';
-            while (prevS !== s) {
-                prevS = s;
-                s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)');
-            }
-
-            s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
-                 .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-                 .replace(/\\sqrt\b/g, '√');
-
-            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>')
-                 .replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
-
-            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                 .replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
-
-            s = s.replace(/\\[;,!]/g, ' ')
-                 .replace(/\\quad/g, ' &nbsp; ')
-                 .replace(/\\qquad/g, ' &nbsp;&nbsp; ')
-                 .replace(/\\([a-zA-Z]+)/g, '$1');
-
-            return isDisplay 
-                ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` 
-                : `<span style="font-family: serif;"><i>${s}</i></span>`;
-        }
-
-        function cleanLooseLatexSymbols(str) {
-            if (!str) return '';
-            return str.replace(/\\rightleftharpoons/g, '⇌')
-                      .replace(/\\rightarrow/g, '→')
-                      .replace(/\\to\b/g, '→')
-                      .replace(/\\leftarrow/g, '←')
-                      .replace(/\\times/g, '×')
-                      .replace(/\\cdot/g, '·')
-                      .replace(/\\pm/g, '±')
-                      .replace(/\\approx/g, '≈')
-                      .replace(/\\neq/g, '≠')
-                      .replace(/\\le\b/g, '≤')
-                      .replace(/\\ge\b/g, '≥');
-        }
-
-        function processMath(text, engine) {
-            if (!text) return '';
-            
-            let res = text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
-                let math = displayMath || inlineMath;
-                let isDisplay = !!displayMath;
-                let unescapedMath = math.trim();
-
-                if (engine === 'MATHML') {
-                    if (typeof katex !== 'undefined') {
-                        try { 
-                            return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
-                        } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
-                    }
+            setTimeout(() => {
+                const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
+                if(prevEl) {
+                    prevEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    prevEl.classList.add('highlight-flash');
+                    setTimeout(() => prevEl.classList.remove('highlight-flash'), 1500);
                 }
-                
-                return formatMathToHTML(unescapedMath, isDisplay);
-            });
-
-            if (engine === 'HTML_FALLBACK') {
-                res = cleanLooseLatexSymbols(res);
-            }
-
-            return res;
+            }, 50);
         }
 
         function parseFormatting(str) {
             if(!str) return '';
             let mathBlocks = [];
-            
             str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
                 mathBlocks.push(match);
-                return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
+                return `__MATH_${mathBlocks.length - 1}__`;
             });
             
             str = str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
                      .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
                      .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
                      
-            str = str.replace(/@@MATH_BLOCK_(\d+)@@/g, (match, i) => mathBlocks[parseInt(i)]);
+            str = str.replace(/__MATH_(\d+)__/g, (match, i) => mathBlocks[i]);
             return str;
         }
 
         function safeHTML(str) {
             if(!str) return '';
             return str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
+        }
+        
+        function processMath(text, engine) {
+            if (!text) return '';
+            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
+                let math = displayMath || inlineMath;
+                let isDisplay = !!displayMath;
+                let unescapedMath = math; 
+
+                if (engine === 'MATHML') {
+                    if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
+                    try { 
+                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
+                    } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
+                } else if (engine === 'HTML_FALLBACK') {
+                    let str = unescapedMath;
+                    // FIX: Upgraded HTML Fallback Dictionary for Dagger/Double Dagger
+                    const greek = { '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ' };
+                    for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+                    str = str.replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\approx/g, '≈').replace(/\\pm/g, '±').replace(/\\partial/g, '∂').replace(/\\infty/g, '∞').replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←').replace(/\\ddagger/g, '‡').replace(/\\dagger/g, '†');
+                    str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;').replace(/\\text\{([^}]+)\}/g, '$1');
+                    str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan').replace(/\\ln/g, 'ln').replace(/\\log/g, 'log');
+                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
+                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
+                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
+                    str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
+                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
+                }
+                return match;
+            });
         }
 
         function updateRulesData() {
@@ -1850,7 +1670,6 @@
                 { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' }
             ];
             activePreviewSection = newName;
-            activeQuestionIndex = 0;
             renderMarksTable();
             renderAllQuestions();
             renderPreviewTabs();
@@ -1860,14 +1679,11 @@
                 const secCard = document.getElementById(`details-${newName}`);
                 if (secCard) {
                     secCard.open = true;
-                    scrollToElementInLeftPanel(secCard);
+                    secCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     secCard.classList.add('highlight-flash');
                     setTimeout(() => secCard.classList.remove('highlight-flash'), 1500);
                     const firstTextarea = secCard.querySelector('.qblock-textarea');
-                    if (firstTextarea) {
-                        try { firstTextarea.focus({ preventScroll: true }); } catch(err) { firstTextarea.focus(); }
-                        autoResize(firstTextarea);
-                    }
+                    if (firstTextarea) firstTextarea.focus();
                 }
                 updateFastScrollElevator();
             }, 100);
@@ -1935,28 +1751,9 @@
             });
             renderMarksTable(); updateMissingImageAlert();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 50);
-        }
-
-        function refreshQuestionBlock(sec, idx) {
-            const oldBlock = document.getElementById(`qblock-${sec}-${idx}`);
-            const q = appState.questionsBySection[sec]?.[idx];
-            if (!oldBlock || !q) return;
-
-            const scrollContainer = document.getElementById('leftContentScroll');
-            const savedScrollTop = scrollContainer ? scrollContainer.scrollTop : null;
-
-            const newBlock = createQuestionBlock(sec, idx, q);
-            oldBlock.replaceWith(newBlock);
-
-            newBlock.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize);
-
-            if (scrollContainer && savedScrollTop !== null) {
-                scrollContainer.scrollTop = savedScrollTop;
-                updateFastScrollElevator();
-            }
         }
 
         function addQuestion(sec) {
@@ -1976,17 +1773,15 @@
                 if (badge) badge.innerText = `${appState.questionsBySection[sec].length} Qs`;
 
                 renderMarksTable();
-                if (activePreviewSection === sec) {
-                    debouncedRenderAllPreviews();
-                }
+                debouncedRenderAllPreviews();
 
-                scrollToElementInLeftPanel(newBlock);
+                newBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 newBlock.classList.add('highlight-flash');
                 setTimeout(() => newBlock.classList.remove('highlight-flash'), 1200);
 
                 const textarea = newBlock.querySelector('.qblock-textarea');
                 if (textarea) {
-                    try { textarea.focus({ preventScroll: true }); } catch(err) { textarea.focus(); }
+                    textarea.focus();
                     autoResize(textarea);
                 }
                 updateFastScrollElevator();
@@ -1998,10 +1793,6 @@
         function createQuestionBlock(sec, idx, q) {
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
-
-            div.onclick = (e) => {
-                if (!e.target.closest('button')) syncPreviewScroll(sec, idx);
-            };
 
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
             (q.options || []).forEach((opt, oi) => {
@@ -2024,10 +1815,10 @@
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
-                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi}); syncPreviewScroll('${sec}', ${idx});">
+                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image (JPG, PNG, GIF, SVG)">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -2037,7 +1828,7 @@
             });
             optsHtml += `</div>`;
 
-            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value); syncPreviewScroll('${sec}', ${idx});"></div>`;
+            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value)"></div>`;
 
             const imgPreview = q.image === 'PLACEHOLDER' 
                 ? `<button class="btn btn-danger btn-sm highlight-flash" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🚨 UPLOAD MISSING IMAGE</button>`
@@ -2051,7 +1842,7 @@
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <div class="qblock-textarea-wrap">
-                        <textarea class="qblock-textarea" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value);">${safeQText}</textarea>
+                        <textarea class="qblock-textarea form-control auto-expand" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
                         <select class="form-control hide-desktop-only" style="width: auto; font-weight: 600; padding: 0.3rem 0.5rem; display: none;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                             <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                         </select>
@@ -2071,67 +1862,48 @@
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕ <span class="hide-mobile">Remove</span></button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
                 </div>
             `;
             
             if(window.innerWidth <= 768) {
-                const sel = div.querySelector('.hide-desktop-only');
-                if (sel) sel.style.display = 'block';
+                div.querySelector('.hide-desktop-only').style.display = 'block';
             }
 
             return div;
         }
 
-        function addOption(sec, idx) { 
-            appState.questionsBySection[sec][idx].options.push(''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-        }
+        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                refreshQuestionBlock(sec, idx); 
-                debouncedUpdateSingleQuestionPreview(sec, idx); 
+                renderAllQuestions(); debouncedUpdateSinglePreview(); 
             } 
         }
 
         function updateOptionText(sec, idx, oi, value) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
             const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg; 
-            debouncedUpdateSingleQuestionPreview(sec, idx);
+            q.options[oi] = value + optImg; debouncedUpdateSinglePreview();
         }
 
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx);
-            updateMissingImageAlert();
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview();
         }
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { 
-                q.correct = parseInt(value); 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            } 
-            else if (field === 'type') { 
-                q.type = value; 
-                refreshQuestionBlock(sec, idx); 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            } 
-            else { 
-                q[field] = value; 
-                debouncedUpdateSingleQuestionPreview(sec, idx);
-            }
+            if (field === 'correct') { q.correct = parseInt(value); } 
+            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
+            else { q[field] = value; }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
             }
+            debouncedUpdateSinglePreview();
         }
 
         function populateSearchDropdown() { document.getElementById('searchSec').innerHTML = appState.sections.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); updateSearchHint(); }
@@ -2143,15 +1915,8 @@
             const sec = document.getElementById('searchSec').value; const qNum = parseInt(document.getElementById('searchQNum').value);
             if (!sec || isNaN(qNum) || qNum < 1) return;
             const idx = qNum - 1; const block = document.getElementById(`qblock-${sec}-${idx}`);
-            if (block) { 
-                document.getElementById(`details-${sec}`).open = true; 
-                scrollToElementInLeftPanel(block);
-                block.classList.add('highlight-flash'); 
-                setTimeout(()=>block.classList.remove('highlight-flash'), 1500); 
-                syncPreviewScroll(sec, idx);
-            } else { 
-                showToast(`Q${qNum} not found in ${sec}.`, 'error'); 
-            }
+            if (block) { document.getElementById(`details-${sec}`).open = true; block.scrollIntoView({ behavior: 'smooth', block: 'center' }); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } 
+            else { showToast(`Q${qNum} not found in ${sec}.`, 'error'); }
         }
 
         let cropperInstance = null; let currentImageData = null; let currentCropBase64 = null; let cropTimeout = null;
@@ -2178,12 +1943,7 @@
                 }
             });
         }
-        function removeImage(sec, idx) { 
-            updateQuestion(sec, idx, 'image', 0, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-            updateMissingImageAlert(); 
-        }
+        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
 
         function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -2239,10 +1999,7 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-            closeModal('cropModal'); 
-            updateMissingImageAlert();
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
         }
 
         function saveOriginalImage() {
@@ -2259,8 +2016,8 @@
             currentCropBase64 = null;
             document.getElementById('liveCropPreviewImg').src = '';
             document.getElementById('cropImage').src = '';
-            refreshQuestionBlock(sec, idx);
-            debouncedUpdateSingleQuestionPreview(sec, idx);
+            renderAllQuestions();
+            debouncedUpdateSinglePreview();
             closeModal('cropModal');
             updateMissingImageAlert();
             showToast('Original image applied (preserved vector/GIF quality)', 'success');
@@ -2293,15 +2050,9 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            refreshQuestionBlock(currentTableData.sec, currentTableData.idx);
-            debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); 
-            closeModal('tableModal');
+            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('tableModal');
         }
-        function removeTable(sec, idx) { 
-            updateQuestion(sec, idx, 'table', 0, ''); 
-            refreshQuestionBlock(sec, idx); 
-            debouncedUpdateSingleQuestionPreview(sec, idx); 
-        }
+        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -2311,12 +2062,7 @@
             appState.sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `ptab ${sec.name === activePreviewSection ? 'active' : ''}`;
-                tab.innerText = sec.name; 
-                tab.onclick = () => { 
-                    activePreviewSection = sec.name; 
-                    renderPreviewTabs(); 
-                    renderAllPreviews(); 
-                };
+                tab.innerText = sec.name; tab.onclick = () => { activePreviewSection = sec.name; renderPreviewTabs(); renderAllPreviews(); };
                 tabsContainer.appendChild(tab);
             });
         }
@@ -2325,8 +2071,8 @@
             let processedText = safeHTML(q.text);
             let previewEngine = appState.renderEngine; 
             
-            if (previewEngine === 'HTML_FALLBACK') {
-                processedText = processMath(processedText, 'HTML_FALLBACK');
+            if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
+                processedText = processMath(processedText, previewEngine);
             }
             processedText = parseFormatting(processedText);
             
@@ -2347,8 +2093,8 @@
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
 
                     let safeOpt = safeHTML(rawOpt);
-                    if (previewEngine === 'HTML_FALLBACK') {
-                        safeOpt = processMath(safeOpt, 'HTML_FALLBACK');
+                    if(appState.mathMode === 'LATEX' && previewEngine === 'HTML_FALLBACK') {
+                        safeOpt = processMath(safeOpt, previewEngine);
                     }
                     safeOpt = parseFormatting(safeOpt);
 
@@ -2369,35 +2115,6 @@
             return html;
         }
 
-        function updateSingleQuestionPreview(sec, idx) {
-            if (!previewIsVisible) return;
-            if (activePreviewSection !== sec) {
-                syncPreviewScroll(sec, idx);
-                return;
-            }
-            const qBox = document.getElementById(`preview-qbox-${sec}-${idx}`);
-            const q = appState.questionsBySection[sec]?.[idx];
-            if (!qBox || !q) return;
-
-            qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
-
-            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
-                renderMathInElement(qBox, { 
-                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
-                    throwOnError: false 
-                });
-            }
-        }
-
-        function debouncedUpdateSingleQuestionPreview(sec, idx) {
-            if (!previewIsVisible) return;
-            const key = `${sec}-${idx}`;
-            if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
-            granularTimeouts[key] = setTimeout(() => {
-                updateSingleQuestionPreview(sec, idx);
-            }, 60);
-        }
-
         function renderAllPreviews() {
             if(!previewIsVisible) return;
             const area = document.getElementById('previewArea');
@@ -2408,12 +2125,18 @@
             qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
             area.innerHTML = html;
 
-            if (appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
+            if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK' && typeof renderMathInElement !== 'undefined') {
                 renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
             }
         }
 
         function debouncedRenderAllPreviews() {
+            if(!previewIsVisible) return;
+            clearTimeout(globalPreviewTimeout);
+            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
+        }
+
+        function debouncedUpdateSinglePreview() {
             if(!previewIsVisible) return;
             clearTimeout(globalPreviewTimeout);
             globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
@@ -2425,7 +2148,8 @@
             if(appState.examTitle) out += `Title: ${appState.examTitle}\n`;
             if(appState.examSubtitle) out += `Subtitle: ${appState.examSubtitle}\n`;
             if(appState.duration) out += `Duration: ${appState.duration}\n`;
-            out += `Timer: ${appState.timerMode}\nFont: ${appState.fontName}\nMathMode: ${appState.mathMode}\n`;
+            out += `Timer: ${appState.timerMode}\nFont: ${appState.fontName}\n`;
+            out += appState.mathMode === 'LATEX' ? `[FORMAT_WATERMARK: LATEX]\n` : `[FORMAT_WATERMARK: PURE_HTML]\n`;
             
             if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
             if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
@@ -2522,7 +2246,20 @@
                         if(tSelect) tSelect.value = appState.timerMode;
                     }
                     if (tr.startsWith('Font:')) { appState.fontName = tr.substring(5).trim(); document.getElementById('fontSelect').value = appState.fontName; document.documentElement.style.setProperty('--preview-font', appState.fontName); }
-                    if (tr.startsWith('MathMode:')) { appState.mathMode = tr.substring(9).trim(); switchPrompt(appState.mathMode); }
+                    if (tr.startsWith('MathMode:')) { 
+                        appState.mathMode = tr.substring(9).trim(); 
+                        switchPrompt(appState.mathMode); 
+                    }
+                    if (tr.startsWith('[FORMAT_WATERMARK:')) {
+                        const wm = tr.match(/\[FORMAT_WATERMARK:\s*(.*?)\]/);
+                        if(wm) {
+                            if(wm[1].trim() === 'PURE_HTML') {
+                                switchPrompt('HTML');
+                            } else {
+                                switchPrompt('LATEX');
+                            }
+                        }
+                    }
                     if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
                     if (tr.startsWith('AudioBg:')) { appState.audio.bg = tr.substring(8).trim(); document.getElementById('audioBg').value = appState.audio.bg; }
                     if (tr.startsWith('AudioStart:')) { appState.audio.start = tr.substring(11).trim(); document.getElementById('audioStart').value = appState.audio.start; }
@@ -2785,20 +2522,24 @@
             appState.sections.forEach(s => { sectionStr += `[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`; });
 
             let modeSpecificRules = '';
+            let watermark = '';
             if (appState.mathMode === 'LATEX') {
+                watermark = '[FORMAT_WATERMARK: LATEX]';
                 modeSpecificRules = `CRITICAL MATH & IMAGE RULES:
 - You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block).
 - DO NOT use \\( ... \\) or \\[ ... \\]. Use ONLY $ and $$.
 - MULTIPLICATION RULE: NEVER use the asterisk '*' for multiplication in math (e.g. $2 * 3$ breaks formatting). Always use \\times ($2 \\times 3$) or \\cdot ($2 \\cdot 3$).
 - FORBIDDEN: NEVER write scientific units or constants in Bengali. Use standard LaTeX (e.g., $m/s^2$, $C$).
-- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma).
+- REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma) and arrows (\\rightarrow, \\rightleftharpoons).
 - COMPLEX MATRICES: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             } else {
+                watermark = '[FORMAT_WATERMARK: PURE_HTML]';
                 modeSpecificRules = `CRITICAL HTML & IMAGE RULES:
-- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes.
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes like \\rightarrow.
 - MULTIPLICATION RULE: Use standard multiplication sign '×' or '·'.
-- Use standard Unicode for symbols (π, α, β, ∑, ∫, √).
-- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts.
+- ARROWS & SEQUENCES: In biological pathways, reactions, or developmental sequences, use the literal Unicode arrow '→' or '⇌'. NEVER write '\\rightarrow' or '$' in HTML mode.
+- Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ←, ⇌, ±, °, μ).
+- Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>O, Ca<sup>2+</sup>, 10<sup>5</sup>).
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             }
 
@@ -2823,6 +2564,7 @@ Title: [Extract if present, else leave blank]
 Subtitle: [Extract if present, else leave blank]
 Duration: [Extract if present, else leave blank]
 Timer: STOPWATCH
+${watermark}
 
 ${sectionStr}QType: MCQ
 Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
