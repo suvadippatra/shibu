@@ -121,7 +121,7 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--bg-panel); min-width: 270px; box-shadow: var(--shadow-lg); z-index: 2000; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; transform-origin: top right; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s ease-out; }
-        .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; cursor: pointer;}
+        .dropdown-item { padding: 0.8rem 1rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border); background: var(--bg-panel); width: 100%; text-align: left; border-left: none; border-right: none; border-top: none; font-family: inherit; font-weight: 600; transition: background 0.2s; }
         .dropdown-item:hover { background-color: var(--bg-hover); color: var(--primary); }
 
         .main {
@@ -480,6 +480,11 @@
         .preview-option.correct { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: var(--success); font-weight: 600; }
         .preview-nat { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--primary); padding: 0.5rem; color: var(--primary-dark); font-weight: 600; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
         
+        /* Image Lightbox */
+        #image-lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        #image-lightbox.active { display: flex !important; }
+        #lightbox-img { max-width: 90%; max-height: 90%; object-fit: contain; background: white; border-radius: 8px; }
+
         .modal {
             display: none;
             position: fixed;
@@ -595,38 +600,38 @@
             
             .left-panel, 
             .left-panel.expanded { 
-                width: 100%; 
-                max-width: 100%; 
-                min-width: 100%; 
-                border-right: none; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                min-width: 100% !important; 
+                border-right: none !important; 
             }
             .left-panel.split-view {
-                width: 100%;
-                max-width: 100%;
-                flex: 0 0 50%;
-                height: 50%;
-                min-height: 20%;
-                max-height: 80%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
+                width: 100% !important;
+                max-width: 100% !important;
+                flex: 0 0 50% !important;
+                height: 50% !important;
+                min-height: 20% !important;
+                max-height: 80% !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--border) !important;
             }
             .right-panel { 
-                width: 100%; 
-                max-width: 100%; 
-                flex: 1 1 50%; 
-                height: 50%;
-                border-left: none; 
-                border-top: none; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                flex: 1 1 50% !important; 
+                height: 50% !important;
+                border-left: none !important; 
+                border-top: none !important; 
             }
             
             .resizer { 
-                width: 100%; 
-                height: 16px; 
-                cursor: row-resize; 
-                flex-direction: row; 
+                width: 100% !important; 
+                height: 16px !important; 
+                cursor: row-resize !important; 
+                flex-direction: row !important; 
             }
             .resizer::after { 
-                content: '⋯'; 
+                content: '⋯' !important; 
                 line-height: 16px; 
                 font-size: 20px; 
             }
@@ -636,37 +641,37 @@
             .main { flex-direction: row !important; }
             .left-panel,
             .left-panel.expanded { 
-                flex: 1 1 100%; 
-                max-width: 100%; 
-                border-right: none; 
-                height: 100%; 
+                flex: 1 1 100% !important; 
+                max-width: 100% !important; 
+                border-right: none !important; 
+                height: 100% !important; 
             }
             .left-panel.split-view { 
-                flex: 0 0 55%; 
-                max-width: 55%; 
-                width: 55%;
-                height: 100%; 
-                border-right: 1px solid var(--border); 
-                border-bottom: none; 
+                flex: 0 0 55% !important; 
+                max-width: 55% !important; 
+                width: 55% !important;
+                height: 100% !important; 
+                border-right: 1px solid var(--border) !important; 
+                border-bottom: none !important; 
             }
             .right-panel { 
-                flex: 1 1 45%; 
-                max-width: 45%; 
-                width: 45%;
-                height: 100%; 
-                border-left: none; 
-                border-top: none; 
+                flex: 1 1 45% !important; 
+                max-width: 45% !important; 
+                width: 45% !important;
+                height: 100% !important; 
+                border-left: none !important; 
+                border-top: none !important; 
             }
             .resizer { 
-                width: 14px; 
-                height: 100%; 
-                cursor: col-resize; 
-                flex-direction: column; 
+                width: 14px !important; 
+                height: 100% !important; 
+                cursor: col-resize !important; 
+                flex-direction: column !important; 
             }
             .resizer::after { 
-                content: '⋮'; 
-                line-height: normal; 
-                font-size: 16px; 
+                content: '⋮' !important; 
+                line-height: normal !important; 
+                font-size: 16px !important; 
             }
         }
         
@@ -731,6 +736,12 @@
     </nav>
 
     <div id="toast-container"></div>
+    
+    <!-- Image Lightbox for Setter -->
+    <div id="image-lightbox" class="overlay hidden" style="background: rgba(0,0,0,0.9); z-index: 9999;" onclick="this.classList.remove('active'); this.classList.add('hidden');">
+        <span style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; background: white; border-radius: 8px;">
+    </div>
 
     <div class="main">
         <div class="left-panel expanded" id="leftPanel">
@@ -886,11 +897,11 @@
             </div>
             <div class="engine-options" style="overflow-y: auto; max-height: 55vh; padding-right: 0.2rem;">
                 <div id="engineHtmlNotice" style="display:none; background:rgba(59, 130, 246, 0.1); border-left:3px solid var(--primary); padding:0.6rem; margin-bottom:0.75rem; font-size:0.85rem; color:var(--text-main);">
-                    <strong>HTML Mode Active:</strong> MathML and KaTeX are disabled to ensure pure HTML compatibility. Switch to LaTeX mode if you need math rendering.
+                    <strong>HTML Mode Active:</strong> Pure HTML Fallback automatically transforms math and arrow symbols into universal HTML entities. You can switch to Native MathML or KaTeX if you need publication-grade rendering.
                 </div>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="MATHML" checked onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Native MathML:</b> Beautiful offline rendering. Best for modern browsers.</label>
                 <label class="engine-label engine-latex-opt"><input type="radio" name="mathEngine" value="KATEX_ONLINE" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>KaTeX (Online):</b> Textbook quality. Requires active internet connection.</label>
-                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses basic sup/sub scripts.</label>
+                <label class="engine-label"><input type="radio" name="mathEngine" value="HTML_FALLBACK" id="engineHtmlRadio" onchange="appState.renderEngine = this.value; debouncedRenderAllPreviews();"> <b>Pure HTML Fallback:</b> Universal offline compatibility. Uses Unicode symbols and sub/sup scripts.</label>
             </div>
             <button class="btn btn-primary btn-block" style="margin-top: 1rem; padding: 0.7rem;" onclick="closeModal('engineModal')">✓ Save Settings</button>
         </div>
@@ -1064,7 +1075,6 @@
                 </div>
             </div>
             
-            <!-- ENGLISH COMPREHENSIVE GUIDE -->
             <div id="help-eng" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Advanced Features & Best Practices</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1081,11 +1091,12 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX Formulas:</strong> Wrap inline equations in single dollar signs ($E = mc^2$) and display equations in double dollar signs ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$).</li>
                     <li><strong>Multiplication Symbol Rule:</strong> NEVER use the asterisk <code>*</code> for multiplication in math (e.g., <code>$2 * 3$</code> collides with Markdown italics). Always write <code>\times</code> (for $\times$) or <code>\cdot</code> (for $\cdot$).</li>
-                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, do not use LaTeX backslashes. Use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts.</li>
+                    <li><strong>Arrows & Chemical Pathways:</strong> Use <code>\rightarrow</code> ($ \rightarrow $) or <code>\rightleftharpoons</code> ($ \rightleftharpoons $) in LaTeX mode. In HTML mode, use standard Unicode arrows like → or ⇌. The engine automatically translates them even if enclosed in dollar signs.</li>
+                    <li><strong>HTML Mode Symbols:</strong> When typing directly in HTML mode, use standard Unicode (π, α, β, θ, ±, √, ×, ÷, →, ⇌) and native HTML tags: <code>&lt;sup&gt;2&lt;/sup&gt;</code> for exponents and <code>&lt;sub&gt;2&lt;/sub&gt;</code> for subscripts (e.g., H<sub>2</sub>O).</li>
                     <li><strong>Compilation Engine Options:</strong> 
                         <br>• <strong>Native MathML:</strong> Lightweight offline math rendered directly by the browser engine.
                         <br>• <strong>KaTeX (Online):</strong> Publication-grade typography requiring an internet connection.
-                        <br>• <strong>Pure HTML Fallback:</strong> Converts math to lightweight italicized HTML with sub/sup scripts for maximum offline compatibility.</li>
+                        <br>• <strong>Pure HTML Fallback:</strong> Converts math and arrows to lightweight HTML with sub/sup scripts and Unicode for universal offline compatibility.</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">Sections, Marking, and Max Attempts</h3>
@@ -1109,7 +1120,6 @@
                 </ul>
             </div>
             
-            <!-- BENGALI COMPREHENSIVE GUIDE -->
             <div id="help-ben" class="hidden" style="max-height: min(440px, 58vh); overflow-y: auto; font-size: 0.88rem; color: var(--text-main); line-height: 1.6; padding-right: 0.5rem;">
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">অ্যাডভান্সড ফিচার ও সেরা কার্যপ্রণালী</h3>
                 <ol style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
@@ -1126,8 +1136,9 @@
                 <ul style="margin-left: 1.3rem; margin-bottom: 1.2rem;">
                     <li><strong>LaTeX সমীকরণ:</strong> সাধারণ সূত্রের জন্য সিঙ্গেল ডলার ($E = mc^2$) এবং ডিসপ্লে ব্লকের জন্য ডাবল ডলার ($$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$) ব্যবহার করুন।</li>
                     <li><strong>গুণের নিয়ম (Multiplication):</strong> গণিতের ভেতরে কখনোই স্টার <code>*</code> ব্যবহার করবেন না (যেমন <code>$2 * 3$</code> দিলে ইটালিক কোডের সাথে সংঘর্ষ হবে)। সবসময় <code>\times</code> ($2 \times 3$) অথবা <code>\cdot</code> ব্যবহার করুন।</li>
+                    <li><strong>তীরচিহ্ন ও জৈব রাসায়নিক ধাপ:</strong> LaTeX মোডে <code>\rightarrow</code> বা <code>\rightleftharpoons</code> ব্যবহার করুন। HTML মোডে সরাসরি ইউনিকোড তীরচিহ্ন (→ বা ⇌) ব্যবহার করবেন।</li>
                     <li><strong>HTML মোড প্রতীক:</strong> HTML মোডে সরাসরি লেখার সময় ব্যাকস্ল্যাশ ছাড়া ইউনিকোড প্রতীক (π, α, β, θ, ±, √, ×, ÷, →) এবং পাওয়ার/সাবস্ক্রিপ্টের জন্য <code>&lt;sup&gt;2&lt;/sup&gt;</code> ও <code>&lt;sub&gt;2&lt;/sub&gt;</code> ট্যাগ দিন।</li>
-                    <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
+                    <li><strong>ইঞ্জিন নির্বাচন:</strong> MathML অফলাইন ব্রাউজার রেন্ডারিংয়ের জন্য সেরা, KaTeX অনলাইন সর্বোচ্চ মান দেয়, এবং HTML Fallback দুর্বল ডিভাইসের জন্য উপযোগী।</li>
                 </ul>
 
                 <h3 style="color: var(--primary); margin-bottom: 0.4rem;">সেকশন, মার্কিং এবং সর্বোচ্চ প্রচেষ্টা (Max Att)</h3>
@@ -1181,6 +1192,7 @@
         };
 
         let activePreviewSection = '';
+        let activeQuestionIndex = 0;
         let granularTimeouts = {}; 
         let globalPreviewTimeout = null;
         const imageTimers = {};
@@ -1306,19 +1318,11 @@
             });
         }
 
-        resizer.addEventListener('pointerdown', function(e) {
-            e.preventDefault();
-            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
+        function startResizing(e) {
             isResizing = true;
             document.body.classList.add('is-resizing');
             resizer.classList.add('resizing');
-        });
-
-        resizer.addEventListener('pointermove', function(e) {
-            if (!isResizing) return;
-            e.preventDefault();
-            handleResizeMove(e.clientX, e.clientY);
-        });
+        }
 
         function stopResizing(e) {
             if (!isResizing) return;
@@ -1329,8 +1333,34 @@
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         }
 
+        resizer.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            try { resizer.setPointerCapture(e.pointerId); } catch(err) {}
+            startResizing(e);
+        });
+        resizer.addEventListener('pointermove', function(e) {
+            if (!isResizing) return;
+            e.preventDefault();
+            handleResizeMove(e.clientX, e.clientY);
+        });
         resizer.addEventListener('pointerup', stopResizing);
         resizer.addEventListener('pointercancel', stopResizing);
+
+        resizer.addEventListener('touchstart', function(e) {
+            if (e.touches && e.touches.length === 1) {
+                e.preventDefault();
+                startResizing(e);
+            }
+        }, { passive: false });
+        window.addEventListener('touchmove', function(e) {
+            if (!isResizing) return;
+            if (e.touches && e.touches.length === 1) {
+                e.preventDefault();
+                handleResizeMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', stopResizing);
+        window.addEventListener('touchcancel', stopResizing);
 
         window.addEventListener('resize', () => {
             if (leftPanel) {
@@ -1421,7 +1451,6 @@
             renderAllQuestions();
             generateAIPrompt();
             
-            // Preview is hidden by default
             previewIsVisible = false;
             const right = document.getElementById('rightPanel'); 
             const left = document.getElementById('leftPanel'); 
@@ -1473,20 +1502,15 @@
             const left = document.getElementById('leftPanel'); 
             const res = document.getElementById('dragMe');
             
-            left.style.flex = '';
-            left.style.maxWidth = '';
-            left.style.maxHeight = '';
-            left.style.width = '';
-            left.style.height = '';
-            right.style.flex = '';
-            right.style.maxWidth = '';
-            right.style.maxHeight = '';
+            left.style.flex = ''; left.style.maxWidth = ''; left.style.maxHeight = ''; left.style.width = ''; left.style.height = '';
+            right.style.flex = ''; right.style.maxWidth = ''; right.style.maxHeight = '';
 
             if(previewIsVisible) { 
                 right.classList.remove('hidden-panel'); 
                 left.classList.remove('expanded'); 
                 left.classList.add('split-view');
                 res.style.display = 'flex';
+                renderPreviewTabs();
                 renderAllPreviews();
             } else { 
                 right.classList.add('hidden-panel'); 
@@ -1497,10 +1521,16 @@
             setTimeout(updateFastScrollElevator, 250);
         }
 
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('image-lightbox').classList.add('active');
+            document.getElementById('image-lightbox').classList.remove('hidden');
+        }
+
         function revealImg(id, src) {
             const el = document.getElementById(id);
             if(!el) return;
-            el.innerHTML = `<img src="${src}">`;
+            el.innerHTML = `<img src="${src}" onclick="openLightbox(this.src)">`;
             el.classList.remove('img-lazy-btn');
             el.onclick = null; 
             
@@ -1526,71 +1556,177 @@
             });
         }
 
+        function scrollToElementInLeftPanel(targetEl) {
+            if (!targetEl || !leftContentScroll) return;
+            const containerRect = leftContentScroll.getBoundingClientRect();
+            const targetRect = targetEl.getBoundingClientRect();
+            const relativeTop = targetRect.top - containerRect.top;
+            
+            if (relativeTop < 0 || relativeTop + targetRect.height > containerRect.height) {
+                leftContentScroll.scrollTo({
+                    top: leftContentScroll.scrollTop + relativeTop - 20,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function scrollPreviewToQuestion(sec, idx) {
+            const prevArea = document.getElementById('previewArea');
+            const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
+            if (!prevArea || !prevEl) return;
+            
+            const containerRect = prevArea.getBoundingClientRect();
+            const elRect = prevEl.getBoundingClientRect();
+            const relativeOffset = elRect.top - containerRect.top;
+            
+            prevArea.scrollTo({
+                top: prevArea.scrollTop + relativeOffset - 24,
+                behavior: 'smooth'
+            });
+
+            prevEl.classList.remove('highlight-flash');
+            void prevEl.offsetWidth;
+            prevEl.classList.add('highlight-flash');
+            setTimeout(() => prevEl.classList.remove('highlight-flash'), 1200);
+        }
+
         function syncPreviewScroll(sec, idx) {
+            activeQuestionIndex = idx;
             if(!previewIsVisible) return;
-            if(activePreviewSection !== sec) {
-                activePreviewSection = sec;
+            const secChanged = (activePreviewSection !== sec);
+            activePreviewSection = sec;
+            if (secChanged) {
                 renderPreviewTabs();
+                renderAllPreviews();
             }
             setTimeout(() => {
-                const prevEl = document.getElementById(`preview-qbox-${sec}-${idx}`);
-                if(prevEl) {
-                    prevEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    prevEl.classList.add('highlight-flash');
-                    setTimeout(() => prevEl.classList.remove('highlight-flash'), 1500);
-                }
-            }, 50);
+                scrollPreviewToQuestion(sec, idx);
+            }, secChanged ? 90 : 20);
         }
 
-        function parseFormatting(str) {
-            if(!str) return '';
-            let mathBlocks = [];
-            str = str.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match) => {
-                mathBlocks.push(match);
-                return `__MATH_${mathBlocks.length - 1}__`;
-            });
-            
-            str = str.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
-                     .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
-                     .replace(/(?<!\\)\*([^\*]+?)\*/g, '<em>$1</em>');
-                     
-            str = str.replace(/__MATH_(\d+)__/g, (match, i) => mathBlocks[i]);
-            return str;
+        function formatMathToHTMLFallback(str, isDisplay) {
+            let s = str.trim();
+            const greek = {
+                '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
+                '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
+                '\\Theta':'Θ', '\\iota':'ι', '\\kappa':'κ', '\\lambda':'λ', '\\Lambda':'Λ',
+                '\\mu':'μ', '\\nu':'ν', '\\xi':'ξ', '\\Xi':'Ξ', '\\pi':'π', '\\Pi':'Π',
+                '\\rho':'ρ', '\\sigma':'σ', '\\Sigma':'Σ', '\\tau':'τ', '\\upsilon':'υ',
+                '\\phi':'φ', '\\Phi':'Φ', '\\chi':'χ', '\\psi':'ψ', '\\Psi':'Ψ',
+                '\\omega':'ω', '\\Omega':'Ω'
+            };
+            for (let g in greek) s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
+
+            s = s.replace(/\\rightleftharpoons/g, '⇌').replace(/\\leftrightarrow/g, '↔')
+                 .replace(/\\Rightarrow/g, '⇒').replace(/\\Leftarrow/g, '⇐')
+                 .replace(/\\rightarrow/g, '→').replace(/\\to\b/g, '→')
+                 .replace(/\\leftarrow/g, '←').replace(/\\gets\b/g, '←')
+                 .replace(/\\uparrow/g, '↑').replace(/\\downarrow/g, '↓');
+
+            s = s.replace(/\\dagger/g, '†').replace(/\\ddagger/g, '‡')
+                 .replace(/\\times/g, '×').replace(/\\cdot/g, '·')
+                 .replace(/\\div/g, '÷').replace(/\\pm/g, '±').replace(/\\mp/g, '∓')
+                 .replace(/\\approx/g, '≈').replace(/\\neq/g, '≠').replace(/\\ne\b/g, '≠')
+                 .replace(/\\leq/g, '≤').replace(/\\geq/g, '≥').replace(/\\le\b/g, '≤').replace(/\\ge\b/g, '≥')
+                 .replace(/\\lt\b/g, '<').replace(/\\gt\b/g, '>')
+                 .replace(/\\ll\b/g, '≪').replace(/\\gg\b/g, '≫')
+                 .replace(/\\equiv/g, '≡').replace(/\\propto/g, '∝')
+                 .replace(/\\infty/g, '∞').replace(/\\partial/g, '∂').replace(/\\nabla/g, '∇')
+                 .replace(/\\degree/g, '°').replace(/\\circ/g, '°')
+                 .replace(/\\in\b/g, '∈').replace(/\\notin/g, '∉')
+                 .replace(/\\subset/g, '⊂').replace(/\\subseteq/g, '⊆')
+                 .replace(/\\cap/g, '∩').replace(/\\cup/g, '∪')
+                 .replace(/\\forall/g, '∀').replace(/\\exists/g, '∃')
+                 .replace(/\\hbar/g, 'ℏ');
+
+            s = s.replace(/\\text\{([^}]+)\}/g, '$1')
+                 .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+                 .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
+                 .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
+
+            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
+                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;').replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
+                 .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
+
+            s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
+
+            let prevS = '';
+            while (prevS !== s) { prevS = s; s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)'); }
+
+            s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
+                 .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+                 .replace(/\\sqrt\b/g, '√');
+
+            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>').replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
+            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>').replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
+            s = s.replace(/\\[;,!]/g, ' ').replace(/\\quad/g, ' &nbsp; ').replace(/\\qquad/g, ' &nbsp;&nbsp; ')
+                 .replace(/\\([a-zA-Z]+)/g, '$1');
+
+            return isDisplay ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` : `<span style="font-family: serif;"><i>${s}</i></span>`;
         }
 
-        function safeHTML(str) {
-            if(!str) return '';
-            return str.replace(/<(?=\s|[0-9])/g, '&lt;').replace(/(?<=\s|[0-9])>/g, '&gt;');
-        }
-        
-        function processMath(text, engine) {
+        // Unified Master Pipeline
+        function formatContent(text, engine, mathMode) {
             if (!text) return '';
-            return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, displayMath, inlineMath) => {
-                let math = displayMath || inlineMath;
-                let isDisplay = !!displayMath;
-                let unescapedMath = math; 
+            
+            let mathBlocks = [];
+            let maskedText = text;
 
-                if (engine === 'MATHML') {
-                    if (typeof katex === 'undefined') return `<span style="color:#f39c12; font-weight:bold;">[Loading Math...]</span>`;
-                    try { 
-                        return katex.renderToString(unescapedMath, { displayMode: isDisplay, output: 'mathml', throwOnError: false }); 
-                    } catch(e) { return `<span style="color:red; font-weight:bold;">[Math Error]</span>`; }
-                } else if (engine === 'HTML_FALLBACK') {
-                    let str = unescapedMath;
-                    // FIX: Upgraded HTML Fallback Dictionary for Dagger/Double Dagger
-                    const greek = { '\\pi':'π', '\\sigma':'σ', '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\omega':'ω', '\\Delta':'Δ', '\\lambda':'λ', '\\theta':'θ', '\\mu':'μ', '\\rho':'ρ', '\\phi':'φ', '\\psi':'ψ' };
-                    for(let g in greek) str = str.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
-                    str = str.replace(/\\times/g, '×').replace(/\\cdot/g, '·').replace(/\\approx/g, '≈').replace(/\\pm/g, '±').replace(/\\partial/g, '∂').replace(/\\infty/g, '∞').replace(/\\rightarrow/g, '→').replace(/\\leftarrow/g, '←').replace(/\\ddagger/g, '‡').replace(/\\dagger/g, '†');
-                    str = str.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;').replace(/\\text\{([^}]+)\}/g, '$1');
-                    str = str.replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan').replace(/\\ln/g, 'ln').replace(/\\log/g, 'log');
-                    str = str.replace(/\^\{(.*?)\}/g, '<sup>$1</sup>').replace(/\^([^{])/g, '<sup>$1</sup>');
-                    str = str.replace(/_\{(.*?)\}/g, '<sub>$1</sub>').replace(/_([^{])/g, '<sub>$1</sub>');
-                    str = str.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '($1)/($2)');
-                    str = str.replace(/\\([a-zA-Z]+)/g, '$1'); 
-                    return `<span style="font-family: serif;"><i>${str}</i></span>`;
-                }
-                return match;
+            // 1. Protect explicitly escaped dollars
+            maskedText = maskedText.replace(/\\\$/g, '@@ESC_DOLLAR@@');
+
+            // 2. Math Masking - Capture all $$ and $ securely to prevent markdown from ripping it apart
+            maskedText = maskedText.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, display, inline) => {
+                mathBlocks.push({
+                    raw: match,
+                    content: display || inline,
+                    isDisplay: !!display
+                });
+                return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
             });
+
+            // 3. Smart HTML Escaping (Safeguard against browser DOM shredding, protects < and > only when followed by space or number)
+            maskedText = maskedText.replace(/<(\s|[0-9])/g, '&lt;$1').replace(/(\s|[0-9])>/g, '$1&gt;');
+
+            // 4. Markdown Parsing (Safe since math is completely hidden inside alphanumeric tags)
+            maskedText = maskedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
+                                   .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
+                                   .replace(/\*([^\*]+?)\*/g, '<em>$1</em>');
+
+            // 5. Restore escaped dollars
+            maskedText = maskedText.replace(/@@ESC_DOLLAR@@/g, '$');
+
+            // 6. Process Math & Unmask
+            mathBlocks.forEach((block, i) => {
+                let processedMath = '';
+                let rawContent = block.content.trim();
+
+                if (mathMode === 'LATEX') {
+                    if (engine === 'MATHML') {
+                        if (typeof katex !== 'undefined') {
+                            try {
+                                processedMath = katex.renderToString(rawContent, { displayMode: block.isDisplay, output: 'mathml', throwOnError: false });
+                            } catch (e) {
+                                processedMath = `<span style="color:red; font-weight:bold;">[Math Error]</span>`;
+                            }
+                        } else {
+                            processedMath = `<span style="color:orange; font-weight:bold;">[Loading Math...]</span>`;
+                        }
+                    } else if (engine === 'HTML_FALLBACK') {
+                        processedMath = formatMathToHTMLFallback(rawContent, block.isDisplay);
+                    } else {
+                        // KATEX_ONLINE (leave raw so client-side auto-render catches it)
+                        processedMath = block.raw; 
+                    }
+                } else {
+                    // HTML Mode forces Fallback symbol dictionary
+                    processedMath = formatMathToHTMLFallback(rawContent, block.isDisplay);
+                }
+                
+                maskedText = maskedText.replace(`@@MATH_BLOCK_${i}@@`, processedMath);
+            });
+
+            return maskedText;
         }
 
         function updateRulesData() {
@@ -1670,6 +1806,7 @@
                 { type: 'MCQ', text: '', options: ['', '', '', ''], correct: 0, correctNat: '', image: '', table: '' }
             ];
             activePreviewSection = newName;
+            activeQuestionIndex = 0;
             renderMarksTable();
             renderAllQuestions();
             renderPreviewTabs();
@@ -1679,11 +1816,14 @@
                 const secCard = document.getElementById(`details-${newName}`);
                 if (secCard) {
                     secCard.open = true;
-                    secCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    scrollToElementInLeftPanel(secCard);
                     secCard.classList.add('highlight-flash');
                     setTimeout(() => secCard.classList.remove('highlight-flash'), 1500);
                     const firstTextarea = secCard.querySelector('.qblock-textarea');
-                    if (firstTextarea) firstTextarea.focus();
+                    if (firstTextarea) {
+                        try { firstTextarea.focus({ preventScroll: true }); } catch(err) { firstTextarea.focus(); }
+                        autoResize(firstTextarea);
+                    }
                 }
                 updateFastScrollElevator();
             }, 100);
@@ -1751,9 +1891,28 @@
             });
             renderMarksTable(); updateMissingImageAlert();
             setTimeout(() => { 
-                document.querySelectorAll('.auto-expand').forEach(autoResize); 
+                document.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize); 
                 updateFastScrollElevator();
             }, 50);
+        }
+
+        function refreshQuestionBlock(sec, idx) {
+            const oldBlock = document.getElementById(`qblock-${sec}-${idx}`);
+            const q = appState.questionsBySection[sec]?.[idx];
+            if (!oldBlock || !q) return;
+
+            const scrollContainer = document.getElementById('leftContentScroll');
+            const savedScrollTop = scrollContainer ? scrollContainer.scrollTop : null;
+
+            const newBlock = createQuestionBlock(sec, idx, q);
+            oldBlock.replaceWith(newBlock);
+
+            newBlock.querySelectorAll('.auto-expand, .qblock-textarea').forEach(autoResize);
+
+            if (scrollContainer && savedScrollTop !== null) {
+                scrollContainer.scrollTop = savedScrollTop;
+                updateFastScrollElevator();
+            }
         }
 
         function addQuestion(sec) {
@@ -1773,15 +1932,17 @@
                 if (badge) badge.innerText = `${appState.questionsBySection[sec].length} Qs`;
 
                 renderMarksTable();
-                debouncedRenderAllPreviews();
+                if (activePreviewSection === sec) {
+                    debouncedRenderAllPreviews();
+                }
 
-                newBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                scrollToElementInLeftPanel(newBlock);
                 newBlock.classList.add('highlight-flash');
                 setTimeout(() => newBlock.classList.remove('highlight-flash'), 1200);
 
                 const textarea = newBlock.querySelector('.qblock-textarea');
                 if (textarea) {
-                    textarea.focus();
+                    try { textarea.focus({ preventScroll: true }); } catch(err) { textarea.focus(); }
                     autoResize(textarea);
                 }
                 updateFastScrollElevator();
@@ -1793,6 +1954,12 @@
         function createQuestionBlock(sec, idx, q) {
             const div = document.createElement('div'); div.className = `question-block`; div.id = `qblock-${sec}-${idx}`;
             const isNAT = q.type === 'NAT'; const optsDisplay = isNAT ? 'none' : 'grid'; const natDisplay = isNAT ? 'block' : 'none';
+
+            div.onclick = (e) => {
+                if (!e.target.closest('button') && !e.target.closest('input') && !e.target.closest('textarea')) {
+                    syncPreviewScroll(sec, idx);
+                }
+            };
 
             let optsHtml = `<div class="options-grid" style="display: ${optsDisplay};">`;
             (q.options || []).forEach((opt, oi) => {
@@ -1815,10 +1982,10 @@
                 optsHtml += `
                 <div class="qblock-option-item">
                     <div class="option-main-row">
-                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi})">
+                        <input type="radio" name="ans-${sec}-${idx}" class="option-radio" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateQuestion('${sec}', ${idx}, 'correct', ${oi}, ${oi}); syncPreviewScroll('${sec}', ${idx});">
                         <span class="option-label">${String.fromCharCode(65 + oi)}.</span>
                         <div class="option-input-wrap">
-                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
+                            <textarea class="auto-expand" rows="1" placeholder="${placeholderText}" onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateOptionText('${sec}', ${idx}, ${oi}, this.value)">${safeVal}</textarea>
                             <button class="opt-img-btn" onclick="event.stopPropagation(); document.getElementById('optImgInput-${sec}-${idx}-${oi}').click()" title="Add Image (JPG, PNG, GIF, SVG)">🖼️</button>
                             <input type="file" id="optImgInput-${sec}-${idx}-${oi}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, true, ${oi})">
                         </div>
@@ -1828,7 +1995,7 @@
             });
             optsHtml += `</div>`;
 
-            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value)"></div>`;
+            const natHtml = `<div class="nat-config-block" style="display: ${natDisplay};"><label style="font-weight:600; font-size:0.8rem; color:var(--primary-dark);">Correct Answer (Exact/Range):</label><input type="text" class="form-control nat-answer-input" style="font-family: monospace; font-weight:bold; margin-top:0.3rem;" value="${q.correctNat || ''}" placeholder="e.g. 2.5 or 2.5-3.5" onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="updateQuestion('${sec}', ${idx}, 'correctNat', 0, this.value); syncPreviewScroll('${sec}', ${idx});"></div>`;
 
             const imgPreview = q.image === 'PLACEHOLDER' 
                 ? `<button class="btn btn-danger btn-sm highlight-flash" onclick="event.stopPropagation(); document.getElementById('imgInput-${sec}-${idx}').click()">🚨 UPLOAD MISSING IMAGE</button>`
@@ -1842,7 +2009,7 @@
                 <div class="qblock-header">
                     <div class="qnum">${idx + 1}</div>
                     <div class="qblock-textarea-wrap">
-                        <textarea class="qblock-textarea form-control auto-expand" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx})" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value)">${safeQText}</textarea>
+                        <textarea class="qblock-textarea" rows="1" placeholder="Type question text... Use **bold**, *italic*, __underline__. Math goes in $ signs." onfocus="syncPreviewScroll('${sec}', ${idx}); autoResize(this);" oninput="autoResize(this); updateQuestion('${sec}', ${idx}, 'text', 0, this.value);">${safeQText}</textarea>
                         <select class="form-control hide-desktop-only" style="width: auto; font-weight: 600; padding: 0.3rem 0.5rem; display: none;" onchange="updateQuestion('${sec}', ${idx}, 'type', 0, this.value)">
                             <option value="MCQ" ${!isNAT?'selected':''}>Type: MCQ</option><option value="NAT" ${isNAT?'selected':''}>Type: NAT</option>
                         </select>
@@ -1862,48 +2029,67 @@
                     <input type="file" id="imgInput-${sec}-${idx}" accept="image/*,.gif,.svg,image/svg+xml,image/gif" style="display:none;" onchange="handleNewImageUpload(event, '${sec}', ${idx}, false, 0)">
                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openTableModal('${sec}', ${idx}, false)">📊 <span class="hide-mobile">Table</span></button>
                     <div style="flex-grow: 1;"></div>
-                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedUpdateSinglePreview(); });">✕ <span class="hide-mobile">Remove</span></button>
+                    <button class="btn btn-danger btn-sm" style="border-radius: 4px;" onclick="event.stopPropagation(); showConfirm('Delete Question ${idx+1}?', () => { appState.questionsBySection['${sec}'].splice(${idx}, 1); renderAllQuestions(); debouncedRenderAllPreviews(); });">✕ <span class="hide-mobile">Remove</span></button>
                 </div>
             `;
             
             if(window.innerWidth <= 768) {
-                div.querySelector('.hide-desktop-only').style.display = 'block';
+                const sel = div.querySelector('.hide-desktop-only');
+                if (sel) sel.style.display = 'block';
             }
 
             return div;
         }
 
-        function addOption(sec, idx) { appState.questionsBySection[sec][idx].options.push(''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
+        function addOption(sec, idx) { 
+            appState.questionsBySection[sec][idx].options.push(''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+        }
         function removeLastOption(sec, idx) { 
             const q = appState.questionsBySection[sec][idx]; 
             if(q.options.length > 2) { 
                 q.options.pop(); 
                 if (q.correct >= q.options.length) q.correct = Math.max(0, q.options.length - 1);
-                renderAllQuestions(); debouncedUpdateSinglePreview(); 
+                refreshQuestionBlock(sec, idx); 
+                debouncedUpdateSingleQuestionPreview(sec, idx); 
             } 
         }
 
         function updateOptionText(sec, idx, oi, value) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || ''; let optImg = '';
             const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/); if (imgMatch) optImg = `||IMG:${imgMatch[1]}||`;
-            q.options[oi] = value + optImg; debouncedUpdateSinglePreview();
+            q.options[oi] = value + optImg; 
+            debouncedUpdateSingleQuestionPreview(sec, idx);
         }
 
         function removeOptionImage(sec, idx, oi) {
             let q = appState.questionsBySection[sec][idx]; let rawOpt = q.options[oi] || '';
-            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); renderAllQuestions(); debouncedUpdateSinglePreview();
+            q.options[oi] = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx);
+            updateMissingImageAlert();
         }
 
         function updateQuestion(sec, idx, field, optIdx, value) {
             const q = appState.questionsBySection[sec][idx];
-            if (field === 'correct') { q.correct = parseInt(value); } 
-            else if (field === 'type') { q.type = value; renderAllQuestions(); } 
-            else { q[field] = value; }
+            if (field === 'correct') { 
+                q.correct = parseInt(value); 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            } 
+            else if (field === 'type') { 
+                q.type = value; 
+                refreshQuestionBlock(sec, idx); 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            } 
+            else { 
+                q[field] = value; 
+                debouncedUpdateSingleQuestionPreview(sec, idx);
+            }
             if(q.image && q.image !== 'PLACEHOLDER') {
                 const eid = `edit-img-${sec}-${idx}`;
                 if(document.getElementById(eid) && document.getElementById(eid).classList.contains('img-lazy-btn')) revealImg(eid, q.image);
             }
-            debouncedUpdateSinglePreview();
         }
 
         function populateSearchDropdown() { document.getElementById('searchSec').innerHTML = appState.sections.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); updateSearchHint(); }
@@ -1915,8 +2101,15 @@
             const sec = document.getElementById('searchSec').value; const qNum = parseInt(document.getElementById('searchQNum').value);
             if (!sec || isNaN(qNum) || qNum < 1) return;
             const idx = qNum - 1; const block = document.getElementById(`qblock-${sec}-${idx}`);
-            if (block) { document.getElementById(`details-${sec}`).open = true; block.scrollIntoView({ behavior: 'smooth', block: 'center' }); block.classList.add('highlight-flash'); setTimeout(()=>block.classList.remove('highlight-flash'), 1500); } 
-            else { showToast(`Q${qNum} not found in ${sec}.`, 'error'); }
+            if (block) { 
+                document.getElementById(`details-${sec}`).open = true; 
+                scrollToElementInLeftPanel(block);
+                block.classList.add('highlight-flash'); 
+                setTimeout(()=>block.classList.remove('highlight-flash'), 1500); 
+                syncPreviewScroll(sec, idx);
+            } else { 
+                showToast(`Q${qNum} not found in ${sec}.`, 'error'); 
+            }
         }
 
         let cropperInstance = null; let currentImageData = null; let currentCropBase64 = null; let cropTimeout = null;
@@ -1943,7 +2136,12 @@
                 }
             });
         }
-        function removeImage(sec, idx) { updateQuestion(sec, idx, 'image', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); updateMissingImageAlert(); }
+        function removeImage(sec, idx) { 
+            updateQuestion(sec, idx, 'image', 0, ''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+            updateMissingImageAlert(); 
+        }
 
         function openCropModalWithData(imgSrc, file) {
             document.getElementById('cropImage').src = imgSrc; openModal('cropModal');
@@ -1999,7 +2197,10 @@
                 let optText = rawOpt.replace(/\|\|IMG:(.+?)\|\|/g, ''); q.options[optIdx] = optText + `||IMG:${currentCropBase64}||`;
             } else { updateQuestion(sec, idx, 'image', 0, currentCropBase64); }
             currentCropBase64 = null; document.getElementById('liveCropPreviewImg').src = ''; document.getElementById('cropImage').src = '';
-            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('cropModal'); updateMissingImageAlert();
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+            closeModal('cropModal'); 
+            updateMissingImageAlert();
         }
 
         function saveOriginalImage() {
@@ -2016,8 +2217,8 @@
             currentCropBase64 = null;
             document.getElementById('liveCropPreviewImg').src = '';
             document.getElementById('cropImage').src = '';
-            renderAllQuestions();
-            debouncedUpdateSinglePreview();
+            refreshQuestionBlock(sec, idx);
+            debouncedUpdateSingleQuestionPreview(sec, idx);
             closeModal('cropModal');
             updateMissingImageAlert();
             showToast('Original image applied (preserved vector/GIF quality)', 'success');
@@ -2050,9 +2251,15 @@
             const clone = document.getElementById('tblEditorContainer').cloneNode(true); 
             clone.querySelectorAll('th, td').forEach(cell => cell.removeAttribute('contenteditable'));
             updateQuestion(currentTableData.sec, currentTableData.idx, 'table', 0, clone.innerHTML);
-            renderAllQuestions(); debouncedUpdateSinglePreview(); closeModal('tableModal');
+            refreshQuestionBlock(currentTableData.sec, currentTableData.idx);
+            debouncedUpdateSingleQuestionPreview(currentTableData.sec, currentTableData.idx); 
+            closeModal('tableModal');
         }
-        function removeTable(sec, idx) { updateQuestion(sec, idx, 'table', 0, ''); renderAllQuestions(); debouncedUpdateSinglePreview(); }
+        function removeTable(sec, idx) { 
+            updateQuestion(sec, idx, 'table', 0, ''); 
+            refreshQuestionBlock(sec, idx); 
+            debouncedUpdateSingleQuestionPreview(sec, idx); 
+        }
 
         function renderPreviewTabs() {
             const tabsContainer = document.getElementById('previewTabs'); tabsContainer.innerHTML = '';
@@ -2072,15 +2279,8 @@
             });
         }
 
-        // =========================================================================
-        // THE IRONCLAD FORMATTING PIPELINE (Replaces 5 old, buggy functions)
-        // Order: Mask Math -> Escape HTML -> Restore Safe Tags -> Markdown -> Unmask
-        // =========================================================================
-        
         function formatMathToHTMLFallback(str, isDisplay) {
-            if (!str) return '';
             let s = str.trim();
-
             const greek = {
                 '\\alpha':'α', '\\beta':'β', '\\gamma':'γ', '\\Delta':'Δ', '\\delta':'δ',
                 '\\epsilon':'ε', '\\varepsilon':'ε', '\\zeta':'ζ', '\\eta':'η', '\\theta':'θ',
@@ -2090,53 +2290,28 @@
                 '\\phi':'φ', '\\Phi':'Φ', '\\chi':'χ', '\\psi':'ψ', '\\Psi':'Ψ',
                 '\\omega':'ω', '\\Omega':'Ω'
             };
-            for (let g in greek) {
-                s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
-            }
+            for (let g in greek) s = s.replace(new RegExp(g.replace(/\\/g, '\\\\'), 'g'), greek[g]);
 
-            s = s.replace(/\\rightleftharpoons/g, '⇌')
-                 .replace(/\\leftrightarrow/g, '↔')
-                 .replace(/\\Rightarrow/g, '⇒')
-                 .replace(/\\Leftarrow/g, '⇐')
-                 .replace(/\\rightarrow/g, '→')
-                 .replace(/\\to\b/g, '→')
-                 .replace(/\\leftarrow/g, '←')
-                 .replace(/\\gets\b/g, '←')
-                 .replace(/\\uparrow/g, '↑')
-                 .replace(/\\downarrow/g, '↓')
-                 .replace(/\\dagger/g, '†')
-                 .replace(/\\ddagger/g, '‡')
-                 .replace(/\\lt/g, '<')
-                 .replace(/\\gt/g, '>')
-                 .replace(/\\times/g, '×')
-                 .replace(/\\cdot/g, '·')
-                 .replace(/\\div/g, '÷')
-                 .replace(/\\pm/g, '±')
-                 .replace(/\\mp/g, '∓')
-                 .replace(/\\approx/g, '≈')
-                 .replace(/\\neq/g, '≠')
-                 .replace(/\\ne\b/g, '≠')
-                 .replace(/\\leq/g, '≤')
-                 .replace(/\\geq/g, '≥')
-                 .replace(/\\le\b/g, '≤')
-                 .replace(/\\ge\b/g, '≥')
-                 .replace(/\\ll\b/g, '≪')
-                 .replace(/\\gg\b/g, '≫')
-                 .replace(/\\equiv/g, '≡')
-                 .replace(/\\propto/g, '∝')
-                 .replace(/\\infty/g, '∞')
-                 .replace(/\\partial/g, '∂')
-                 .replace(/\\nabla/g, '∇')
-                 .replace(/\\degree/g, '°')
-                 .replace(/\\circ/g, '°')
-                 .replace(/\\in\b/g, '∈')
-                 .replace(/\\notin/g, '∉')
-                 .replace(/\\subset/g, '⊂')
-                 .replace(/\\subseteq/g, '⊆')
-                 .replace(/\\cap/g, '∩')
-                 .replace(/\\cup/g, '∪')
-                 .replace(/\\forall/g, '∀')
-                 .replace(/\\exists/g, '∃')
+            s = s.replace(/\\rightleftharpoons/g, '⇌').replace(/\\leftrightarrow/g, '↔')
+                 .replace(/\\Rightarrow/g, '⇒').replace(/\\Leftarrow/g, '⇐')
+                 .replace(/\\rightarrow/g, '→').replace(/\\to\b/g, '→')
+                 .replace(/\\leftarrow/g, '←').replace(/\\gets\b/g, '←')
+                 .replace(/\\uparrow/g, '↑').replace(/\\downarrow/g, '↓');
+
+            s = s.replace(/\\dagger/g, '†').replace(/\\ddagger/g, '‡')
+                 .replace(/\\times/g, '×').replace(/\\cdot/g, '·')
+                 .replace(/\\div/g, '÷').replace(/\\pm/g, '±').replace(/\\mp/g, '∓')
+                 .replace(/\\approx/g, '≈').replace(/\\neq/g, '≠').replace(/\\ne\b/g, '≠')
+                 .replace(/\\leq/g, '≤').replace(/\\geq/g, '≥').replace(/\\le\b/g, '≤').replace(/\\ge\b/g, '≥')
+                 .replace(/\\lt\b/g, '<').replace(/\\gt\b/g, '>')
+                 .replace(/\\ll\b/g, '≪').replace(/\\gg\b/g, '≫')
+                 .replace(/\\equiv/g, '≡').replace(/\\propto/g, '∝')
+                 .replace(/\\infty/g, '∞').replace(/\\partial/g, '∂').replace(/\\nabla/g, '∇')
+                 .replace(/\\degree/g, '°').replace(/\\circ/g, '°')
+                 .replace(/\\in\b/g, '∈').replace(/\\notin/g, '∉')
+                 .replace(/\\subset/g, '⊂').replace(/\\subseteq/g, '⊆')
+                 .replace(/\\cap/g, '∩').replace(/\\cup/g, '∪')
+                 .replace(/\\forall/g, '∀').replace(/\\exists/g, '∃')
                  .replace(/\\hbar/g, 'ℏ');
 
             s = s.replace(/\\text\{([^}]+)\}/g, '$1')
@@ -2144,48 +2319,39 @@
                  .replace(/\\mathbf\{([^}]+)\}/g, '<b>$1</b>')
                  .replace(/\\mathit\{([^}]+)\}/g, '<i>$1</i>');
 
-            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;')
-                 .replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
-                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;')
-                 .replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
+            s = s.replace(/\\vec\{([^}]+)\}/g, '$1&#x20D7;').replace(/\\hat\{([^}]+)\}/g, '$1&#x0302;')
+                 .replace(/\\bar\{([^}]+)\}/g, '$1&#x0304;').replace(/\\dot\{([^}]+)\}/g, '$1&#x0307;')
                  .replace(/\\ddot\{([^}]+)\}/g, '$1&#x0308;');
 
             s = s.replace(/\\(sin|cos|tan|cot|sec|csc|log|ln|exp|lim|max|min)\b/g, '$1');
 
             let prevS = '';
-            while (prevS !== s) {
-                prevS = s;
-                s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)');
-            }
+            while (prevS !== s) { prevS = s; s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '($1)/($2)'); }
 
             s = s.replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<sup>$1</sup>√($2)')
                  .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
                  .replace(/\\sqrt\b/g, '√');
 
-            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>')
-                 .replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
-
-            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                 .replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
-
-            s = s.replace(/\\[;,!]/g, ' ')
-                 .replace(/\\quad/g, ' &nbsp; ')
-                 .replace(/\\qquad/g, ' &nbsp;&nbsp; ')
+            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>').replace(/\^([0-9a-zA-Z+-])/g, '<sup>$1</sup>');
+            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>').replace(/_([0-9a-zA-Z+-])/g, '<sub>$1</sub>');
+            s = s.replace(/\\[;,!]/g, ' ').replace(/\\quad/g, ' &nbsp; ').replace(/\\qquad/g, ' &nbsp;&nbsp; ')
                  .replace(/\\([a-zA-Z]+)/g, '$1');
 
-            return isDisplay 
-                ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` 
-                : `<span style="font-family: serif;"><i>${s}</i></span>`;
+            return isDisplay ? `<div style="text-align:center; margin: 6px 0; font-family: serif;"><i>${s}</i></div>` : `<span style="font-family: serif;"><i>${s}</i></span>`;
         }
 
+        // Ironclad Unified Pipeline
         function formatContent(text, engine, mathMode) {
             if (!text) return '';
             
             let mathBlocks = [];
             let maskedText = text;
 
-            // Step 1: Math Masking - Capture all $$ and $ securely, ignoring escaped currency \$
-            maskedText = maskedText.replace(/(?<!\\)\$\$(.*?)(?<!\\)\$\$|(?<!\\)\$(.*?)(?<!\\)\$/gs, (match, display, inline) => {
+            // 1. Protect explicitly escaped dollars
+            maskedText = maskedText.replace(/\\\$/g, '@@ESC_DOLLAR@@');
+
+            // 2. Math Masking
+            maskedText = maskedText.replace(/\$\$(.*?)\$\$|\$(.*?)\$/gs, (match, display, inline) => {
                 mathBlocks.push({
                     raw: match,
                     content: display || inline,
@@ -2194,21 +2360,18 @@
                 return `@@MATH_BLOCK_${mathBlocks.length - 1}@@`;
             });
 
-            // Step 2: HTML Escaping (Safeguard against browser DOM shredding)
-            maskedText = maskedText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // 3. Smart HTML Escaping (Safeguard against browser DOM shredding, protects < and > only when followed by space or number)
+            maskedText = maskedText.replace(/<(\s|[0-9])/g, '&lt;$1').replace(/(\s|[0-9])>/g, '$1&gt;');
 
-            // Step 3: Safe Tag Restoration (Tables, breaks, and basic formatting)
-            maskedText = maskedText.replace(/&lt;(\/?(?:sup|sub|br|table|tbody|thead|tr|th|td|b|i|u|strong|em|img)(?:\s+[^&>]+)?)&gt;/gi, '<$1>');
-
-            // Step 4: Markdown Parsing
+            // 4. Markdown Parsing (Safe since math is completely hidden inside alphanumeric tags)
             maskedText = maskedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
                                    .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
-                                   .replace(/(?<!\\)\*([^\*]+?)(?<!\\)\*/g, '<em>$1</em>');
+                                   .replace(/\*([^\*]+?)\*/g, '<em>$1</em>');
 
-            // Unescape currency
-            maskedText = maskedText.replace(/\\\$/g, '$');
+            // 5. Restore escaped dollars
+            maskedText = maskedText.replace(/@@ESC_DOLLAR@@/g, '$');
 
-            // Step 5: Math Processing & Unmasking
+            // 6. Process Math & Unmask
             mathBlocks.forEach((block, i) => {
                 let processedMath = '';
                 let rawContent = block.content.trim();
@@ -2227,26 +2390,23 @@
                     } else if (engine === 'HTML_FALLBACK') {
                         processedMath = formatMathToHTMLFallback(rawContent, block.isDisplay);
                     } else {
-                        // KATEX_ONLINE
+                        // KATEX_ONLINE (leave raw so client-side auto-render catches it)
                         processedMath = block.raw; 
                     }
                 } else {
+                    // HTML Mode forces Fallback symbol dictionary
                     processedMath = formatMathToHTMLFallback(rawContent, block.isDisplay);
                 }
-
+                
                 maskedText = maskedText.replace(`@@MATH_BLOCK_${i}@@`, processedMath);
             });
 
             return maskedText;
         }
 
-        // =========================================================================
-
         function generateSinglePreviewHTML(sec, idx, q) {
-            let previewEngine = appState.renderEngine; 
-            
-            let processedText = formatContent(q.text, previewEngine, appState.mathMode);
-            let processedTable = q.table ? formatContent(q.table, previewEngine, appState.mathMode) : '';
+            let processedText = formatContent(q.text, appState.renderEngine, appState.mathMode);
+            let processedTable = q.table ? formatContent(q.table, appState.renderEngine, appState.mathMode) : '';
             
             let html = `<div class="preview-question"><div class="preview-qtext">Q${idx + 1}. ${processedText || '<span style="color:#aaa;">Typing question...</span>'}</div>`;
             
@@ -2254,7 +2414,7 @@
                 if (q.image === 'PLACEHOLDER') { html += `<div style="margin: 0.75rem 0; color: var(--danger); font-weight: bold; border: 1px dashed var(--danger); padding: 10px; border-radius: 4px; text-align: center;">🚨 Missing Image [Upload via Left Panel]</div>`; } 
                 else { html += `<div id="prev-img-${sec}-${idx}" class="img-lazy-wrapper img-lazy-btn" data-src="${q.image}" onclick="revealImg(this.id, this.getAttribute('data-src'))" style="margin: 0.75rem 0;">🖼️ View Attached Image</div>`; }
             }
-            if (q.table) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${processedTable}</div>`;
+            if (processedTable) html += `<div style="margin: 0.75rem 0; overflow-x: auto; border-radius: 8px; border: 1px dashed var(--border);">${processedTable}</div>`;
             
             if (q.type === 'NAT') { html += `<div class="preview-nat">Answer Key: <strong>${q.correctNat || '-'}</strong></div>`; } 
             else {
@@ -2264,7 +2424,7 @@
                     const imgMatch = rawOpt.match(/\|\|IMG:(.+?)\|\|/);
                     if (imgMatch) { optImgSrc = imgMatch[1]; rawOpt = rawOpt.replace(imgMatch[0], ''); }
 
-                    let safeOpt = formatContent(rawOpt, previewEngine, appState.mathMode);
+                    let safeOpt = formatContent(rawOpt, appState.renderEngine, appState.mathMode);
 
                     let optLength = safeOpt.length > 100 ? 'long' : (safeOpt.length > 50 ? 'medium' : 'short');
                     
@@ -2284,6 +2444,194 @@
         }
 
         function updateSingleQuestionPreview(sec, idx) {
+            if (!previewIsVisible) return;
+            if (activePreviewSection !== sec) {
+                syncPreviewScroll(sec, idx);
+                return;
+            }
+            const qBox = document.getElementById(`preview-qbox-${sec}-${idx}`);
+            const q = appState.questionsBySection[sec]?.[idx];
+            if (!qBox || !q) return;
+
+            qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
+
+            if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE' && typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(qBox, { 
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], 
+                    throwOnError: false 
+                });
+            }
+        }
+
+        function debouncedUpdateSingleQuestionPreview(sec, idx) {
+            if (!previewIsVisible) return;
+            const key = `${sec}-${idx}`;
+            if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
+            granularTimeouts[key] = setTimeout(() => {
+                updateSingleQuestionPreview(sec, idx);
+            }, 60);
+        }
+
+        function renderAllPreviews() {
+            if(!previewIsVisible) return;
+            const area = document.getElementById('previewArea');
+            const qs = appState.questionsBySection[activePreviewSection] || [];
+            if (qs.length === 0) { area.innerHTML = `<div style="text-align: center; color: var(--text-muted); margin-top: 3rem; font-weight: 600;"><div style="font-size: 2rem; margin-bottom: 1rem;">👆</div>No questions in ${activePreviewSection} yet.</div>`; return; }
+
+            let html = ``;
+            qs.forEach((q, idx) => { html += `<div id="preview-qbox-${activePreviewSection}-${idx}">${generateSinglePreviewHTML(activePreviewSection, idx, q)}</div>`; });
+            area.innerHTML = html;
+
+            if (appState.mathMode === 'LATEX' && appState.renderEngine === 'KATEX_ONLINE' && typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(area, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false });
+            }
+        }
+
+        function debouncedRenderAllPreviews() {
+            if(!previewIsVisible) return;
+            clearTimeout(globalPreviewTimeout);
+            globalPreviewTimeout = setTimeout(() => { renderAllPreviews(); }, 300);
+        }
+
+        function generateCBTString() {
+            let out = `[EXAM_INFO]\n`;
+            if(appState.agencyName) out += `Agency: ${appState.agencyName}\n`;
+            if(appState.examTitle) out += `Title: ${appState.examTitle}\n`;
+            if(appState.examSubtitle) out += `Subtitle: ${appState.examSubtitle}\n`;
+            if(appState.duration) out += `Duration: ${appState.duration}\n`;
+            out += `Timer: ${appState.timerMode}\nFont: ${appState.fontName}\nMathMode: ${appState.mathMode}\n`;
+            
+            let watermark = appState.mathMode === 'LATEX' ? '[FORMAT_WATERMARK: LATEX]' : '[FORMAT_WATERMARK: PURE_HTML]';
+            out += `${watermark}\n`;
+
+            if (appState.rules.length) out += `Rules: ${appState.rules.join('|')}\n`;
+            if (appState.audio.bg) out += `AudioBg: ${appState.audio.bg}\n`;
+            if (appState.audio.start) out += `AudioStart: ${appState.audio.start}\n`;
+            if (appState.audio.submit) out += `AudioSubmit: ${appState.audio.submit}\n`;
+            if (appState.constants.length) { out += `\n[CONSTANTS]\n`; appState.constants.forEach(c => out += `${c.name}: ${c.value}\n`); }
+
+            appState.sections.forEach(s => {
+                out += `\n[SECTION:${s.name}|Marks:${s.marks}|Neg:${s.negative}|MaxAtt:${s.maxAttempts}]\n`;
+                (appState.questionsBySection[s.name] || []).forEach(q => {
+                    out += `QType: ${q.type || 'MCQ'}\n`;
+                    let cleanQText = q.text.replace(/\n/g, '\\n');
+                    if (q.image === 'PLACEHOLDER') cleanQText += `\n[IMAGE]`; 
+                    out += `Q: ${cleanQText}\n`;
+                    
+                    if (q.type === 'NAT') { out += `A: ${q.correctNat || ''}\n`; } 
+                    else {
+                        q.options.forEach(o => {
+                            let cleanOpt = o.replace(/\n/g, '\\n');
+                            if (cleanOpt.includes('||IMG:PLACEHOLDER||')) { cleanOpt = cleanOpt.replace('||IMG:PLACEHOLDER||', '') + ' [IMAGE]'; }
+                            out += `O: ${cleanOpt.trim()}\n`;
+                        });
+                        out += `A: ${String.fromCharCode(65 + q.correct)}\n`;
+                    }
+                    if (q.table) out += `T: ${q.table.replace(/\n/g, '')}\n`;
+                    if (q.image && q.image !== 'PLACEHOLDER') out += `I: ${q.image}\n`;
+                });
+            });
+            return out;
+        }
+
+        function syncCBT() {
+            const out = generateCBTString();
+            document.getElementById('cbtInput').value = out;
+            autoResize(document.getElementById('cbtInput'));
+            const blob = new Blob([out], { type: 'text/plain; charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.getElementById('downloadLinkCBT');
+            link.href = url; link.download = `${appState.examTitle ? appState.examTitle.replace(/\s+/g, '_') : 'Exam'}.cbt`;
+            document.getElementById('downloadAreaCBT').classList.remove('hidden');
+            showToast('CBT Synced and ready for backup!', 'success');
+        }
+
+        function handleCBTFileUpload(evt) {
+            const file = evt.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => { 
+                document.getElementById('cbtInput').value = e.target.result; 
+                autoResize(document.getElementById('cbtInput'));
+            };
+            reader.readAsText(file); evt.target.value = ''; 
+        }
+
+        function parseCBTFormat() {
+            let txt = document.getElementById('cbtInput').value; 
+            if(!txt.trim()) { showToast('Paste content or load file first', 'error'); return; }
+
+            txt = txt.replace(/\[span_[^\]]*\](?:\(start_span\)|\(end_span\))?/gi, '');
+            txt = txt.replace(/\\n/g, '\n');
+            txt = txt.replace(/(Statement|Assertion|List|Reason)[\s\n]+(I{1,3}|A|B|R)[\s\n]*:/gi, '$1 $2:');
+            txt = txt.replace(/\n([QOAI]\s*:)/gi, '\n$1');
+
+            const lines = txt.split('\n'); 
+            let mode = null, curSec = null, curQ = null, lastField = null; 
+            
+            appState.sections = []; appState.questionsBySection = {}; appState.constants = []; appState.rules = [];
+            appState.audio = { bg: '', start: '', submit: '' };
+            appState.agencyName = ''; appState.examTitle = ''; appState.examSubtitle = ''; appState.duration = '';
+
+            lines.forEach(line => {
+                const tr = line.trim(); 
+                if (!tr && lastField !== 'T' && lastField !== 'Q' && lastField !== 'O') return; 
+                if (tr.startsWith('#')) return;
+                
+                if (tr.startsWith('[EXAM_INFO]')) { mode = 'exam'; lastField = null; }
+                else if (tr.startsWith('[CONSTANTS]')) { mode = 'constants'; lastField = null; }
+                else if (tr.startsWith('[SECTION:')) {
+                    mode = 'questions'; lastField = null;
+                    const m = tr.match(/\[SECTION:(.*?)(?:\|Marks:([\d.]+))?(?:\|Neg:([\d.]+))?(?:\|MaxAtt:(\d+))?\]/);
+                    if(m) { 
+                        curSec = m[1].trim(); 
+                        appState.sections.push({ name: curSec, marks: parseFloat(m[2])||4, negative: parseFloat(m[3])||1, maxAttempts: parseInt(m[4])||0 }); 
+                        appState.questionsBySection[curSec] = []; curQ = null; 
+                    }
+                }
+                else if (mode === 'exam') {
+                    if (tr.startsWith('Agency:')) { appState.agencyName = tr.substring(7).trim(); document.getElementById('agencyName').value = appState.agencyName; }
+                    if (tr.startsWith('Title:')) { appState.examTitle = tr.substring(6).trim(); document.getElementById('examTitle').value = appState.examTitle; }
+                    if (tr.startsWith('Subtitle:')) { appState.examSubtitle = tr.substring(9).trim(); document.getElementById('examSubtitle').value = appState.examSubtitle; }
+                    if (tr.toLowerCase().startsWith('duration:')) { appState.duration = parseInt(tr.substring(9)) || ''; document.getElementById('duration').value = appState.duration; }
+                    if (tr.toLowerCase().startsWith('timer:')) { 
+                        appState.timerMode = tr.substring(6).trim().toUpperCase(); 
+                        const tSelect = document.getElementById('timerMode');
+                        if(tSelect) tSelect.value = appState.timerMode;
+                    }
+                    if (tr.startsWith('Font:')) { appState.fontName = tr.substring(5).trim(); document.getElementById('fontSelect').value = appState.fontName; document.documentElement.style.setProperty('--preview-font', appState.fontName); }
+                    if (tr.startsWith('MathMode:')) { 
+                        appState.mathMode = tr.substring(9).trim(); 
+                        switchPrompt(appState.mathMode); 
+                    }
+                    if (tr.startsWith('[FORMAT_WATERMARK:')) {
+                        let wm = tr.replace('[FORMAT_WATERMARK:', '').replace(']', '').trim();
+                        if (wm === 'PURE_HTML') { switchPrompt('HTML'); } 
+                        else if (wm === 'LATEX') { switchPrompt('LATEX'); }
+                    }
+                    if (tr.startsWith('Rules:')) { appState.rules = tr.substring(6).trim().split('|'); document.getElementById('rules').value = appState.rules.join('\n'); }
+                    if (tr.startsWith('AudioBg:')) { appState.audio.bg = tr.substring(8).trim(); document.getElementById('audioBg').value = appState.audio.bg; }
+                    if (tr.startsWith('AudioStart:')) { appState.audio.start = tr.substring(11).trim(); document.getElementById('audioStart').value = appState.audio.start; }
+                    if (tr.startsWith('AudioSubmit:')) { appState.audio.submit = tr.substring(12).trim(); document.getElementById('audioSubmit').value = appState.audio.submit; }
+                }
+                else if (mode === 'constants') { const idx = tr.indexOf(':'); if(idx > 0) appState.constants.push({ name: tr.substring(0, idx).trim(), value: tr.substring(idx+1).trim() }); }
+                else if (mode === 'questions' && curSec) {
+                    if (/^QType\s*:/i.test(tr)) {
+                        curQ = { type: tr.replace(/^QType\s*:/i, '').trim().toUpperCase(), text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; 
+                        appState.questionsBySection[curSec].push(curQ); lastField = 'type';
+                    }
+                    else if (/^Q\s*:/i.test(tr)) { 
+                        if (!curQ || curQ.text !== '') { curQ = { type: 'MCQ', text: '', options: [], correct: 0, correctNat: '', image: '', table: '' }; appState.questionsBySection[curSec].push(curQ); }
+                        curQ.text = tr.replace(/^Q\s*:/i, '').trim(); lastField = 'Q';
+                    }
+                    else if (/^O\s*:/i.test(tr) && curQ && curQ.type !== 'NAT') {
+                        curQ.options.push(tr.replace(/^O\s*:/i, '').trim());
+                        lastField = 'O';
+                    }
+                    else if (/^A\s*:/i.test(tr) && curQ) {
+                        let val = tr.replace(/^A\s*:/i, '').trim();
+                        if (curQ.type === 'MCQ' && val.length > 3) {
+                            if (lastField === 'Q') curQ.text += '\n' + tr;
+                            else if (lastField === 'O' && curQ.options.length > 0) curQ.options[curQ.options.length - 1] += '\n' + tr;
                         } else {
                             if (curQ.type === 'NAT') curQ.correctNat = val;
                             else {
@@ -2353,7 +2701,7 @@
 
                 txt = txt.replace(/<title>.*?<\/title>/, `<title>${appState.examTitle || 'Exam'}</title>`);
                 txt = txt.replace(/<h2 style="color:var\(--primary\); margin-bottom: 5px;">.*?<\/h2>/, `<h2 style="color:var(--primary); margin-bottom: 5px;">${appState.agencyName || ''}</h2>`);
-                txt = txt.replace(/<h1 style="color:var\(--text-dark\); margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:var(--text-dark); margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
+                txt = txt.replace(/<h1 style="color:#666; margin-bottom: 5px;">.*?<\/h1>/, `<h1 style="color:#666; margin-bottom: 5px;">${appState.examTitle || 'Test'}</h1>`);
                 txt = txt.replace(/<h2 style="margin:0; color:var\(--text-dark\);">.*?<\/h2>/, `<h2 style="margin:0; color:var(--text-dark);">${appState.examTitle || 'Test'}</h2>`);
                 txt = txt.replace(/<div class="exam-title">.*?<\/div>/, `<div class="exam-title">${appState.examTitle || 'Test'}</div>`);
                 txt = txt.replace(/<span class="exam-subtitle">.*?<\/span>/, `<span class="exam-subtitle">${appState.examSubtitle || ''}</span>`);
@@ -2390,7 +2738,6 @@
                 const rulesStr = finalRules.map((r,i) => `<p>${i+1}. ${r}</p>`).join('');
                 const instHtml = `<div class="inst-section"><h3>📋 Instructions</h3>${rulesStr}</div><div class="inst-section"><p>Please familiarize yourself with the status indicators used in the Question Palette:<br><span class="inst-status-icon circle status-ans"></span> <strong>Green:</strong> Answered.<br><span class="inst-status-icon square status-not-ans"></span> <strong>Red:</strong> Not Answered.<br><span class="inst-status-icon circle status-rev"></span> <strong>Purple:</strong> Marked for Review.<br><span class="inst-status-icon circle status-rev-ans"></span> <strong>Purple with Tick:</strong> Answered & Marked for Review (will be considered for evaluation).<br><span class="inst-status-icon circle" style="border:1px solid #ccc; color:#333"></span> <strong>White/Grey:</strong> Not Visited.</p><br><p style="color:var(--nta-red);"><strong>Critical Rule:</strong> If you attempt more questions than the maximum allowed in a specific section, only your first valid attempts (chronologically by question number) up to the limit will be evaluated.</p></div><div class="inst-section"><p>The Question Paper is divided into distinct <strong>Sections</strong>. Below is the section-wise distribution and marking schema:</p><h3>Marking Scheme</h3><table class="scheme-table"><thead><tr><th>Section</th><th>Total Qs</th><th>Max Attempt</th><th>Correct</th><th>Incorrect</th><th>Max Marks</th></tr></thead><tbody id="scheme-table-body"></tbody><tfoot id="scheme-table-foot"></tfoot></table></div>`;
                 
-                // BULLETPROOF EXAM_S_HTML REPLACEMENT WITH MARKERS
                 let instRegex = /\/\*<INST_START>\*\/[\s\S]*?\/\*<INST_END>\*\//i;
                 if (!instRegex.test(txt)) {
                     instRegex = /(?:const|let|var)\s+EXAM_S_HTML\s*=\s*`[\s\S]*?`;/i;
@@ -2401,19 +2748,18 @@
                 const safeInstInject = `/*<INST_START>*/\nconst EXAM_S_HTML = \`${instHtml.replace(/`/g, '\\`')}\`;\n/*<INST_END>*/`;
                 txt = txt.replace(instRegex, safeInstInject);
                 
-                // ABSOLUTE CDN FIX FOR KATEX
                 let katexCSS = ''; let katexJS = '';
                 if (appState.mathMode === 'LATEX' && appState.renderEngine !== 'HTML_FALLBACK') {
-                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">';
-                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
+                    katexCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" onerror="this.onerror=null;this.href=\'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css\';">';
+                    katexJS = `\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" onerror="this.onerror=null;this.src=\'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js\';"><\/script>\n<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onerror="this.onerror=null;this.src=\'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js\';" onload="if(typeof renderMathInElement !== 'undefined') { renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}); }"><\/script>\n`;
                 }
                 txt = txt.replace(/<!--\s*PARAMETER 11.*?-->/i, () => katexCSS).replace(/<!--\s*PARAMETER 12.*?-->/i, () => katexJS).replace(/<!--\s*PARAMETER 11.*?-->/gi, '').replace(/<!--\s*PARAMETER 12.*?-->/gi, '');
 
                 const qb = [];
                 for (const sec of appState.sections) {
                     const qs = (appState.questionsBySection[sec.name] || []).map((q, i) => {
-                        let finalFormattedText = formatContent(q.text, appState.renderEngine, appState.mathMode);
-                        let finalFormattedTable = q.table ? formatContent(q.table, appState.renderEngine, appState.mathMode) : '';
+                        let processedText = formatContent(q.text, appState.renderEngine, appState.mathMode);
+                        let processedTable = q.table ? formatContent(q.table, appState.renderEngine, appState.mathMode) : '';
 
                         let finalOptionsHtmlReady = [];
                         q.options.forEach(o => {
@@ -2425,15 +2771,15 @@
                             let processedOpt = formatContent(optText, appState.renderEngine, appState.mathMode);
 
                             if (optImg && optImg !== 'PLACEHOLDER') {
-                                processedOpt += `<br><img src="${optImg}" onclick="openLightbox(this.src)" style="max-height:25vh; max-width:100%; object-fit:contain; border-radius:4px; margin-top:5px; border:1px solid var(--border-color); cursor:pointer; background:white;">`;
+                                processedOpt += `<br><img src="${optImg}" onclick="openLightbox(this.src)" style="max-height:25vh; max-width:100%; object-fit:contain; border-radius:4px; margin-top:5px; border:1px solid #ccc; cursor:pointer; background:white;">`;
                             }
                             finalOptionsHtmlReady.push(processedOpt);
                         });
 
                         return {
-                            id: i + 1, type: q.type || 'MCQ', text: finalFormattedText, 
+                            id: i + 1, type: q.type || 'MCQ', text: processedText, 
                             img: (q.image && q.image !== 'PLACEHOLDER') ? q.image : '', 
-                            table: finalFormattedTable,
+                            table: processedTable,
                             options: q.type !== 'NAT' ? finalOptionsHtmlReady : [], correct: q.type === 'NAT' ? (q.correctNat || '') : q.correct, 
                             marksCorrect: sec.marks, marksWrong: q.type === 'NAT' ? 0 : sec.negative
                         };
@@ -2441,7 +2787,6 @@
                     qb.push({ sectionTitle: sec.name, marksCorrect: sec.marks, marksWrong: sec.negative, maxAttempts: sec.maxAttempts, questions: qs });
                 }
                 
-                // BULLETPROOF QUESTION_BANK REPLACEMENT WITH SAFEGUARDS
                 let qbRegex = /\/\*<QB_START>\*\/[\s\S]*?\/\*<QB_END>\*\//i;
                 if (!qbRegex.test(txt)) {
                     qbRegex = /(?:const|let|var)\s+QUESTION_BANK\s*=\s*\[[\s\S]*?(?=\s*\/\/ ==========================================================)/i;
@@ -2517,20 +2862,18 @@
 
             let modeSpecificRules = '';
             if (appState.mathMode === 'LATEX') {
-                modeSpecificRules = `CRITICAL MATH, HTML & IMAGE RULES:
-- Thou shalt use ONLY $ (inline) or $$ (display block) for math. NO \\( ... \\) or \\[ ... \\].
-- Thou shalt NOT use \\ce{} or \\mhchem{} for chemistry. Use standard math mode (e.g., $\\text{H}_2\\text{O}$).
-- Thou shalt NOT use '<' or '>' inside math blocks. Use \\lt and \\gt instead.
-- Thou shalt NOT use the asterisk '*' for multiplication. Use \\times or \\cdot.
-- Thou shalt ALWAYS escape currency dollar signs as \\$.
+                modeSpecificRules = `CRITICAL MATH & IMAGE RULES:
+- You MUST extract ALL mathematical equations, variables, and scientific notation using ONLY standard LaTeX wrapped EXACTLY in $ (inline) or $$ (display block).
+- DO NOT use \\( ... \\) or \\[ ... \\]. Use ONLY $ and $$.
+- MULTIPLICATION RULE: NEVER use the asterisk '*' for multiplication in math (e.g. $2 * 3$ breaks formatting). Always use \\times ($2 \\times 3$) or \\cdot ($2 \\cdot 3$).
+- FORBIDDEN: NEVER write scientific units or constants in Bengali. Use standard LaTeX (e.g., $m/s^2$, $C$).
 - REQUIRED: Always use LaTeX for Greek letters (\\alpha, \\beta, \\gamma) and arrows (\\rightarrow, \\rightleftharpoons).
-- COMPLEX MATRICES/DIAGRAMS: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
+- COMPLEX MATRICES: If a question contains a complex matrix, diagram, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
             } else {
-                modeSpecificRules = `CRITICAL HTML, MATH & IMAGE RULES:
-- Thou shalt use ZERO LaTeX. Do not use $ or \\frac or any backslashes like \\rightarrow.
-- Thou shalt ALWAYS escape currency dollar signs as \\$.
+                modeSpecificRules = `CRITICAL HTML & IMAGE RULES:
+- ABSOLUTELY NO LATEX. Do not use $ or \\frac or any backslashes like \\rightarrow.
 - MULTIPLICATION RULE: Use standard multiplication sign '×' or '·'.
-- ARROWS & SEQUENCES: In biological pathways or reactions, use the literal Unicode arrow '→' or '⇌'. NEVER write '\\rightarrow'.
+- ARROWS & SEQUENCES: In biological pathways, reactions, or developmental sequences, use the literal Unicode arrow '→' or '⇌'. NEVER write '\\rightarrow' or '$' in HTML mode.
 - Use standard Unicode for symbols (π, α, β, ∑, ∫, √, →, ←, ⇌, ±, °, μ).
 - Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>O, Ca<sup>2+</sup>, 10<sup>5</sup>).
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
@@ -2557,7 +2900,7 @@ Title: [Extract if present, else leave blank]
 Subtitle: [Extract if present, else leave blank]
 Duration: [Extract if present, else leave blank]
 Timer: STOPWATCH
-${watermark}
+[FORMAT_WATERMARK: ${appState.mathMode === 'LATEX' ? 'LATEX' : 'PURE_HTML'}]
 
 ${sectionStr}QType: MCQ
 Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
