@@ -12,40 +12,37 @@
 
 | Tool | Purpose | URL |
 |------|---------|-----|
-| **QP Maker** | Author question papers with LaTeX math, images, OCR support | [`index.html`](https://suvadippatra.github.io/shibu/) |
-| **CBT Maker** | Build NTA/TCS-style online exams with timer & calculator | [`cbt/cbt_index.html`](https://suvadippatra.github.io/shibu/cbt/cbt_index.html) |
-| **PDF Tools** | Merge, watermark, invert colors, detect watermarks | See [PDF Tools](#pdf-tools) |
+| **Landing Hub** | Unified bilingual launcher, `.qpf`/`.cbt` quick dropzone, PWA install | [`index.html`](https://suvadippatra.github.io/shibu/) |
+| **QP Maker** | Author question papers with LaTeX math, Undo/Redo, ODT & `.cbt` export | [`qp/index.html`](https://suvadippatra.github.io/shibu/qp/) |
+| **CBT Maker** | Build NTA/TCS-style single-file offline exams with timer & calculator | [`cbt/cbt_index.html`](https://suvadippatra.github.io/shibu/cbt/cbt_index.html) |
+| **PDF Tools** | Merge, Bengali watermark, night reader invert, redact/mask box | [`add-watermark.html`](https://suvadippatra.github.io/shibu/add-watermark.html) |
 
-**Works offline.** Open directly in your browser or host on GitHub Pages.
+**Works offline (PWA).** Serve over `localhost` or GitHub Pages.
 
 ---
 
 ## ✨ What You Can Do
 
-### 📝 QP Maker
-- **Multi-format authoring:** MCQ, NAT (Numerical Answer Type), Labeled Diagrams in Bengali & English
-- **Math rendering:** Full LaTeX via KaTeX + MathML support (online/offline)
-- **Smart layouts:** 4 view modes (portrait, landscape, continuous) with answer space controls
-- **Export formats:** DOCX (with embedded fonts), HTML (printable), QPF (custom format)
-- **Smart validation:** Real-time Bengali scientific notation checker with LaTeX suggestions
-- **Image support:** Built-in OCR for scanned papers, Cropper.js for precise image placement
-- **Watermark control:** Custom SVG or PNG overlays with full positioning control
+### 📝 QP Maker (`qp/`)
+- **Multi-format authoring:** MCQ, Short Answer, Descriptive, Long Answer, Labeled Diagrams & Tables in Bengali & English
+- **Math rendering:** Balanced `[EQ:...]`, `[CHEM:...]`, `[SUB:...]`, `[SUP:...]`, `[SYM:...]` and `$...$` via KaTeX + HTML fallback
+- **Smart layouts:** 4 view modes (Mono, Double, Quad, Booklet Flow) with Auto-Fit pagination & answer space controls
+- **Undo / Redo & Live Validator:** 40-step history (`Ctrl+Z`/`Ctrl+Y`) plus live delimiter and Bengali scientific unit checks
+- **Export formats:** Print/PDF, `.qpf` v1.1, `.odt` (with embedded images), and direct `.cbt` conversion
 
-### 💻 CBT Maker
-- **Flexible exam structure:** Multi-section builder (A, B, C) with custom marks & negative marking
-- **Question types:** MCQ, NAT with image & math support
-- **Math engines:** Native MathML, KaTeX (local), KaTeX (CDN), pure HTML fallback
-- **AI extraction:** Auto-extract questions from scanned papers (sends to your LLM of choice)
-- **Full exam UI:** Timer, calculator, physical constants panel, question palette
-- **Single-file output:** Self-contained HTML—no dependencies after generation
+### 💻 CBT Maker (`cbt/`)
+- **Flexible exam structure:** Multi-section builder with custom marks, negative marking, and max-attempt limits
+- **Question types:** MCQ & NAT with image cropping (Cropper.js), tables, and math validation warnings
+- **Math engines:** Native MathML, KaTeX (Offline Embedded), KaTeX (CDN), pure HTML fallback
+- **Single-file output (`*_Final.html`):** Self-contained portable exam runtime with scientific calculator, virtual keyboard, dark mode, and printable report
 
-### 🔧 PDF Tools
+### 🔧 PDF Tools (`pdf/`)
 | Tool | What It Does |
 |------|-------------|
-| **PDF Merge** | Combine & reorder multiple PDFs |
-| **PDF Colour Invert** | Flip colors for dark-mode-friendly printing |
-| **PDF Watermark Detect** | Analyze & locate watermarks in PDFs |
-| **Add Watermark** | Apply SVG/PNG watermarks to PDFs |
+| **Add Watermark** | Stamp Bengali (`Tiro Bangla` via Fontkit), image, or SVG watermarks across PDFs |
+| **PDF Merge** | Combine & reorder multiple PDFs with ↑ / ↓ controls |
+| **PDF Dark Reader** | Instant color-inverted night reading for bright PDFs |
+| **PDF Redact / Mask** | Mask headers, footers, or watermark boxes with solid fills |
 
 ---
 
@@ -53,29 +50,46 @@
 
 ```
 shibu/
-├── 📄 index.html                    # QP Maker entry point
-├── 📄 pdf-merge.html                # PDF tools
-├── 📄 add-watermark.html
+├── 📄 index.html                    # Unified Landing Hub + Quick Dropzone
+├── 📄 manifest.webmanifest          # PWA manifest
+├── 📄 sw.js                         # Offline Service Worker cache
+├── 📄 add-watermark.html            # PDF tools (slim shells -> ./pdf/*.js)
+├── 📄 pdf-merge.html
 ├── 📄 pdf-colour-invert.html
 ├── 📄 pdf-watermark-detect.html
 │
-├── 📁 cbt/
-│   ├── 📄 cbt_index.html            # CBT Maker entry point
-│   ├── 📄 Last.html                 # Runtime exam template
-│   └── 📁 vendor/cropper/           # Image cropper (bundled)
+├── 📁 shared/
+│   ├── css/ (fonts.css, tokens.css)
+│   └── js/  (dom.js, math-pipeline.js)
 │
-├── 📁 libs/                         # Bundled JS libraries (offline)
-│   ├── pdf-lib.min.js
-│   ├── jszip.min.js
-│   ├── katex.min.js
-│   └── fontkit.umd.min.js
+├── 📁 qp/                           # Modular QP Maker
+│   ├── index.html, qp.css, main.js
+│   └── state.js, qpf-parser.js, renderer.js, editor-ui.js, export-odt.js
 │
-├── 📁 fonts/                        # Embedded fonts
-│   ├── TiroBangla.woff2             # Bengali body font
-│   └── DMSerifText.woff2            # Latin heading font
+├── 📁 cbt/                          # Modular CBT Builder + Exam Runtime
+│   ├── cbt_index.html, Last.html
+│   ├── css/cbt-editor.css
+│   └── js/ (cbt-state.js, cbt-parser.js, cbt-preview.js, cbt-media.js, cbt-editor.js, cbt-compiler.js, main.js)
 │
+├── 📁 pdf/                          # Modular PDF Utilities
+│   └── pdf-tools.css, watermark.js, merge.js, invert.js, redact.js
+│
+├── 📁 tests/                        # Zero-dependency Node unit tests
+│   └── test-math-pipeline.mjs, test-cbt-parser.mjs, test-qpf-parser.mjs
+│
+├── 📁 libs/                         # Bundled JS/CSS libraries (offline)
+├── 📁 fonts/                        # Canonical UI & Bengali fonts
 └── 📁 watermark/                    # Watermark assets
-    └── default.png
+```
+
+---
+
+## 🧪 Automated Tests
+
+Run the built-in Node test suite (requires Node.js ≥ 18, zero external dependencies):
+
+```bash
+node --test tests/*.mjs
 ```
 
 ---
@@ -100,7 +114,7 @@ npx serve .
 
 Then open `http://localhost:8080/`
 
-> ⚠️ **Note:** Use `localhost` instead of `file://`—browser security blocks fonts and WASM from `file://`
+> ⚠️ **Note:** Use `localhost` instead of `file://`—ES Modules and local fonts require HTTP/HTTPS.
 
 ---
 

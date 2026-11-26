@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>প্রশ্নপত্র Maker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><text x='5' y='24' font-size='22'>প</text></svg>"/>
+<link rel="stylesheet" href="../shared/css/fonts.css"/>
+<link rel="stylesheet" href="../shared/css/tokens.css"/>
+<link rel="stylesheet" href="../libs/katex.min.css"/>
+<link rel="stylesheet" href="./qp.css"/>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="icon-btn" href="../index.html" title="Back to Home" aria-label="Back to Home" style="font-size:16px;font-weight:700;">←</a>
+  <div class="logo logo-text" title="Double click for glow mode">প্রশ্নপত্র <em>Maker</em></div>
+
+  <div class="topbar-right">
+    <div id="topbar-stats"></div>
+    <span id="fit-badge" class="ok">✓ Ready</span>
+    <button class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle dark/light mode">
+      <svg id="theme-icon-dark" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <svg id="theme-icon-light" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <button class="icon-btn" id="info-btn" title="AI OCR & Formatting Tools" aria-label="Open info panel">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
+    <button class="icon-btn" id="guide-btn" title="Beginner's Guide" aria-label="Open guide panel">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- MOBILE/TABLET SEGMENTED SWITCHER -->
+<div id="qp-mobile-tabs">
+  <button type="button" class="qp-mtab on" data-tab="editor">✏️ Edit</button>
+  <button type="button" class="qp-mtab" data-tab="preview">👁️ Preview</button>
+  <button type="button" class="qp-mtab" data-tab="settings">⚙️ Settings &amp; Export</button>
+</div>
+
+<div id="main">
+  <aside id="sidebar">
+    <div id="import-strip">
+      <div class="dropdown" id="menu-dropdown">
+        <button class="btn btn-ghost btn-sm" id="menu-trigger-btn">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> Menu
+        </button>
+        <div class="dropdown-content">
+          <a href="../cbt/cbt_index.html">💻 CBT Maker</a>
+          <a href="../add-watermark.html">💧 Add Watermark</a>
+          <a href="../pdf-merge.html">🔗 PDF Merge</a>
+          <a href="../pdf-colour-invert.html">🌗 PDF Dark Reader</a>
+          <a href="../pdf-watermark-detect.html">🩹 PDF Redact / Mask</a>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-paste-tab">📋 Paste QPF</button>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer" title="Upload .qpf file">
+        📂 <span class="hide-txt">Upload .qpf</span>
+        <input type="file" id="qpf-file" accept=".qpf,.txt" hidden/>
+      </label>
+      <button class="btn btn-ghost btn-sm no-print" id="ocr-prompt-quick" title="Copy AI prompt" style="display:flex; align-items:center; gap:5px;">
+        🤖 <span class="hide-txt">OCR Prompt</span>
+      </button>
+      <div style="display:flex; gap:3px; margin-left:auto;">
+        <button class="btn btn-ghost btn-xs no-print" id="qp-undo" title="Undo last structural/text change (Ctrl+Z)" disabled>↶</button>
+        <button class="btn btn-ghost btn-xs no-print" id="qp-redo" title="Redo (Ctrl+Y)" disabled>↷</button>
+      </div>
+    </div>
+
+    <div id="import-drawer">
+      <div class="import-drawer-inner">
+        <div class="import-tabs">
+          <div class="import-tab on" data-tab="paste">📋 Paste Text</div>
+          <div class="import-tab" data-tab="upload">📂 Upload File</div>
+        </div>
+        <div class="import-paste-panel active" id="import-paste-panel">
+          <textarea id="qpf-ta" class="qpf-ta" rows="5" placeholder="Paste QPF text here..."></textarea>
+          <div style="display:flex; gap:7px">
+            <button class="btn btn-primary btn-sm" id="qpf-apply" style="flex:1">✓ Apply &amp; Fill Form</button>
+            <button class="btn btn-ghost btn-sm" id="qpf-clear">Clear</button>
+            <button class="btn btn-ghost btn-sm" id="close-drawer">✕</button>
+          </div>
+        </div>
+        <div class="import-upload-panel" id="import-upload-panel">
+          <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone-icon">📄</div>
+            <p>Drag &amp; drop your <strong>.qpf</strong> file here</p>
+            <span>or click to browse</span>
+            <input type="file" id="qpf-file2" accept=".qpf,.txt" hidden/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sidebar-scroll">
+      <div class="card" id="ei-card">
+        <div class="card-hdr open" id="ei-hdr">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="card-ttl">📄 Exam Information</span>
+        </div>
+        <div class="card-body" id="ei-body">
+          <div class="fgrp">
+            <label class="flabel">Paper Title</label>
+            <input type="text" id="f-tt" class="bn-field" placeholder="Test no. " value="Test no. "/>
+          </div>
+          <div class="frow c3">
+            <div class="fgrp">
+              <label class="flabel">Class</label>
+              <input type="text" id="f-cls" class="bn-field" placeholder="VII"/>
+            </div>
+            <div class="fgrp">
+              <label class="flabel">Full Marks</label>
+              <input type="number" id="f-fm" value="0" readonly style="opacity:.55; cursor:not-allowed"/>
+            </div>
+            <div class="fgrp">
+              <label class="flabel">Time (min)</label>
+              <input type="number" id="f-time" value="30" min="5" max="300"/>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Subject <span id="subj-warn">⚠ long</span></label>
+            <input type="text" id="f-subj" class="bn-field" placeholder="বিজ্ঞান / Science"/>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Instructions (optional)</label>
+            <textarea id="f-inst" class="bn-field" rows="2" placeholder="নির্দেশ: সমস্ত প্রশ্নের উত্তর দাও।"></textarea>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Paper Language Mode</label>
+            <div class="pill-group" id="s-plang" style="width:100%">
+              <div class="pill on" data-v="full-bn" style="flex:1; text-align:center">পূর্ণ বাংলা</div>
+              <div class="pill" data-v="mixed" style="flex:1; text-align:center">Mixed</div>
+              <div class="pill" data-v="full-en" style="flex:1; text-align:center">Full English</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="secs"></div>
+
+      <div style="display:flex; justify-content:center;">
+        <button class="btn btn-accent" id="add-sec" style="padding: 10px 30px;">+ Add Section (বিভাগ)</button>
+      </div>
+    </div>
+
+    <div id="qp-math-bar" class="math-quickbar" aria-label="Math & Symbol Quick Insert"></div>
+
+    <div id="export-bar">
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <a class="btn btn-ghost btn-sm" id="ex-qpf" title="Save .qpf backup">⬇ .qpf</a>
+        <a class="btn btn-ghost btn-sm" id="ex-cbt" title="Convert & download .cbt for CBT Maker">💻 .cbt</a>
+        <a class="btn btn-ghost btn-sm" id="ex-odt" title="Export editable ODT">📄 ODT</a>
+      </div>
+      <button class="btn btn-primary" id="ex-pdf">🖨 Print / PDF</button>
+    </div>
+  </aside>
+
+  <div id="resize-handle" title="Drag to resize"></div>
+
+  <div id="right-col">
+    <div id="settings-panel">
+      <div id="settings-panel-header" class="open">
+        <div id="settings-panel-title">⚙️ Paper Settings</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg id="settings-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transition:transform .2s; color:var(--t3)"><polyline points="18 15 12 9 6 15"/></svg>
+        </div>
+      </div>
+      <div id="settings-panel-body" class="open">
+        <div class="settings-grid">
+          <div class="sg2">
+            <div class="sg2-label"><span>Font Size</span> <span class="slider-val" id="s-fs-v">11 pt</span></div>
+            <div class="slider-wrap">
+              <button class="slider-btn" data-slider="s-fs" data-dir="-1">−</button>
+              <input type="range" id="s-fs" min="7" max="15" value="11" step="0.5"/>
+              <button class="slider-btn" data-slider="s-fs" data-dir="1">+</button>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Line Spacing</span> <span class="slider-val" id="s-lh-v">1.45</span></div>
+            <div class="slider-wrap">
+              <button class="slider-btn" data-slider="s-lh" data-dir="-1">−</button>
+              <input type="range" id="s-lh" min="0.8" max="1.75" value="1.45" step="0.05"/>
+              <button class="slider-btn" data-slider="s-lh" data-dir="1">+</button>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Page Margin</span> <span class="slider-val" id="s-mg-v">1.0 cm</span></div>
+            <div class="slider-wrap">
+              <button class="slider-btn" data-slider="s-mg" data-dir="-1">−</button>
+              <input type="range" id="s-mg" min="0" max="25" value="10" step="1"/>
+              <button class="slider-btn" data-slider="s-mg" data-dir="1">+</button>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Orientation</span></div>
+            <div class="dpick" id="s-orient">
+              <div class="dopt on" data-v="auto">Auto</div>
+              <div class="dopt" data-v="portrait">Portrait</div>
+              <div class="dopt" data-v="landscape">Landscape</div>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Cut Line Style</span></div>
+            <div class="dpick">
+              <div class="dopt on" data-d="dotted">·‧·</div>
+              <div class="dopt" data-d="dashed">- - -</div>
+              <div class="dopt" data-d="solid">———</div>
+              <div class="dopt" data-d="text">✂ cut</div>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Watermark Opacity</span> <span class="slider-val" id="s-wmo-v">7%</span></div>
+            <div class="slider-wrap">
+              <button class="slider-btn" data-slider="s-wmo" data-dir="-1">−</button>
+              <input type="range" id="s-wmo" min="0" max="30" value="7" step="1"/>
+              <button class="slider-btn" data-slider="s-wmo" data-dir="1">+</button>
+            </div>
+          </div>
+          <div class="sg2">
+            <div class="sg2-label"><span>Watermark Size</span> <span class="slider-val" id="s-wms-v">65%</span></div>
+            <div class="slider-wrap">
+              <button class="slider-btn" data-slider="s-wms" data-dir="-1">−</button>
+              <input type="range" id="s-wms" min="20" max="100" value="65" step="5"/>
+              <button class="slider-btn" data-slider="s-wms" data-dir="1">+</button>
+            </div>
+          </div>
+          <div class="sg2 settings-full">
+            <div class="sg2-label"><span>Watermark Source</span></div>
+            <div class="wm-select-wrap">
+              <select id="s-wmsrc">
+                <option value="none" selected>None</option>
+                <option value="default">Default</option>
+                <option value="custom">Custom upload…</option>
+              </select>
+              <input type="file" id="wm-file" accept="image/*" hidden/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="preview">
+      <div id="preview-bar">
+        <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+          <div class="pill-group" id="pv-mode">
+            <div class="pill" data-m="mono">Mono</div>
+            <div class="pill on" data-m="double">Double</div>
+            <div class="pill" data-m="quad">Quad</div>
+            <div class="pill" data-m="flow">Flow</div>
+          </div>
+          <button id="ans-space-btn" title="Toggle blank space below questions for writing answers">Ans Space: OFF</button>
+          <button id="autofit-btn" title="Auto-fit content to page" style="display:none;">Auto-fit</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:5px">
+          <button class="icon-btn" id="z-out" title="Zoom out">−</button>
+          <span style="font-size:11px; color:var(--t2); min-width:30px; text-align:center" id="z-lbl">55%</span>
+          <button class="icon-btn" id="z-in" title="Zoom in">+</button>
+          <button class="icon-btn" id="z-fit" title="Fit to window">⛶</button>
+        </div>
+      </div>
+      <div id="preview-vp"></div>
+    </div>
+  </div>
+</div>
+
+<div id="dia-modal">
+  <div id="dia-panel">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+      <span style="font-size:13px; font-weight:700; color:var(--t1)">✏ Draw Diagram</span>
+      <div class="dia-toolbar">
+        <button class="btn btn-ghost btn-sm dia-t on" data-t="free">✏ Free</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="line">— Line</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="rect">□ Rect</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="circle">○ Circle</button>
+        <button class="btn btn-ghost btn-sm dia-t" data-t="arrow">→ Arrow</button>
+        <button class="btn btn-ghost btn-sm" id="dia-load-img">🖼 Load Image</button>
+        <input type="file" id="dia-file" accept="image/*" hidden/>
+        <button class="btn btn-danger btn-sm" id="dia-clr">🗑 Clear</button>
+        <input type="color" id="dia-col" value="#111111" style="width:26px;height:26px;border:1px solid var(--border2);border-radius:4px;background:none;cursor:pointer;padding:1px"/>
+        <select id="dia-w" style="font-size:11px; padding:3px 6px; width:58px">
+          <option value="1">1px</option><option value="2" selected>2px</option><option value="3">3px</option><option value="5">5px</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:6px">
+        <button class="btn btn-primary btn-sm" id="dia-save">Save</button>
+        <button class="btn btn-ghost btn-sm" id="dia-cancel">Cancel</button>
+      </div>
+    </div>
+    <canvas id="dia-canvas" width="520" height="320"></canvas>
+  </div>
+</div>
+
+<div id="ov"></div>
+
+<div id="info" role="dialog" aria-modal="true" aria-label="AI and Formatting Tools">
+  <div class="info-hdr">
+    <span style="font-size:14px; font-weight:700; color:var(--t1)">AI OCR &amp; Formatting Tools</span>
+    <button class="icon-btn" id="info-close" aria-label="Close">✕</button>
+  </div>
+  <div class="info-body">
+    <div>
+      <div class="info-sec-ttl">✍️ Formatting Rules / ফরম্যাটিং নিয়ম</div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[EQ:\frac{1}{2}]</code> or <code>$...$</code> : Math equations (matrices, roots &amp; inequalities supported)<br><span style="color:var(--t2); font-size:11px;">গণিতের সমীকরণ, ম্যাট্রিক্স ও অসমতা রেন্ডার করে।</span></p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>[CHEM:2H2 + O2 -> 2H2O]</code> : Chemistry formulas</p></div>
+      <div class="step"><div class="sn">→</div><p class="info-p"><code>x[SUP:2]</code> / <code>C[SUB:3]</code> / <code>[SYM:alpha]</code></p></div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">🤖 AI OCR (Gemini / ChatGPT)</div>
+      <div class="prompt-tabs">
+        <div class="prompt-tab on" data-ptab="img">📷 From Photo</div>
+        <div class="prompt-tab" data-ptab="txt">📝 From Notes</div>
+      </div>
+      <div class="prompt-content active" id="ptab-img">
+        <button class="btn btn-success btn-sm" id="copy-prompt-img">📋 Copy Image Prompt</button>
+      </div>
+      <div class="prompt-content" id="ptab-txt">
+        <button class="btn btn-success btn-sm" id="copy-prompt-txt">📋 Copy Draft Prompt</button>
+      </div>
+    </div>
+    <div>
+      <div class="info-sec-ttl">🖨 Print Tips / প্রিন্ট টিপস</div>
+      <div class="info-item"><div class="iico a">💡</div>
+        <p class="info-p">Use Chrome or Edge, set Margins to <strong>None</strong> and Background graphics to <strong>✓</strong>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="guide" role="dialog" aria-modal="true" aria-label="Beginner's Guide">
+  <div class="info-hdr">
+    <span style="font-size:14px; font-weight:700; color:var(--t1)">Beginner's Guide / নতুনদের গাইড</span>
+    <button class="icon-btn" id="guide-close" aria-label="Close">✕</button>
+  </div>
+  <div class="info-body">
+    <div class="step"><div class="sn">1</div><p class="info-p">Fill Exam Info and add sections (বিভাগ). Click <strong>Link OR</strong> to pair অথবা questions.</p></div>
+    <div class="step"><div class="sn">2</div><p class="info-p">Tap inside any question/option on phone/tablet to open the Math &amp; Symbol Quick-Bar.</p></div>
+    <div class="step"><div class="sn">3</div><p class="info-p">Switch between <strong>Mono, Double, Quad, and Flow</strong> modes, then export <strong>.qpf</strong>, <strong>.cbt</strong>, <strong>ODT</strong>, or <strong>Print/PDF</strong>.</p></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="../libs/jszip.min.js"></script>
+<script src="../libs/katex.min.js"></script>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

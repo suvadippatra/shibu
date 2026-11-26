@@ -2,9 +2,9 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- PARAMETER 1 (Global): Exam Name. Update this string to dynamically change the browser tab title. -->
-    <title>My_Test</title>
+    <title>Assessment Exam</title>
     
     <!-- PARAMETER 11 (KaTeX CSS) - Injected by compiler -->
     <!-- PARAMETER 12 (KaTeX JS) - Injected by compiler -->
@@ -13,7 +13,7 @@
     <script>
         // Math Rendering Engine Detection
         // Will be overridden by compiler based on user selection
-        window.mathRenderEngine = 'mathml'; // Options: 'mathml', 'html_fallback', 'katex_online'
+        window.mathRenderEngine = 'mathml'; // Options: 'mathml', 'html_fallback', 'katex_online', 'katex_local'
     </script>
 
     <style>
@@ -29,7 +29,7 @@
             --text-dark: #2d3436;
             --text-muted: #666666;
             --border-color: #dfe6e9;
-            --q-font: Arial, sans-serif; 
+            --q-font: 'Tiro Bangla', 'Kalpurush', Arial, sans-serif; 
         }
 
         [data-theme="dark"] {
@@ -45,11 +45,9 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Segoe UI', 'Tiro Bangla', Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; padding: 0; 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%;
+            width: 100%; height: 100dvh;
             background-color: var(--bg-main); 
             color: var(--text-dark);
             display: flex; flex-direction: column;
@@ -213,9 +211,17 @@
 
         /* FIX: Reduced padding for Options to avoid overheight */
         .option-item { 
-            display: flex; align-items: center; gap: 15px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; white-space: pre-wrap; 
-            font-family: var(--q-font); color: var(--text-dark);
+            display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 1.1rem; white-space: pre-wrap; 
+            font-family: var(--q-font); color: var(--text-dark); min-height: 44px;
         }
+        .opt-body { display: block; flex: 1; min-width: 0; }
+        .frac-stack { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 2px; font-size: 0.9em; line-height: 1.15; }
+        .frac-stack > .frac-num { border-bottom: 1px solid currentColor; padding: 0 3px 1px; }
+        .frac-stack > .frac-den { padding: 1px 3px 0; }
+        .fallback-matrix { display: inline-table; vertical-align: middle; border-collapse: collapse; margin: 0 3px; border-left: 1.5px solid currentColor; border-right: 1.5px solid currentColor; }
+        .fallback-matrix.det { border-left: 1px solid currentColor; border-right: 1px solid currentColor; }
+        .fallback-matrix.cases { border-right: none; border-left: 2px solid currentColor; border-radius: 6px 0 0 6px; }
+        .fallback-matrix td { padding: 1px 5px; text-align: center; font-style: normal; border: none !important; }
         .option-item:hover { background: var(--bg-main); border-color: var(--primary); }
         .option-item.selected { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
         
@@ -306,11 +312,13 @@
             border: 1px solid #999; 
             z-index: 100; 
             display: none; 
-            overflow: hidden; 
+            max-width: calc(100vw - 20px);
+            max-height: calc(100dvh - 20px);
+            overflow-y: auto; 
             /* Fix: Do not zoom the entire panel on touch */
         }
         .fp-head { background: #0056b3; color: white; padding: 8px 12px; cursor: move; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
-        .fp-body { padding: 10px; background: #e0e0e0; max-height: 450px; overflow-y: auto; }
+        .fp-body { padding: 10px; background: #e0e0e0; max-height: min(450px, calc(100dvh - 80px)); overflow-y: auto; }
         
         #calc-panel { width: 450px; }
         .calc-display-area { background: white; border: 1px solid #999; padding: 5px; margin-bottom: 5px; position:relative;}
@@ -382,6 +390,7 @@
 
         .vk-btn-dark { background: #b0bec5; }
         .vk-btn-dark:active { background: #9eaab0; }
+        .vk-btn-dark.active { background: var(--primary); color: #fff; border-color: var(--primary); }
         
         .vk-btn-wide { flex: 1.5; }
         .vk-btn-wider { flex: 2; }
@@ -512,7 +521,7 @@
             .sidebar { position: absolute; right: 0; transform: translateX(100%); margin-right: 0; z-index: 100; box-shadow: -5px 0 20px rgba(0,0,0,0.2); }
             .sidebar.open { transform: translateX(0); }
             
-            #calc-panel { top: 50% !important; left: 50% !important; transform: translate(-50%, -50%); width: 95% !important; max-width: 400px; }
+            #calc-panel { width: 95% !important; max-width: 400px; }
             .calc-main-body { flex-direction: column; }
             .calc-left-panel, .calc-right-panel { grid-template-columns: repeat(5, 1fr); width: 100%; }
             .footer-bar { height: auto; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 8px; padding: 10px; background: var(--panel-bg); }
@@ -589,26 +598,36 @@
             .header-row-line { flex-direction: row !important; font-size: 10pt !important; }
             
             .print-perf-summary { display: grid !important; grid-template-columns: repeat(8, 1fr) !important; background: white; border: 1px solid #000; }
-            .print-q-body { display: flex !important; flex-direction: row !important; gap: 10px !important; }
-            .print-opt-col { flex: 1 !important; width: auto !important; border: none !important; padding: 0 !important; }
-            .print-meta-col { flex: 0 0 240px !important; width: 240px !important; border: none !important; margin-top: 0 !important; display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 5px !important; }
+            .print-section-title { margin: 8px 0 6px !important; padding: 3px 6px !important; font-size: 9pt !important; }
+            .print-q-block { margin-bottom: 8px !important; }
+            .print-q-text { font-size: 9.5pt !important; margin-bottom: 4px !important; padding-top: 6px !important; line-height: 1.3 !important; }
+            .print-q-text img { max-height: 110px !important; max-width: 60% !important; margin-top: 4px !important; }
+            .print-q-body { display: flex !important; flex-direction: column !important; gap: 4px !important; }
+            .print-opt-col { flex: none !important; width: 100% !important; border: none !important; padding: 0 !important; display: grid !important; grid-template-columns: 1fr !important; gap: 3px 6px !important; }
+            .print-opt-col.compact-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+            .print-opt-col.compact-2, .print-opt-col.compact-img { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            .print-opt-item { font-size: 8.5pt !important; padding: 2px 6px !important; line-height: 1.25 !important; }
+            .print-opt-item img { max-height: 55px !important; max-width: 100% !important; object-fit: contain !important; display: block !important; margin-top: 2px !important; }
+            .print-meta-col { flex: none !important; width: 100% !important; border: none !important; padding: 0 !important; margin-top: 0 !important; display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 4px !important; }
             
             .meta-block {
                 border: 1px solid #ccc !important;
                 background: #f9f9f9 !important;
-                padding: 5px !important;
-                border-radius: 4px;
-                font-size: 9pt;
+                padding: 2px 5px !important;
+                border-radius: 3px;
+                font-size: 7.5pt;
                 text-align: center;
                 display: flex;
-                flex-direction: column;
+                flex-direction: row !important;
+                gap: 4px !important;
+                align-items: center !important;
                 justify-content: center;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             
-            .meta-block strong { display: block; font-size: 8pt; color: #555; text-transform: uppercase; }
-            .meta-block span { font-weight: bold; font-size: 10pt; color: #000; }
+            .meta-block strong { display: inline !important; font-size: 7pt; color: #555; text-transform: uppercase; }
+            .meta-block span { font-weight: bold; font-size: 8pt; color: #000; }
             
             .print-footer, .print-secondary-header { display: flex !important; visibility: visible !important; }
 
@@ -631,21 +650,6 @@
             .print-first-page-mask { position: absolute; top: 0; left: 0; right: 0; height: 1.2cm; background: white; z-index: 200; display: block !important; }
         }
     </style>
-
-    <script>
-    if (typeof answer === 'undefined') { window.answer = ""; }
-    document.addEventListener('input', e => { 
-        if(e.target.value && typeof e.target.value === 'string' && e.target.value.includes('undefined')) {
-            e.target.value = e.target.value.replace('undefined', ''); 
-            window.answer = e.target.value;
-        }
-    });
-    setInterval(() => { 
-        document.querySelectorAll('input').forEach(inp => { 
-            if(inp.value.includes('undefined')) inp.value = inp.value.replace('undefined', ''); 
-        }); 
-    }, 300);
-    </script>
 </head>
 <body>
 
@@ -669,15 +673,15 @@
     
     <div class="print-secondary-header">
         <!-- PARAMETER 6 (Global): Exam Name & Subtitle for Print Header. -->
-        <div>NEET Re-Exam (2024) - C1 Booklet, 23.06.2024</div>
+        <div>Assessment Exam</div>
         <div></div> 
     </div>
 
     <!-- SUBMISSION MODAL -->
-    <div id="submission-modal" class="overlay hidden" style="background: rgba(0,0,0,0.85);">
+    <div id="submission-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sub-modal-title" style="background: rgba(0,0,0,0.85);">
         <div class="modal-card">
             <div id="modal-warning-line" style="display:none; color:white; background:#d63031; padding:10px; margin:-30px -30px 20px -30px; border-radius:8px 8px 0 0; font-weight:bold;">Time Run Out — Examination Auto-Submitted</div>
-            <h3 class="modal-title">Submit Examination</h3>
+            <h3 class="modal-title" id="sub-modal-title">Submit Examination</h3>
             <p class="modal-msg">Are you sure you want to submit? Once submitted, no changes, edits, or reviews will be allowed.</p>
             <div class="summary-grid">
                 <div class="stat-row"><span>Answered:</span> <span class="stat-val" style="color:var(--nta-green)" id="sub-ans">0</span></div>
@@ -693,10 +697,10 @@
     </div>
 
     <!-- EXAM INFO MODAL -->
-    <div id="info-modal" class="overlay hidden" style="background: rgba(0,0,0,0.6); z-index: 5500;">
+    <div id="info-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="info-modal-title" style="background: rgba(0,0,0,0.6); z-index: 5500;">
         <div class="info-modal-wrapper" id="info-modal-target">
             <div class="info-modal-card">
-                <h3 class="modal-title" style="color:var(--primary); margin-bottom: 10px;">Examination Rules & Section Limits</h3>
+                <h3 class="modal-title" id="info-modal-title" style="color:var(--primary); margin-bottom: 10px;">Examination Rules & Section Limits</h3>
                 <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; text-align: left;">
                     <strong>Notice:</strong> For sections with a restricted attempt limit, only your first answered questions (chronologically by question number) up to the section limit will be evaluated. Any attempts exceeding the defined limit will be ignored during scoring. Questions 'Marked for Review & Answered' will be counted.
                 </p>
@@ -718,18 +722,19 @@
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="overlay">
         <!-- PARAMETER 2 (Global): Agency Name and Exam Title (Login View). -->
-        <h2 style="color:var(--primary); margin-bottom: 5px;">Aapna Testing Agency</h2>
-        <h1 style="color:var(--text-dark); margin-bottom: 5px;">Aapna Exam</h1>
+        <h2 style="color:var(--primary); margin-bottom: 5px;">Online Examination</h2>
+        <h1 data-cbt-slot="login-title" style="color:var(--text-dark); margin-bottom: 5px;">Assessment Exam</h1>
         
         <!-- Centered Login Screen Text -->
         <div style="text-align: center;">
-            <p style="color:var(--text-muted); margin-bottom: 0px;">Identify yourself to proceed</p>
-            <p style="color:var(--text-muted); margin-bottom: 30px;">Did you bring your id card, two passport photo and transparent watter bottle?</p>
+            <p style="color:var(--text-muted); margin-bottom: 24px;">Enter your name and choose an avatar to proceed.</p>
         </div>
         
         <div class="login-card">
-            <!-- Input for Name with Virtual Keyboard trigger -->
-            <input type="text" id="user-name" class="inp-name" placeholder="Enter Candidate Name (Tap for Keyboard)" autocomplete="off" readonly onclick="openVK('login')">
+            <div style="display:flex; gap:8px; align-items:stretch; margin-bottom:20px;">
+                <input type="text" id="user-name" class="inp-name" style="margin-bottom:0; flex:1; cursor:text;" placeholder="Enter Candidate Name (Bengali / English)" autocomplete="off">
+                <button type="button" class="btn btn-clear" style="padding:0 12px;" title="Open On-Screen Keyboard" aria-label="Open On-Screen Keyboard" onclick="openVK('login')">⌨️</button>
+            </div>
             <p style="color:var(--text-muted); font-size:0.9rem;">Select Avatar</p>
             <div class="avatar-grid">
                 <div class="avatar-option" onclick="selectAvatar(this, '👨‍⚕️')">👨‍⚕️</div>
@@ -748,7 +753,7 @@
             <div class="inst-header">
                 <div>
                     <!-- PARAMETER 3 (Global): Exam Name (Instructions View). -->
-                    <h2 style="margin:0; color:var(--text-dark);">NEET Re-Exam (2024)</h2>
+                    <h2 style="margin:0; color:var(--text-dark);">Assessment Exam</h2>
                     <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;" id="current-date-time">Loading date...</div>
                 </div>
                 <div class="inst-user-profile"><span id="inst-name-disp">Candidate</span><span id="inst-avatar-disp" style="font-size:1.5rem;">🎓</span></div>
@@ -771,36 +776,36 @@
     <!-- MAIN EXAM UI -->
     <header id="app-header" class="hidden">
         <div class="header-left">
-            <div class="logo-circle">PW</div>
+            <div class="logo-circle">📝</div>
             <div>
                 <!-- PARAMETER 4 (Global): Exam Name & Subtitle (Main Toolbar). -->
-                <div class="exam-title">NEET Re-Exam (2024)</div>
-                <span class="exam-subtitle">C1 Booklet, 23.06.2024</span>
+                <div class="exam-title">Assessment Exam</div>
+                <span class="exam-subtitle"></span>
             </div>
         </div>
         <div class="toolbar">
-            <div class="zoom-container"><input type="range" min="0.8" max="1.8" step="0.1" value="1" oninput="applyZoom(this.value)"></div>
-            <button class="tool-btn" id="btn-audio" onclick="toggleAudio()" title="Background Audio"><span style="font-size:1.2rem;">🎧</span></button>
+            <div class="zoom-container"><input type="range" min="0.8" max="1.8" step="0.1" value="1" aria-label="Zoom question text" oninput="applyZoom(this.value)"></div>
+            <button class="tool-btn" id="btn-audio" onclick="toggleAudio()" title="Background Audio" aria-label="Toggle Background Audio"><span style="font-size:1.2rem;">🎧</span></button>
             
             <!-- Dark Mode Toggle -->
-            <button class="tool-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><span style="font-size:1.1rem;">🌙</span></button>
+            <button class="tool-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Dark or Light Mode"><span id="theme-toggle-icon" style="font-size:1.1rem;">🌙</span></button>
 
-            <button class="tool-btn" onclick="document.getElementById('info-modal').classList.remove('hidden')" title="Exam Info">
+            <button class="tool-btn" onclick="document.getElementById('info-modal').classList.remove('hidden')" title="Exam Info" aria-label="Exam Information and Marking Scheme">
                 <span style="font-size:1.1rem; font-weight:bold; font-family:serif; font-style:italic;">i</span>
             </button>
-            <button class="tool-btn" onclick="toggleFloat('calc-panel')" title="Calculator"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h10V4H7zm2 2h6v2H9V6zm0 4h2v2H9v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg></button>
-            <button class="tool-btn" onclick="toggleFloat('const-panel')" title="Constants"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></button>
-            <button class="tool-btn" onclick="toggleFullScreen(document.documentElement)" title="Full Screen"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+            <button class="tool-btn" onclick="toggleFloat('calc-panel')" title="Calculator" aria-label="Toggle Scientific Calculator"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h10V4H7zm2 2h6v2H9V6zm0 4h2v2H9v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg></button>
+            <button class="tool-btn" onclick="toggleFloat('const-panel')" title="Constants" aria-label="Toggle Physical Constants"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></button>
+            <button class="tool-btn" onclick="toggleFullScreen(document.documentElement)" title="Full Screen" aria-label="Toggle Full Screen"><svg class="tool-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
         </div>
-        <div class="timer-box" id="timer-display">03:00:00</div>
+        <div class="timer-box" id="timer-display" aria-live="off">03:00:00</div>
     </header>
 
     <div class="main-container hidden" id="app-container">
         <main class="question-area">
             <div class="section-nav-bar">
-                <button class="nav-scroll-btn hidden" id="tab-scroll-left" onclick="scrollTabs(-1)">‹</button>
-                <div class="section-tab-container" id="section-tabs"></div>
-                <button class="nav-scroll-btn" id="tab-scroll-right" onclick="scrollTabs(1)">›</button>
+                <button class="nav-scroll-btn hidden" id="tab-scroll-left" aria-label="Scroll sections left" onclick="scrollTabs(-1)">‹</button>
+                <div class="section-tab-container" id="section-tabs" role="tablist" aria-label="Exam Sections"></div>
+                <button class="nav-scroll-btn" id="tab-scroll-right" aria-label="Scroll sections right" onclick="scrollTabs(1)">›</button>
             </div>
             
             <div class="q-scroll-view" id="zoom-target">
@@ -909,7 +914,7 @@
                         <button class="vk-btn vk-btn-wide" onclick="vkBackspace()">⌫</button>
                     </div>
                     <div class="vk-row">
-                        <button class="vk-btn vk-btn-wide" onclick="vkType(' ')">Tab</button>
+                        <button class="vk-btn" onclick="vkType('(')">(</button>
                         <button class="vk-btn vk-letter" onclick="vkType('q')">q</button>
                         <button class="vk-btn vk-letter" onclick="vkType('w')">w</button>
                         <button class="vk-btn vk-letter" onclick="vkType('e')">e</button>
@@ -920,8 +925,8 @@
                         <button class="vk-btn vk-letter" onclick="vkType('i')">i</button>
                         <button class="vk-btn vk-letter" onclick="vkType('o')">o</button>
                         <button class="vk-btn vk-letter" onclick="vkType('p')">p</button>
-                        <button class="vk-btn" onclick="vkType('[')">[</button>
-                        <button class="vk-btn" onclick="vkType(']')">]</button>
+                        <button class="vk-btn" onclick="vkType(')')">)</button>
+                        <button class="vk-btn" onclick="vkType('+')">+</button>
                     </div>
                     <div class="vk-row">
                         <button class="vk-btn vk-btn-wider" onclick="toggleVKShift()">Caps</button>
@@ -936,7 +941,7 @@
                         <button class="vk-btn vk-letter" onclick="vkType('l')">l</button>
                         <button class="vk-btn" onclick="vkType(';')">;</button>
                         <button class="vk-btn" onclick="vkType('\'')">'</button>
-                        <button class="vk-btn" onclick="vkType('\\')">\</button>
+                        <button class="vk-btn" onclick="vkType('^')">^</button>
                     </div>
                     <div class="vk-row">
                         <button class="vk-btn vk-btn-wide" onclick="toggleVKShift()">Shift</button>
@@ -953,12 +958,11 @@
                         <button class="vk-btn vk-btn-wide" onclick="toggleVKShift()">Shift</button>
                     </div>
                     <div class="vk-row">
-                        <button class="vk-btn vk-btn-wide" onclick="vkType(' ')">Ctrl</button>
-                        <button class="vk-btn" onclick="vkType(' ')">Win</button>
-                        <button class="vk-btn" onclick="vkType(' ')">Alt</button>
-                        <button class="vk-btn vk-btn-space" onclick="vkType(' ')"> </button>
-                        <button class="vk-btn" onclick="vkType(' ')">AltGr</button>
-                        <button class="vk-btn" onclick="vkType(' ')">Fn</button>
+                        <button class="vk-btn" onclick="vkType('[')">[</button>
+                        <button class="vk-btn" onclick="vkType(']')">]</button>
+                        <button class="vk-btn vk-btn-space" onclick="vkType(' ')">Space</button>
+                        <button class="vk-btn" onclick="vkType('+')">+</button>
+                        <button class="vk-btn" onclick="vkType('-')">-</button>
                     </div>
                 </div>
 
@@ -983,6 +987,8 @@
                         <button class="vk-btn" onclick="vkType('0')">0</button>
                         <button class="vk-btn" onclick="vkType('.')">.</button>
                         <button class="vk-btn" onclick="vkType('-')">-</button>
+                        <button class="vk-btn" onclick="vkType('+')">+</button>
+                        <button class="vk-btn" onclick="vkType('/')">/</button>
                     </div>
                     <div class="vk-row">
                         <button class="vk-btn vk-btn-wider" style="background:#e57373;" onclick="vkBackspace()">⌫ Backspace</button>
@@ -994,8 +1000,8 @@
             
             <!-- Side Control Panel -->
             <div class="vk-side-panel">
-                <button class="vk-btn vk-btn-dark" onclick="toggleVKMode('alpha')">Abc</button>
-                <button class="vk-btn vk-btn-dark" onclick="toggleVKMode('num')">123</button>
+                <button class="vk-btn vk-btn-dark" id="vk-tab-alpha" onclick="toggleVKMode('alpha')">Abc</button>
+                <button class="vk-btn vk-btn-dark" id="vk-tab-num" onclick="toggleVKMode('num')">123</button>
                 <button class="vk-btn vk-btn-dark" style="margin-top:auto;" onclick="closeVK()">Hide</button>
             </div>
         </div>
@@ -1044,11 +1050,11 @@
 
     <!-- DETAILED SHEET -->
     <div id="detailed-sheet-view" class="detailed-sheet-container">
-        
+        <div class="print-first-page-mask" style="display:none;"></div>
         <div class="report-header-grid">
             <div class="header-content-left">
                 <!-- PARAMETER 6 (Global): Exam Name & Subtitle (Report/Print View). -->
-                <div class="header-exam-title-row">NEET Re-Exam (2024) : C1 Booklet, 23.06.2024</div>
+                <div class="header-exam-title-row">Assessment Exam</div>
                 
                 <div class="header-info-matrix">
                     <div class="header-row-line"><strong>Candidate Name:</strong> <span id="rep-name">Name</span></div>
@@ -1126,29 +1132,45 @@ const QUESTION_BANK = [
     let qCounter = 0;
     let activeSectionIndex = 0; 
     
-    // CRITICAL MATH RENDER: Triggers KaTeX auto-render asynchronously to prevent blocking/lag
-    function triggerMathRender() {
-        if (window.renderMathInElement) {
-            setTimeout(() => {
-                const renderArea = document.getElementById('q-render-area');
-                if (renderArea) {
-                    try {
-                        renderMathInElement(renderArea, {
-                            delimiters: [
-                                {left: '$$', right: '$$', display: true},
-                                {left: '$', right: '$', display: false}
-                            ],
-                            throwOnError: false
-                        });
-                    } catch (e) {
-                        console.warn("Math rendering failed: ", e);
-                    }
-                }
-            }, 50); // Small delay to allow DOM to paint text first
+    // CRITICAL MATH RENDER: Triggers KaTeX auto-render safely, retrying briefly if deferred scripts are still loading
+    function triggerMathRender(targetEl = null, attempt = 0) {
+        if (!window.renderMathInElement) {
+            if (attempt < 25) {
+                setTimeout(() => triggerMathRender(targetEl, attempt + 1), 60);
+            }
+            return;
         }
+        setTimeout(() => {
+            const area = targetEl || document.getElementById('q-render-area');
+            if (!area) return;
+            try {
+                window.renderMathInElement(area, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch (e) {
+                console.warn("Math rendering failed: ", e);
+            }
+        }, 30);
+    }
+    window.triggerMathRender = triggerMathRender;
+
+    function escHtml(s) {
+        if (!s && s !== 0) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
-    window.onload = function() {
+    window.addEventListener('load', function() {
         document.documentElement.style.setProperty('--q-font', Q_FONT_FAMILY);
         if(document.getElementById('s-content-area')) {
             document.getElementById('s-content-area').innerHTML = EXAM_S_HTML;
@@ -1162,7 +1184,16 @@ const QUESTION_BANK = [
                 });
             }
         }
-    };
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            updateTimeSpent();
+            lastSwitchTime = 0;
+        } else if (document.getElementById('app-container') && !document.getElementById('app-container').classList.contains('hidden')) {
+            lastSwitchTime = Date.now();
+        }
+    });
     
     function generateSchemeTable() {
         const tbody = document.getElementById('scheme-table-body');
@@ -1186,7 +1217,7 @@ const QUESTION_BANK = [
             totalMaxMarks += secMax;
             
             htmlRows += `<tr>
-                <td>${sec.sectionTitle}</td>
+                <td>${escHtml(sec.sectionTitle)}</td>
                 <td>${count}</td>
                 <td style="font-weight:bold; color:var(--primary);">${maxAtt}</td>
                 <td style="color:var(--nta-green);">+${marksC}</td>
@@ -1219,7 +1250,7 @@ const QUESTION_BANK = [
             const secMax = maxAtt * marksC;
             
             htmlRows += `<tr>
-                <td style="text-align: left;">${sec.sectionTitle}</td>
+                <td style="text-align: left;">${escHtml(sec.sectionTitle)}</td>
                 <td>${count}</td>
                 <td style="font-weight:bold; color:var(--primary);">${maxAtt}</td>
                 <td style="color:var(--nta-green);">+${marksC}</td>
@@ -1271,9 +1302,11 @@ const QUESTION_BANK = [
 
     // FIX 7: Dark Mode Function
     function toggleTheme() {
-        const html = document.documentElement; 
-        if (html.getAttribute('data-theme') === 'dark') { html.setAttribute('data-theme', 'light'); } 
-        else { html.setAttribute('data-theme', 'dark'); }
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
     }
 
     // FIX 4: Image Lightbox Function
@@ -1340,7 +1373,7 @@ const QUESTION_BANK = [
         }
 
         if(START_EXAM_AUDIO_B64) {
-            new Audio(START_EXAM_AUDIO_B64).play();
+            new Audio(START_EXAM_AUDIO_B64).play().catch(() => {});
         }
         
         if(BACKGROUND_AUDIO_BASE64) {
@@ -1379,8 +1412,11 @@ const QUESTION_BANK = [
         const container = document.getElementById('section-tabs');
         container.innerHTML = '';
         EXAM_SECTIONS.forEach((sec, idx) => {
-            const tab = document.createElement('div');
+            const tab = document.createElement('button');
+            tab.type = 'button';
             tab.className = 'section-tab';
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('aria-selected', idx === activeSectionIndex ? 'true' : 'false');
             tab.innerText = sec.name;
             tab.id = `tab-${idx}`;
             tab.onclick = () => switchSection(idx);
@@ -1427,10 +1463,13 @@ const QUESTION_BANK = [
 
     function switchSection(secIdx) {
         activeSectionIndex = secIdx;
-        document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
         const activeTab = document.getElementById(`tab-${secIdx}`);
-        activeTab.classList.add('active');
-        activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
+            activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
         renderPalette(secIdx);
         const targetQ = EXAM_SECTIONS[secIdx].startIndex;
         loadQuestion(targetQ);
@@ -1457,16 +1496,21 @@ const QUESTION_BANK = [
         const end = start + sec.count;
 
         for(let i = start; i < end; i++) {
-            const b = document.createElement('div');
+            const b = document.createElement('button');
+            b.type = 'button';
             b.className = 'p-btn'; 
             b.innerText = i + 1; 
             b.id = `p-${i}`;
+            b.setAttribute('aria-label', `Question ${i + 1}`);
             
             if(status[i] === 'ans') b.classList.add('status-ans');
             else if(status[i] === 'not-ans') b.classList.add('status-not-ans');
             else if(status[i] === 'rev') b.classList.add('status-rev');
             else if(status[i] === 'rev-ans') b.classList.add('status-rev-ans');
-            if(i === currQ) b.classList.add('active');
+            if(i === currQ) {
+                b.classList.add('active');
+                b.setAttribute('aria-current', 'true');
+            }
 
             b.onclick = () => jumpTo(i);
             btnGrid.appendChild(b);
@@ -1484,10 +1528,20 @@ const QUESTION_BANK = [
     
     function fmtText(txt) {
         if (!txt) return '';
-        let formatted = txt.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
-        // Handle list numbering line breaks safely.
-        formatted = formatted.replace(/(?<!^)(\d+\.\s+[A-Za-z])/g, '<br><br>$1'); 
-        return formatted;
+        let s = String(txt);
+        // If uncompiled markdown (**bold**, __underline__, *italic*) exists outside math/HTML tags, format it safely
+        if (/(\*\*|__|(?<!\\)\*)/.test(s) && !/<(?:strong|em|u|math|span\s+class="katex")/i.test(s)) {
+            const masked = [];
+            s = s.replace(/\$\$[\s\S]*?\$\$|\$[^$\n]+?\$|<math[\s\S]*?<\/math>/gi, (m) => {
+                masked.push(m);
+                return `@@FMT_M_${masked.length - 1}@@`;
+            });
+            s = s.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
+                 .replace(/__([\s\S]*?)__/g, '<u>$1</u>')
+                 .replace(/\*([^\*]+?)\*/g, '<em>$1</em>');
+            masked.forEach((m, idx) => { s = s.replace(`@@FMT_M_${idx}@@`, () => m); });
+        }
+        return s;
     }
 
     function loadQuestion(idx) {
@@ -1505,8 +1559,9 @@ const QUESTION_BANK = [
 
         if (targetSecIdx !== activeSectionIndex) {
             activeSectionIndex = targetSecIdx;
-            document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${activeSectionIndex}`).classList.add('active');
+            document.querySelectorAll('.section-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+            const tEl = document.getElementById(`tab-${activeSectionIndex}`);
+            if (tEl) { tEl.classList.add('active'); tEl.setAttribute('aria-selected', 'true'); }
             setTimeout(updateScrollButtons, 100);
             renderPalette(activeSectionIndex);
         }
@@ -1516,23 +1571,23 @@ const QUESTION_BANK = [
 
         const q = QUESTIONS[idx];
         // FIX 4: Attached onclick=openLightbox(this.src)
-        let imgHtml = q.img ? `<img src="${q.img}" onclick="openLightbox(this.src)" alt="Question Image" onerror="this.style.display='none'">` : '';
+        let imgHtml = q.img ? `<img src="${escHtml(q.img)}" onclick="openLightbox(this.src)" alt="Question Image" onerror="this.style.display='none'">` : '';
         let tableHtml = q.table ? `<div class="table-container">${q.table}</div>` : ''; 
 
         let dynamicInputHtml = '';
         if (q.type === 'NAT') {
-            const ansVal = answers[idx] !== undefined ? answers[idx] : '';
+            const ansVal = answers[idx] !== undefined ? escHtml(answers[idx]) : '';
             dynamicInputHtml = `
                 <div class="nat-container">
                     <input type="text" id="nat-input-${idx}" class="nat-input" 
                            value="${ansVal}" placeholder="Tap to open keyboard" 
-                           readonly onclick="openVK(${idx})">
+                           aria-label="Numerical Answer Input" readonly onclick="openVK(${idx})">
                 </div>
             `;
         } else {
             dynamicInputHtml = q.options.map((o,i) => `
-                <div class="option-item ${answers[idx]===i?'selected':''}" onclick="selectOpt(${i})">
-                    <span style="font-weight:bold; margin-right:8px;">${i + 1}.</span>${fmtText(o)}
+                <div class="option-item ${answers[idx]===i?'selected':''}" role="button" tabindex="0" aria-pressed="${answers[idx]===i?'true':'false'}" onclick="selectOpt(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectOpt(${i});}">
+                    <span style="font-weight:bold; margin-right:8px;">${String.fromCharCode(65 + i)}.</span><div class="opt-body">${fmtText(o)}</div>
                 </div>
             `).join('');
             closeVK(); 
@@ -1564,9 +1619,16 @@ const QUESTION_BANK = [
 
     function selectOpt(i) { 
         answers[currQ] = i; 
+        status[currQ] = (status[currQ] === 'rev' || status[currQ] === 'rev-ans') ? 'rev-ans' : 'ans';
         updateTimeSpent();
         finalTimes[currQ] = timeSpent[currQ];
-        loadQuestion(currQ); 
+        const items = document.querySelectorAll('#q-render-area .option-item');
+        items.forEach((el, idx) => {
+            const isSel = idx === i;
+            el.classList.toggle('selected', isSel);
+            el.setAttribute('aria-pressed', isSel ? 'true' : 'false');
+        });
+        updateAllVisibleBtns();
     }
     
     function handleAction(a) {
@@ -1626,6 +1688,13 @@ const QUESTION_BANK = [
         let isCountDown = false;
         if (TIMER_MODE === 'COUNTDOWN') { totalSeconds = EXAM_DURATION_MINS * 60; isCountDown = true; } 
         else { totalSeconds = 0; isCountDown = false; }
+        const renderClock = () => {
+            const h = Math.floor(totalSeconds / 3600).toString().padStart(2,'0');
+            const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2,'0');
+            const s = (totalSeconds % 60).toString().padStart(2,'0');
+            document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+        };
+        renderClock();
         lastSwitchTime = Date.now(); 
         timerInterval = setInterval(() => {
             if (isCountDown) {
@@ -1635,10 +1704,7 @@ const QUESTION_BANK = [
                 totalSeconds++; 
             }
             totalExamTime++;
-            const h = Math.floor(totalSeconds / 3600).toString().padStart(2,'0');
-            const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2,'0');
-            const s = (totalSeconds % 60).toString().padStart(2,'0');
-            document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+            renderClock();
         }, 1000);
     }
 
@@ -1720,26 +1786,7 @@ const QUESTION_BANK = [
                             let mCor = (typeof q.marksCorrect === 'number') ? q.marksCorrect : 4;
                             let mWro = (typeof q.marksWrong === 'number') ? q.marksWrong : 1;
                             
-                            let isCorrect = false;
-                            
-                            if (q.type === 'NAT') {
-                                const uAnsStr = String(userAns).trim().toLowerCase();
-                                const cAnsStr = String(q.correct).trim().toLowerCase();
-                                const rangeMatch = cAnsStr.match(/^(-?\d+(?:\.\d+)?)\s*(?:to|-|~|:)\s*(-?\d+(?:\.\d+)?)$/);
-                                
-                                if (rangeMatch) {
-                                    const min = parseFloat(rangeMatch[1]);
-                                    const max = parseFloat(rangeMatch[2]);
-                                    const uVal = parseFloat(uAnsStr);
-                                    if (!isNaN(uVal)) {
-                                        isCorrect = (uVal >= min && uVal <= max);
-                                    }
-                                } else {
-                                    isCorrect = (uAnsStr === cAnsStr);
-                                }
-                            } else {
-                                isCorrect = (userAns === q.correct);
-                            }
+                            let isCorrect = isAnswerCorrect(q, userAns);
 
                             if(isCorrect) { 
                                 correct++; 
@@ -1795,10 +1842,35 @@ const QUESTION_BANK = [
         }, 50);
     }
 
+    function isAnswerCorrect(q, userAns) {
+        if (userAns === null || userAns === undefined || String(userAns).trim() === '') return false;
+        if (q.type === 'NAT') {
+            const uAnsStr = String(userAns).trim().toLowerCase();
+            const cAnsStr = String(q.correct).trim().toLowerCase();
+            const rangeMatch = cAnsStr.match(/^(-?\d+(?:\.\d+)?)\s*(?:to|-|~|:)\s*(-?\d+(?:\.\d+)?)$/);
+            if (rangeMatch) {
+                const min = parseFloat(rangeMatch[1]);
+                const max = parseFloat(rangeMatch[2]);
+                const uVal = Number(uAnsStr);
+                return Number.isFinite(uVal) && uVal >= min && uVal <= max;
+            }
+            const uVal = Number(uAnsStr);
+            const cVal = Number(cAnsStr);
+            if (uAnsStr !== '' && cAnsStr !== '' && Number.isFinite(uVal) && Number.isFinite(cVal)) {
+                return Math.abs(uVal - cVal) < 1e-6;
+            }
+            return uAnsStr === cAnsStr;
+        }
+        return userAns === q.correct;
+    }
+
     function prepareReport(score, acc, time, att, corr, wrong, notAns) {
         document.getElementById('rep-name').innerText = USER_DATA.name;
         document.getElementById('rep-id').innerText = USER_DATA.id;
         document.getElementById('rep-icon').innerText = USER_DATA.avatar;
+        if (document.getElementById('rep-date')) {
+            document.getElementById('rep-date').innerText = new Date().toLocaleDateString();
+        }
         
         const h = Math.floor(totalExamTime / 3600).toString().padStart(2,'0');
         const m = Math.floor((totalExamTime % 3600) / 60).toString().padStart(2,'0');
@@ -1838,29 +1910,9 @@ const QUESTION_BANK = [
             const userAns = answers[i];
             const stat = status[i];
             const isAttempted = (stat === 'ans' || stat === 'rev-ans');
-            
-            let isCorrect = false;
-            
-            if (q.type === 'NAT') {
-                const uAnsStr = String(userAns).trim().toLowerCase();
-                const cAnsStr = String(q.correct).trim().toLowerCase();
-                const rangeMatch = cAnsStr.match(/^(-?\d+(?:\.\d+)?)\s*(?:to|-|~|:)\s*(-?\d+(?:\.\d+)?)$/);
-                
-                if (rangeMatch) {
-                    const min = parseFloat(rangeMatch[1]);
-                    const max = parseFloat(rangeMatch[2]);
-                    const uVal = parseFloat(uAnsStr);
-                    if (!isNaN(uVal)) {
-                        isCorrect = (uVal >= min && uVal <= max);
-                    }
-                } else {
-                    isCorrect = (uAnsStr === cAnsStr);
-                }
-            } else {
-                isCorrect = (userAns === q.correct);
-            }
+            const isCorrect = isAnswerCorrect(q, userAns);
 
-            const timeVal = finalTimes[i] ? Math.round(finalTimes[i]) : 0;
+            const timeVal = Math.round(finalTimes[i] || timeSpent[i] || 0);
             
             let evaluated = false;
             if(isAttempted) {
@@ -1879,88 +1931,119 @@ const QUESTION_BANK = [
             }
             
             let optionsHTML = '';
+            let optColClass = 'print-opt-col';
             
             if (q.type === 'NAT') {
                 let optClass = isCorrect ? 'po-correct' : (userAns ? 'po-wrong-sel' : 'po-neutral');
                 if(!evaluated && isAttempted) optClass = 'po-neutral';
-                optionsHTML = `<div class="print-opt-item ${optClass}">Your Input: <strong>${userAns || '-'}</strong><br><span style="color:#555; font-size:0.85rem;">Correct Answer: ${q.correct}</span></div>`;
+                optionsHTML = `<div class="print-opt-item ${optClass}">Your Input: <strong>${escHtml(userAns || '-')}</strong> &nbsp;|&nbsp; <span style="color:var(--text-muted); font-size:0.85rem;">Correct Answer: ${escHtml(q.correct)}</span></div>`;
             } else {
+                let hasImgOpt = false;
+                let maxOptLen = 0;
                 q.options.forEach((opt, oIdx) => {
+                    const optStr = String(opt || '');
+                    if (/<img\b/i.test(optStr)) hasImgOpt = true;
+                    const plainLen = optStr.replace(/<[^>]+>/g, '').replace(/\$\$?|\s+/g, ' ').trim().length;
+                    if (plainLen > maxOptLen) maxOptLen = plainLen;
+
                     let optClass = 'po-neutral';
                     if (oIdx === q.correct) optClass = 'po-correct';
                     else if (userAns === oIdx && !isCorrect) optClass = 'po-wrong-sel';
                     
                     if(userAns === oIdx && !evaluated) optClass = 'po-neutral';
                     
-                    optionsHTML += `<div class="print-opt-item ${optClass}"><strong>${oIdx + 1}.</strong> ${fmtText(opt)}</div>`;
+                    optionsHTML += `<div class="print-opt-item ${optClass}"><strong>${String.fromCharCode(65 + oIdx)}.</strong> <span class="opt-body">${fmtText(opt)}</span></div>`;
                 });
+                if (hasImgOpt) optColClass += ' compact-img';
+                else if (maxOptLen <= 16) optColClass += ' compact-4';
+                else if (maxOptLen <= 48) optColClass += ' compact-2';
             }
             
             // FIX 4: Attached onclick=openLightbox(this.src) for Report view too
-            let imgHtml = q.img ? `<img src="${q.img}" onclick="openLightbox(this.src)" alt="Question Image">` : '';
-            let tableHtml = q.table ? `<div style="margin: 10px 0;">${q.table}</div>` : '';
+            let imgHtml = q.img ? `<img src="${escHtml(q.img)}" onclick="openLightbox(this.src)" alt="Question Image">` : '';
+            let tableHtml = q.table ? `<div style="margin: 6px 0;">${q.table}</div>` : '';
 
             let outcomeStr = !isAttempted ? '-' : (evaluated ? (q.type === 'NAT' ? 'Filled' : String.fromCharCode(65+userAns)) : 'Not Evaluated');
+            const marksColor = marks > 0 ? 'var(--nta-green)' : (marks < 0 ? 'var(--nta-red)' : 'var(--text-dark)');
             
             const metaHTML = `
-                <div class="meta-block" style="${!evaluated && isAttempted ? 'grid-column: 1 / -1;' : ''}"><strong>Selected</strong><span>${outcomeStr}</span></div>
+                <div class="meta-block" style="${!evaluated && isAttempted ? 'grid-column: 1 / -1;' : ''}"><strong>Selected</strong><span>${escHtml(outcomeStr)}</span></div>
                 ${!evaluated && isAttempted ? '' : `<div class="meta-block"><strong>Correct</strong><span>${q.type === 'NAT' ? 'Value' : String.fromCharCode(65+q.correct)}</span></div>`}
-                <div class="meta-block"><strong>Marks</strong><span style="color:${marks>0?'green':(marks<0?'red':'black')}">${marks>0?'+'+marks:marks}</span></div>
+                <div class="meta-block"><strong>Marks</strong><span style="color:${marksColor}">${marks>0?'+'+marks:marks}</span></div>
                 <div class="meta-block"><strong>Time</strong><span>${timeVal > 0 ? timeVal + 's' : '-'}</span></div>
             `;
 
             const block = document.createElement('div');
             block.className = 'print-q-block';
-            block.innerHTML = `<div class="print-q-text">Q${q.id}. ${fmtText(q.text)}${imgHtml}${tableHtml}</div><div class="print-q-body"><div class="print-opt-col">${optionsHTML}</div><div class="print-meta-col">${metaHTML}</div></div>`;
+            block.innerHTML = `<div class="print-q-text">Q${q.id}. ${fmtText(q.text)}${imgHtml}${tableHtml}</div><div class="print-q-body"><div class="${optColClass}">${optionsHTML}</div><div class="print-meta-col">${metaHTML}</div></div>`;
             list.appendChild(block);
         });
         
-        // Critical Render call for KaTeX Online Mode in Report (Asynchronous to prevent lag)
-        if (window.renderMathInElement) {
-            setTimeout(() => {
-                renderMathInElement(document.getElementById('detailed-sheet-view'), {
-                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
-                    throwOnError: false
-                });
-            }, 50);
-        }
+        triggerMathRender(document.getElementById('detailed-sheet-view'));
     }
 
-    function showDetailedSheet() { document.getElementById('result-gateway').classList.add('hidden'); document.getElementById('detailed-sheet-view').style.display = 'block'; }
+    function showDetailedSheet() {
+        document.getElementById('result-gateway').classList.add('hidden');
+        const sheet = document.getElementById('detailed-sheet-view');
+        sheet.style.display = 'block';
+        triggerMathRender(sheet);
+    }
     function hideDetailedSheet() { document.getElementById('detailed-sheet-view').style.display = 'none'; document.getElementById('result-gateway').classList.remove('hidden'); }
     
     function printReport() { 
         const originalTitle = document.title;
-        document.title = "NEET Re-Exam (2024)"; 
+        document.title = document.querySelector('.exam-title')?.innerText || originalTitle; 
         
         document.getElementById('result-gateway').classList.add('hidden'); 
-        document.getElementById('detailed-sheet-view').style.display = 'block'; 
-        
+        const sheet = document.getElementById('detailed-sheet-view');
+        sheet.style.display = 'block';
+        triggerMathRender(sheet);
+
+        const cleanup = () => { document.title = originalTitle; };
+        window.addEventListener('afterprint', cleanup, { once: true });
         setTimeout(() => { 
             window.print(); 
-            setTimeout(() => { document.title = originalTitle; }, 100);
-        }, 500); 
+            setTimeout(cleanup, 2000);
+        }, 60); 
     }
 
     function applyZoom(v) { 
-        // FIX 3: Using CSS 'zoom' properly resizes the box models, preventing huge white bottom borders
-        document.getElementById('zoom-target').style.zoom = v; 
-        
-        // FIX 2: Float Panels (calc, keyboard) intentionally NOT zoomed so they don't jump on touch
+        const z = parseFloat(v) || 1;
+        const zoomTarget = document.getElementById('zoom-target');
         const infoTarget = document.getElementById('info-modal-target');
-        if (infoTarget) {
-            infoTarget.style.zoom = v; // Apply native zoom to info modal instead of transform
+        const supportsZoom = typeof CSS !== 'undefined' && CSS.supports && CSS.supports('zoom', '1');
+        if (supportsZoom) {
+            zoomTarget.style.zoom = z;
+            zoomTarget.style.transform = '';
+            zoomTarget.style.width = '';
+            if (infoTarget) { infoTarget.style.zoom = z; infoTarget.style.transform = ''; }
+        } else {
+            zoomTarget.style.transform = `scale(${z})`;
+            zoomTarget.style.transformOrigin = 'top left';
+            zoomTarget.style.width = `${(100 / z).toFixed(2)}%`;
+            if (infoTarget) {
+                infoTarget.style.transform = `scale(${z})`;
+                infoTarget.style.transformOrigin = 'center center';
+            }
         }
     }
 
     function toggleFullScreen(elem) { if (!document.fullscreenElement) { if (elem.requestFullscreen) { elem.requestFullscreen(); } else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } } else { if (document.exitFullscreen) document.exitFullscreen(); } }
-    function toggleFloat(id) { const el = document.getElementById(id); if(!el.style.left) { el.style.top="80px"; el.style.left="50px"; } el.style.display = el.style.display==='block'?'none':'block'; }
+    function toggleFloat(id) {
+        const el = document.getElementById(id);
+        const opening = el.style.display !== 'block';
+        el.style.display = opening ? 'block' : 'none';
+        if (opening && !el.style.left) {
+            el.style.top = '72px';
+            el.style.left = Math.max(10, Math.round((window.innerWidth - (el.offsetWidth || 320)) / 2)) + 'px';
+        }
+    }
     function toggleCalcHelp() { const h = document.getElementById('calc-help-box'); h.style.display = h.style.display==='block'?'none':'block'; }
     
     function makeDraggable(elmnt, handle) { 
         let pos1=0, pos2=0, pos3=0, pos4=0; 
-        handle.onmousedown = dragStart; 
-        handle.ontouchstart = dragStart; 
+        handle.addEventListener('mousedown', dragStart);
+        handle.addEventListener('touchstart', dragStart, { passive: false });
         
         function dragStart(e) { 
             e.preventDefault(); 
@@ -1977,8 +2060,10 @@ const QUESTION_BANK = [
             } else { 
                 pos3 = e.clientX; pos4 = e.clientY; 
             } 
-            document.onmouseup = closeDrag; document.onmousemove = elementDrag; 
-            document.ontouchend = closeDrag; document.ontouchmove = elementDrag; 
+            document.addEventListener('mouseup', closeDrag);
+            document.addEventListener('mousemove', elementDrag);
+            document.addEventListener('touchend', closeDrag);
+            document.addEventListener('touchmove', elementDrag, { passive: false });
         } 
         function elementDrag(e) { 
             e.preventDefault(); 
@@ -1999,8 +2084,10 @@ const QUESTION_BANK = [
             elmnt.style.top = newTop + "px"; elmnt.style.left = newLeft + "px"; 
         } 
         function closeDrag() { 
-            document.onmouseup = null; document.onmousemove = null; 
-            document.ontouchend = null; document.ontouchmove = null; 
+            document.removeEventListener('mouseup', closeDrag);
+            document.removeEventListener('mousemove', elementDrag);
+            document.removeEventListener('touchend', closeDrag);
+            document.removeEventListener('touchmove', elementDrag);
         } 
     }
 
@@ -2015,27 +2102,25 @@ const QUESTION_BANK = [
 
         el.style.transform = 'none';
 
-        if (target === 'login') {
+        const positionClamped = () => {
             const rect = el.getBoundingClientRect();
-            let leftPos = (window.innerWidth - rect.width) / 2;
-            let topPos = window.innerHeight - rect.height - 20;
-            
-            el.style.left = Math.max(10, leftPos) + "px";
-            el.style.top = Math.max(10, topPos) + "px";
+            const maxLeft = Math.max(10, window.innerWidth - rect.width - 10);
+            const maxTop = Math.max(10, window.innerHeight - rect.height - 10);
+            const leftPos = Math.min(maxLeft, Math.max(10, (window.innerWidth - rect.width) / 2));
+            const topPos = Math.min(maxTop, Math.max(10, window.innerHeight - rect.height - 20));
+            el.style.left = leftPos + "px";
+            el.style.top = topPos + "px";
             el.style.bottom = 'auto';
-            
-            toggleVKMode('alpha'); 
+        };
+
+        if (target === 'login') {
+            toggleVKMode('alpha');
+            positionClamped();
         } else {
-            if (!el.style.top || el.style.top === "") {
-                const rect = el.getBoundingClientRect();
-                let leftPos = (window.innerWidth - rect.width) / 2;
-                let topPos = window.innerHeight - rect.height - 20;
-                
-                el.style.left = Math.max(10, leftPos) + "px";
-                el.style.top = Math.max(10, topPos) + "px";
-                el.style.bottom = 'auto';
-            }
             toggleVKMode('num');
+            if (!el.style.top || el.style.top === "") {
+                positionClamped();
+            }
             if (answers[target] === undefined) answers[target] = '';
         }
     }
@@ -2045,9 +2130,9 @@ const QUESTION_BANK = [
     function toggleVKMode(mode) {
         document.getElementById('vk-num-container').style.display = mode === 'num' ? 'flex' : 'none';
         document.getElementById('vk-alpha-container').style.display = mode === 'alpha' ? 'flex' : 'none';
-        document.getElementById('vk-tab-num').classList.remove('active');
-        document.getElementById('vk-tab-alpha').classList.remove('active');
-        document.getElementById(`vk-tab-${mode}`).classList.add('active');
+        document.getElementById('vk-tab-num')?.classList.remove('active');
+        document.getElementById('vk-tab-alpha')?.classList.remove('active');
+        document.getElementById(`vk-tab-${mode}`)?.classList.add('active');
     }
 
     function toggleVKShift() {
@@ -2109,19 +2194,157 @@ const QUESTION_BANK = [
     /* Calculator state logic */
     let calcState = { display: '0', firstOp: null, waitingForSecondOp: false, operator: null, memory: 0, angleMode: 'deg' };
     function updateDisplay() { document.getElementById('calc-result').value = calcState.display; }
-    function calcInput(digit) { if (calcState.waitingForSecondOp) { calcState.display = digit; calcState.waitingForSecondOp = false; } else { calcState.display = calcState.display === '0' ? digit : calcState.display + digit; } updateDisplay(); }
+    function getParenDepth(str) {
+        let depth = 0;
+        for (const ch of String(str)) {
+            if (ch === '(') depth++;
+            else if (ch === ')') depth = Math.max(0, depth - 1);
+        }
+        return depth;
+    }
+    function hasUnclosedParen(str) { return getParenDepth(str) > 0; }
+    function closeUnclosedParens(str) {
+        const d = getParenDepth(str);
+        return d > 0 ? String(str) + ')'.repeat(d) : String(str);
+    }
+    function formatCalcOut(num) { return Number.isFinite(num) ? String(num) : 'Error'; }
+    function evalCalcDisplay(exprStr) {
+        const src = String(exprStr).replace(/\s+/g, '');
+        if (!src || src === 'Error') return 0;
+        let i = 0;
+        function parseExpr() {
+            let val = parseTerm();
+            while (i < src.length && (src[i] === '+' || src[i] === '-')) {
+                const op = src[i++];
+                const rhs = parseTerm();
+                val = op === '+' ? val + rhs : val - rhs;
+            }
+            return val;
+        }
+        function parseTerm() {
+            let val = parseFactor();
+            while (i < src.length && (src[i] === '*' || src[i] === '/' || src[i] === '%')) {
+                const op = src[i++];
+                const rhs = parseFactor();
+                if (op === '*') val *= rhs;
+                else if (op === '/') val /= rhs;
+                else val %= rhs;
+            }
+            return val;
+        }
+        function parseFactor() {
+            if (src[i] === '+') { i++; return parseFactor(); }
+            if (src[i] === '-') { i++; return -parseFactor(); }
+            if (src[i] === '(') {
+                i++;
+                const val = parseExpr();
+                if (src[i] === ')') i++;
+                return val;
+            }
+            const rest = src.slice(i);
+            const m = rest.match(/^(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/);
+            if (!m) return NaN;
+            i += m[0].length;
+            return parseFloat(m[0]);
+        }
+        const out = parseExpr();
+        return i === src.length ? out : NaN;
+    }
+    function calcInput(digit) {
+        if (calcState.waitingForSecondOp || calcState.display === 'Error') {
+            calcState.display = digit;
+            calcState.waitingForSecondOp = false;
+        } else if (calcState.display === '0' && digit !== '.' && digit !== ')') {
+            calcState.display = digit;
+        } else {
+            calcState.display += digit;
+        }
+        updateDisplay();
+    }
     function calcClear() { calcState.display = '0'; calcState.firstOp = null; calcState.waitingForSecondOp = false; calcState.operator = null; updateDisplay(); }
-    function calcBackspace() { if (calcState.display.length > 1) { calcState.display = calcState.display.slice(0, -1); } else { calcState.display = '0'; } updateDisplay(); }
-    function calcNegate() { calcState.display = String(-parseFloat(calcState.display)); updateDisplay(); }
+    function calcBackspace() { if (calcState.display !== 'Error' && calcState.display.length > 1) { calcState.display = calcState.display.slice(0, -1); } else { calcState.display = '0'; } updateDisplay(); }
+    function calcNegate() {
+        const val = evalCalcDisplay(closeUnclosedParens(calcState.display));
+        if (Number.isFinite(val)) {
+            calcState.display = String(val === 0 ? 0 : -val);
+            updateDisplay();
+        }
+    }
     function toggleAngle(mode) { calcState.angleMode = mode; }
     function toRad(val) { return calcState.angleMode === 'deg' ? val * (Math.PI / 180) : val; }
     function fromRad(val) { return calcState.angleMode === 'deg' ? val * (180 / Math.PI) : val; }
-    function calcFunc(func) { let val = parseFloat(calcState.display); let res = 0; switch(func) { case 'sin': res = Math.sin(toRad(val)); break; case 'cos': res = Math.cos(toRad(val)); break; case 'tan': res = Math.tan(toRad(val)); break; case 'asin': res = fromRad(Math.asin(val)); break; case 'acos': res = fromRad(Math.acos(val)); break; case 'atan': res = fromRad(Math.atan(val)); break; case 'sinh': res = Math.sinh(val); break; case 'cosh': res = Math.cosh(val); break; case 'tanh': res = Math.tanh(val); break; case 'asinh': res = Math.asinh(val); break; case 'acosh': res = Math.acosh(val); break; case 'atanh': res = Math.atanh(val); break; case 'ln': res = Math.log(val); break; case 'log': res = Math.log10(val); break; case 'log2': res = Math.log2(val); break; case 'sq': res = val * val; break; case 'cube': res = val * val * val; break; case 'sqrt': res = Math.sqrt(val); break; case 'cbrt': res = Math.cbrt(val); break; case 'recip': res = 1 / val; break; case 'fact': res = 1; for(let i=2; i<=val; i++) res *= i; break; case 'exp': res = Math.exp(val); break; case 'ex': res = Math.exp(val); break; case 'pow10': res = Math.pow(10, val); break; case 'abs': res = Math.abs(val); break; } calcState.display = String(res); calcState.waitingForSecondOp = true; updateDisplay(); }
+    function calcFunc(func) {
+        let val = evalCalcDisplay(closeUnclosedParens(calcState.display));
+        let res = 0;
+        switch(func) {
+            case 'sin': res = Math.sin(toRad(val)); break;
+            case 'cos': res = Math.cos(toRad(val)); break;
+            case 'tan': res = Math.tan(toRad(val)); break;
+            case 'asin': res = fromRad(Math.asin(val)); break;
+            case 'acos': res = fromRad(Math.acos(val)); break;
+            case 'atan': res = fromRad(Math.atan(val)); break;
+            case 'sinh': res = Math.sinh(val); break;
+            case 'cosh': res = Math.cosh(val); break;
+            case 'tanh': res = Math.tanh(val); break;
+            case 'asinh': res = Math.asinh(val); break;
+            case 'acosh': res = Math.acosh(val); break;
+            case 'atanh': res = Math.atanh(val); break;
+            case 'ln': res = Math.log(val); break;
+            case 'log': res = Math.log10(val); break;
+            case 'log2': res = Math.log2(val); break;
+            case 'sq': res = val * val; break;
+            case 'cube': res = val * val * val; break;
+            case 'sqrt': res = Math.sqrt(val); break;
+            case 'cbrt': res = Math.cbrt(val); break;
+            case 'recip': res = 1 / val; break;
+            case 'fact':
+                if (!Number.isInteger(val) || val < 0 || val > 170) res = NaN;
+                else { res = 1; for (let i = 2; i <= val; i++) res *= i; }
+                break;
+            case 'exp':
+            case 'ex': res = Math.exp(val); break;
+            case 'pow10': res = Math.pow(10, val); break;
+            case 'abs': res = Math.abs(val); break;
+        }
+        calcState.display = formatCalcOut(res);
+        calcState.waitingForSecondOp = true;
+        updateDisplay();
+    }
     function calcConst(c) { if (c === 'pi') calcState.display = String(Math.PI); if (c === 'e') calcState.display = String(Math.E); calcState.waitingForSecondOp = true; updateDisplay(); }
-    function calcDualOp(nextOp) { const inputValue = parseFloat(calcState.display); if (calcState.operator && calcState.waitingForSecondOp) { calcState.operator = nextOp; return; } if (calcState.firstOp == null) { calcState.firstOp = inputValue; } else if (calcState.operator) { const result = performCalculation(calcState.operator, calcState.firstOp, inputValue); calcState.display = String(result); calcState.firstOp = result; } calcState.waitingForSecondOp = true; calcState.operator = nextOp; updateDisplay(); }
-    function calcEqual() { const inputValue = parseFloat(calcState.display); if (calcState.operator && calcState.firstOp != null) { const result = performCalculation(calcState.operator, calcState.firstOp, inputValue); calcState.display = String(result); calcState.firstOp = null; calcState.operator = null; calcState.waitingForSecondOp = true; updateDisplay(); } }
+    function calcDualOp(nextOp) {
+        if (hasUnclosedParen(calcState.display) && ['+', '-', '*', '/', 'Mod'].includes(nextOp)) {
+            calcState.display += (nextOp === 'Mod' ? '%' : nextOp);
+            calcState.waitingForSecondOp = false;
+            updateDisplay();
+            return;
+        }
+        const inputValue = evalCalcDisplay(calcState.display);
+        if (calcState.operator && calcState.waitingForSecondOp) { calcState.operator = nextOp; return; }
+        if (calcState.firstOp == null) { calcState.firstOp = inputValue; }
+        else if (calcState.operator) {
+            const result = performCalculation(calcState.operator, calcState.firstOp, inputValue);
+            calcState.display = formatCalcOut(result);
+            calcState.firstOp = result;
+        }
+        calcState.waitingForSecondOp = true;
+        calcState.operator = nextOp;
+        updateDisplay();
+    }
+    function calcEqual() {
+        const inputValue = evalCalcDisplay(closeUnclosedParens(calcState.display));
+        if (calcState.operator && calcState.firstOp != null) {
+            const result = performCalculation(calcState.operator, calcState.firstOp, inputValue);
+            calcState.display = formatCalcOut(result);
+            calcState.firstOp = null;
+            calcState.operator = null;
+        } else {
+            calcState.display = formatCalcOut(inputValue);
+        }
+        calcState.waitingForSecondOp = true;
+        updateDisplay();
+    }
     function performCalculation(op, first, second) { switch(op) { case '+': return first + second; case '-': return first - second; case '*': return first * second; case '/': return first / second; case 'Mod': return first % second; case 'pow': return Math.pow(first, second); case 'yroot': return Math.pow(first, 1/second); case 'logy': return Math.log(first) / Math.log(second); default: return second; } }
-    function calcMem(op) { let val = parseFloat(calcState.display); switch(op) { case 'MC': calcState.memory = 0; break; case 'MR': calcState.display = String(calcState.memory); break; case 'MS': calcState.memory = val; break; case 'M+': calcState.memory += val; break; case 'M-': calcState.memory -= val; break; } if(op === 'MR') calcState.waitingForSecondOp = true; updateDisplay(); }
+    function calcMem(op) { let val = evalCalcDisplay(closeUnclosedParens(calcState.display)); switch(op) { case 'MC': calcState.memory = 0; break; case 'MR': calcState.display = String(calcState.memory); break; case 'MS': if (Number.isFinite(val)) calcState.memory = val; break; case 'M+': if (Number.isFinite(val)) calcState.memory += val; break; case 'M-': if (Number.isFinite(val)) calcState.memory -= val; break; } if(op === 'MR') calcState.waitingForSecondOp = true; updateDisplay(); }
 
 </script>
 </body>
