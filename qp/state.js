@@ -82,6 +82,19 @@ export function getHdgs() {
   return S.paperLang === 'full-en' ? HDGS_EN : HDGS_BN;
 }
 
+export function getDefaultHeading(type, mpq = 1, lang = S.paperLang) {
+  const hdgs = lang === 'full-en' ? HDGS_EN : HDGS_BN;
+  if (type === 'mcq') return hdgs[0];
+  if (type === 'long') return hdgs[3];
+  if (type === 'descriptive') return hdgs[2];
+  return Number(mpq) >= 2 ? hdgs[2] : hdgs[1];
+}
+
+export function stripLeadingQNum(text) {
+  if (!text && text !== 0) return '';
+  return String(text).replace(/^\s*(?:Q\.?\s*)?(?:\d+|[০-৯]+)(?:\.(?:\d+|[০-৯]+))?\s*[\.\)]\s*/i, '');
+}
+
 export function getActiveOrient() {
   return S.orientOverride === 'auto' ? S.orient[S.viewMode] || 'landscape' : S.orientOverride;
 }

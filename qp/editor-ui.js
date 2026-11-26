@@ -2,9 +2,10 @@
 import { $, $$, uid, esc, toast, safeDownload, copyText, sha256Hex, attachMathQuickBar } from '../shared/js/dom.js';
 import { qpfStateToCbtString } from '../shared/js/math-pipeline.js';
 import { openMathBuilderModal } from '../shared/js/math-builder.js';
+import { unlockDefaultWatermark } from '../shared/js/watermark-vault.js';
 import {
   DEFAULT_WM_HASH, S, linkMode, BN_O, EN_O, HDGS_BN, HDGS_EN, TYPES,
-  bn, sl, getPtrLbl, getHdgs, getActiveOrient, applyVars, recalc,
+  bn, sl, getPtrLbl, getHdgs, getDefaultHeading, getActiveOrient, applyVars, recalc,
   clearAutoFit, syncFields, exFname, validateScientificExpression
 } from './state.js';
 import { parseQPF, serializeQPF, auditQPFState, PROMPT_IMG, PROMPT_TXT } from './qpf-parser.js';
@@ -240,12 +241,12 @@ export function initSettings() {
     } else if (e.target.value === 'default') {
       const pwd = prompt('Enter password to access default watermark:');
       if (pwd) {
-        const hash = await sha256Hex(pwd.trim());
-        if (hash === DEFAULT_WM_HASH) {
+        const ok = await unlockDefaultWatermark(pwd.trim(), '../watermark.svg');
+        if (ok) {
           S.wmSrc = 'default'; _lastWmSrc = 'default';
-          toast('Watermark applied.', 'success'); sched();
+          toast('Watermark unlocked & applied.', 'success'); sched();
         } else {
-          toast('Access Denied: Incorrect Password', 'error');
+          toast('Access Denied: Incorrect Password or missing watermark', 'error');
           e.target.value = _lastWmSrc; S.wmSrc = _lastWmSrc;
         }
       } else {
@@ -599,7 +600,9 @@ function mkSecCard(sec, idx) {
   });
 
   card.querySelector('.sec-type').addEventListener('change', (e) => {
+    const isDefault = !sec.heading || HDGS_BN.includes(sec.heading) || HDGS_EN.includes(sec.heading);
     sec.type = e.target.value;
+    if (isDefault) sec.heading = getDefaultHeading(sec.type, sec.mpq, S.paperLang);
     rebuildSecs(); sched();
   });
   card.querySelector('.sec-mpq').addEventListener('input', (e) => { sec.mpq = parseFloat(e.target.value) || 1; recalc(); sched(); });

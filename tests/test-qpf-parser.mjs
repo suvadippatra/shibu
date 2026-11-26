@@ -97,3 +97,26 @@ Q: Next question without TABLE_END`;
   ]);
   assert.equal(st.sections[0].questions[1].text, 'Next question without TABLE_END');
 });
+
+test('parseQPF auto-assigns default heading by type/marks, strips leading question numbers, and fixes [SUB:C][SUB:3]', () => {
+  const raw = `##META
+TOP_TITLE: Bio Test
+PAPER_LANG: full-bn
+##SECTION_KA
+HEADING: A
+TYPE: short
+MARKS_PER_Q: 1
+Q: ১. সালোকসংশ্লেষের প্রধান রঞ্জকটি হল —
+##SECTION_KHA
+HEADING: B
+TYPE: descriptive
+MARKS_PER_Q: 2
+Q: ২. [SUB:C][SUB:3] উদ্ভিদ বলতে কী বোঝায়?
+##END`;
+
+  const st = parseQPF(raw);
+  assert.equal(st.sections[0].heading, 'সংক্ষিপ্ত উত্তর দাও:');
+  assert.equal(st.sections[1].heading, 'নীচের প্রশ্নগুলির উত্তর দাও:');
+  assert.equal(st.sections[0].questions[0].text, 'সালোকসংশ্লেষের প্রধান রঞ্জকটি হল —');
+  assert.equal(st.sections[1].questions[0].text, 'C[SUB:3] উদ্ভিদ বলতে কী বোঝায়?');
+});

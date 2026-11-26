@@ -518,7 +518,10 @@ select {
 .qp-sec-row { display: flex; justify-content: space-between; font-weight: bold; padding-bottom: 1pt; line-height: 1.2; break-after: avoid; page-break-after: avoid; }
 
 .qp-q { margin-bottom: 4pt; break-inside: avoid; page-break-inside: avoid; }
-.qp-q-text { flex: 1; min-width: 0; text-align: justify; white-space: pre-wrap; overflow-wrap: break-word; }
+.qp-q-text { flex: 1; min-width: 0; text-align: justify; white-space: pre-wrap; overflow-wrap: break-word; line-height: var(--p-lh); }
+.qp-page sub, .qp-page sup { font-size: 0.72em; line-height: 0; position: relative; vertical-align: baseline; }
+.qp-page sub { bottom: -0.22em; }
+.qp-page sup { top: -0.45em; }
 .qp-page .katex {
   white-space: nowrap !important;
   text-align: left !important;

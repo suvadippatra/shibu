@@ -1,6 +1,6 @@
 /* Pure QPF v1.1 Parser, Serializer, Sample Paper & AI OCR Prompts */
 import { uid } from '../shared/js/dom.js';
-import { HDGS_BN } from './state.js';
+import { HDGS_BN, getDefaultHeading, stripLeadingQNum } from './state.js';
 
 export const SEC_QPF = ['KA', 'KHA', 'GA', 'GHA', 'UMA', 'CHA', 'CHHA', 'JA', 'JHA', 'NYA'];
 
@@ -62,7 +62,7 @@ OP_GH: [MCQ option 4]
 TOKENS FOR SPECIAL CONTENT:
 [EQ:\\frac{a}{b}] for LaTeX math (always wrap |x| or matrices inside [EQ:...] so '|' does not split table columns)
 [CHEM:H2SO4] for chemical formulas
-C[SUB:3] for subscript
+C[SUB:3] for subscript (write C[SUB:3] or H[SUB:2]O — NEVER wrap the base letter like [SUB:C][SUB:3])
 x[SUP:2] for superscript
 [SYM:alpha] for Greek/special symbols
 TABLE_START: 3x2
@@ -197,6 +197,7 @@ function splitTableRow(line, expectedCols) {
 export function repairCommonQPFMistakes(rawText) {
   return String(rawText || '')
     .replace(/^\uFEFF/, '')
+    .replace(/\[SUB:([A-Za-z])\]\s*\[SUB:(\d+)\]/gi, '$1[SUB:$2]')
     .replace(/\\\[([\s\S]*?)\\\]/g, (_, inner) => `[EQ:${inner.trim()}]`)
     .replace(/\\\(([\s\S]*?)\\\)/g, (_, inner) => `[EQ:${inner.trim()}]`)
     .replace(/^\s*\*\*(##(?:META|END|SECTION_[A-Z0-9_]+))\*\*\s*$/gim, '$1')
@@ -283,6 +284,10 @@ export function parseQPF(rawText) {
   const flushSec = () => {
     flushQ();
     if (curSec) {
+      if (!curSec._explicitHeading) {
+        curSec.heading = getDefaultHeading(curSec.type, curSec.mpq, newState.paperLang);
+      }
+      delete curSec._explicitHeading;
       newState.sections.push(curSec);
       curSec = null;
     }
@@ -300,6 +305,7 @@ export function parseQPF(rawText) {
       curSec = {
         id: uid(),
         heading: HDGS_BN[0],
+        _explicitHeading: false,
         type: 'mcq',
         mpq: 1,
         os: 'bn',
@@ -415,8 +421,13 @@ export function parseQPF(rawText) {
         continue;
       }
 
-      if (k === 'HEADING') curSec.heading = v;
-      else if (k === 'TYPE') {
+      if (k === 'HEADING') {
+        const isPlaceholder = !v || /^(?:[A-Za-zক-ঞ]|(?:Section|বিভাগ)\s*['"]?[A-Za-zক-ঞ]['"]?)$/i.test(v);
+        if (!isPlaceholder) {
+          curSec.heading = v;
+          curSec._explicitHeading = true;
+        }
+      } else if (k === 'TYPE') {
         const typeMap = { mcq: 'mcq', short: 'short', descriptive: 'descriptive', long: 'long', sa: 'short', la: 'long', desc: 'descriptive' };
         curSec.type = typeMap[v.toLowerCase()] || 'short';
       } else if (k === 'MARKS_PER_Q' || k === 'MARKS') {
@@ -428,7 +439,7 @@ export function parseQPF(rawText) {
         if (aVal > 0) curSec.answerAny = aVal;
       } else if (k === 'Q') {
         flushQ();
-        curQ = { id: uid(), text: v, options: ['', '', '', ''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false };
+        curQ = { id: uid(), text: stripLeadingQNum(v), options: ['', '', '', ''], img: null, imgSize: 60, imgAlign: 'right', extra: [], isOrNext: false };
         inTable = false;
         inLabeled = false;
       } else if (k === 'OR_NEXT') {

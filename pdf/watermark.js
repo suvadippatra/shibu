@@ -1,4 +1,7 @@
 import { $, $$, initTheme, toast, safeDownload } from '../shared/js/dom.js';
+import {
+  isVaultEncrypted, isWatermarkUnlocked, getUnlockedWatermarkSvg, unlockDefaultWatermark
+} from '../shared/js/watermark-vault.js';
 
 initTheme({ storageKey: 'qpm-theme' });
 
@@ -181,6 +184,14 @@ function updateSimPreview() {
 }
 
 async function initDefaultSvg() {
+  if (isVaultEncrypted()) {
+    if (isWatermarkUnlocked()) {
+      state.defaultSvgRaw = getUnlockedWatermarkSvg();
+      state.defaultSvgValid = /<svg[\s>]/i.test(state.defaultSvgRaw || '');
+      updateSimPreview();
+    }
+    return;
+  }
   try {
     const res = await fetch('watermark.svg');
     if (!res.ok) return;
@@ -206,7 +217,19 @@ function setSelectedPdf(file) {
   if ($('file-icon')) $('file-icon').textContent = '✅';
 }
 
-function switchTab(type) {
+async function switchTab(type) {
+  if (type === 'svg' && isVaultEncrypted() && !isWatermarkUnlocked()) {
+    const pwd = prompt('Enter password to unlock default SVG watermark:');
+    if (!pwd) return;
+    const ok = await unlockDefaultWatermark(pwd.trim(), 'watermark.svg');
+    if (!ok) {
+      toast('Access Denied: Incorrect Password', 'error');
+      return;
+    }
+    state.defaultSvgRaw = getUnlockedWatermarkSvg();
+    state.defaultSvgValid = true;
+    toast('Default SVG watermark unlocked.', 'success');
+  }
   state.wmType = type;
   $$('.type-tab').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.type === type);

@@ -1,7 +1,8 @@
 /* QP Maker Preview Pagination, Booklet Flow, Watermark, Divider, and Auto-fit Renderer */
 import { $, esc, toast } from '../shared/js/dom.js';
 import { renderTok as sharedRenderTok, stripMarkupLength } from '../shared/js/math-pipeline.js';
-import { S, BN_O, EN_O, bn, sl, getActiveOrient, applyVars, showAutoFitBtn, checkFit } from './state.js';
+import { getUnlockedWatermarkDataUrl } from '../shared/js/watermark-vault.js';
+import { S, BN_O, EN_O, bn, sl, getActiveOrient, applyVars, showAutoFitBtn, checkFit, stripLeadingQNum } from './state.js';
 
 const _tokCache = new Map();
 
@@ -27,7 +28,7 @@ export function wmHtmlGenerator() {
       ? null
       : S.wmSrc === 'custom' && S.wmCustomData
       ? S.wmCustomData
-      : '../watermark/default.png';
+      : getUnlockedWatermarkDataUrl();
   const wmStyle = `opacity:${S.wmOpacity / 100};pointer-events:none;z-index:5;`;
   return wmSrc
     ? `<div class="qp-wm" style="${wmStyle}"><img src="${wmSrc}" style="max-width:${S.wmSize}%;max-height:${S.wmSize}%" onerror="this.style.display='none'"/></div>`
@@ -250,10 +251,11 @@ export function buildSet(asBlocks = false) {
     const tot = (sec.mpq || 0) * countedQ;
     const mfNum = isBn ? `${bn(sec.mpq)} × ${bn(countedQ)} = ${bn(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
     const secPrefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
+    const secNumPrefix = isBn ? `${bn(idx + 1)}।` : `${idx + 1}.`;
     const anyNote = sec.answerAny ? (isBn ? ` (যেকোনো ${bn(sec.answerAny)}টি)` : ` (any ${sec.answerAny})`) : '';
 
     blocks.push(
-      `<div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div><div class="qp-sec-row" style="font-size:${fsPt}"><span>&nbsp;&nbsp;&nbsp;${esc(sec.heading)}${anyNote}</span><span>${mfNum}</span></div>`
+      `<div class="qp-sec-hdr" style="font-size:${fsPt}">${secPrefix}</div><div class="qp-sec-row" style="font-size:${fsPt}"><span>${secNumPrefix} ${esc(sec.heading)}${anyNote}</span><span>${mfNum}</span></div>`
     );
 
     if (!sec.questions.length) {
@@ -263,12 +265,12 @@ export function buildSet(asBlocks = false) {
 
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
-      const numStr = isBn ? `${bn(idx + 1)}.${bn(qCounter)})` : `${idx + 1}.${qCounter})`;
+      const numStr = isBn ? `${bn(qCounter)})` : `${qCounter})`;
       const isOrChild = qi > 0 && sec.questions[qi - 1].isOrNext;
-      const numH = `<div style="flex-shrink:0; font-weight:normal; margin-right:4pt; ${isOrChild ? 'opacity:0;' : ''}">${numStr}</div>`;
+      const numH = `<div style="flex-shrink:0; font-weight:normal; margin-right:4pt; line-height:var(--p-lh); ${isOrChild ? 'opacity:0;' : ''}">${numStr}</div>`;
 
-      // Render math/tokens BEFORE any marks badge formatting, and only float genuine mark breakdowns after punctuation/whitespace
-      let renderedText = renderTok(q.text);
+      // Render math/tokens BEFORE any marks badge formatting, stripping accidental duplicate leading question numbers
+      let renderedText = renderTok(stripLeadingQNum(q.text));
       renderedText = renderedText.replace(
         /([।?.]|<br>)\s*[\(\[]([0-9০-৯]+(?:\s*\+\s*[0-9০-৯]+)*)[\)\]]\s*$/,
         '$1 <span style="float:right; font-weight:normal; margin-left:10px;">($2)</span>'

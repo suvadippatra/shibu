@@ -1,7 +1,7 @@
 /* ODT Document Exporter with Readable Math/Chem Conversion & Embedded Images */
 import { uid, safeDownload, toast } from '../shared/js/dom.js';
 import { SYM, findClosingBracket } from '../shared/js/math-pipeline.js';
-import { S, BN_O, EN_O, bn, sl, exFname, getActiveOrient } from './state.js';
+import { S, BN_O, EN_O, bn, sl, exFname, getActiveOrient, stripLeadingQNum } from './state.js';
 
 function xmlEsc(s) {
   if (!s && s !== 0) return '';
@@ -157,17 +157,18 @@ export async function exportODT() {
     const countedQ = sec.answerAny && sec.answerAny < actualCount ? sec.answerAny : actualCount;
     const tot = (sec.mpq || 0) * countedQ;
     const prefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
+    const secNumPrefix = isBn ? `${numF(idx + 1)}।` : `${idx + 1}.`;
     const mf = isBn ? `${numF(sec.mpq)} × ${numF(countedQ)} = ${numF(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
 
     body += center(prefix);
-    body += p(`<text:span text:style-name="BoldSpan">${xmlEsc(sec.heading)}</text:span><text:tab/>${xmlEsc(mf)}`, 'SecRow');
+    body += p(`<text:span text:style-name="BoldSpan">${xmlEsc(secNumPrefix)} ${xmlEsc(sec.heading)}</text:span><text:tab/>${xmlEsc(mf)}`, 'SecRow');
 
     let qCounter = 1;
     sec.questions.forEach((q, qi) => {
       const isOrChild = qi > 0 && sec.questions[qi - 1].isOrNext;
-      const numStr = isBn ? `${numF(idx + 1)}.${numF(qCounter)})` : `${idx + 1}.${qCounter})`;
+      const numStr = isBn ? `${numF(qCounter)})` : `${qCounter})`;
       const prefixStr = isOrChild ? '   ' : `${numStr} `;
-      body += para(xmlEsc(prefixStr) + textToOdtXml(q.text));
+      body += para(xmlEsc(prefixStr) + textToOdtXml(stripLeadingQNum(q.text)));
 
       if (sec.type === 'mcq') {
         const ls = sec.os === 'en' ? EN_O : BN_O;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shibu-suite-v6';
+const CACHE_NAME = 'shibu-suite-v7';
 
 const CORE_ASSETS = [
   './',
@@ -10,6 +10,7 @@ const CORE_ASSETS = [
   './shared/js/dom.js',
   './shared/js/math-pipeline.js',
   './shared/js/math-builder.js',
+  './shared/js/watermark-vault.js',
   './fonts/TiroBangla.woff2',
   './fonts/TiroBangla-Italic.woff2',
   './fonts/DMSerifText.woff2',
