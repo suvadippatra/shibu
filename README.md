@@ -1,4 +1,4 @@
-# Shibu — প্রশ্নপত্র & CBT Suite
+# Shibu's — প্রশ্নপত্র & CBT Suite
 
 > A browser-based toolkit for creating Bengali and English question papers, building computer-based exams, and working with PDFs. No account or backend is required; your work is processed in the browser.
 
@@ -97,6 +97,10 @@ Run the repository's automated tests with Node.js 18 or newer:
 node --test tests/*.mjs
 ```
 
+## Bugs & Feature Request
+
+For this you have to [create an issue or request](https://github.com/suvadippatra/shibu/issues/new/choose). Or you can fork this repo if you want to use.
+
 ## 📁 Repository Contents
 
 - `index.html` — bilingual landing hub, quick import, and math playground
@@ -108,10 +112,6 @@ node --test tests/*.mjs
 - `fonts/` — Bengali and Latin font files
 - `tests/` — automated tests
 
-## 👤 Author
-
-**Suvadip Patra** — [GitHub profile](https://github.com/suvadippatra)
-
 ## 📄 License
 
 This project is released under the [MIT License](LICENSE).
@@ -120,9 +120,9 @@ This project is released under the [MIT License](LICENSE).
 
 <div align="center">
 
-Made for Bengali and English education
+Made for Bengali and English texts. This website is vive coded: ideas are taken from real life problems, UI is designed manually.
 
-**[Open Shibu Suite](https://suvadippatra.github.io/shibu/)**
+**[Open QSuite](https://suvadippatra.github.io/shibu/)**
 
 *Last updated: November 26, 2026*
 
