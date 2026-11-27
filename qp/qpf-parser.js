@@ -11,95 +11,116 @@ const KNOWN_SEC_KEYS = new Set([
   'TABLE_START', 'TABLE_END', 'POINTER'
 ]);
 
-export const PROMPT_IMG = `You are a highly advanced data-extraction algorithm processing an exam paper (which may be printed or handwritten). Use your most advanced reasoning and transcription capabilities. Extract and format STRICTLY according to the schema below.
+export const PROMPT_IMG = `You are a precision exam-paper OCR & QPF v1.1 extraction engine. Extract EVERY header, section, question, option, table, and diagram from the provided image(s) into strict QPF v1.1 format.
 
-CRITICAL RULES:
-1. OUTPUT: Output raw plain text ONLY. Do NOT use markdown code blocks, backticks, or any fences. Start output directly with "// Question Paper Format v1.1".
-2. NO FILLER: Do NOT add explanations, preambles, or filler text.
-3. TWO-PASS STRUCTURE & ZERO HALLUCINATION: First mentally segment Header / Sections / Questions / Sub-parts / Tables / Diagrams before emitting tokens. Never merge two distinct questions when numbering is faint or missing — emit a separate Q: for each. If any word is illegible write <§>; if a number/mark is illegible write <§_NUM>; if a table's column alignment is ambiguous write <§_TBL> inside the affected cell. Do NOT guess or autocorrect. Preserve all Bengali and English characters exactly as printed.
-4. FULL MARKS: Do NOT extract or calculate full marks for the paper — omit FULL_MARKS.
-5. NUMBERING (CRITICAL): Do NOT include main question numbering (1., 2., Q3, etc.) in Q: values. The UI automatically numbers them.
-6. DITTO MARKS: Replace any standalone double comma (") acting as a ditto mark with the exact word(s) from the line immediately above.
-7. BLANKS: Transcribe fill-in-the-blank lines (long dashes, underscores) as "________।" (Bengali) or "________." (English).
-8. TRUE/FALSE: For True/False questions: write the full sentence, add "।" or ".", then append "(সত্য/মিথ্যা)" for Bengali or "(T/F)" for English. Never both.
-9. INSTRUCTIONS: For sections with "answer any N" or "যেকোনো N টি" instruction, set ANSWER_ANY: N in that section block.
-10. SUB-PARTS: Do this ONLY if there are written part-by-part marks in the uploaded sample. Start each sub-part on a NEW LINE, indenting with spaces. Set MARKS_PER_Q to the total. Append the breakdown like (1+3+1) at the very end of the Q: text.
-11. LABELED DIAGRAMS (CRITICAL): If the image contains a diagram with dashed pointer lines for labeling, use the LABELED_START and LABELED_END tokens. For each pointer line, output POINTER: [Label] : ___ where [Label] is the letter/number pointing to the blank (e.g., A, B, i, ii). Do NOT guess the answers.
-12. HEADINGS: Auto-generate HEADING based on TYPE and MARKS_PER_Q:
-    - TYPE mcq, any marks → সঠিক উত্তরটি নির্বাচন করো:
+CRITICAL LINE-BREAK & FORMATTING CONTRACT (ALL LLMs MUST OBEY):
+1. RAW PLAIN TEXT ONLY: Output ONLY raw QPF v1.1 lines. Do NOT wrap in markdown code fences (\`\`\`), do NOT add any intro/outro text, and do NOT bold keys (never write **Q:** or - Q:). Start line 1 with: // Question Paper Format v1.1
+2. STRICT ONE-TAG-PER-LINE (NEVER FLATTEN): Every directive and key (##META, TOP_TITLE:, CLASS:, SUBJECT:, TIME:, ##SECTION_KA, HEADING:, TYPE:, MARKS_PER_Q:, OPT_STYLE:, ANSWER_ANY:, Q:, OR_NEXT:, OP_K:, OP_KH:, OP_G:, OP_GH:, TABLE_START:, TABLE_END, LABELED_START, POINTER:, LABELED_END, ##END) MUST start at column 0 on its OWN NEW LINE. NEVER join multiple tags or questions into a flat paragraph!
+3. MULTI-LINE QUESTIONS & SUB-PARTS:
+   - Do NOT include main question numbers (1., 2., Q1, ১।, ২)) in Q: values — the app numbers them automatically.
+   - If a question has sub-parts ((a)/(b), (i)/(ii), (ক)/(খ)) or multiple paragraphs, keep the stem on the Q: line and start each sub-part on a NEW indented line (2 spaces) OR separate with [BR].
+   - If sub-parts have individual marks written in the paper, set MARKS_PER_Q to the total and append the breakdown like (1+3+1) at the end of the Q: block.
+4. TWO-PASS ZERO-HALLUCINATION GUARD:
+   - Pass 1: Segment Header, Sections, Questions, Options, Tables, and Diagrams. Never merge two distinct questions when numbering is faint or missing.
+   - Pass 2: Transcribe exact Bengali and English wording. If any word is illegible write <§>; if a number/mark is illegible write <§_NUM>; if a table cell/alignment is ambiguous write <§_TBL>. NEVER guess or invent missing text.
+5. FULL MARKS: Omit FULL_MARKS (auto-calculated).
+6. DITTO MARKS: Replace any standalone ditto mark (") with the exact word(s) from the line immediately above.
+7. BLANKS & TRUE/FALSE:
+   - Transcribe blanks as "________।" (Bengali) or "________." (English).
+   - For True/False: write the full sentence + "।" or "." + " (সত্য/মিথ্যা)" for Bengali or " (T/F)" for English.
+8. INSTRUCTIONS & OR QUESTIONS:
+   - If a section says "answer any N" / "যেকোনো N টি", add ANSWER_ANY: N.
+   - If a question has an alternative OR / অথবা question right after it, add OR_NEXT: true on its own line immediately after the first question's Q: block, then write the alternative Q: block.
+9. LABELED DIAGRAMS: If there is a diagram with pointer blanks, emit:
+LABELED_START
+POINTER: A : ___
+LABELED_END
+10. AUTO-HEADINGS (use exact phrasing if section has no explicit heading):
+    - TYPE mcq → সঠিক উত্তরটি নির্বাচন করো:
     - TYPE short, MARKS_PER_Q 1 → সংক্ষিপ্ত উত্তর দাও:
     - TYPE short, MARKS_PER_Q 2 → নীচের প্রশ্নগুলির উত্তর দাও:
     - TYPE descriptive or long, MARKS_PER_Q 3+ → দীর্ঘ উত্তরধর্মী প্রশ্ন:
-13. Use the ending hashtag "##END" at the end of the qpf formatter, when there is nothing to write then use this.
+11. MATH, CHEMISTRY & TABLES:
+    - Wrap all LaTeX math in [EQ:...] (e.g. [EQ:\\frac{1}{x} + \\sqrt[3]{27}]). Always wrap |x| or matrices inside [EQ:...] so '|' never breaks table parsing.
+    - Chemical formulas: [CHEM:2H2 + O2 -> 2H2O]
+    - Subscripts/superscripts: C[SUB:3], H[SUB:2]O, x[SUP:2] (NEVER wrap the base letter like [SUB:C][SUB:3]).
+    - Symbols: [SYM:alpha], [SYM:degree], [SYM:theta].
+    - Tables:
+TABLE_START: RowsxCols
+Col1 | Col2
+Val1 | Val2
+TABLE_END
+12. End the entire output with ##END on its own line.
 
-SCHEMA:
+CONCRETE EXAMPLE OUTPUT (FOLLOW THIS EXACT LINE-BY-LINE STRUCTURE):
 // Question Paper Format v1.1
 ##META
-TOP_TITLE: Test No. [number only]
-CLASS: [Roman numeral class, no board name]
-SUBJECT: [subject name]
-TIME: [minutes only, number]
+TOP_TITLE: Unit Test - I
+CLASS: X
+SUBJECT: গণিত (Mathematics)
+TIME: 45
 FONT_SIZE: 11
 LINE_HEIGHT: 1.45
 MARGIN: 1.0
 DIVIDER: dotted
 
 ##SECTION_KA
-HEADING: [auto-generate per rule 12]
-TYPE: [mcq | short | descriptive | long]
-MARKS_PER_Q: [numeric, total per question including sub-parts]
-OPT_STYLE: [bn | en]
-ANSWER_ANY: [N if "answer any N" instruction exists, else omit this line]
-Q: [full question text, one line, NO main numbering. Sub-parts on new lines. Breakdown appended ONLY if present in image]
-OR_NEXT: [true if this question has an alternative OR / অথবা question immediately following it, else omit]
-OP_K: [MCQ option 1]
-OP_KH: [MCQ option 2]
-OP_G: [MCQ option 3]
-OP_GH: [MCQ option 4]
-[Repeat Q: block for all questions. Create new ##SECTION_ blocks as needed.]
-##END
+HEADING: সঠিক উত্তরটি নির্বাচন করো:
+TYPE: mcq
+MARKS_PER_Q: 1
+OPT_STYLE: bn
+Q: যদি [EQ:x \\neq 0] এবং [EQ:\\frac{1}{x} + x = 2] হয়, তবে [EQ:x^{2026} + \\frac{1}{x^{2026}}]-এর মান কত?
+OP_K: 0
+OP_KH: 1
+OP_G: 2
+OP_GH: [EQ:\\sqrt[3]{27}]
 
-TOKENS FOR SPECIAL CONTENT:
-[EQ:\\frac{a}{b}] for LaTeX math (always wrap |x| or matrices inside [EQ:...] so '|' does not split table columns)
-[CHEM:H2SO4] for chemical formulas
-C[SUB:3] for subscript (write C[SUB:3] or H[SUB:2]O — NEVER wrap the base letter like [SUB:C][SUB:3])
-x[SUP:2] for superscript
-[SYM:alpha] for Greek/special symbols
-TABLE_START: 3x2
-col1 | col2 | col3
-...rows... (use <§> in any unreadable cell, and ALWAYS close with TABLE_END)
+##SECTION_KHA
+HEADING: নীচের প্রশ্নগুলির উত্তর দাও:
+TYPE: short
+MARKS_PER_Q: 3
+OPT_STYLE: bn
+Q: সমাধান করো:
+  (i) [EQ:\\sqrt[3]{x + 1} = 3] এবং অনুপাত a : b = 2 : 3
+  (ii) নির্ণায়ক [EQ:\\begin{vmatrix} 1 & 2 \\\\ 3 & x \\end{vmatrix} = 0] হলে x-এর মান কত?
+OR_NEXT: true
+Q: জলের সংকেত [CHEM:2H2 + O2 -> 2H2O] অনুযায়ী সমীকরণটির ভারসাম্য দেখাও।
+Q: একটি গোলকের ব্যাসার্ধ [EQ:r = 7] cm হলে সমগ্রতলের ক্ষেত্রফল কত?
+TABLE_START: 2x3
+ব্যাসার্ধ (r) | ক্ষেত্রফল | আয়তন
+7 cm | 616 | 1437.33
 TABLE_END
-LABELED_START
-POINTER: Part ___ : ___
-LABELED_END`;
+##END`;
 
-export const PROMPT_TXT = `You are a highly advanced QPF (Question Paper Format) conversion algorithm. The user will provide rough text, handwritten OCR dumps, messy tables, or uncategorized notes. Convert it to strict QPF format v1.1.
+export const PROMPT_TXT = `You are a precision QPF v1.1 conversion engine. The user will provide rough text, handwritten OCR dumps, messy tables, or uncategorized notes. Convert it into strict QPF v1.1 format.
 
-CRITICAL RULES:
-1. OUTPUT: Output raw plain text ONLY. Do NOT use markdown code blocks, backticks, or any fences. Start output directly with "// Question Paper Format v1.1".
-2. NO FILLER: Do NOT add explanations, preambles, or conversational text.
-3. TWO-PASS STRUCTURE & ILLEGIBILITY GUARD: First identify Header / Sections / Individual Questions / Tables before formatting. Never merge two separate questions when numbering is missing or messy. Preserve original wording and values strictly. If any word is unreadable output <§>; if a number/mark is unreadable output <§_NUM>; if a table cell/alignment is ambiguous output <§_TBL>. NEVER guess or invent missing text.
-4. NUMBERING (CRITICAL): Strip out and delete all main question numbering (e.g., 1., 2., Q1, etc.) from the Q: values. The system handles numbering natively.
-5. SUB-PARTS: If questions are grouped logically with sub-parts, put them on a new indented line (or separated by [BR]) within the same Q: value.
-6. INFER SECTIONS: Group similar questions together and create ##SECTION_ blocks (e.g., group all MCQs into ##SECTION_KA, short questions into ##SECTION_KHA).
-7. AUTO-HEADINGS:
-    - TYPE mcq → সঠিক উত্তরটি নির্বাচন করো:
-    - TYPE short (1 mark) → সংক্ষিপ্ত উত্তর দাও:
-    - TYPE short (2 marks) → নীচের প্রশ্নগুলির উত্তর দাও:
-    - TYPE descriptive/long (3+ marks) → দীর্ঘ উত্তরধর্মী প্রশ্ন:
-8. TOKENS & TABLES: Use [EQ:\\frac{a}{b}], [CHEM:H2O], C[SUB:3], x[SUP:2], [SYM:alpha]. Always wrap vertical bars like |x| inside [EQ:|x|]. Format tables using:
-TABLE_START: RxC
-col1 | col2
-val1 | val2
-TABLE_END
-Format labeled diagrams using LABELED_START / POINTER: A : ___ / LABELED_END.
+CRITICAL LINE-BREAK & FORMATTING CONTRACT (ALL LLMs MUST OBEY):
+1. RAW PLAIN TEXT ONLY: Output ONLY raw QPF v1.1 lines. Do NOT use markdown code fences (\`\`\`), do NOT add explanations/preambles, and do NOT bold keys (never write **Q:** or - Q:). Start line 1 with: // Question Paper Format v1.1
+2. STRICT ONE-TAG-PER-LINE (NEVER FLATTEN): Every tag (##META, TOP_TITLE:, CLASS:, SUBJECT:, TIME:, ##SECTION_KA, HEADING:, TYPE:, MARKS_PER_Q:, OPT_STYLE:, ANSWER_ANY:, Q:, OR_NEXT:, OP_K:, OP_KH:, OP_G:, OP_GH:, TABLE_START:, TABLE_END, ##END) MUST be on its OWN NEW LINE. Never merge multiple tags or questions into one flat paragraph.
+3. TWO-PASS STRUCTURE & ILLEGIBILITY GUARD:
+   - Pass 1: Identify Header, Sections, Individual Questions, Sub-parts, OR-alternatives, Options, and Tables. Never merge two separate questions when numbering is missing or messy.
+   - Pass 2: Preserve original Bengali/English wording strictly. If any word is unreadable write <§>; if a number/mark is unreadable write <§_NUM>; if a table cell/alignment is ambiguous write <§_TBL>. NEVER guess or invent missing text.
+4. NUMBERING & SUB-PARTS:
+   - Strip all leading main question numbers (1., 2., Q1, ১।, ২)) from Q: values.
+   - If a question has sub-parts ((a)/(b), (i)/(ii)), keep the main stem on Q: and place each sub-part on a NEW indented line (2 spaces) or separated by [BR].
+5. INFER SECTIONS & AUTO-HEADINGS: Group similar questions into ##SECTION_KA, ##SECTION_KHA, etc.:
+   - TYPE mcq → সঠিক উত্তরটি নির্বাচন করো:
+   - TYPE short (1 mark) → সংক্ষিপ্ত উত্তর দাও:
+   - TYPE short (2 marks) → নীচের প্রশ্নগুলির উত্তর দাও:
+   - TYPE descriptive/long (3+ marks) → দীর্ঘ উত্তরধর্মী প্রশ্ন:
+6. TOKENS & TABLES:
+   - Math: [EQ:\\frac{a}{b}] (always wrap |x| or matrices inside [EQ:...]).
+   - Chemistry: [CHEM:H2O]. Sub/Super: C[SUB:3], x[SUP:2]. Symbols: [SYM:alpha].
+   - Tables: TABLE_START: RxC ... rows separated by | ... TABLE_END.
+   - Diagrams: LABELED_START ... POINTER: A : ___ ... LABELED_END.
+7. End with ##END on its own line.
 
-SCHEMA TO FOLLOW:
+CONCRETE EXAMPLE OUTPUT:
 // Question Paper Format v1.1
 ##META
-TOP_TITLE: Test No. [number only]
-CLASS: [Roman numeral class]
-SUBJECT: [subject name]
+TOP_TITLE: Test No. 1
+CLASS: X
+SUBJECT: Physical Science
 TIME: 30
 FONT_SIZE: 11
 LINE_HEIGHT: 1.45
@@ -107,13 +128,26 @@ MARGIN: 1.0
 DIVIDER: dotted
 
 ##SECTION_KA
-HEADING: [auto-generate]
-TYPE: [mcq | short | descriptive | long]
-MARKS_PER_Q: [numeric]
+HEADING: সঠিক উত্তরটি নির্বাচন করো:
+TYPE: mcq
+MARKS_PER_Q: 1
 OPT_STYLE: bn
-Q: State and prove the Cayley-Hamilton theorem.
+Q: জলের রাসায়নিক সংকেত কোনটি?
+OP_K: [CHEM:H2O]
+OP_KH: [CHEM:CO2]
+OP_G: [CHEM:O2]
+OP_GH: [CHEM:H2O2]
+
+##SECTION_KHA
+HEADING: নীচের প্রশ্নগুলির উত্তর দাও:
+TYPE: short
+MARKS_PER_Q: 2
+OPT_STYLE: bn
+Q: প্রমাণ করো [EQ:\\frac{1}{a} + \\frac{1}{b} = \\frac{a+b}{ab}]।
 OR_NEXT: true
-Q: Explain the central force orbital mechanics of the Two-Body Problem.
+Q: সংক্ষেপে লেখো:
+  (i) ওহমের সূত্রটি বিবৃত করো।
+  (ii) রোধের SI একক কী?
 ##END`;
 
 export const SAMPLE_BN_MATH_QPF = `// Question Paper Format v1.1

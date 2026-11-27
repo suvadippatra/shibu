@@ -44,7 +44,7 @@ html {
   --r3:       4px;
 
   --font-ui:  'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-bn:  'Tiro Bangla', 'Kalpurush', serif;
+  --font-bn:  'Tiro Bangla', 'Times New Roman', 'Liberation Serif', 'Plus Jakarta Sans', serif;
   --font-tt:  'DM Serif Text', Georgia, serif;
   --pv-bg:    #0c1124;
 }
@@ -457,3 +457,14 @@ html {
   background: var(--bg2);
 }
 
+/* Global KaTeX rendering fixes (prevent box-sizing reset & ensure crisp fraction lines) */
+.katex *, .katex *::before, .katex *::after {
+  box-sizing: content-box;
+}
+.katex .mfrac {
+  margin: 0 0.1em;
+}
+.katex .mfrac .frac-line {
+  border-bottom-width: max(1px, 0.055em) !important;
+  border-bottom-style: solid !important;
+}

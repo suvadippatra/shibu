@@ -17,9 +17,26 @@ export function renderTok(t) {
 }
 
 let _pvT = null;
+let _pvRaf = 0;
+let _lastRenderTs = 0;
 export function sched(d = 50) {
   clearTimeout(_pvT);
-  _pvT = setTimeout(() => { render(); }, d);
+  const now = performance.now();
+  // Leading / rAF-throttled update so dragging sliders or fast typing updates live
+  if (d <= 16 || now - _lastRenderTs >= Math.max(d, 45)) {
+    if (!_pvRaf) {
+      _pvRaf = requestAnimationFrame(() => {
+        _pvRaf = 0;
+        _lastRenderTs = performance.now();
+        render();
+      });
+    }
+    return;
+  }
+  _pvT = setTimeout(() => {
+    _lastRenderTs = performance.now();
+    render();
+  }, d);
 }
 
 export function wmHtmlGenerator() {
@@ -251,7 +268,7 @@ export function buildSet(asBlocks = false) {
     const tot = (sec.mpq || 0) * countedQ;
     const mfNum = isBn ? `${bn(sec.mpq)} × ${bn(countedQ)} = ${bn(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
     const secPrefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
-    const secNumPrefix = isBn ? `${bn(idx + 1)}।` : `${idx + 1}.`;
+    const secNumPrefix = isBn ? `${bn(idx + 1)}.` : `${idx + 1}.`;
     const anyNote = sec.answerAny ? (isBn ? ` (যেকোনো ${bn(sec.answerAny)}টি)` : ` (any ${sec.answerAny})`) : '';
 
     blocks.push(

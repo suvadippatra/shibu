@@ -501,6 +501,7 @@ select {
 .qp-page {
   display: flex;
   font-family: var(--font-bn); font-size: var(--p-fsize); line-height: var(--p-lh);
+  font-variant-numeric: lining-nums tabular-nums; font-feature-settings: "lnum" 1, "tnum" 1;
   color: #111; position: relative; overflow: hidden; background: #fff; box-sizing: border-box;
 }
 .qp-set { flex: 1; overflow: hidden; min-width: 0; position: relative; }

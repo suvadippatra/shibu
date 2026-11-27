@@ -157,7 +157,7 @@ export async function exportODT() {
     const countedQ = sec.answerAny && sec.answerAny < actualCount ? sec.answerAny : actualCount;
     const tot = (sec.mpq || 0) * countedQ;
     const prefix = isBn ? `বিভাগ '${L}'` : `Section '${L}'`;
-    const secNumPrefix = isBn ? `${numF(idx + 1)}।` : `${idx + 1}.`;
+    const secNumPrefix = isBn ? `${numF(idx + 1)}.` : `${idx + 1}.`;
     const mf = isBn ? `${numF(sec.mpq)} × ${numF(countedQ)} = ${numF(tot)}` : `${sec.mpq} × ${countedQ} = ${tot}`;
 
     body += center(prefix);

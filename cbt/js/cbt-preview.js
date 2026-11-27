@@ -120,11 +120,21 @@ export function updateSingleQuestionPreview(sec, idx) {
   runAutoRenderIfNeeded(qBox);
 }
 
+const _lastGranularTs = {};
 export function debouncedUpdateSingleQuestionPreview(sec, idx) {
   if (!uiState.previewIsVisible) return;
   const key = `${sec}-${idx}`;
+  const now = performance.now();
   if (granularTimeouts[key]) clearTimeout(granularTimeouts[key]);
-  granularTimeouts[key] = setTimeout(() => updateSingleQuestionPreview(sec, idx), 60);
+  if (!_lastGranularTs[key] || now - _lastGranularTs[key] >= 60) {
+    _lastGranularTs[key] = now;
+    requestAnimationFrame(() => updateSingleQuestionPreview(sec, idx));
+    return;
+  }
+  granularTimeouts[key] = setTimeout(() => {
+    _lastGranularTs[key] = performance.now();
+    updateSingleQuestionPreview(sec, idx);
+  }, 60);
 }
 
 export function renderAllPreviews() {

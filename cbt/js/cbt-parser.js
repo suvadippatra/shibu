@@ -258,40 +258,54 @@ export function buildAIPrompt(appState) {
 - Use raw HTML <sup>2</sup> for exponents and <sub>2</sub> for subscripts (e.g., H<sub>2</sub>O, Ca<sup>2+</sup>, 10<sup>5</sup>).
 - COMPLEX DIAGRAMS: If a question contains a diagram, complex structure, or chart, output EXACTLY \`[IMAGE]\` on a new line. NEVER use a single dot '.'.`;
 
-  return `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict plain-text .CBT format specified below.
+  return `SYSTEM INSTRUCTION: You are an expert Data Extraction AI. Extract EVERY SINGLE question from the provided document and format them EXACTLY into the strict line-by-line .CBT plain-text format specified below.
 
-CRITICAL EXTRACTION RULES (FOLLOW OR FAIL):
-1. NEVER SKIP: Extract every question.
-2. MCQ FORMAT: Exactly 4 'O:' lines. The 'A:' line must be a single letter (A, B, C, or D).
-3. NAT FORMAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact text/number or range.
-4. TEXT EMPHASIS: You MUST preserve all italics from the original document using *italic* (CRITICAL for biological names like *Mangifera indica*). Preserve bold text using **bold**.
-5. LISTS & LINE BREAKS: If a question contains an internal list of items (e.g., 1., 2., 3. or A., B., C., D. or I., II., III.), you MUST insert a literal \\n before each item so they stack vertically.
-6. STATEMENTS: DO NOT break "Statement I:", "List-I", "List-II", "Assertion A:" into multiple lines. Keep the label and its text on the SAME line.
-7. TABLES: Convert tables into a minified HTML <table> string on a single line starting with 'T: ' (with consistent column count across rows).
-8. HANDWRITING & ILLEGIBLE INPUT GUARD: NEVER hallucinate or guess unreadable handwriting, blurred numbers, or corrupted text/table cells. Output <§> for illegible words, <§_NUM> for illegible numbers, and <§_TBL> for ambiguous table cells. Do NOT output "[span_0]" or bounding box artifacts.
+STRICT LINE-BREAK & FORMATTING CONTRACT (ALL LLMs — ChatGPT, Claude, Gemini, DeepSeek — MUST OBEY):
+1. ONE TAG PER LINE (NEVER FLATTEN): Every directive and key ([EXAM_INFO], Agency:, Title:, Subtitle:, Duration:, Timer:, [FORMAT_WATERMARK: ...], [SECTION:...], QType:, Q:, T:, O:, A:, [IMAGE]) MUST start at column 0 on its OWN NEW LINE.
+   - NEVER collapse multiple tags or options onto a single paragraph or line (NEVER write "Q: ... O: ... O: ...").
+   - NEVER use markdown bullets (- O:) or bold keys (**Q:**).
+   - Leave a blank line between consecutive questions for readability.
+2. NEVER SKIP: Extract every single question in order. Strip leading question numbers (e.g. "1.", "Q2)") from Q: text.
+3. MCQ FORMAT: Always emit 4 separate 'O:' lines (one per option). The 'A:' line must be a single letter (A, B, C, or D; use <§> if answer key is missing).
+4. NAT FORMAT: DO NOT output any 'O:' lines. The 'A:' line must be the exact number, text, or range.
+5. INTERNAL PARAGRAPH / LIST BREAKS:
+   - Inside a 'Q:' value ONLY, use the literal two-character escape \\n whenever the question has multiple paragraphs or an internal list (1., 2., 3. or I., II., III. or A., B., C., D.).
+   - Keep "Statement I:", "Statement II:", "Assertion A:", "Reason R:", "List-I:" and their text on the same line after \\n.
+6. TEXT EMPHASIS: Preserve italics with *italic* (CRITICAL for scientific names like *Mangifera indica*) and bold with **bold**.
+7. TABLES: Convert tables into a single-line minified HTML <table> starting with 'T: ' (consistent column count across rows).
+8. HANDWRITING & ILLEGIBLE INPUT GUARD: NEVER hallucinate or guess unreadable handwriting, blurred numbers, or corrupted table cells. Output <§> for illegible words, <§_NUM> for illegible numbers, and <§_TBL> for ambiguous table cells.
 
 ${modeSpecificRules}
 
-FORMAT BLUEPRINT TO FOLLOW:
+FORMAT BLUEPRINT & CONCRETE EXAMPLE (FOLLOW THIS EXACT LINE-BY-LINE STRUCTURE):
 [EXAM_INFO]
-Agency: [Extract if present, else leave blank]
-Title: [Extract if present, else leave blank]
-Subtitle: [Extract if present, else leave blank]
-Duration: [Extract if present, else leave blank]
+Agency: NTA
+Title: Mock Test - 01
+Subtitle: Physics & Chemistry
+Duration: 60
 Timer: STOPWATCH
 [FORMAT_WATERMARK: ${appState.mathMode === 'LATEX' ? 'LATEX' : 'PURE_HTML'}]
 
 ${sectionStr}QType: MCQ
-Q: Read the statements:\\n**Statement I:** First statement...\\n**Statement II:** Second statement...
-O: Option A text
-O: Option B text
-O: Option C text
-O: Option D text
-A: B
+Q: Read the statements:\\n**Statement I:** Force is a vector quantity.\\n**Statement II:** Speed is a scalar quantity.
+O: Both Statement I and Statement II are correct
+O: Both Statement I and Statement II are incorrect
+O: Statement I is correct but Statement II is incorrect
+O: Statement I is incorrect but Statement II is correct
+A: A
+
+QType: MCQ
+Q: Match List-I with List-II:
+T: <table><tr><th>List-I</th><th>List-II</th></tr><tr><td>A. Work</td><td>I. Joule</td></tr><tr><td>B. Power</td><td>II. Watt</td></tr></table>
+O: A-I, B-II
+O: A-II, B-I
+O: A-I, B-I
+O: A-II, B-II
+A: A
 
 QType: NAT
 Q: The value of the charge is ____________ C.
 A: 2.5-2.6
 
-Now, parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text block.`;
+Now parse the attached document and output ONLY the raw .CBT code inside a \`\`\`text code block (with NO conversational intro or outro).`;
 }
