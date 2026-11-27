@@ -205,6 +205,9 @@ export function renderTok(rawText, katexApi = globalThis.katex, options = {}) {
 
   let out = escHtml(masked);
   out = out.replace(/@@ESC_DOLLAR@@/g, '$');
+  // WhatsApp-style **bold** and _italic_: no leading/trailing space, never crosses newline
+  out = out.replace(/(^|[^\w*])\*\*([^\s*](?:[^\n*]*?[^\s*])?)\*\*(?=[^\w*]|$)/g, '$1<strong>$2</strong>');
+  out = out.replace(/(^|[^\w_])_([^\s_](?:[^\n_]*?[^\s_])?)_(?=[^\w_]|$)/g, '$1<em>$2</em>');
   if (preserveNewlines) {
     out = out.replace(/\r?\n/g, '<br>');
   }

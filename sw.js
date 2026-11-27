@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shibu-suite-v9';
+const CACHE_NAME = 'shibu-suite-v10';
 
 const CORE_ASSETS = [
   './',

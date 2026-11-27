@@ -142,9 +142,13 @@ export function triggerPasteStageAnimation(container) {
   setTimeout(() => container.classList.remove('manim-paste-stage'), 750);
 }
 
-/* Lightweight Manim-like Live Typing Reveal (animates only the newly added tail/node — zero frame drop) */
+/* Lightweight Live Typing Reveal (animates only newly added tail; no blink on backspace) */
 export function animateLiveReveal(containerEl, prevLen = 0, nextLen = 0) {
   if (!containerEl || !animationsEnabled()) return;
+  if (nextLen < prevLen) {
+    // Backspace / delete: do not flash the whole block
+    return;
+  }
   if (nextLen > prevLen && nextLen - prevLen <= 4) {
     // Find last non-empty text node inside containerEl (skipping hidden katex-mathml)
     const walker = document.createTreeWalker(containerEl, NodeFilter.SHOW_TEXT, {
@@ -188,6 +192,7 @@ export function initSiteRuntime() {
   const body = document.body;
   if (body && animationsEnabled()) {
     body.classList.add('anim-page-enter');
+    body.addEventListener('animationend', () => body.classList.remove('anim-page-enter'), { once: true });
   }
 
   // Handle browser back/forward cache restore
