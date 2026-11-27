@@ -1,13 +1,16 @@
-const CACHE_NAME = 'shibu-suite-v8';
+const CACHE_NAME = 'shibu-suite-v9';
 
 const CORE_ASSETS = [
   './',
   './index.html',
+  './settings.html',
   './manifest.webmanifest',
   './logo.png',
   './shared/css/fonts.css',
   './shared/css/tokens.css',
+  './shared/css/animations.css',
   './shared/js/dom.js',
+  './shared/js/site-prefs.js',
   './shared/js/math-pipeline.js',
   './shared/js/math-builder.js',
   './shared/js/watermark-vault.js',

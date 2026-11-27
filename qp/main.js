@@ -1,5 +1,6 @@
 /* QP Maker Bootstrap Entry Point */
 import { $, $$, initTheme, toast, uid } from '../shared/js/dom.js';
+import { initSiteRuntime } from '../shared/js/site-prefs.js';
 import { S, HDGS_BN, applyVars, getHdgs } from './state.js';
 import { SAMPLE_BN_MATH_QPF } from './qpf-parser.js';
 import { sched } from './renderer.js';
@@ -26,6 +27,7 @@ function initMobileTabs() {
 function init() {
   try { localStorage.setItem('shibu_last_tool', 'qp/index.html'); } catch (_) {}
   initTheme({ btnId: 'theme-btn', darkIconId: 'theme-icon-dark', lightIconId: 'theme-icon-light' });
+  initSiteRuntime();
   applyVars();
   initSettings();
   initExamInfo();

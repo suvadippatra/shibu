@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#080d1a"/>
+  <title>Settings — প্রশ্নপত্র &amp; CBT Suite</title>
+  <link rel="icon" href="./logo.png" type="image/png"/>
+  <link rel="stylesheet" href="./shared/css/fonts.css"/>
+  <link rel="stylesheet" href="./shared/css/tokens.css"/>
+  <link rel="stylesheet" href="./shared/css/animations.css"/>
+  <style>
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    .settings-wrap {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .s-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow3);
+    }
+    .s-card h2 {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .s-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .s-row:first-of-type { border-top: none; padding-top: 0; }
+    .s-meta { flex: 1; min-width: 210px; }
+    .s-label { font-size: 13px; font-weight: 700; color: var(--t1); }
+    .s-desc { font-size: 11.5px; color: var(--t2); margin-top: 2px; line-height: 1.45; }
+    .seg-group {
+      display: inline-flex;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .seg-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--t2);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      gap: 8px;
+    }
+    .switch input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+    .font-slot-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .font-status {
+      font-size: 11px;
+      color: var(--accent3);
+      font-weight: 600;
+    }
+    .anim-demo-box {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .anim-demo-out {
+      min-height: 36px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-family: var(--font-bn);
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="btn btn-ghost btn-sm" href="./index.html" title="Back to Home">← Home</a>
+    <div class="logo-text" style="margin-left:6px;">⚙️ Site Settings</div>
+    <div class="topbar-right">
+      <button type="button" class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle dark/light mode">
+        <svg id="theme-icon-dark" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg id="theme-icon-light" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="settings-wrap">
+    <!-- Appearance & Theme -->
+    <section class="s-card">
+      <h2>🎨 Appearance &amp; Workspace</h2>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Color Theme (Dark / Light Mode)</div>
+          <div class="s-desc">Applies across Home Hub, QP Maker, CBT Builder, and PDF Tools.</div>
+        </div>
+        <div class="seg-group">
+          <button type="button" class="seg-btn" id="th-dark">🌙 Dark</button>
+          <button type="button" class="seg-btn" id="th-light">☀️ Light</button>
+        </div>
+      </div>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Home Hub Language</div>
+          <div class="s-desc">Default interface language on the landing page.</div>
+        </div>
+        <div class="seg-group">
+          <button type="button" class="seg-btn" id="lang-bn">বাংলা</button>
+          <button type="button" class="seg-btn" id="lang-en">English</button>
+        </div>
+      </div>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Auto-Open Last Used Tool</div>
+          <div class="s-desc">Jump straight into your previous editor on next visit.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-auto-open"/>
+          <span style="font-size:12px;font-weight:700;">Enabled</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Manim-like Animations -->
+    <section class="s-card">
+      <h2>✨ Manim-Style Animations</h2>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Enable Lightweight Animations</div>
+          <div class="s-desc">Smooth GPU-only character appear on live typing, staggered reveal on QPF/CBT paste &amp; apply, and page open/close transitions. Turn OFF on very old devices if desired.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-anim-toggle"/>
+          <span id="anim-status-lbl" style="font-size:12px;font-weight:700;">ON</span>
+        </label>
+      </div>
+      <div class="anim-demo-box">
+        <div style="font-size:11.5px;color:var(--t2);font-weight:600;">Live Test (type below to preview Manim reveal):</div>
+        <input type="text" id="anim-demo-inp" class="form-control" value="যদি x ≠ 0 এবং 1/x + x = 2" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg);color:var(--t1);font-size:13px;"/>
+        <div class="anim-demo-out" id="anim-demo-out">যদি x ≠ 0 এবং 1/x + x = 2</div>
+      </div>
+    </section>
+
+    <!-- Custom Font Upload -->
+    <section class="s-card">
+      <h2>🔤 Custom Fonts (Offline IndexedDB)</h2>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Question &amp; Body Font (<code>--font-bn</code>)</div>
+          <div class="s-desc">Upload <code>.woff2</code>, <code>.ttf</code>, or <code>.otf</code> for Bengali/English questions.</div>
+          <div class="font-status" id="status-font-bn">Default: Tiro Bangla</div>
+        </div>
+        <div class="font-slot-actions">
+          <label class="btn btn-primary btn-xs" style="cursor:pointer;">Upload Font<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden id="up-font-bn"/></label>
+          <button type="button" class="btn btn-ghost btn-xs" id="rst-font-bn">Reset</button>
+        </div>
+      </div>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Paper Title / Heading Font (<code>--font-tt</code>)</div>
+          <div class="s-desc">Used for exam titles and header metadata rows.</div>
+          <div class="font-status" id="status-font-tt">Default: DM Serif Text</div>
+        </div>
+        <div class="font-slot-actions">
+          <label class="btn btn-primary btn-xs" style="cursor:pointer;">Upload Font<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden id="up-font-tt"/></label>
+          <button type="button" class="btn btn-ghost btn-xs" id="rst-font-tt">Reset</button>
+        </div>
+      </div>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">App Interface Font (<code>--font-ui</code>)</div>
+          <div class="s-desc">Used for buttons, panels, and navigation across the suite.</div>
+          <div class="font-status" id="status-font-ui">Default: Plus Jakarta Sans</div>
+        </div>
+        <div class="font-slot-actions">
+          <label class="btn btn-primary btn-xs" style="cursor:pointer;">Upload Font<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden id="up-font-ui"/></label>
+          <button type="button" class="btn btn-ghost btn-xs" id="rst-font-ui">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cache & Storage -->
+    <section class="s-card">
+      <h2>🧹 Cache &amp; Storage</h2>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Clear Extra Cache</div>
+          <div class="s-desc" id="cache-info-txt">Removes Service Worker offline caches &amp; forces fresh assets without deleting your saved drafts.</div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-clear-cache">🧹 Clear Extra Cache</button>
+      </div>
+      <div class="s-row">
+        <div class="s-meta">
+          <div class="s-label">Reset All Site Settings</div>
+          <div class="s-desc">Restores default theme, animations ON, and clears custom uploaded fonts.</div>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-reset-all">↺ Reset Settings</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts"></div>
+
+  <script type="module">
+    import { $, initTheme, setTheme, toast } from './shared/js/dom.js';
+    import {
+      getSitePrefs, saveSitePrefs, initSiteRuntime,
+      saveCustomFont, getCustomFontMeta, clearCustomFont,
+      clearExtraCaches, animateLiveReveal
+    } from './shared/js/site-prefs.js';
+
+    initTheme();
+    initSiteRuntime();
+
+    const syncThemeButtons = () => {
+      const cur = document.documentElement.dataset.theme || 'dark';
+      $('th-dark').classList.toggle('active', cur === 'dark');
+      $('th-light').classList.toggle('active', cur === 'light');
+    };
+    syncThemeButtons();
+    $('th-dark').addEventListener('click', () => { setTheme('dark'); syncThemeButtons(); });
+    $('th-light').addEventListener('click', () => { setTheme('light'); syncThemeButtons(); });
+    $('theme-btn').addEventListener('click', () => setTimeout(syncThemeButtons, 10));
+
+    // Language
+    const syncLang = () => {
+      const l = localStorage.getItem('shibu_hub_lang') || 'en';
+      $('lang-bn').classList.toggle('active', l === 'bn');
+      $('lang-en').classList.toggle('active', l === 'en');
+    };
+    syncLang();
+    $('lang-bn').addEventListener('click', () => { localStorage.setItem('shibu_hub_lang', 'bn'); syncLang(); toast('Language set to বাংলা', 'success'); });
+    $('lang-en').addEventListener('click', () => { localStorage.setItem('shibu_hub_lang', 'en'); syncLang(); toast('Language set to English', 'success'); });
+
+    // Auto-open
+    const autoChk = $('set-auto-open');
+    autoChk.checked = localStorage.getItem('shibu_auto_open') === '1';
+    autoChk.addEventListener('change', () => {
+      localStorage.setItem('shibu_auto_open', autoChk.checked ? '1' : '0');
+      toast(autoChk.checked ? 'Auto-open enabled' : 'Auto-open disabled', 'info');
+    });
+
+    // Animations toggle
+    const animChk = $('set-anim-toggle');
+    const animLbl = $('anim-status-lbl');
+    const prefs = getSitePrefs();
+    animChk.checked = prefs.animations;
+    animLbl.textContent = prefs.animations ? 'ON' : 'OFF';
+    animChk.addEventListener('change', () => {
+      const on = animChk.checked;
+      saveSitePrefs({ animations: on });
+      animLbl.textContent = on ? 'ON' : 'OFF';
+      toast(`Animations turned ${on ? 'ON' : 'OFF'}`, 'success');
+    });
+
+    // Live animation demo
+    let prevDemoLen = $('anim-demo-inp').value.length;
+    $('anim-demo-inp').addEventListener('input', (e) => {
+      const val = e.target.value;
+      const out = $('anim-demo-out');
+      out.textContent = val;
+      animateLiveReveal(out, prevDemoLen, val.length);
+      prevDemoLen = val.length;
+    });
+
+    // Custom fonts
+    const fontDefaults = { bn: 'Default: Tiro Bangla', tt: 'Default: DM Serif Text', ui: 'Default: Plus Jakarta Sans' };
+    async function refreshFontLabels() {
+      for (const slot of ['bn', 'tt', 'ui']) {
+        const meta = await getCustomFontMeta(slot);
+        $(`status-font-${slot}`).textContent = meta ? `Custom: ${meta.name}` : fontDefaults[slot];
+      }
+    }
+    refreshFontLabels();
+
+    for (const slot of ['bn', 'tt', 'ui']) {
+      $(`up-font-${slot}`).addEventListener('change', async (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        try {
+          const buf = await f.arrayBuffer();
+          await saveCustomFont(slot, f.name, buf);
+          await refreshFontLabels();
+          toast(`Font "${f.name}" applied site-wide!`, 'success');
+        } catch (err) {
+          toast('Failed to load font: ' + err.message, 'error');
+        }
+      });
+      $(`rst-font-${slot}`).addEventListener('click', async () => {
+        await clearCustomFont(slot);
+        await refreshFontLabels();
+        toast('Restored default font', 'info');
+      });
+    }
+
+    // Cache info & clear
+    async function updateCacheInfo() {
+      if (!('caches' in window)) return;
+      const keys = await caches.keys();
+      $('cache-info-txt').textContent = keys.length
+        ? `Active offline caches: ${keys.join(', ')}. Clearing forces fresh files without deleting drafts.`
+        : 'No extra offline caches stored.';
+    }
+    updateCacheInfo();
+
+    $('btn-clear-cache').addEventListener('click', async () => {
+      const n = await clearExtraCaches();
+      await updateCacheInfo();
+      toast(n ? `Cleared ${n} cache bucket(s)!` : 'Cache already clean.', 'success');
+    });
+
+    $('btn-reset-all').addEventListener('click', async () => {
+      if (!confirm('Reset theme, animation preferences, and custom fonts to defaults?')) return;
+      setTheme('dark');
+      syncThemeButtons();
+      saveSitePrefs({ animations: true, hasCustomFonts: false });
+      animChk.checked = true;
+      animLbl.textContent = 'ON';
+      for (const slot of ['bn', 'tt', 'ui']) await clearCustomFont(slot);
+      await refreshFontLabels();
+      toast('All site settings restored to defaults.', 'success');
+    });
+  </script>
+</body>
+</html>

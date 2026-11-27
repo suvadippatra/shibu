@@ -9,7 +9,7 @@ import {
   clearAutoFit, syncFields, exFname, validateScientificExpression
 } from './state.js';
 import { parseQPF, serializeQPF, auditQPFState, PROMPT_IMG, PROMPT_TXT } from './qpf-parser.js';
-import { sched, runAutoFit } from './renderer.js';
+import { sched, runAutoFit, requestPasteReveal } from './renderer.js';
 import { exportODT } from './export-odt.js';
 
 const _undoStack = [];
@@ -130,6 +130,7 @@ export function applyQPFText(rawText) {
   rebuildSecs();
   recalc();
   applyVars();
+  requestPasteReveal();
   sched(10);
   const audit = auditQPFState(S);
   if (audit.illegibleCount > 0) {

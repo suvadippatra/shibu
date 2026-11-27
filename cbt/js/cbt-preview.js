@@ -1,6 +1,7 @@
 /* CBT Maker Live Preview Renderer & Scroll Sync */
 import { $, esc } from '../../shared/js/dom.js';
 import { formatContent, stripMarkupLength, findUnmatchedMathTokens } from '../../shared/js/math-pipeline.js';
+import { animateLiveReveal } from '../../shared/js/site-prefs.js';
 import { appState, uiState } from './cbt-state.js';
 
 const granularTimeouts = {};
@@ -116,8 +117,13 @@ export function updateSingleQuestionPreview(sec, idx) {
   const q = appState.questionsBySection[sec]?.[idx];
   if (!qBox || !q) return;
 
+  const prevLen = (qBox.textContent || '').length;
   qBox.innerHTML = generateSinglePreviewHTML(sec, idx, q);
   runAutoRenderIfNeeded(qBox);
+  const nextLen = (qBox.textContent || '').length;
+  if (prevLen > 0 && prevLen !== nextLen) {
+    animateLiveReveal(qBox, prevLen, nextLen);
+  }
 }
 
 const _lastGranularTs = {};

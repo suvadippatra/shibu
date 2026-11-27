@@ -9,6 +9,7 @@
   <link rel="icon" href="./logo.png" type="image/png"/>
   <link rel="stylesheet" href="./shared/css/fonts.css"/>
   <link rel="stylesheet" href="./shared/css/tokens.css"/>
+  <link rel="stylesheet" href="./shared/css/animations.css"/>
   <link rel="stylesheet" href="./libs/katex.min.css"/>
   <script defer src="./libs/katex.min.js"></script>
   <style>
@@ -270,6 +271,7 @@
         <svg id="theme-icon-dark" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         <svg id="theme-icon-light" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
+      <a class="icon-btn" href="./settings.html" title="Site Settings" aria-label="Open site settings" style="text-decoration:none;font-size:15px;">⚙️</a>
       <button type="button" class="icon-btn" id="help-btn" title="Suite Guide" aria-label="Open Suite Guide">
         <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </button>
@@ -428,8 +430,10 @@
   <script type="module">
     import { $, initTheme, initDrawer, toast } from './shared/js/dom.js';
     import { renderTok } from './shared/js/math-pipeline.js';
+    import { initSiteRuntime, animateLiveReveal } from './shared/js/site-prefs.js';
 
     initTheme({ btnId: 'theme-btn', darkIconId: 'theme-icon-dark', lightIconId: 'theme-icon-light', storageKey: 'qpm-theme' });
+    initSiteRuntime();
     initDrawer({ openBtnId: 'help-btn', drawerId: 'help-drawer', closeBtnId: 'help-close', overlayId: 'ov' });
 
     const I18N = {
@@ -597,21 +601,26 @@
     } catch (_) {}
 
     // Live Math & Chemistry Playground
-    const renderPlayground = () => {
+    let _prevPgLen = 0;
+    const renderPlayground = (animate = false) => {
       const inp = $('pg-input');
       const out = $('pg-output');
       if (!inp || !out) return;
+      const curLen = inp.value.length;
       out.innerHTML = renderTok(inp.value, globalThis.katex, { preserveNewlines: false, allowDollar: true });
+      if (animate) animateLiveReveal(out, _prevPgLen, curLen);
+      _prevPgLen = curLen;
     };
-    $('pg-input')?.addEventListener('input', renderPlayground);
+    $('pg-input')?.addEventListener('input', () => renderPlayground(true));
     document.querySelectorAll('.pg-chip').forEach((btn) =>
       btn.addEventListener('click', () => {
         if ($('pg-input')) $('pg-input').value = btn.dataset.val || '';
-        renderPlayground();
+        _prevPgLen = 0;
+        renderPlayground(true);
       })
     );
-    window.addEventListener('load', renderPlayground);
-    renderPlayground();
+    window.addEventListener('load', () => renderPlayground(false));
+    renderPlayground(false);
 
     // PWA install prompt & Service Worker registration
     let deferredPrompt = null;

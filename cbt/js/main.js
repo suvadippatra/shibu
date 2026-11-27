@@ -1,5 +1,6 @@
 /* CBT Maker Bootstrap Entry Point */
 import { $, $$, copyText, attachMathQuickBar } from '../../shared/js/dom.js';
+import { initSiteRuntime, triggerPasteStageAnimation } from '../../shared/js/site-prefs.js';
 import { openMathBuilderModal } from '../../shared/js/math-builder.js';
 import { appState, uiState, defaultRules, showToast, startMemoryTracker } from './cbt-state.js';
 import { parseCBTData, generateCBTString, buildAIPrompt, SAMPLE_CBT_TEXT } from './cbt-parser.js';
@@ -93,7 +94,10 @@ function applyParsedCBT(rawText) {
 
   setTimeout(() => {
     $$('.auto-expand, .qblock-textarea').forEach(autoResize);
-    if (uiState.previewIsVisible) renderAllPreviews();
+    if (uiState.previewIsVisible) {
+      renderAllPreviews();
+      triggerPasteStageAnimation($('previewArea'));
+    }
     updateFastScrollElevator();
   }, 150);
 
@@ -272,6 +276,7 @@ function initResizerAndElevator() {
 
 function init() {
   try { localStorage.setItem('shibu_last_tool', 'cbt/cbt_index.html'); } catch (_) {}
+  initSiteRuntime();
   startMemoryTracker();
   initConfirmModal();
   initMediaListeners();

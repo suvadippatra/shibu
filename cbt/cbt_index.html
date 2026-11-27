@@ -6,6 +6,7 @@
   <title>CBT Maker — প্রশ্নপত্র Suite</title>
   <link rel="stylesheet" href="../shared/css/fonts.css">
   <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/animations.css">
   <link rel="stylesheet" href="vendor/cropper/cropper.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css';">
   <script src="vendor/cropper/cropper.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js';"></script>
   <link rel="stylesheet" href="../libs/katex.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css';">
@@ -22,6 +23,7 @@
     <div class="navbar-actions">
       <button type="button" class="btn-icon hidden" id="missingImgIcon" style="color: #fca5a5; background: rgba(239, 68, 68, 0.2); border-color: var(--danger);" title="Missing Images">🚨 <span class="nav-text-mobile-hide" id="missingImgCount">0</span></button>
       <button type="button" class="btn-icon" id="btnTheme" title="Toggle Dark/Light Mode">🌙</button>
+      <a class="btn-icon" href="../settings.html" title="Site Settings" aria-label="Open site settings" style="text-decoration:none;">⚙️</a>
       <button type="button" class="btn-icon" id="previewToggleBtn" title="Toggle Live Preview">👁️</button>
       <button type="button" class="btn-icon" id="btnPromptModal" title="Copy AI Prompt">🤖<span class="nav-text-mobile-hide"> Prompt</span></button>
       <button type="button" class="btn-icon" id="btnImportModal" title="Import/Export CBT">📌<span class="nav-text-mobile-hide"> Import</span></button>

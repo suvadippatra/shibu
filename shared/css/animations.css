@@ -1,0 +1,130 @@
+/* Lightweight GPU-only Manim-style animations & page transitions.
+   Disabled automatically when [data-anim="off"] or prefers-reduced-motion: reduce. */
+
+@keyframes manimPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes manimPageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+}
+
+@keyframes manimCharIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.84);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes manimWriteSweep {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes manimPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes manimFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+/* Page Open / Close */
+html:not([data-anim="off"]) body.anim-page-enter {
+  animation: manimPageEnter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html:not([data-anim="off"]) body.anim-page-exit {
+  animation: manimPageExit 140ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+/* Live typing character / token reveal */
+html:not([data-anim="off"]) .manim-char-in {
+  display: inline-block;
+  animation: manimCharIn 170ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+html:not([data-anim="off"]) .manim-char-out {
+  display: inline-block;
+  animation: manimFadeOut 130ms ease-out forwards;
+  pointer-events: none;
+}
+
+/* Element / Math / Table / Option reveal */
+html:not([data-anim="off"]) .manim-write-in {
+  animation: manimWriteSweep 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity, clip-path;
+}
+
+html:not([data-anim="off"]) .manim-pop-in {
+  animation: manimPopIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+/* Whole-page staggered paste & apply reveal */
+html:not([data-anim="off"]) .manim-paste-stage .qp-title,
+html:not([data-anim="off"]) .manim-paste-stage .qp-info,
+html:not([data-anim="off"]) .manim-paste-stage .qp-sec-hdr,
+html:not([data-anim="off"]) .manim-paste-stage .qp-sec-row,
+html:not([data-anim="off"]) .manim-paste-stage .qp-q,
+html:not([data-anim="off"]) .manim-paste-stage .qp-itable,
+html:not([data-anim="off"]) .manim-paste-stage .preview-card,
+html:not([data-anim="off"]) .manim-paste-stage [id^="preview-qbox-"] {
+  animation: manimWriteSweep 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(min(var(--manim-i, 0), 14) * 28ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.anim-page-enter,
+  body.anim-page-exit,
+  .manim-char-in,
+  .manim-char-out,
+  .manim-write-in,
+  .manim-pop-in,
+  .manim-paste-stage * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

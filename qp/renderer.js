@@ -2,6 +2,7 @@
 import { $, esc, toast } from '../shared/js/dom.js';
 import { renderTok as sharedRenderTok, stripMarkupLength } from '../shared/js/math-pipeline.js';
 import { getUnlockedWatermarkDataUrl } from '../shared/js/watermark-vault.js';
+import { animateLiveReveal, triggerPasteStageAnimation } from '../shared/js/site-prefs.js';
 import { S, BN_O, EN_O, bn, sl, getActiveOrient, applyVars, showAutoFitBtn, checkFit, stripLeadingQNum } from './state.js';
 
 const _tokCache = new Map();
@@ -19,6 +20,10 @@ export function renderTok(t) {
 let _pvT = null;
 let _pvRaf = 0;
 let _lastRenderTs = 0;
+let _pendingPasteReveal = false;
+export function requestPasteReveal() {
+  _pendingPasteReveal = true;
+}
 export function sched(d = 50) {
   clearTimeout(_pvT);
   const now = performance.now();
@@ -456,7 +461,22 @@ export async function render() {
 
     // Only update DOM if this is still the latest render (not superseded by a newer call)
     if (seq !== _renderSeq) return;
+    const prevTexts = Array.from(vp.querySelectorAll('.qp-q')).map((el) => el.textContent || '');
     vp.innerHTML = renderedHTML; // also removes spinner since we replace all content
+    if (_pendingPasteReveal) {
+      _pendingPasteReveal = false;
+      triggerPasteStageAnimation(vp);
+    } else if (prevTexts.length > 0) {
+      const nextEls = vp.querySelectorAll('.qp-q');
+      if (nextEls.length === prevTexts.length) {
+        nextEls.forEach((el, idx) => {
+          const curTxt = el.textContent || '';
+          if (curTxt !== prevTexts[idx]) {
+            animateLiveReveal(el, prevTexts[idx].length, curTxt.length);
+          }
+        });
+      }
+    }
     checkFit(logicalPages.length);
   } catch (error) {
     console.error('Rendering Error:', error);
